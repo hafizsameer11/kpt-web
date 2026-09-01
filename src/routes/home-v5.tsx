@@ -27,6 +27,7 @@ import {
   DashboardTopBar,
 } from "@/components/kipit/DashboardSidebar";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
+import { productArt } from "@/components/kipit/art";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 
