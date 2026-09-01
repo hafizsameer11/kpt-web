@@ -351,20 +351,25 @@ function Plans() {
               to="/invest"
               className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card transition hover:shadow-float"
             >
-              <img
-                src={productArt(p.name)}
-                alt=""
-                aria-hidden="true"
-                loading="lazy"
-                width={1200}
-                height={400}
-                className="h-16 w-full object-cover"
-              />
-              <div className="p-4">
-                <span className={`grid size-10 place-items-center rounded-xl ${TONE[p.tone]}`}>
+              <div className="relative h-14 w-full overflow-hidden bg-primary">
+                <img
+                  src={productArt(p.name)}
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  width={1200}
+                  height={400}
+                  className="absolute inset-0 h-full w-full object-cover opacity-60"
+                />
+                <span
+                  className={`absolute -bottom-5 left-4 grid size-10 place-items-center rounded-xl border border-card ${TONE[p.tone]}`}
+                >
                   <Icon className="size-5" />
                 </span>
-                <p className="mt-2.5 text-sm font-extrabold text-foreground">{p.name}</p>
+              </div>
+              <div className="p-4 pt-7">
+                <p className="text-sm font-extrabold text-foreground">{p.name}</p>
+
                 <p className="text-xs leading-snug text-muted-foreground">{p.desc}</p>
                 <p className="mt-2 text-base font-extrabold tabular-nums text-foreground">
                   {hidden ? MASK : naira(p.value)}
