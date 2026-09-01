@@ -180,7 +180,7 @@ function HomeV4() {
             AO
           </div>
           <div>
-            <p className="text-[11px] text-muted-foreground">Good morning</p>
+            <p className="text-xs text-muted-foreground">Good morning</p>
             <p className="text-xs font-bold">Adaeze O.</p>
           </div>
         </div>
@@ -232,25 +232,46 @@ function HomeV4() {
                 </button>
               </div>
               <p className="mt-2 text-4xl font-extrabold tracking-tight md:text-5xl">
-                {mask(2450000)}
+                {mask(PORTFOLIO_VALUE)}
               </p>
               <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand-foreground/15 px-3 py-1 text-xs font-semibold">
-                <TrendingUp className="size-3.5" /> +₦38,200 · +1.58% this month
+                <TrendingUp className="size-3.5" /> +{naira(range.change)} · +
+                {range.pct}% {range.note}
               </p>
+
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {RANGES.map((r, i) => (
+                  <button
+                    key={r.label}
+                    type="button"
+                    onClick={() => setRangeIdx(i)}
+                    aria-pressed={i === rangeIdx}
+                    className={`rounded-full px-3 py-1 text-xs font-bold transition-colors ${
+                      i === rangeIdx
+                        ? "bg-gold text-brand"
+                        : "bg-brand-foreground/10 text-brand-foreground/70 hover:bg-brand-foreground/20"
+                    }`}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
 
               <div className="mt-6 grid grid-cols-2 gap-2">
                 <div className="rounded-2xl bg-brand-foreground/10 p-3.5">
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold opacity-75">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold opacity-75">
                     <Wallet className="size-3.5" /> Wallet
                   </div>
-                  <p className="mt-1 text-lg font-extrabold">{mask(500000)}</p>
+                  <p className="mt-1 text-lg font-extrabold">
+                    {mask(WALLET_BALANCE)}
+                  </p>
                 </div>
                 <div className="rounded-2xl bg-brand-foreground/10 p-3.5">
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold opacity-75">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold opacity-75">
                     <TrendingUp className="size-3.5" /> Earned this week
                   </div>
                   <p className="mt-1 text-lg font-extrabold text-gold">
-                    {mask(12480)}
+                    {mask(WEEK_TOTAL)}
                   </p>
                 </div>
               </div>
@@ -259,22 +280,58 @@ function HomeV4() {
             {/* Quick actions pill */}
             <section className="mt-4 grid grid-cols-4 gap-1 rounded-3xl bg-surface p-2 shadow-card">
               {[
-                { label: "Add Money", icon: ArrowDownToLine },
-                { label: "Withdraw", icon: ArrowUpFromLine },
-                { label: "New Plan", icon: PlusCircle },
-                { label: "Statements", icon: FileText },
-              ].map(({ label, icon: Icon }) => (
-                <button
+                { label: "Add Money", icon: ArrowDownToLine, to: "/portfolio" },
+                { label: "Withdraw", icon: ArrowUpFromLine, to: "/portfolio" },
+                { label: "New Plan", icon: PlusCircle, to: "/invest" },
+                { label: "Statements", icon: FileText, to: "/portfolio" },
+              ].map(({ label, icon: Icon, to }) => (
+                <Link
                   key={label}
-                  type="button"
+                  to={to}
                   className="flex flex-col items-center gap-1.5 rounded-2xl px-2 py-3 transition-colors hover:bg-secondary active:scale-95"
                 >
                   <span className="grid size-10 place-items-center rounded-full bg-accent text-accent-foreground">
                     <Icon className="size-4.5" />
                   </span>
-                  <span className="text-[11px] font-semibold">{label}</span>
-                </button>
+                  <span className="text-xs font-semibold">{label}</span>
+                </Link>
               ))}
+            </section>
+
+            {/* Weekly earnings */}
+            <section className="mt-4 rounded-3xl bg-surface p-5 shadow-card">
+              <div className="flex items-end justify-between">
+                <div>
+                  <h2 className="text-base font-extrabold tracking-tight">
+                    Weekly earnings
+                  </h2>
+                  <p className="text-xs text-muted-foreground">
+                    Last 7 days · payouts credited to your wallet
+                  </p>
+                </div>
+                <p className="text-lg font-extrabold text-brand">
+                  {mask(WEEK_TOTAL)}
+                </p>
+              </div>
+              <div className="mt-4 flex h-28 items-end gap-2">
+                {WEEK.map((d, i) => (
+                  <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
+                    <div className="flex w-full flex-1 items-end">
+                      <div
+                        className="w-full rounded-t-lg bg-gold-gradient"
+                        style={{ height: `${(d.value / WEEK_MAX) * 100}%` }}
+                        title={`${d.day}: ${naira(d.value)}`}
+                      />
+                    </div>
+                    <span className="text-xs font-semibold text-muted-foreground">
+                      {d.day}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
+                Best day: {WEEK_BEST.day} · {naira(WEEK_BEST.value)}
+              </p>
             </section>
 
             {/* Plans */}
