@@ -156,10 +156,11 @@ function GrowthCurve({ frame }: { frame: Frame }) {
       return [x, y] as const;
     });
     // smooth cubic path
-    let d = `M ${coords[0][0]} ${coords[0][1]}`;
+    const first = coords[0] ?? ([0, h] as const);
+    let d = `M ${first[0]} ${first[1]}`;
     for (let i = 1; i < coords.length; i++) {
-      const [x0, y0] = coords[i - 1];
-      const [x1, y1] = coords[i];
+      const [x0, y0] = coords[i - 1]!;
+      const [x1, y1] = coords[i]!;
       const cx = (x0 + x1) / 2;
       d += ` C ${cx} ${y0}, ${cx} ${y1}, ${x1} ${y1}`;
     }
