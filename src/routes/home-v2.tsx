@@ -278,22 +278,34 @@ function HomeV2Screen() {
             <p className="mt-3 font-display text-3xl font-bold tracking-tight text-gold">
               {mask(12480)}
             </p>
-            <div className="mt-5 flex h-20 items-center gap-2">
-              {[38, 52, 44, 66, 58, 80, 72].map((h, i) => (
-                <span
-                  key={i}
-                  style={{ width: `${16 + h * 0.28}px` }}
-                  className={`h-10 shrink-0 rounded-full transition-all ${
-                    i === 5
-                      ? "bg-gold-gradient shadow-[0_6px_18px_-6px_oklch(0.75_0.16_85/0.55)]"
-                      : "bg-secondary"
-                  }`}
+            <div className="mt-5 h-24 w-full">
+              <svg viewBox="0 0 280 80" className="h-full w-full overflow-visible" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="weeklyArea" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="oklch(0.75 0.16 85 / 0.45)" />
+                    <stop offset="100%" stopColor="oklch(0.75 0.16 85 / 0)" />
+                  </linearGradient>
+                </defs>
+                <polygon
+                  points="0,70 0,52 47,46 93,50 140,34 187,40 233,16 280,22 280,70 0,70"
+                  fill="url(#weeklyArea)"
                 />
-              ))}
+                <polyline
+                  points="0,52 47,46 93,50 140,34 187,40 233,16 280,22"
+                  fill="none"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  stroke="oklch(0.72 0.17 85)"
+                />
+                <circle cx="233" cy="16" r="3.5" className="fill-gold" />
+                <circle cx="233" cy="16" r="6" fill="none" stroke="oklch(0.72 0.17 85)" strokeWidth="1.5" opacity="0.35" />
+              </svg>
             </div>
-            <div className="mt-2 flex justify-between text-[10px] font-semibold text-muted-foreground">
-              <span>Mon</span>
-              <span>Sun</span>
+            <div className="mt-1 flex justify-between text-[10px] font-semibold text-muted-foreground">
+              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+                <span key={d}>{d}</span>
+              ))}
             </div>
           </article>
 
