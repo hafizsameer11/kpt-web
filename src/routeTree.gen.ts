@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as InvestRouteImport } from './routes/invest'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as SettingsRouteImport } from './routes/settings'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const PortfolioRoute = PortfolioRouteImport.update({
   path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
   '/invest': typeof InvestRoute
   '/portfolio': typeof PortfolioRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
   '/invest': typeof InvestRoute
   '/portfolio': typeof PortfolioRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/invest': typeof InvestRoute
   '/portfolio': typeof PortfolioRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/explore' | '/invest' | '/portfolio'
+  fullPaths: '/' | '/explore' | '/invest' | '/portfolio' | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/explore' | '/invest' | '/portfolio'
-  id: '__root__' | '/' | '/explore' | '/invest' | '/portfolio'
+  to: '/' | '/explore' | '/invest' | '/portfolio' | '/settings'
+  id: '__root__' | '/' | '/explore' | '/invest' | '/portfolio' | '/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +76,7 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   InvestRoute: typeof InvestRoute
   PortfolioRoute: typeof PortfolioRoute
+  SettingsRoute: typeof SettingsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   InvestRoute: InvestRoute,
   PortfolioRoute: PortfolioRoute,
+  SettingsRoute: SettingsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
