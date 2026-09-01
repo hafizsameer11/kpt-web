@@ -1,5 +1,4 @@
 import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
-import { useState } from "react";
 import {
   ArrowDownLeft,
   ArrowDownToLine,
@@ -12,7 +11,7 @@ import {
   EyeOff,
   Home,
   Lightbulb,
-  MoreHorizontal,
+  FileText,
   PieChart,
   PlusCircle,
   Settings,
@@ -22,6 +21,8 @@ import {
 } from "lucide-react";
 import { DashboardSidebar, DashboardTopBar } from "@/components/kipit/DashboardSidebar";
 import { Logo } from "@/components/kipit/Logo";
+import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
+import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 
 export const Route = createFileRoute("/home-v4")({
   head: () => ({
@@ -106,9 +107,27 @@ const ACTIVITY = [
   },
 ];
 
+const FEED = [
+  {
+    tag: "Product update",
+    title: "Kipit Fixed Income now settles same-day",
+    body: "Maturity payouts land in your wallet within minutes of maturity.",
+  },
+  {
+    tag: "Education",
+    title: "Understanding tenor and effective yield",
+    body: "A 3-minute read on how rate and tenor shape your real return.",
+  },
+  {
+    tag: "Announcement",
+    title: "Tier 2 verification is now instant",
+    body: "Upgrade with your BVN and NIN to raise your transaction limits.",
+  },
+];
+
 function HomeV4() {
-  const [hidden, setHidden] = useState(false);
-  const mask = (value: number) => (hidden ? "₦••••••" : naira(value));
+  const { hidden, toggle, mask, naira } = useBalanceVisibility();
+  const isNewUser = useIsNewUser();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
@@ -131,14 +150,14 @@ function HomeV4() {
         </div>
         <div className="flex items-center gap-2">
           <Logo className="text-lg" />
-          <button
-            type="button"
+          <Link
+            to="/notifications"
             aria-label="Notifications"
             className="relative grid size-9 place-items-center rounded-full bg-surface shadow-card"
           >
             <Bell className="size-4" />
             <span className="absolute right-2 top-2 size-1.5 rounded-full bg-gold" />
-          </button>
+          </Link>
         </div>
       </header>
 
@@ -151,6 +170,9 @@ function HomeV4() {
           </div>
         </div>
 
+        {isNewUser ? (
+          <NewUserEmptyState />
+        ) : (
         <div className="grid gap-4 lg:grid-cols-5">
           {/* Left column: balance + plans */}
           <div className="lg:col-span-3">
@@ -162,7 +184,7 @@ function HomeV4() {
                 </p>
                 <button
                   type="button"
-                  onClick={() => setHidden((v) => !v)}
+                  onClick={toggle}
                   aria-label={hidden ? "Show balances" : "Hide balances"}
                   className="grid size-8 place-items-center rounded-full bg-brand-foreground/15"
                 >
@@ -204,7 +226,7 @@ function HomeV4() {
                 { label: "Add Money", icon: ArrowDownToLine },
                 { label: "Withdraw", icon: ArrowUpFromLine },
                 { label: "New Plan", icon: PlusCircle },
-                { label: "More", icon: MoreHorizontal },
+                { label: "Statements", icon: FileText },
               ].map(({ label, icon: Icon }) => (
                 <button
                   key={label}
@@ -292,6 +314,22 @@ function HomeV4() {
             </section>
 
             <section className="rounded-3xl bg-surface p-5 shadow-card">
+              <p className="text-sm font-bold text-muted-foreground">Next maturity</p>
+              <p className="mt-2 text-base font-bold">Fixed Income · 90 days</p>
+              <p className="mt-1 text-2xl font-extrabold tracking-tight">{mask(750000)}</p>
+              <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+                <span>Matures 14 Oct 2026</span>
+                <span className="rounded-full bg-accent px-2.5 py-1 font-bold text-accent-foreground">
+                  23 days left
+                </span>
+              </div>
+              <p className="mt-4 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
+                Funds in your wallet are available for investment or withdrawal, and do not earn
+                investment returns.
+              </p>
+            </section>
+
+            <section className="rounded-3xl bg-surface p-5 shadow-card">
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-extrabold tracking-tight">
                   Recent activity
@@ -328,15 +366,32 @@ function HomeV4() {
                         item.kind === "credit" ? "text-success" : ""
                       }`}
                     >
-                      {item.amount > 0 ? "+" : "−"}
-                      {naira(Math.abs(item.amount))}
+                      {hidden
+                        ? "₦••••••"
+                        : `${item.amount > 0 ? "+" : "−"}${naira(Math.abs(item.amount))}`}
                     </p>
                   </li>
                 ))}
               </ul>
             </section>
+
+            <section>
+              <h2 className="text-base font-extrabold tracking-tight">For you</h2>
+              <div className="mt-3 space-y-3">
+                {FEED.map((item) => (
+                  <article key={item.title} className="rounded-3xl bg-surface p-5 shadow-card">
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      {item.tag}
+                    </span>
+                    <h3 className="mt-2 text-sm font-bold leading-snug">{item.title}</h3>
+                    <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{item.body}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
           </div>
         </div>
+        )}
       </main>
       </div>
 

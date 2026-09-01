@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   ArrowDownLeft,
@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { Logo } from "@/components/kipit/Logo";
+import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
+import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 
 export const Route = createFileRoute("/home-v2")({
   head: () => ({
@@ -96,9 +98,9 @@ function CountdownRing({ daysLeft, total }: { daysLeft: number; total: number })
 }
 
 function HomeV2Screen() {
-  const [hidden, setHidden] = useState(false);
+  const { hidden, toggle, mask } = useBalanceVisibility();
+  const isNewUser = useIsNewUser();
   const [range, setRange] = useState("1M");
-  const mask = (value: number) => (hidden ? "₦ • • • • • •" : naira(value));
 
   return (
     <div className="theme-v2">
@@ -108,14 +110,14 @@ function HomeV2Screen() {
           <div className="flex items-center justify-between">
             <Logo tone="brand" className="font-display text-2xl" />
             <div className="flex items-center gap-3">
-              <button
-                type="button"
+              <Link
+                to="/notifications"
                 aria-label="Notifications"
                 className="relative grid size-10 place-items-center rounded-full border border-border bg-secondary text-foreground"
               >
                 <Bell className="size-5" />
                 <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-gold" />
-              </button>
+              </Link>
               <div className="grid size-10 place-items-center rounded-full bg-gold-gradient text-sm font-bold text-gold-foreground">
                 AO
               </div>
@@ -123,6 +125,10 @@ function HomeV2Screen() {
           </div>
         </header>
 
+        {isNewUser ? (
+          <NewUserEmptyState />
+        ) : (
+        <>
         {/* Hero portfolio panel */}
         <section className="grid gap-4 lg:grid-cols-3">
           <article className="relative overflow-hidden rounded-3xl border border-border bg-brand-gradient p-6 text-primary-foreground shadow-card md:p-8 lg:col-span-2">
@@ -141,7 +147,7 @@ function HomeV2Screen() {
                   </h1>
                   <button
                     type="button"
-                    onClick={() => setHidden((v) => !v)}
+                    onClick={toggle}
                     aria-label={hidden ? "Show balances" : "Hide balances"}
                     className="grid size-9 place-items-center rounded-full border border-white/25 bg-white/10 text-primary-foreground/80 transition-colors hover:bg-white/20 hover:text-primary-foreground"
                   >
@@ -363,6 +369,8 @@ function HomeV2Screen() {
           </div>
         </section>
 
+        </>
+        )}
       </AppShell>
     </div>
   );

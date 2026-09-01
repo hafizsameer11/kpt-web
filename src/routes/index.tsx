@@ -1,5 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowDownToLine,
   ArrowUpFromLine,
@@ -15,6 +14,9 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { Logo } from "@/components/kipit/Logo";
+import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
+import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -65,8 +67,9 @@ const FEED = [
 ];
 
 function HomeScreen() {
-  const [hidden, setHidden] = useState(false);
-  const mask = (value: number) => (hidden ? "₦••••••" : naira(value));
+  const { hidden, toggle, mask } = useBalanceVisibility();
+  const isNewUser = useIsNewUser();
+
 
   return (
     <AppShell>
@@ -84,14 +87,15 @@ function HomeScreen() {
           </div>
           <div className="flex items-center gap-3">
             <Logo tone="light" className="text-lg" />
-            <button
-              type="button"
+            <Link
+              to="/notifications"
               aria-label="Notifications"
               className="relative grid size-10 place-items-center rounded-full bg-brand-foreground/15"
             >
               <Bell className="size-5" />
               <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-gold" />
-            </button>
+            </Link>
+
           </div>
         </div>
 
@@ -100,7 +104,7 @@ function HomeScreen() {
             Total portfolio value
             <button
               type="button"
-              onClick={() => setHidden((v) => !v)}
+              onClick={toggle}
               aria-label={hidden ? "Show balances" : "Hide balances"}
             >
               {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -122,7 +126,7 @@ function HomeScreen() {
           </div>
           <button
             type="button"
-            onClick={() => setHidden((v) => !v)}
+            onClick={toggle}
             className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold"
           >
             {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -138,8 +142,15 @@ function HomeScreen() {
         </div>
       </section>
 
+      {isNewUser ? (
+        <div className="mt-5">
+          <NewUserEmptyState />
+        </div>
+      ) : (
+      <>
       {/* Quick actions */}
       <section className="mt-5 grid grid-cols-4 gap-2 md:mt-6 md:gap-4">
+
         {QUICK_ACTIONS.map(({ label, icon: Icon }) => (
           <button
             key={label}
@@ -243,7 +254,9 @@ function HomeScreen() {
           ))}
         </div>
       </section>
-
+      </>
+      )}
     </AppShell>
+
   );
 }
