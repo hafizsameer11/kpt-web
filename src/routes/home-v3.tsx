@@ -16,6 +16,7 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react";
+import { DashboardSidebar } from "@/components/kipit/DashboardSidebar";
 import { Logo } from "@/components/kipit/Logo";
 
 export const Route = createFileRoute("/home-v3")({
@@ -95,53 +96,11 @@ function HomeV3Screen() {
   return (
     <div className="min-h-screen bg-background">
       {/* ============ Desktop sidebar ============ */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-brand-gradient text-primary-foreground md:flex">
-        <div className="px-7 pb-8 pt-8">
-          <Logo tone="light" className="text-3xl" />
-        </div>
-        <nav className="flex-1 space-y-1 px-4">
-          {[{ label: "Home", to: "/", icon: Home }, { label: "Invest", to: "/invest", icon: TrendingUp }, ...NAV.slice(1)].map((item, i) => {
-            const Icon = item.icon;
-            const active = i === 0;
-            return (
-              <Link
-                key={item.label}
-                to={item.to}
-                className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-colors ${
-                  active
-                    ? "bg-white/12 text-primary-foreground"
-                    : "text-primary-foreground/60 hover:bg-white/8 hover:text-primary-foreground"
-                }`}
-              >
-                <span className={`grid size-9 place-items-center rounded-xl ${active ? "bg-gold-gradient text-gold-foreground" : "bg-white/10"}`}>
-                  <Icon className="size-4.5" />
-                </span>
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-        <div className="m-4 rounded-2xl bg-white/10 p-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary-foreground/60">Wallet</p>
-          <p className="mt-1 text-xl font-extrabold">{mask(500000)}</p>
-          <button
-            type="button"
-            className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-gold-gradient px-4 py-2.5 text-xs font-bold text-gold-foreground transition-transform active:scale-95"
-          >
-            <Plus className="size-3.5" /> Fund wallet
-          </button>
-        </div>
-        <div className="flex items-center gap-3 px-7 pb-7">
-          <div className="grid size-10 place-items-center rounded-full bg-gold-gradient text-sm font-bold text-gold-foreground">AO</div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-bold">Adaeze Okafor</p>
-            <p className="text-xs text-primary-foreground/60">Tier 2 verified</p>
-          </div>
-        </div>
-      </aside>
+      <DashboardSidebar hideBalance={hidden} walletBalance={500000} />
 
       {/* ============ Main column ============ */}
       <main className="pb-32 md:pl-64 md:pb-16">
+
         {/* Immersive navy hero (mobile full-bleed, desktop rounded panel) */}
         <header className="relative overflow-hidden bg-brand-gradient px-5 pb-16 pt-6 text-primary-foreground md:mx-8 md:mt-8 md:rounded-[2rem] md:px-10 md:pb-20 md:pt-10">
           <div aria-hidden className="pointer-events-none absolute -right-20 -top-28 size-80 rounded-full bg-white/8 blur-3xl" />
