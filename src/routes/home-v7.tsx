@@ -48,14 +48,26 @@ export const Route = createFileRoute("/home-v7")({
 });
 
 const naira = (n: number) => `₦${n.toLocaleString()}`;
+const MASK = "₦••••••";
 
 /* ------------------------------ data ------------------------------ */
 
+const PORTFOLIO_VALUE = 1830150;
+const WALLET_BALANCE = 128500;
+
+const RANGES = [
+  { key: "1D", label: "1D", change: 4820, pct: 0.3, series: [12, 13, 12.4, 14, 13.6, 15, 15.4] },
+  { key: "1W", label: "1W", change: 21400, pct: 1.2, series: [10, 12, 11, 14, 13, 16, 17] },
+  { key: "1M", label: "1M", change: 96400, pct: 5.6, series: [8, 10, 9, 12, 14, 13, 18] },
+  { key: "1Y", label: "1Y", change: 412300, pct: 29.1, series: [4, 6, 5, 9, 12, 15, 20] },
+  { key: "All", label: "All", change: 630150, pct: 52.5, series: [2, 3, 6, 8, 11, 16, 22] },
+] as const;
+
 const DISCOVER = [
-  { name: "Kipit FlexiYield", meta: "18.2% p.a. · Flexible", tone: "brand" },
-  { name: "Treasury Notes 91-Day", meta: "21.4% p.a. · Low risk", tone: "gold" },
-  { name: "Kipit Dollar Fund", meta: "9.8% p.a. · USD", tone: "violet" },
-  { name: "Money Market Fund", meta: "16.1% p.a. · Daily yield", tone: "teal" },
+  { name: "Kipit FlexiYield", meta: "18.2% p.a. · Flexible", tone: "brand", icon: Zap },
+  { name: "Treasury Notes 91-Day", meta: "21.4% p.a. · Low risk", tone: "gold", icon: Landmark },
+  { name: "Kipit Dollar Fund", meta: "9.8% p.a. · USD", tone: "violet", icon: CircleDollarSign },
+  { name: "Money Market Fund", meta: "16.1% p.a. · Daily yield", tone: "teal", icon: PiggyBank },
 ] as const;
 
 const WATCHLIST = [
@@ -65,10 +77,21 @@ const WATCHLIST = [
   { ticker: "COCOA", name: "Cocoa Futures", change: 3.6 },
 ] as const;
 
-const WEEKLY = [42, 58, 36, 71, 49, 66, 84];
+/* Daily payouts that add up exactly to the weekly total shown. */
+const WEEKLY = [
+  { day: "Mon", value: 4200 },
+  { day: "Tue", value: 5800 },
+  { day: "Wed", value: 3600 },
+  { day: "Thu", value: 7100 },
+  { day: "Fri", value: 4900 },
+  { day: "Sat", value: 6600 },
+  { day: "Sun", value: 9950 },
+] as const;
+const WEEKLY_TOTAL = WEEKLY.reduce((s, d) => s + d.value, 0);
+const WEEKLY_MAX = Math.max(...WEEKLY.map((d) => d.value));
 
 const ACTIVITY = [
-  { label: "Kipit FlexiYield payout", time: "Today · 09:12", amount: 42150, credit: true },
+  { label: "Kipit FlexiYield payout", time: "Today · 09:12", amount: 9950, credit: true },
   { label: "Bought T-Bill 91-Day", time: "Yesterday", amount: 100000, credit: false },
   { label: "Wallet deposit", time: "Mon · 14:40", amount: 150000, credit: true },
 ] as const;
@@ -76,7 +99,10 @@ const ACTIVITY = [
 const FEED = [
   { tag: "Investing 101", title: "What are treasury bills and why everyone is buying them" },
   { tag: "Market watch", title: "Naira steadies — what it means for dollar funds" },
+  { tag: "Kipit guide", title: "How to build a 12-month ladder with short-dated notes" },
 ] as const;
+
+const MATURITY_PROGRESS = 78;
 
 const TONE: Record<string, string> = {
   brand: "bg-brand/10 text-brand",
@@ -84,6 +110,7 @@ const TONE: Record<string, string> = {
   violet: "bg-violet/10 text-violet",
   teal: "bg-teal/10 text-teal",
 };
+
 
 const TABS: { to: string; label: string; icon: LucideIcon }[] = [
   { to: "/home-v7", label: "Home", icon: Home },
