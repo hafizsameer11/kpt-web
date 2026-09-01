@@ -181,23 +181,44 @@ function Greeting() {
 
 function BalanceCard() {
   const { hidden, toggle, mask } = useBalanceVisibility();
+  const [rangeKey, setRangeKey] = useState<string>("1W");
+  const range = RANGES.find((r) => r.key === rangeKey) ?? RANGES[1];
   return (
     <section className="rounded-3xl bg-brand-gradient p-6 text-primary-foreground shadow-float">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary-foreground/80">
           Total portfolio value
           <button
+            type="button"
             aria-label={hidden ? "Show balances" : "Hide balances"}
             onClick={toggle}
           >
             {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
         </p>
-        <span className="rounded-full bg-primary-foreground/15 px-2.5 py-1 text-[11px] font-semibold">
-          +₦32,410 · +1.51% this week
+        <span className="rounded-full bg-primary-foreground/15 px-2.5 py-1 text-xs font-semibold">
+          +{naira(range.change)} · +{range.pct}%
         </span>
       </div>
       <p className="mt-2 text-4xl font-extrabold tracking-tight">{mask(2176500)}</p>
+
+      <div className="mt-4 flex gap-1.5">
+        {RANGES.map((r) => (
+          <button
+            key={r.key}
+            type="button"
+            onClick={() => setRangeKey(r.key)}
+            className={`flex-1 rounded-full px-2 py-1.5 text-xs font-bold transition-colors ${
+              r.key === rangeKey
+                ? "bg-gold text-gold-foreground"
+                : "bg-primary-foreground/10 text-primary-foreground/70"
+            }`}
+          >
+            {r.key}
+          </button>
+        ))}
+      </div>
+
       <div className="mt-5 grid grid-cols-4 gap-2">
         {[
           { label: "Add money", icon: ArrowDownToLine, gold: true },
@@ -208,7 +229,7 @@ function BalanceCard() {
           <button
             key={label}
             type="button"
-            className={`flex flex-col items-center gap-1.5 rounded-2xl px-1 py-3 text-[11px] font-bold transition-transform active:scale-95 ${
+            className={`flex flex-col items-center gap-1.5 rounded-2xl px-1 py-3 text-xs font-bold transition-transform active:scale-95 ${
               gold
                 ? "bg-gold text-gold-foreground"
                 : "bg-primary-foreground/15 text-primary-foreground"
@@ -226,40 +247,50 @@ function BalanceCard() {
 function WalletEarningsMaturity() {
   const { mask } = useBalanceVisibility();
   return (
-    <div className="grid gap-3 sm:grid-cols-3">
+    <div className="grid gap-3 sm:grid-cols-2">
       <article className="rounded-3xl bg-card p-5 shadow-card">
         <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
           <Wallet className="size-4" /> Wallet balance
         </div>
-        <p className="mt-2 text-xl font-extrabold tracking-tight">{mask(86500)}</p>
-        <p className="mt-1 text-xs text-muted-foreground">Available funds: {mask(86500)}</p>
-        <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-          Funds in your wallet are available for investment or withdrawal. Wallet funds do not
-          earn investment returns.
+        <p className="mt-2 text-xl font-extrabold tracking-tight">
+          {mask(WALLET_BALANCE)}
         </p>
-      </article>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Available to invest or withdraw. Wallet funds do not earn returns.
+        </p>
 
-      <article className="rounded-3xl bg-card p-5 shadow-card">
-        <p className="text-xs font-bold text-muted-foreground">Weekly earnings</p>
-        <p className="mt-2 text-xl font-extrabold tracking-tight text-success">{mask(32410)}</p>
-        <p className="mt-1 text-xs text-muted-foreground">Interest earned this week</p>
-        <div className="mt-4 flex h-12 items-end gap-1.5">
-          {[42, 55, 40, 68, 60, 82, 74].map((h, i) => (
-            <span key={i} style={{ height: `${h}%` }} className="flex-1 rounded-t-md bg-gold-gradient" />
-          ))}
-        </div>
-      </article>
-
-      <article className="rounded-3xl bg-card p-5 shadow-card">
-        <p className="text-xs font-bold text-muted-foreground">Next maturity</p>
-        <p className="mt-2 text-sm font-bold">Kipit Lock · 180 days</p>
-        <p className="mt-1 text-xl font-extrabold tracking-tight">{mask(500000)}</p>
-        <div className="mt-3 flex items-center justify-between text-[11px] text-muted-foreground">
-          <span>Matures 14 Oct 2026</span>
+        <p className="mt-5 text-xs font-bold text-muted-foreground">Next maturity</p>
+        <p className="mt-1 text-sm font-bold">Kipit Lock · 180 days</p>
+        <p className="mt-0.5 text-lg font-extrabold tracking-tight">{mask(500000)}</p>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span>Matures 24 Sep 2026</span>
           <span className="rounded-full bg-accent px-2 py-1 font-bold text-accent-foreground">
             23 days left
           </span>
         </div>
+      </article>
+
+      <article className="rounded-3xl bg-card p-5 shadow-card">
+        <p className="text-xs font-bold text-muted-foreground">Weekly earnings</p>
+        <p className="mt-2 text-xl font-extrabold tracking-tight text-success">
+          {mask(WEEKLY_TOTAL)}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">Interest earned this week</p>
+        <div className="mt-4 flex h-20 items-end gap-1.5">
+          {WEEKLY.map((d, i) => (
+            <div key={i} className="flex flex-1 flex-col items-center gap-1">
+              <span
+                style={{ height: `${(d.value / WEEKLY_MAX) * 100}%` }}
+                className="w-full rounded-t-md bg-gold-gradient"
+                title={`${d.day}: ${naira(d.value)}`}
+              />
+              <span className="text-xs text-muted-foreground">{d.day}</span>
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground">
+          Best day: {BEST_DAY.day} · {naira(BEST_DAY.value)}
+        </p>
       </article>
     </div>
   );
@@ -363,33 +394,55 @@ function ProductCard({ product }: { product: Product }) {
 }
 
 function Todos() {
+  const [done, setDone] = useState(() => TODOS.map((t) => t.done));
+  const completed = done.filter(Boolean).length;
   return (
     <section className="rounded-3xl bg-card p-5 shadow-card">
-      <h2 className="text-sm font-bold text-foreground">To-do list</h2>
-      <ul className="mt-3 space-y-3">
-        {TODOS.map((todo) => (
-          <li key={todo.label} className="flex items-center gap-3">
-            <span
-              className={`grid size-6 place-items-center rounded-full text-[10px] font-bold ${
-                todo.done
-                  ? "bg-success text-primary-foreground"
-                  : "border-2 border-gold text-transparent"
-              }`}
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-bold text-foreground">To-do list</h2>
+        <span className="text-xs font-semibold text-muted-foreground">
+          {completed} of {TODOS.length} done
+        </span>
+      </div>
+      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
+        <span
+          className="block h-full rounded-full bg-gold-gradient transition-all"
+          style={{ width: `${(completed / TODOS.length) * 100}%` }}
+        />
+      </div>
+      <ul className="mt-4 space-y-3">
+        {TODOS.map((todo, i) => (
+          <li key={todo.label}>
+            <button
+              type="button"
+              aria-pressed={done[i]}
+              onClick={() =>
+                setDone((prev) => prev.map((v, j) => (j === i ? !v : v)))
+              }
+              className="flex w-full items-center gap-3 text-left"
             >
-              ✓
-            </span>
-            <span
-              className={`text-sm ${
-                todo.done
-                  ? "text-muted-foreground line-through"
-                  : "font-semibold text-foreground"
-              }`}
-            >
-              {todo.label}
-            </span>
-            {!todo.done && (
-              <ArrowUpRight className="ml-auto size-4 text-muted-foreground" />
-            )}
+              <span
+                className={`grid size-6 shrink-0 place-items-center rounded-full text-xs font-bold ${
+                  done[i]
+                    ? "bg-success text-primary-foreground"
+                    : "border-2 border-gold text-transparent"
+                }`}
+              >
+                ✓
+              </span>
+              <span
+                className={`min-w-0 flex-1 text-sm ${
+                  done[i]
+                    ? "text-muted-foreground line-through"
+                    : "font-semibold text-foreground"
+                }`}
+              >
+                {todo.label}
+              </span>
+              {!done[i] && (
+                <ArrowUpRight className="size-4 shrink-0 text-muted-foreground" />
+              )}
+            </button>
           </li>
         ))}
       </ul>
