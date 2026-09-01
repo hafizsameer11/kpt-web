@@ -282,7 +282,7 @@ function HomeV2Screen() {
               {[38, 52, 44, 66, 58, 80, 72].map((h, i) => (
                 <span
                   key={i}
-                  style={{ width: `${20 + h * 0.42}px` }}
+                  style={{ width: `${16 + h * 0.28}px` }}
                   className={`h-10 shrink-0 rounded-full transition-all ${
                     i === 5
                       ? "bg-gold-gradient shadow-[0_6px_18px_-6px_oklch(0.75_0.16_85/0.55)]"
