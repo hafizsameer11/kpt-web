@@ -103,7 +103,7 @@ function HomeScreen() {
             Total portfolio value
             <button
               type="button"
-              onClick={() => setHidden((v) => !v)}
+              onClick={toggle}
               aria-label={hidden ? "Show balances" : "Hide balances"}
             >
               {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -125,7 +125,7 @@ function HomeScreen() {
           </div>
           <button
             type="button"
-            onClick={() => setHidden((v) => !v)}
+            onClick={toggle}
             className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold"
           >
             {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
