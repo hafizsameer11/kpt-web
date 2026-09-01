@@ -368,7 +368,13 @@ function HomeV2Screen() {
           to="/"
           className="fixed bottom-24 right-4 z-50 inline-flex items-center gap-1.5 rounded-full border border-gold/50 bg-surface px-4 py-2 text-xs font-bold text-gold shadow-float md:bottom-6"
         >
-          ← Original design
+          ← Design 1
+        </Link>
+        <Link
+          to="/home-v3"
+          className="fixed bottom-[8.5rem] right-4 z-50 inline-flex items-center gap-1.5 rounded-full bg-gold px-4 py-2 text-xs font-bold text-gold-foreground shadow-float md:bottom-[4.5rem]"
+        >
+          Try design 3 →
         </Link>
       </AppShell>
     </div>
