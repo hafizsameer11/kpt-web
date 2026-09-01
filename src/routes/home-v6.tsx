@@ -254,7 +254,6 @@ function PortfolioHero() {
 
 function WalletCard() {
   const { hidden } = useBalanceVisibility();
-  const greeting = useGreeting();
   return (
     <section className="rounded-2xl border border-border bg-card p-4 shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -545,6 +544,7 @@ function MobileTabBar() {
 function HomeV6() {
   const isNewUser = useIsNewUser();
   const { hidden } = useBalanceVisibility();
+  const greeting = useGreeting();
   return (
     <div className="type-v6 min-h-screen bg-background">
       <DashboardSidebar
