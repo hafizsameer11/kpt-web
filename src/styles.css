@@ -121,6 +121,43 @@
   --shadow-float: 0 12px 40px -12px oklch(0.32 0.09 254 / 0.35);
 }
 
+/* Alternate "private banking" dark navy theme — used by the /home-v2 page */
+.theme-v2 {
+  --background: oklch(0.17 0.032 256);
+  --surface: oklch(0.215 0.038 256);
+  --foreground: oklch(0.96 0.008 250);
+  --card: oklch(0.215 0.038 256);
+  --card-foreground: oklch(0.96 0.008 250);
+  --popover: oklch(0.215 0.038 256);
+  --popover-foreground: oklch(0.96 0.008 250);
+  --primary: oklch(0.84 0.155 88);
+  --primary-foreground: oklch(0.2 0.06 256);
+  --secondary: oklch(0.27 0.042 256);
+  --secondary-foreground: oklch(0.96 0.008 250);
+  --muted: oklch(0.27 0.042 256);
+  --muted-foreground: oklch(0.68 0.028 254);
+  --accent: oklch(0.32 0.07 90);
+  --accent-foreground: oklch(0.88 0.14 92);
+  --destructive: oklch(0.62 0.2 25);
+  --destructive-foreground: oklch(0.98 0.005 250);
+  --success: oklch(0.72 0.16 160);
+  --warning: oklch(0.8 0.15 70);
+  --border: oklch(0.32 0.045 256 / 0.7);
+  --input: oklch(0.32 0.045 256);
+  --ring: oklch(0.84 0.155 88);
+  --brand: oklch(0.84 0.155 88);
+  --brand-foreground: oklch(0.2 0.06 256);
+  --gold: oklch(0.84 0.155 88);
+  --gold-foreground: oklch(0.2 0.06 256);
+
+  --gradient-brand: linear-gradient(135deg, oklch(0.24 0.05 256), oklch(0.32 0.06 258));
+  --gradient-gold: linear-gradient(135deg, oklch(0.88 0.15 95), oklch(0.78 0.16 75));
+  --shadow-card: 0 1px 0 oklch(1 0 0 / 0.04) inset, 0 10px 30px -14px oklch(0.08 0.02 256 / 0.8);
+  --shadow-float: 0 20px 60px -20px oklch(0.84 0.155 88 / 0.28);
+
+  --font-display: "Syne", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
