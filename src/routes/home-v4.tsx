@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowDownLeft,
@@ -11,12 +12,15 @@ import {
   EyeOff,
   Home,
   Lightbulb,
+  Landmark,
   FileText,
   PieChart,
+  PiggyBank,
   PlusCircle,
   Settings,
   TrendingUp,
   Wallet,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 import { DashboardSidebar, DashboardTopBar } from "@/components/kipit/DashboardSidebar";
@@ -64,6 +68,7 @@ const PLANS = [
     amount: 750000,
     daysLeft: 23,
     progress: 74,
+    icon: Landmark,
   },
   {
     name: "Yield Note · 180 days",
@@ -71,6 +76,7 @@ const PLANS = [
     amount: 1200000,
     daysLeft: 72,
     progress: 48,
+    icon: Zap,
   },
   {
     name: "Starter · 30 days",
@@ -78,8 +84,35 @@ const PLANS = [
     amount: 500000,
     daysLeft: 9,
     progress: 88,
+    icon: PiggyBank,
   },
 ];
+
+const PORTFOLIO_VALUE = PLANS.reduce((sum, p) => sum + p.amount, 0);
+const WALLET_BALANCE = 500000;
+
+const RANGES = [
+  { label: "1D", change: 1180, pct: 0.05, note: "today" },
+  { label: "1W", change: 12480, pct: 0.51, note: "this week" },
+  { label: "1M", change: 38200, pct: 1.58, note: "this month" },
+  { label: "3M", change: 104600, pct: 4.46, note: "in 3 months" },
+  { label: "1Y", change: 331500, pct: 15.65, note: "in a year" },
+  { label: "All", change: 450000, pct: 22.5, note: "all time" },
+] as const;
+
+// Daily earnings that sum exactly to the 1W figure (₦12,480)
+const WEEK = [
+  { day: "M", value: 1620 },
+  { day: "T", value: 1740 },
+  { day: "W", value: 1860 },
+  { day: "T", value: 1580 },
+  { day: "F", value: 2210 },
+  { day: "S", value: 1990 },
+  { day: "S", value: 1480 },
+];
+const WEEK_TOTAL = WEEK.reduce((s, d) => s + d.value, 0);
+const WEEK_BEST = WEEK.reduce((a, b) => (b.value > a.value ? b : a));
+const WEEK_MAX = Math.max(...WEEK.map((d) => d.value));
 
 const ACTIVITY = [
   {
@@ -130,11 +163,13 @@ function HomeV4() {
   const { hidden, toggle, mask, naira } = useBalanceVisibility();
   const isNewUser = useIsNewUser();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [rangeIdx, setRangeIdx] = useState(2);
+  const range = RANGES[rangeIdx] ?? RANGES[2]!;
 
   return (
     <div className="type-v4 min-h-screen bg-secondary/60">
       {/* Desktop dashboard sidebar */}
-      <DashboardSidebar hideBalance={hidden} />
+      <DashboardSidebar hideBalance={hidden} walletBalance={WALLET_BALANCE} />
       <div className="md:pl-64">
         <DashboardTopBar title="Dashboard" />
 
@@ -145,7 +180,7 @@ function HomeV4() {
             AO
           </div>
           <div>
-            <p className="text-[11px] text-muted-foreground">Good morning</p>
+            <p className="text-xs text-muted-foreground">Good morning</p>
             <p className="text-xs font-bold">Adaeze O.</p>
           </div>
         </div>
@@ -197,25 +232,46 @@ function HomeV4() {
                 </button>
               </div>
               <p className="mt-2 text-4xl font-extrabold tracking-tight md:text-5xl">
-                {mask(2450000)}
+                {mask(PORTFOLIO_VALUE)}
               </p>
               <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand-foreground/15 px-3 py-1 text-xs font-semibold">
-                <TrendingUp className="size-3.5" /> +₦38,200 · +1.58% this month
+                <TrendingUp className="size-3.5" /> +{naira(range.change)} · +
+                {range.pct}% {range.note}
               </p>
+
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {RANGES.map((r, i) => (
+                  <button
+                    key={r.label}
+                    type="button"
+                    onClick={() => setRangeIdx(i)}
+                    aria-pressed={i === rangeIdx}
+                    className={`rounded-full px-3 py-1 text-xs font-bold transition-colors ${
+                      i === rangeIdx
+                        ? "bg-gold text-brand"
+                        : "bg-brand-foreground/10 text-brand-foreground/70 hover:bg-brand-foreground/20"
+                    }`}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
 
               <div className="mt-6 grid grid-cols-2 gap-2">
                 <div className="rounded-2xl bg-brand-foreground/10 p-3.5">
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold opacity-75">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold opacity-75">
                     <Wallet className="size-3.5" /> Wallet
                   </div>
-                  <p className="mt-1 text-lg font-extrabold">{mask(500000)}</p>
+                  <p className="mt-1 text-lg font-extrabold">
+                    {mask(WALLET_BALANCE)}
+                  </p>
                 </div>
                 <div className="rounded-2xl bg-brand-foreground/10 p-3.5">
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold opacity-75">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold opacity-75">
                     <TrendingUp className="size-3.5" /> Earned this week
                   </div>
                   <p className="mt-1 text-lg font-extrabold text-gold">
-                    {mask(12480)}
+                    {mask(WEEK_TOTAL)}
                   </p>
                 </div>
               </div>
@@ -224,22 +280,58 @@ function HomeV4() {
             {/* Quick actions pill */}
             <section className="mt-4 grid grid-cols-4 gap-1 rounded-3xl bg-surface p-2 shadow-card">
               {[
-                { label: "Add Money", icon: ArrowDownToLine },
-                { label: "Withdraw", icon: ArrowUpFromLine },
-                { label: "New Plan", icon: PlusCircle },
-                { label: "Statements", icon: FileText },
-              ].map(({ label, icon: Icon }) => (
-                <button
+                { label: "Add Money", icon: ArrowDownToLine, to: "/portfolio" },
+                { label: "Withdraw", icon: ArrowUpFromLine, to: "/portfolio" },
+                { label: "New Plan", icon: PlusCircle, to: "/invest" },
+                { label: "Statements", icon: FileText, to: "/portfolio" },
+              ].map(({ label, icon: Icon, to }) => (
+                <Link
                   key={label}
-                  type="button"
+                  to={to}
                   className="flex flex-col items-center gap-1.5 rounded-2xl px-2 py-3 transition-colors hover:bg-secondary active:scale-95"
                 >
                   <span className="grid size-10 place-items-center rounded-full bg-accent text-accent-foreground">
                     <Icon className="size-4.5" />
                   </span>
-                  <span className="text-[11px] font-semibold">{label}</span>
-                </button>
+                  <span className="text-xs font-semibold">{label}</span>
+                </Link>
               ))}
+            </section>
+
+            {/* Weekly earnings */}
+            <section className="mt-4 rounded-3xl bg-surface p-5 shadow-card">
+              <div className="flex items-end justify-between">
+                <div>
+                  <h2 className="text-base font-extrabold tracking-tight">
+                    Weekly earnings
+                  </h2>
+                  <p className="text-xs text-muted-foreground">
+                    Last 7 days · payouts credited to your wallet
+                  </p>
+                </div>
+                <p className="text-lg font-extrabold text-brand">
+                  {mask(WEEK_TOTAL)}
+                </p>
+              </div>
+              <div className="mt-4 flex h-28 items-end gap-2">
+                {WEEK.map((d, i) => (
+                  <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
+                    <div className="flex h-24 w-full items-end">
+                      <div
+                        className="w-full rounded-t-lg bg-gold-gradient"
+                        style={{ height: `${(d.value / WEEK_MAX) * 100}%` }}
+                        title={`${d.day}: ${naira(d.value)}`}
+                      />
+                    </div>
+                    <span className="text-xs font-semibold text-muted-foreground">
+                      {d.day}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
+                Best day: {WEEK_BEST.day} · {naira(WEEK_BEST.value)}
+              </p>
             </section>
 
             {/* Plans */}
@@ -256,15 +348,15 @@ function HomeV4() {
                 </Link>
               </div>
               <div className="mt-3 space-y-3">
-                {PLANS.map((plan) => (
+                {PLANS.map(({ icon: PlanIcon, ...plan }) => (
                   <article
                     key={plan.name}
                     className="rounded-3xl bg-surface p-5 shadow-card transition-transform active:scale-[0.99]"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand text-brand-foreground">
-                          <TrendingUp className="size-5" />
+                        <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand text-gold">
+                          <PlanIcon className="size-5" />
                         </span>
                         <div>
                           <h3 className="text-sm font-bold">{plan.name}</h3>
@@ -277,7 +369,7 @@ function HomeV4() {
                         <p className="text-base font-extrabold">
                           {mask(plan.amount)}
                         </p>
-                        <p className="text-[11px] font-semibold text-muted-foreground">
+                        <p className="text-xs font-semibold text-muted-foreground">
                           {plan.daysLeft} days left
                         </p>
                       </div>
@@ -301,17 +393,17 @@ function HomeV4() {
                 <Lightbulb className="size-4 text-gold" /> Smart insight
               </div>
               <p className="mt-2 text-sm font-semibold text-accent-foreground">
-                Your ₦500,000 wallet balance isn't invested.
+                Your {naira(WALLET_BALANCE)} wallet balance isn't invested.
               </p>
               <p className="mt-1 text-xs text-accent-foreground/80">
                 Plans from 18.5% p.a. · 30–365 day tenors · ₦50,000 minimum.
               </p>
-              <button
-                type="button"
-                className="mt-4 w-full rounded-full bg-brand px-5 py-2.5 text-sm font-bold text-brand-foreground"
+              <Link
+                to="/invest"
+                className="mt-4 block rounded-full bg-brand px-5 py-2.5 text-center text-sm font-bold text-brand-foreground"
               >
                 Explore investments
-              </button>
+              </Link>
             </section>
 
             <section className="rounded-3xl bg-surface p-5 shadow-card">
@@ -319,10 +411,17 @@ function HomeV4() {
               <p className="mt-2 text-base font-bold">Fixed Income · 90 days</p>
               <p className="mt-1 text-2xl font-extrabold tracking-tight">{mask(750000)}</p>
               <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-                <span>Matures 14 Oct 2026</span>
+                <span>Matures 24 Sep 2026</span>
                 <span className="rounded-full bg-accent px-2.5 py-1 font-bold text-accent-foreground">
                   23 days left
                 </span>
+              </div>
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-secondary">
+                <div className="h-full rounded-full bg-gold-gradient" style={{ width: "74%" }} />
+              </div>
+              <div className="mt-1.5 flex justify-between text-xs text-muted-foreground">
+                <span>Started 26 Jun 2026</span>
+                <span>74% of term</span>
               </div>
               <p className="mt-4 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
                 Funds in your wallet are available for investment or withdrawal, and do not earn
@@ -335,12 +434,9 @@ function HomeV4() {
                 <h2 className="text-base font-extrabold tracking-tight">
                   Recent activity
                 </h2>
-                <button
-                  type="button"
-                  className="text-xs font-bold text-brand"
-                >
+                <Link to="/portfolio" className="text-xs font-bold text-brand">
                   See all
-                </button>
+                </Link>
               </div>
               <ul className="mt-3 divide-y divide-border">
                 {ACTIVITY.map((item) => (
@@ -376,23 +472,31 @@ function HomeV4() {
               </ul>
             </section>
 
-            <section>
-              <h2 className="text-base font-extrabold tracking-tight">For you</h2>
-              <div className="mt-3 space-y-3">
-                {FEED.map((item, i) => (
-                  <article key={item.title} className="rounded-3xl bg-surface p-5 shadow-card">
-              <FeedThumb index={i} />
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                      {item.tag}
-                    </span>
-                    <h3 className="mt-2 text-sm font-bold leading-snug">{item.title}</h3>
-                    <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{item.body}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
           </div>
         </div>
+        )}
+
+        {!isNewUser && (
+          <section className="mt-6">
+            <h2 className="text-base font-extrabold tracking-tight">For you</h2>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {FEED.map((item, i) => (
+                <article
+                  key={item.title}
+                  className="flex flex-col rounded-3xl bg-surface p-5 shadow-card"
+                >
+                  <FeedThumb index={i} />
+                  <span className="mt-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    {item.tag}
+                  </span>
+                  <h3 className="mt-2 text-sm font-bold leading-snug">{item.title}</h3>
+                  <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                    {item.body}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </section>
         )}
       </main>
       </div>
@@ -410,7 +514,7 @@ function HomeV4() {
                 )}
                 <Link
                   to={tab.to}
-                  className={`flex flex-col items-center gap-1 py-2.5 text-[11px] transition-colors ${
+                  className={`flex flex-col items-center gap-1 py-2.5 text-xs transition-colors ${
                     active
                       ? "font-bold text-brand"
                       : "font-medium text-muted-foreground"
