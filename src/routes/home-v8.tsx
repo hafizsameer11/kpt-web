@@ -28,6 +28,8 @@ import {
   DashboardTopBar,
 } from "@/components/kipit/DashboardSidebar";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
+import { productArt } from "@/components/kipit/art";
+import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 
 export const Route = createFileRoute("/home-v8")({
@@ -263,18 +265,31 @@ function Products() {
             <Link
               key={p.name}
               to="/invest"
-              className="rounded-2xl border border-border bg-card p-4 shadow-card transition hover:shadow-float"
+              className="overflow-hidden rounded-2xl border border-border bg-card shadow-card transition hover:shadow-float"
             >
+              <img
+                src={productArt(p.name)}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                width={768}
+                height={512}
+                className="h-20 w-full object-cover"
+              />
+              <div className="p-4">
               <span className={`grid size-10 place-items-center rounded-xl ${TONE[p.tone]}`}>
                 <Icon className="size-5" />
               </span>
+
               <p className="mt-2.5 text-sm font-extrabold text-foreground">{p.name}</p>
               <p className="text-[11px] leading-snug text-muted-foreground">{p.desc}</p>
               <p className="mt-2 text-base font-extrabold tabular-nums text-foreground">
                 {hidden ? "₦••••••" : naira(p.value)}
               </p>
               <p className="text-[11px] font-bold text-gold-foreground">{p.rate}</p>
+              </div>
             </Link>
+
           );
         })}
       </div>
@@ -465,11 +480,12 @@ function ContentFeed() {
     <section>
       <SectionTitle>For you</SectionTitle>
       <div className="grid gap-3 sm:grid-cols-2">
-        {FEED.map((f) => (
+        {FEED.map((f, i) => (
           <article
             key={f.title}
             className="rounded-2xl border border-border bg-card p-4 shadow-card transition hover:shadow-float"
           >
+              <FeedThumb index={i} />
             <span className="inline-block rounded-full bg-brand/10 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-brand">
               {f.tag}
             </span>

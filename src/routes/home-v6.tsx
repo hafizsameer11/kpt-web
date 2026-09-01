@@ -25,6 +25,7 @@ import {
   DashboardTopBar,
 } from "@/components/kipit/DashboardSidebar";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
+import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 
 export const Route = createFileRoute("/home-v6")({
@@ -416,11 +417,12 @@ function ContentFeed() {
     <section>
       <SectionTitle>For you</SectionTitle>
       <div className="grid gap-3 sm:grid-cols-2">
-        {FEED.map((f) => (
+        {FEED.map((f, i) => (
           <article
             key={f.title}
             className="rounded-2xl border border-border bg-card p-4 shadow-card transition hover:shadow-float"
           >
+              <FeedThumb index={i} />
             <span className="inline-block rounded-full bg-brand/10 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-brand">
               {f.tag}
             </span>

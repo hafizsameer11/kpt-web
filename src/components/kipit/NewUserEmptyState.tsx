@@ -1,16 +1,23 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowDownToLine, Compass } from "lucide-react";
+import { ArrowDownToLine } from "lucide-react";
+import { EMPTY_STATE_ART } from "@/components/kipit/art";
 
 /**
  * MOB-020 — Empty State (new user).
  */
 export function NewUserEmptyState() {
   return (
-    <section className="rounded-3xl border border-dashed border-gold/60 bg-surface p-8 text-center shadow-card">
-      <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-accent text-accent-foreground">
-        <Compass className="size-6" />
-      </span>
-      <h2 className="mt-4 text-xl font-extrabold tracking-tight">
+    <section className="overflow-hidden rounded-3xl border border-dashed border-gold/60 bg-surface text-center shadow-card">
+      <img
+        src={EMPTY_STATE_ART}
+        alt="Abstract navy and gold shapes representing a growing portfolio"
+        width={1024}
+        height={640}
+        className="h-40 w-full object-cover sm:h-52"
+      />
+      <div className="p-8 pt-6">
+      <h2 className="text-xl font-extrabold tracking-tight">
+
         Start building your portfolio.
       </h2>
       <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
@@ -30,6 +37,8 @@ export function NewUserEmptyState() {
           Explore Investments
         </Link>
       </div>
+      </div>
+
     </section>
   );
 }
