@@ -1,19 +1,23 @@
 import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
-import { useState } from "react";
 import {
   ArrowDownLeft,
   ArrowUpRight,
   Bell,
+  ChevronRight,
   Compass,
+  FileText,
   Eye,
   EyeOff,
   Home,
+  Lightbulb,
   Lock,
   PieChart,
   PlusCircle,
   Settings,
   ShieldCheck,
   Target,
+  ArrowDownToLine,
+  ArrowUpFromLine,
   TrendingUp,
   Wallet,
   type LucideIcon,
@@ -22,6 +26,8 @@ import {
   DashboardSidebar,
   DashboardTopBar,
 } from "@/components/kipit/DashboardSidebar";
+import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
+import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 
 export const Route = createFileRoute("/home-v5")({
   head: () => ({
@@ -133,55 +139,162 @@ function Greeting() {
           <h1 className="text-base font-bold text-foreground">Adaeze O.</h1>
         </div>
       </div>
-      <button
+      <Link
+        to="/notifications"
         aria-label="Notifications"
         className="relative grid size-10 place-items-center rounded-full bg-card shadow-card"
       >
         <Bell className="size-5 text-brand" />
         <span className="absolute right-2 top-2 size-2 rounded-full bg-gold" />
-      </button>
+      </Link>
     </div>
   );
 }
 
 function BalanceCard() {
-  const [visible, setVisible] = useState(true);
+  const { hidden, toggle, mask } = useBalanceVisibility();
   return (
     <section className="rounded-3xl bg-brand-gradient p-6 text-primary-foreground shadow-float">
       <div className="flex items-center justify-between">
         <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary-foreground/80">
-          Total savings
+          Total portfolio value
           <button
-            aria-label="Toggle balance visibility"
-            onClick={() => setVisible((v) => !v)}
+            aria-label={hidden ? "Show balances" : "Hide balances"}
+            onClick={toggle}
           >
-            {visible ? (
-              <Eye className="size-4" />
-            ) : (
-              <EyeOff className="size-4" />
-            )}
+            {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
         </p>
         <span className="rounded-full bg-primary-foreground/15 px-2.5 py-1 text-[11px] font-semibold">
-          +₦32,410 this week
+          +₦32,410 · +1.51% this week
         </span>
       </div>
-      <p className="mt-2 text-4xl font-extrabold tracking-tight">
-        {visible ? naira(2176500) : "₦ • • • • • •"}
-      </p>
-      <div className="mt-5 flex gap-3">
-        <Link
-          to="/invest"
-          className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gold px-4 py-3 text-sm font-bold text-gold-foreground"
-        >
-          <PlusCircle className="size-4" /> Add money
-        </Link>
-        <Link
-          to="/portfolio"
-          className="flex flex-1 items-center justify-center gap-2 rounded-full bg-primary-foreground/15 px-4 py-3 text-sm font-bold text-primary-foreground"
-        >
-          Withdraw
-        </Link>
+      <p className="mt-2 text-4xl font-extrabold tracking-tight">{mask(2176500)}</p>
+      <div className="mt-5 grid grid-cols-4 gap-2">
+        {[
+          { label: "Add money", icon: ArrowDownToLine, gold: true },
+          { label: "Withdraw", icon: ArrowUpFromLine, gold: false },
+          { label: "New plan", icon: PlusCircle, gold: false },
+          { label: "Statements", icon: FileText, gold: false },
+        ].map(({ label, icon: Icon, gold }) => (
+          <button
+            key={label}
+            type="button"
+            className={`flex flex-col items-center gap-1.5 rounded-2xl px-1 py-3 text-[11px] font-bold transition-transform active:scale-95 ${
+              gold
+                ? "bg-gold text-gold-foreground"
+                : "bg-primary-foreground/15 text-primary-foreground"
+            }`}
+          >
+            <Icon className="size-4" />
+            {label}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function WalletEarningsMaturity() {
+  const { mask } = useBalanceVisibility();
+  return (
+    <div className="grid gap-3 sm:grid-cols-3">
+      <article className="rounded-3xl bg-card p-5 shadow-card">
+        <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
+          <Wallet className="size-4" /> Wallet balance
+        </div>
+        <p className="mt-2 text-xl font-extrabold tracking-tight">{mask(86500)}</p>
+        <p className="mt-1 text-xs text-muted-foreground">Available funds: {mask(86500)}</p>
+        <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+          Funds in your wallet are available for investment or withdrawal. Wallet funds do not
+          earn investment returns.
+        </p>
+      </article>
+
+      <article className="rounded-3xl bg-card p-5 shadow-card">
+        <p className="text-xs font-bold text-muted-foreground">Weekly earnings</p>
+        <p className="mt-2 text-xl font-extrabold tracking-tight text-success">{mask(32410)}</p>
+        <p className="mt-1 text-xs text-muted-foreground">Interest earned this week</p>
+        <div className="mt-4 flex h-12 items-end gap-1.5">
+          {[42, 55, 40, 68, 60, 82, 74].map((h, i) => (
+            <span key={i} style={{ height: `${h}%` }} className="flex-1 rounded-t-md bg-gold-gradient" />
+          ))}
+        </div>
+      </article>
+
+      <article className="rounded-3xl bg-card p-5 shadow-card">
+        <p className="text-xs font-bold text-muted-foreground">Next maturity</p>
+        <p className="mt-2 text-sm font-bold">Kipit Lock · 180 days</p>
+        <p className="mt-1 text-xl font-extrabold tracking-tight">{mask(500000)}</p>
+        <div className="mt-3 flex items-center justify-between text-[11px] text-muted-foreground">
+          <span>Matures 14 Oct 2026</span>
+          <span className="rounded-full bg-accent px-2 py-1 font-bold text-accent-foreground">
+            23 days left
+          </span>
+        </div>
+      </article>
+    </div>
+  );
+}
+
+function Recommendation() {
+  return (
+    <section className="rounded-3xl border border-gold/40 bg-accent p-5 md:flex md:items-center md:justify-between md:gap-6">
+      <div className="flex gap-3">
+        <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold-gradient text-gold-foreground">
+          <Lightbulb className="size-5" />
+        </span>
+        <div>
+          <p className="text-sm font-bold text-accent-foreground">
+            Your ₦86,500 Flex Wallet balance isn&apos;t currently invested.
+          </p>
+          <p className="mt-1 text-xs text-accent-foreground/80">
+            Plans from 18.5% p.a. · 30–365 day tenors · ₦50,000 minimum.
+          </p>
+        </div>
+      </div>
+      <Link
+        to="/explore"
+        className="mt-4 inline-flex w-full items-center justify-center gap-1 rounded-full bg-brand px-5 py-3 text-sm font-bold text-brand-foreground md:mt-0 md:w-auto"
+      >
+        Explore Investments <ChevronRight className="size-4" />
+      </Link>
+    </section>
+  );
+}
+
+const FEED = [
+  {
+    tag: "Product update",
+    title: "Kipit Lock now settles same-day",
+    body: "Maturity payouts land in your wallet within minutes of maturity.",
+  },
+  {
+    tag: "Education",
+    title: "Understanding tenor and effective yield",
+    body: "A 3-minute read on how rate and tenor shape your real return.",
+  },
+  {
+    tag: "Announcement",
+    title: "Tier 2 verification is now instant",
+    body: "Upgrade with your BVN and NIN to raise your transaction limits.",
+  },
+];
+
+function ContentFeed() {
+  return (
+    <section>
+      <h2 className="mb-3 text-sm font-bold text-foreground">For you</h2>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {FEED.map((item) => (
+          <article key={item.title} className="rounded-3xl bg-card p-5 shadow-card">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+              {item.tag}
+            </span>
+            <h3 className="mt-2 text-sm font-bold leading-snug">{item.title}</h3>
+            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{item.body}</p>
+          </article>
+        ))}
       </div>
     </section>
   );
@@ -189,6 +302,7 @@ function BalanceCard() {
 
 function ProductCard({ product }: { product: Product }) {
   const Icon = product.icon;
+  const { mask } = useBalanceVisibility();
   return (
     <button
       className={`flex flex-col items-start gap-3 rounded-3xl p-5 text-left shadow-card transition-transform hover:-translate-y-0.5 ${product.card}`}
@@ -203,7 +317,7 @@ function ProductCard({ product }: { product: Product }) {
         </span>
       </span>
       <span className="mt-auto text-lg font-extrabold">
-        {naira(product.balance)}
+        {mask(product.balance)}
       </span>
     </button>
   );
@@ -245,6 +359,7 @@ function Todos() {
 }
 
 function ActivityFeed() {
+  const { hidden, naira } = useBalanceVisibility();
   return (
     <section>
       <div className="mb-3 flex items-center justify-between">
@@ -278,8 +393,7 @@ function ActivityFeed() {
                 item.credit ? "text-success" : "text-foreground"
               }`}
             >
-              {item.credit ? "+" : "−"}
-              {naira(item.amount)}
+              {hidden ? "₦••••••" : `${item.credit ? "+" : "−"}${naira(item.amount)}`}
             </span>
           </li>
         ))}
@@ -321,6 +435,7 @@ function MobileTabBar() {
 }
 
 function HomeV5() {
+  const isNewUser = useIsNewUser();
   return (
     <div className="min-h-screen bg-background">
       <DashboardSidebar activePath="/home-v5" />
@@ -330,9 +445,14 @@ function HomeV5() {
           <div className="md:hidden">
             <Greeting />
           </div>
+          {isNewUser ? (
+            <NewUserEmptyState />
+          ) : (
           <div className="grid gap-5 lg:grid-cols-3">
             <div className="space-y-5 lg:col-span-2">
               <BalanceCard />
+              <WalletEarningsMaturity />
+              <Recommendation />
               <section>
                 <div className="mb-3 flex items-center justify-between">
                   <h2 className="text-sm font-bold text-foreground">
@@ -353,7 +473,11 @@ function HomeV5() {
               <Todos />
               <ActivityFeed />
             </div>
+            <div className="lg:col-span-3">
+              <ContentFeed />
+            </div>
           </div>
+          )}
         </main>
       </div>
       <MobileTabBar />
