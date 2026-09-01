@@ -27,7 +27,7 @@ export function AppShell({
 }: {
   children: ReactNode;
   title?: string;
-  navVariant?: "classic" | "floating";
+  navVariant?: "classic" | "floating" | "morph";
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
