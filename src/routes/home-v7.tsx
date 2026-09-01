@@ -1,9 +1,12 @@
+import { useRef, useState } from "react";
 import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowDownLeft,
   ArrowUpRight,
   Bell,
+  ChevronLeft,
   ChevronRight,
+  CircleDollarSign,
   Compass,
   Eye,
   EyeOff,
@@ -12,12 +15,14 @@ import {
   Landmark,
   Lightbulb,
   PieChart,
+  PiggyBank,
   Plus,
   Search,
   Settings,
   TrendingDown,
   TrendingUp,
   Wallet,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -48,14 +53,26 @@ export const Route = createFileRoute("/home-v7")({
 });
 
 const naira = (n: number) => `₦${n.toLocaleString()}`;
+const MASK = "₦••••••";
 
 /* ------------------------------ data ------------------------------ */
 
+const PORTFOLIO_VALUE = 1830150;
+const WALLET_BALANCE = 128500;
+
+const RANGES = [
+  { key: "1D", label: "1D", change: 4820, pct: 0.3, series: [12, 13, 12.4, 14, 13.6, 15, 15.4] },
+  { key: "1W", label: "1W", change: 21400, pct: 1.2, series: [10, 12, 11, 14, 13, 16, 17] },
+  { key: "1M", label: "1M", change: 96400, pct: 5.6, series: [8, 10, 9, 12, 14, 13, 18] },
+  { key: "1Y", label: "1Y", change: 412300, pct: 29.1, series: [4, 6, 5, 9, 12, 15, 20] },
+  { key: "All", label: "All", change: 630150, pct: 52.5, series: [2, 3, 6, 8, 11, 16, 22] },
+] as const;
+
 const DISCOVER = [
-  { name: "Kipit FlexiYield", meta: "18.2% p.a. · Flexible", tone: "brand" },
-  { name: "Treasury Notes 91-Day", meta: "21.4% p.a. · Low risk", tone: "gold" },
-  { name: "Kipit Dollar Fund", meta: "9.8% p.a. · USD", tone: "violet" },
-  { name: "Money Market Fund", meta: "16.1% p.a. · Daily yield", tone: "teal" },
+  { name: "Kipit FlexiYield", meta: "18.2% p.a. · Flexible", tone: "brand", icon: Zap },
+  { name: "Treasury Notes 91-Day", meta: "21.4% p.a. · Low risk", tone: "gold", icon: Landmark },
+  { name: "Kipit Dollar Fund", meta: "9.8% p.a. · USD", tone: "violet", icon: CircleDollarSign },
+  { name: "Money Market Fund", meta: "16.1% p.a. · Daily yield", tone: "teal", icon: PiggyBank },
 ] as const;
 
 const WATCHLIST = [
@@ -65,10 +82,21 @@ const WATCHLIST = [
   { ticker: "COCOA", name: "Cocoa Futures", change: 3.6 },
 ] as const;
 
-const WEEKLY = [42, 58, 36, 71, 49, 66, 84];
+/* Daily payouts that add up exactly to the weekly total shown. */
+const WEEKLY = [
+  { day: "Mon", value: 4200 },
+  { day: "Tue", value: 5800 },
+  { day: "Wed", value: 3600 },
+  { day: "Thu", value: 7100 },
+  { day: "Fri", value: 4900 },
+  { day: "Sat", value: 6600 },
+  { day: "Sun", value: 9950 },
+] as const;
+const WEEKLY_TOTAL = WEEKLY.reduce((s, d) => s + d.value, 0);
+const WEEKLY_MAX = Math.max(...WEEKLY.map((d) => d.value));
 
 const ACTIVITY = [
-  { label: "Kipit FlexiYield payout", time: "Today · 09:12", amount: 42150, credit: true },
+  { label: "Kipit FlexiYield payout", time: "Today · 09:12", amount: 9950, credit: true },
   { label: "Bought T-Bill 91-Day", time: "Yesterday", amount: 100000, credit: false },
   { label: "Wallet deposit", time: "Mon · 14:40", amount: 150000, credit: true },
 ] as const;
@@ -76,7 +104,10 @@ const ACTIVITY = [
 const FEED = [
   { tag: "Investing 101", title: "What are treasury bills and why everyone is buying them" },
   { tag: "Market watch", title: "Naira steadies — what it means for dollar funds" },
+  { tag: "Kipit guide", title: "How to build a 12-month ladder with short-dated notes" },
 ] as const;
+
+const MATURITY_PROGRESS = 78;
 
 const TONE: Record<string, string> = {
   brand: "bg-brand/10 text-brand",
@@ -84,6 +115,7 @@ const TONE: Record<string, string> = {
   violet: "bg-violet/10 text-violet",
   teal: "bg-teal/10 text-teal",
 };
+
 
 const TABS: { to: string; label: string; icon: LucideIcon }[] = [
   { to: "/home-v7", label: "Home", icon: Home },
@@ -155,14 +187,17 @@ function GreetingHeader() {
 
 function BalanceCard() {
   const { hidden, toggle } = useBalanceVisibility();
+  const [rangeKey, setRangeKey] = useState<string>("1M");
+  const range = RANGES.find((r) => r.key === rangeKey) ?? RANGES[2];
+
   return (
     <section className="overflow-hidden rounded-3xl bg-brand-gradient p-5 text-brand-foreground shadow-float md:p-6">
-      <div className="flex items-start justify-between gap-3">
+      <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
         <div className="min-w-0">
           <p className="text-xs font-semibold text-brand-foreground/70">Total portfolio value</p>
           <div className="mt-1 flex items-center gap-2">
             <h1 className="text-3xl font-extrabold tabular-nums md:text-4xl">
-              {hidden ? "₦••••••" : naira(1830150)}
+              {hidden ? MASK : naira(PORTFOLIO_VALUE)}
             </h1>
             <button
               onClick={toggle}
@@ -173,16 +208,46 @@ function BalanceCard() {
             </button>
           </div>
           <p className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-gold">
-            <TrendingUp className="size-4" /> +{hidden ? "••••" : naira(96400)} (5.6%) this month
+            <TrendingUp className="size-4" /> +{hidden ? "••••" : naira(range.change)} ({range.pct}%)
+            <span className="text-brand-foreground/70">
+              {range.key === "All" ? "all time" : `past ${range.label}`}
+            </span>
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-[11px] font-semibold text-brand-foreground/70">Kipit Wallet</p>
-          <p className="text-sm font-extrabold tabular-nums">{hidden ? "₦••••••" : naira(128500)}</p>
-        </div>
+
+        <Sparkline
+          key={range.key}
+          data={range.series}
+          className="h-16 w-full text-gold md:w-56"
+        />
       </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-2">
+      <div
+        role="tablist"
+        aria-label="Performance timeframe"
+        className="mt-4 flex gap-1.5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {RANGES.map((r) => {
+          const active = r.key === rangeKey;
+          return (
+            <button
+              key={r.key}
+              role="tab"
+              aria-selected={active}
+              onClick={() => setRangeKey(r.key)}
+              className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
+                active
+                  ? "bg-gold text-gold-foreground"
+                  : "bg-brand-foreground/10 text-brand-foreground/80 hover:bg-brand-foreground/20"
+              }`}
+            >
+              {r.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-5 grid gap-2 sm:grid-cols-3">
         <button className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gold py-2.5 text-sm font-bold text-gold-foreground transition hover:brightness-105">
           <Plus className="size-4" /> Invest
         </button>
@@ -197,6 +262,7 @@ function BalanceCard() {
   );
 }
 
+
 /* ------------------------------ wallet ------------------------------ */
 
 function WalletCard() {
@@ -205,13 +271,13 @@ function WalletCard() {
     <section className="rounded-2xl border border-border bg-card p-4 shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="grid size-10 place-items-center rounded-xl bg-brand/10 text-brand">
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand">
             <Wallet className="size-5" />
           </span>
-          <div>
+          <div className="min-w-0">
             <p className="text-xs font-semibold text-muted-foreground">Kipit Wallet</p>
             <p className="text-lg font-extrabold tabular-nums text-foreground">
-              {hidden ? "₦••••••" : naira(128500)}
+              {hidden ? MASK : naira(WALLET_BALANCE)}
             </p>
           </div>
         </div>
@@ -219,7 +285,7 @@ function WalletCard() {
           <FileText className="size-3.5" /> Statements
         </button>
       </div>
-      <p className="mt-3 rounded-lg bg-muted/60 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+      <p className="mt-3 rounded-lg bg-muted/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
         Funds in your wallet don’t earn returns until invested. Move money into a plan to start growing it.
       </p>
     </section>
@@ -229,25 +295,67 @@ function WalletCard() {
 /* ----------------------------- discover ----------------------------- */
 
 function Discover() {
+  const railRef = useRef<HTMLDivElement>(null);
+
+  const scrollBy = (dir: 1 | -1) => {
+    railRef.current?.scrollBy({ left: dir * 220, behavior: "smooth" });
+  };
+
   return (
     <section>
-      <SectionTitle action="See all">Discover investments</SectionTitle>
-      <div className="flex snap-x gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {DISCOVER.map((d) => (
-          <div
-            key={d.name}
-            className="w-44 shrink-0 snap-start rounded-2xl border border-border bg-card p-4 shadow-card transition hover:shadow-float"
-          >
-            <span className={`grid size-10 place-items-center rounded-xl text-xs font-extrabold ${TONE[d.tone]}`}>
-              {d.name.slice(0, 2)}
-            </span>
-            <p className="mt-3 text-sm font-bold leading-snug text-foreground">{d.name}</p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">{d.meta}</p>
-            <button className="mt-3 w-full rounded-lg bg-brand py-2 text-xs font-bold text-brand-foreground transition hover:brightness-110">
-              Start investing
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h2 className="text-base font-extrabold text-foreground">Discover investments</h2>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-brand">
+            See all <ChevronRight className="size-3.5" />
+          </span>
+          <div className="hidden gap-1 md:flex">
+            <button
+              onClick={() => scrollBy(-1)}
+              aria-label="Scroll products left"
+              className="grid size-7 place-items-center rounded-full border border-border bg-card text-muted-foreground transition hover:bg-muted"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+            <button
+              onClick={() => scrollBy(1)}
+              aria-label="Scroll products right"
+              className="grid size-7 place-items-center rounded-full border border-border bg-card text-muted-foreground transition hover:bg-muted"
+            >
+              <ChevronRight className="size-4" />
             </button>
           </div>
-        ))}
+        </div>
+      </div>
+
+      <div className="relative">
+        <div
+          ref={railRef}
+          className="flex snap-x items-stretch gap-3 overflow-x-auto pb-1 pr-8 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {DISCOVER.map((d) => {
+            const Icon = d.icon;
+            return (
+              <div
+                key={d.name}
+                className="flex w-44 shrink-0 snap-start flex-col rounded-2xl border border-border bg-card p-4 shadow-card transition hover:shadow-float"
+              >
+                <span className={`grid size-10 place-items-center rounded-xl ${TONE[d.tone]}`}>
+                  <Icon className="size-5" />
+                </span>
+                <p className="mt-3 text-sm font-bold leading-snug text-foreground">{d.name}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{d.meta}</p>
+                <div className="mt-auto pt-3">
+                  <button className="w-full rounded-lg bg-brand py-2 text-xs font-bold text-brand-foreground transition hover:brightness-110">
+                    Start investing
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        {/* fade affordance so the rail reads as scrollable, not clipped */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-background to-transparent" />
       </div>
     </section>
   );
@@ -260,29 +368,33 @@ function Watchlist() {
     <section>
       <SectionTitle action="Markets">Watchlist</SectionTitle>
       <ul className="divide-y divide-border rounded-2xl border border-border bg-card shadow-card">
-        {WATCHLIST.map((w) => (
-          <li key={w.ticker} className="flex items-center gap-3 px-4 py-3.5">
-            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand/10 text-[10px] font-extrabold text-brand">
-              {w.ticker.slice(0, 2)}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-bold text-foreground">{w.ticker}</span>
-              <span className="text-xs text-muted-foreground">{w.name}</span>
-            </span>
-            <Sparkline
-              data={w.change >= 0 ? [2, 4, 3, 6, 5, 8, 10] : [10, 8, 9, 6, 7, 4, 2]}
-              className={`hidden h-7 w-14 sm:block ${w.change >= 0 ? "text-success" : "text-destructive"}`}
-            />
-            <span
-              className={`inline-flex items-center gap-0.5 text-sm font-extrabold ${
-                w.change >= 0 ? "text-success" : "text-destructive"
-              }`}
-            >
-              {w.change >= 0 ? <TrendingUp className="size-3.5" /> : <TrendingDown className="size-3.5" />}
-              {w.change >= 0 ? "+" : ""}{w.change}%
-            </span>
-          </li>
-        ))}
+        {WATCHLIST.map((w) => {
+          const up = w.change >= 0;
+          return (
+            <li key={w.ticker} className="flex items-center gap-3 px-4 py-3.5">
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand/10 text-xs font-extrabold text-brand">
+                {w.ticker.slice(0, 2)}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-bold text-foreground">{w.ticker}</span>
+                <span className="text-xs text-muted-foreground">{w.name}</span>
+              </span>
+              <Sparkline
+                data={up ? [2, 4, 3, 6, 5, 8, 10] : [10, 8, 9, 6, 7, 4, 2]}
+                className={`hidden h-7 w-14 sm:block ${up ? "text-gold" : "text-brand/40"}`}
+              />
+              <span
+                className={`inline-flex items-center gap-0.5 text-sm font-extrabold ${
+                  up ? "text-success" : "text-destructive"
+                }`}
+              >
+                {up ? <TrendingUp className="size-3.5" /> : <TrendingDown className="size-3.5" />}
+                {up ? "+" : ""}
+                {w.change}%
+              </span>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
@@ -297,18 +409,26 @@ function EarningsAndMaturity() {
       <section className="rounded-2xl border border-border bg-card p-4 shadow-card">
         <p className="text-xs font-semibold text-muted-foreground">Earned this week</p>
         <p className="mt-1 text-xl font-extrabold tabular-nums text-foreground">
-          {hidden ? "₦••••••" : naira(42150)}
+          {hidden ? MASK : naira(WEEKLY_TOTAL)}
         </p>
-        <div className="mt-3 flex h-16 items-end gap-1.5">
-          {WEEKLY.map((h, i) => (
-            <div
-              key={i}
-              className={`flex-1 rounded-t-md ${i === WEEKLY.length - 1 ? "bg-gold" : "bg-brand/20"}`}
-              style={{ height: `${h}%` }}
-            />
+        <div className="mt-3 flex h-20 items-end gap-1.5">
+          {WEEKLY.map((d, i) => (
+            <div key={d.day} className="flex h-full flex-1 flex-col justify-end gap-1.5">
+              <div
+                title={`${d.day}: ${hidden ? MASK : naira(d.value)}`}
+                className={`rounded-t-md ${i === WEEKLY.length - 1 ? "bg-gold" : "bg-brand/20"}`}
+                style={{ height: `${(d.value / WEEKLY_MAX) * 100}%` }}
+              />
+              <span className="text-center text-[0.7rem] font-semibold text-muted-foreground">
+                {d.day.slice(0, 1)}
+              </span>
+            </div>
           ))}
         </div>
-        <p className="mt-2 text-[11px] text-muted-foreground">Mon – Sun</p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Best day <span className="font-semibold text-foreground">Sun</span> ·{" "}
+          {hidden ? MASK : naira(WEEKLY_MAX)}
+        </p>
       </section>
 
       <section className="rounded-2xl border border-border bg-card p-4 shadow-card">
@@ -320,18 +440,24 @@ function EarningsAndMaturity() {
         </div>
         <p className="mt-2 text-sm font-bold text-foreground">Treasury Notes · 91-Day</p>
         <p className="text-xl font-extrabold tabular-nums text-foreground">
-          {hidden ? "₦••••••" : naira(460000)}
+          {hidden ? MASK : naira(460000)}
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
           Matures <span className="font-semibold text-foreground">12 Sep 2026</span> · 11 days left
         </p>
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
-          <div className="h-full w-[78%] rounded-full bg-gold" />
+        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
+          <div className="h-full rounded-full bg-gold" style={{ width: `${MATURITY_PROGRESS}%` }} />
+        </div>
+        <div className="mt-1.5 flex items-center justify-between text-xs text-muted-foreground">
+          <span>13 Jun</span>
+          <span className="font-semibold text-foreground">{MATURITY_PROGRESS}% of term</span>
+          <span>12 Sep</span>
         </div>
       </section>
     </div>
   );
 }
+
 
 /* ----------------------- recommendation & feed ----------------------- */
 
@@ -381,7 +507,7 @@ function Activity() {
               <span className="text-xs text-muted-foreground">{a.time}</span>
             </span>
             <span className={`text-sm font-bold tabular-nums ${a.credit ? "text-success" : "text-foreground"}`}>
-              {hidden ? "₦••••••" : `${a.credit ? "+" : "−"}${naira(a.amount)}`}
+              {hidden ? MASK : `${a.credit ? "+" : "−"}${naira(a.amount)}`}
             </span>
           </li>
         ))}
@@ -394,18 +520,18 @@ function ContentFeed() {
   return (
     <section>
       <SectionTitle>For you</SectionTitle>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {FEED.map((f, i) => (
           <article
             key={f.title}
-            className="rounded-2xl border border-border bg-card p-4 shadow-card transition hover:shadow-float"
+            className="flex h-full flex-col rounded-2xl border border-border bg-card p-4 shadow-card transition hover:shadow-float"
           >
-              <FeedThumb index={i} />
+            <FeedThumb index={i} />
             <span className="inline-block rounded-full bg-brand/10 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-brand">
               {f.tag}
             </span>
             <h3 className="mt-2 text-sm font-bold leading-snug text-foreground">{f.title}</h3>
-            <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-brand">
+            <span className="mt-auto pt-2 inline-flex items-center gap-1 text-xs font-semibold text-brand">
               Read <ChevronRight className="size-3.5" />
             </span>
           </article>
@@ -457,12 +583,13 @@ function MobileTabBar() {
 
 function HomeV7() {
   const isNewUser = useIsNewUser();
+  const { hidden } = useBalanceVisibility();
   return (
     <div className="type-v7 min-h-screen bg-background">
-      <DashboardSidebar activePath="/home-v7" />
+      <DashboardSidebar activePath="/home-v7" walletBalance={WALLET_BALANCE} hideBalance={hidden} />
       <div className="md:pl-64">
         <DashboardTopBar title="Home" />
-        <main className="mx-auto w-full max-w-2xl space-y-5 px-4 pb-28 pt-5 md:max-w-none md:px-8 md:pb-16">
+        <main className="mx-auto w-full max-w-2xl space-y-5 px-4 pb-28 pt-5 md:max-w-[1400px] md:px-8 md:pb-16">
           {isNewUser ? (
             <NewUserEmptyState />
           ) : (
