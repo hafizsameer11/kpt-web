@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -8,13 +9,16 @@ import {
   Eye,
   EyeOff,
   Home,
+  Landmark,
   Lightbulb,
   PieChart,
+  PiggyBank,
   Plus,
   Receipt,
   Settings,
   TrendingUp,
   Wallet,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 import { DashboardSidebar } from "@/components/kipit/DashboardSidebar";
@@ -45,11 +49,13 @@ export const Route = createFileRoute("/home-v3")({
 const naira = (value: number) =>
   `₦${value.toLocaleString("en-NG", { maximumFractionDigits: 0 })}`;
 
-const QUICK_ACTIONS: { label: string; icon: LucideIcon }[] = [
-  { label: "Add", icon: ArrowDownLeft },
-  { label: "Withdraw", icon: ArrowUpRight },
-  { label: "New Plan", icon: Plus },
-  { label: "Statements", icon: Receipt },
+const WALLET_BALANCE = 500000;
+
+const QUICK_ACTIONS: { label: string; icon: LucideIcon; to: string }[] = [
+  { label: "Add", icon: ArrowDownLeft, to: "/invest" },
+  { label: "Withdraw", icon: ArrowUpRight, to: "/portfolio" },
+  { label: "New Plan", icon: Plus, to: "/invest" },
+  { label: "Statements", icon: Receipt, to: "/portfolio" },
 ];
 
 const PLANS = [
@@ -59,7 +65,9 @@ const PLANS = [
     amount: 750000,
     yield: "18.5% p.a.",
     progress: 0.74,
-    matures: "14 Oct 2026",
+    started: "26 Jun 2026",
+    matures: "24 Sep 2026",
+    icon: Landmark,
   },
   {
     name: "Kipit Flex Yield",
@@ -67,7 +75,9 @@ const PLANS = [
     amount: 1200000,
     yield: "19.2% p.a.",
     progress: 0.38,
-    matures: "02 Jan 2027",
+    started: "25 Jun 2026",
+    matures: "22 Dec 2026",
+    icon: Zap,
   },
   {
     name: "Kipit Goal — Rent",
@@ -75,9 +85,36 @@ const PLANS = [
     amount: 500000,
     yield: "17.8% p.a.",
     progress: 0.16,
-    matures: "30 Aug 2027",
+    started: "05 Jul 2026",
+    matures: "05 Jul 2027",
+    icon: PiggyBank,
   },
 ];
+
+const INVESTED_TOTAL = PLANS.reduce((sum, p) => sum + p.amount, 0);
+const TOTAL_BALANCE = INVESTED_TOTAL + WALLET_BALANCE;
+
+const TIMEFRAMES = [
+  { id: "1D", gain: 4820, pct: 0.16, label: "today" },
+  { id: "1W", gain: 12480, pct: 0.43, label: "this week" },
+  { id: "1M", gain: 38200, pct: 1.31, label: "this month" },
+  { id: "6M", gain: 214600, pct: 7.85, label: "past 6 months" },
+  { id: "1Y", gain: 386400, pct: 15.1, label: "past year" },
+  { id: "All", gain: 452900, pct: 18.2, label: "all time" },
+];
+
+const WEEKLY = [
+  { day: "Mon", value: 1240 },
+  { day: "Tue", value: 1680 },
+  { day: "Wed", value: 1420 },
+  { day: "Thu", value: 2100 },
+  { day: "Fri", value: 1860 },
+  { day: "Sat", value: 2380 },
+  { day: "Sun", value: 1800 },
+];
+const WEEKLY_TOTAL = WEEKLY.reduce((sum, d) => sum + d.value, 0);
+const WEEKLY_MAX = Math.max(...WEEKLY.map((d) => d.value));
+const WEEKLY_BEST = WEEKLY.reduce((a, b) => (b.value > a.value ? b : a));
 
 const ACTIVITY: { icon: LucideIcon; title: string; detail: string; amount: string; positive: boolean }[] = [
   { icon: TrendingUp, title: "Interest payout", detail: "Kipit Fixed Income · Today, 09:12", amount: "+₦12,480", positive: true },
@@ -105,7 +142,7 @@ const FEED = [
 ];
 
 const NAV: { label: string; to: string; icon: LucideIcon }[] = [
-  { label: "Home", to: "/", icon: Home },
+  { label: "Home", to: "/home-v3", icon: Home },
   { label: "Explore", to: "/explore", icon: Compass },
   { label: "Portfolio", to: "/portfolio", icon: PieChart },
   { label: "Settings", to: "/settings", icon: Settings },
@@ -114,11 +151,14 @@ const NAV: { label: string; to: string; icon: LucideIcon }[] = [
 function HomeV3Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNewUser = useIsNewUser();
+  const [range, setRange] = useState("1M");
+  const pathname = useRouterState({ select: (r) => r.location.pathname });
+  const tf = TIMEFRAMES.find((t) => t.id === range) ?? TIMEFRAMES[2]!;
 
   return (
     <div className="type-v3 min-h-screen bg-background">
       {/* ============ Desktop sidebar ============ */}
-      <DashboardSidebar hideBalance={hidden} walletBalance={500000} />
+      <DashboardSidebar hideBalance={hidden} walletBalance={WALLET_BALANCE} />
 
       {/* ============ Main column ============ */}
       <main className="pb-32 md:pl-64 md:pb-16">
@@ -147,7 +187,7 @@ function HomeV3Screen() {
               </p>
               <div className="mt-2 flex items-center gap-3">
                 <h1 className="text-4xl font-extrabold tracking-tight md:text-6xl">
-                  {mask(2450000)}
+                  {mask(TOTAL_BALANCE)}
                 </h1>
                 <button
                   type="button"
@@ -158,8 +198,12 @@ function HomeV3Screen() {
                   {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
               </div>
+              <p className="mt-2 text-xs font-medium text-primary-foreground/70">
+                Invested {mask(INVESTED_TOTAL)} · Wallet {mask(WALLET_BALANCE)}
+              </p>
               <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-[oklch(0.87_0.15_94)]">
-                <TrendingUp className="size-3.5" /> +1.58% this month
+                <TrendingUp className="size-3.5" />
+                {hidden ? "• • •" : `+${naira(tf.gain)}`} · +{tf.pct}% {tf.label}
               </p>
             </div>
             <Link
@@ -170,6 +214,25 @@ function HomeV3Screen() {
               <Bell className="size-5" />
               <span className="absolute right-3 top-3 size-2 rounded-full bg-gold" />
             </Link>
+          </div>
+
+          {/* Timeframe controls */}
+          <div className="relative mt-6 flex gap-1.5 overflow-x-auto no-scrollbar">
+            {TIMEFRAMES.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setRange(t.id)}
+                aria-pressed={t.id === range}
+                className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-bold transition-colors ${
+                  t.id === range
+                    ? "bg-gold text-gold-foreground"
+                    : "bg-white/10 text-primary-foreground/75 hover:bg-white/20"
+                }`}
+              >
+                {t.id}
+              </button>
+            ))}
           </div>
         </header>
 
@@ -182,17 +245,17 @@ function HomeV3Screen() {
         {/* Quick actions — overlapping the hero edge */}
         <section className="relative z-10 -mt-9 px-5 md:mx-8 md:px-10">
           <div className="grid grid-cols-4 gap-3 rounded-3xl border border-border bg-surface p-4 shadow-float">
-            {QUICK_ACTIONS.map(({ label, icon: Icon }) => (
-              <button
+            {QUICK_ACTIONS.map(({ label, icon: Icon, to }) => (
+              <Link
                 key={label}
-                type="button"
+                to={to}
                 className="group flex flex-col items-center gap-2 transition-transform active:scale-95"
               >
                 <span className="grid size-12 place-items-center rounded-2xl bg-brand text-brand-foreground transition-colors group-hover:bg-gold group-hover:text-gold-foreground">
                   <Icon className="size-5" />
                 </span>
-                <span className="text-[11px] font-bold text-foreground">{label}</span>
-              </button>
+                <span className="text-xs font-bold text-foreground">{label}</span>
+              </Link>
             ))}
           </div>
         </section>
@@ -207,7 +270,7 @@ function HomeV3Screen() {
             ].map((s) => (
               <div key={s.label} className="px-4 text-center">
                 <p className="text-lg font-extrabold tracking-tight text-brand md:text-2xl">{s.value}</p>
-                <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground md:text-xs">
+                <p className="mt-1 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   {s.label}
                 </p>
               </div>
@@ -221,8 +284,8 @@ function HomeV3Screen() {
             <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground">
               <Wallet className="size-4" /> Wallet balance
             </div>
-            <p className="mt-2 text-2xl font-extrabold tracking-tight">{mask(500000)}</p>
-            <p className="mt-1 text-xs text-muted-foreground">Available funds: {mask(500000)}</p>
+            <p className="mt-2 text-2xl font-extrabold tracking-tight">{mask(WALLET_BALANCE)}</p>
+            <p className="mt-1 text-xs text-muted-foreground">Available to invest or withdraw</p>
             <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
               Funds in your wallet are available for investment or withdrawal. Wallet funds do
               not earn investment returns.
@@ -231,13 +294,23 @@ function HomeV3Screen() {
 
           <article className="rounded-3xl border border-border bg-surface p-5 shadow-card">
             <p className="text-sm font-bold text-muted-foreground">Weekly earnings</p>
-            <p className="mt-2 text-2xl font-extrabold tracking-tight text-success">{mask(12480)}</p>
+            <p className="mt-2 text-2xl font-extrabold tracking-tight text-success">{mask(WEEKLY_TOTAL)}</p>
             <p className="mt-1 text-xs text-muted-foreground">Interest earned this week</p>
-            <div className="mt-4 flex h-14 items-end gap-1.5">
-              {[38, 52, 44, 66, 58, 80, 72].map((h, i) => (
-                <span key={i} style={{ height: `${h}%` }} className="flex-1 rounded-t-md bg-gold-gradient" />
+            <div className="mt-4 flex items-end gap-1.5">
+              {WEEKLY.map((d) => (
+                <div key={d.day} className="flex flex-1 flex-col items-center gap-1.5">
+                  <span
+                    title={`${d.day}: ${naira(d.value)}`}
+                    style={{ height: `${Math.round((d.value / WEEKLY_MAX) * 56)}px` }}
+                    className="w-full rounded-t-md bg-gold-gradient"
+                  />
+                  <span className="text-xs font-semibold text-muted-foreground">{d.day[0]}</span>
+                </div>
               ))}
             </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Best day: {WEEKLY_BEST.day} · {mask(WEEKLY_BEST.value)}
+            </p>
           </article>
 
           <article className="rounded-3xl border border-border bg-surface p-5 shadow-card">
@@ -245,7 +318,7 @@ function HomeV3Screen() {
             <p className="mt-2 text-base font-bold">Kipit Fixed Income · 90 days</p>
             <p className="mt-1 text-2xl font-extrabold tracking-tight">{mask(750000)}</p>
             <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-              <span>Matures 14 Oct 2026</span>
+              <span>Matures 24 Sep 2026</span>
               <span className="rounded-full bg-accent px-2.5 py-1 font-bold text-accent-foreground">
                 23 days left
               </span>
@@ -281,23 +354,33 @@ function HomeV3Screen() {
         {/* My plans — horizontal scroll cards */}
         <section className="mt-10">
           <div className="flex items-end justify-between px-5 md:mx-8 md:px-10">
-            <h2 className="text-xl font-extrabold tracking-tight">My plans</h2>
+            <div>
+              <h2 className="text-xl font-extrabold tracking-tight">My plans</h2>
+              <p className="mt-0.5 text-xs text-muted-foreground md:hidden">Swipe to see all {PLANS.length} plans →</p>
+            </div>
             <Link to="/invest" className="text-xs font-bold text-gold">
               New plan →
             </Link>
           </div>
           <div className="mt-4 flex gap-4 overflow-x-auto px-5 pb-2 no-scrollbar md:mx-8 md:grid md:grid-cols-3 md:overflow-visible md:px-10">
-            {PLANS.map((plan) => (
+            {PLANS.map((plan) => {
+              const PlanIcon = plan.icon;
+              return (
               <article
                 key={plan.name}
                 className="w-72 shrink-0 rounded-3xl border border-border bg-surface p-5 shadow-card transition-colors hover:border-gold/50 md:w-auto"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="font-bold leading-snug">{plan.name}</h3>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{plan.tenor} · matures {plan.matures}</p>
+                  <div className="flex gap-3">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-accent text-brand">
+                      <PlanIcon className="size-5" />
+                    </span>
+                    <div>
+                      <h3 className="font-bold leading-snug">{plan.name}</h3>
+                      <p className="mt-0.5 text-xs text-muted-foreground">{plan.tenor} · matures {plan.matures}</p>
+                    </div>
                   </div>
-                  <span className="shrink-0 rounded-full bg-accent px-2.5 py-1 text-[10px] font-bold text-accent-foreground">
+                  <span className="shrink-0 rounded-full bg-accent px-2.5 py-1 text-xs font-bold text-accent-foreground">
                     {plan.yield}
                   </span>
                 </div>
@@ -308,11 +391,13 @@ function HomeV3Screen() {
                     style={{ width: `${Math.round(plan.progress * 100)}%` }}
                   />
                 </div>
-                <p className="mt-2 text-[11px] font-semibold text-muted-foreground">
-                  {Math.round(plan.progress * 100)}% to maturity
-                </p>
+                <div className="mt-2 flex items-center justify-between text-xs font-semibold text-muted-foreground">
+                  <span>Started {plan.started}</span>
+                  <span>{Math.round(plan.progress * 100)}% to maturity</span>
+                </div>
               </article>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -320,9 +405,9 @@ function HomeV3Screen() {
         <section className="mt-10 px-5 md:mx-8 md:px-10">
           <div className="flex items-end justify-between">
             <h2 className="text-xl font-extrabold tracking-tight">Recent activity</h2>
-            <button type="button" className="text-xs font-bold text-gold">
+            <Link to="/portfolio" className="text-xs font-bold text-gold">
               View all
-            </button>
+            </Link>
           </div>
           <ul className="mt-4 space-y-2">
             {ACTIVITY.map((item) => {
@@ -359,7 +444,7 @@ function HomeV3Screen() {
             {FEED.map((item, i) => (
               <article key={item.title} className="rounded-3xl border border-border bg-surface p-5 shadow-card">
               <FeedThumb index={i} />
-                <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   {item.tag}
                 </span>
                 <h3 className="mt-2 text-sm font-bold leading-snug">{item.title}</h3>
@@ -374,41 +459,44 @@ function HomeV3Screen() {
 
       {/* ============ Mobile floating dock nav with gold center FAB ============ */}
       <nav className="fixed inset-x-4 bottom-4 z-40 md:hidden">
-        <div className="relative flex items-center justify-between rounded-full border border-border bg-surface/95 px-6 py-3 shadow-float backdrop-blur">
+        <div className="relative flex items-end justify-between rounded-3xl border border-border bg-surface/95 px-4 py-2.5 shadow-float backdrop-blur">
           {NAV.slice(0, 2).map((item) => {
             const Icon = item.icon;
-            const active = item.label === "Home";
+            const active = pathname === item.to;
             return (
               <Link
                 key={item.label}
                 to={item.to}
-                aria-label={item.label}
-                className={`grid size-11 place-items-center rounded-full transition-colors ${
-                  active ? "bg-accent text-gold" : "text-muted-foreground"
+                className={`flex w-16 flex-col items-center gap-1 rounded-2xl py-1.5 transition-colors ${
+                  active ? "text-gold" : "text-muted-foreground"
                 }`}
               >
                 <Icon className="size-5" strokeWidth={active ? 2.4 : 1.8} />
+                <span className="text-xs font-bold">{item.label}</span>
               </Link>
             );
           })}
           <span className="w-14" aria-hidden />
           {NAV.slice(2).map((item) => {
             const Icon = item.icon;
+            const active = pathname === item.to;
             return (
               <Link
                 key={item.label}
                 to={item.to}
-                aria-label={item.label}
-                className="grid size-11 place-items-center rounded-full text-muted-foreground transition-colors"
+                className={`flex w-16 flex-col items-center gap-1 rounded-2xl py-1.5 transition-colors ${
+                  active ? "text-gold" : "text-muted-foreground"
+                }`}
               >
-                <Icon className="size-5" strokeWidth={1.8} />
+                <Icon className="size-5" strokeWidth={active ? 2.4 : 1.8} />
+                <span className="text-xs font-bold">{item.label}</span>
               </Link>
             );
           })}
           <Link
             to="/invest"
             aria-label="Invest"
-            className="absolute left-1/2 top-0 grid size-14 -translate-x-1/2 -translate-y-1/3 place-items-center rounded-full bg-gold-gradient text-gold-foreground shadow-float ring-4 ring-background transition-transform active:scale-95"
+            className="absolute left-1/2 top-0 grid size-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-gold-gradient text-gold-foreground shadow-float ring-4 ring-background transition-transform active:scale-95"
           >
             <Plus className="size-6" strokeWidth={2.5} />
           </Link>
