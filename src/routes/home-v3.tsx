@@ -152,7 +152,7 @@ function HomeV3Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNewUser = useIsNewUser();
   const [range, setRange] = useState("1M");
-  const tf = TIMEFRAMES.find((t) => t.id === range) ?? TIMEFRAMES[2];
+  const tf = TIMEFRAMES.find((t) => t.id === range) ?? TIMEFRAMES[2]!;
 
   return (
     <div className="type-v3 min-h-screen bg-background">
