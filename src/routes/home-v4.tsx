@@ -11,12 +11,15 @@ import {
   EyeOff,
   Home,
   Lightbulb,
+  Landmark,
   FileText,
   PieChart,
+  PiggyBank,
   PlusCircle,
   Settings,
   TrendingUp,
   Wallet,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 import { DashboardSidebar, DashboardTopBar } from "@/components/kipit/DashboardSidebar";
