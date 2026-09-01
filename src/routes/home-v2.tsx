@@ -278,11 +278,11 @@ function HomeV2Screen() {
             <p className="mt-3 font-display text-3xl font-bold tracking-tight text-gold">
               {mask(12480)}
             </p>
-            <div className="mt-5 flex h-20 items-center gap-2">
+            <div className="mt-5 flex h-20 items-center gap-2 overflow-hidden">
               {[38, 52, 44, 66, 58, 80, 72].map((h, i) => (
                 <span
                   key={i}
-                  style={{ width: `${Math.max(h, 28)}%` }}
+                  style={{ width: `${28 + h * 0.55}px` }}
                   className={`h-10 shrink-0 rounded-full transition-all ${
                     i === 5
                       ? "bg-gold-gradient shadow-[0_6px_18px_-6px_oklch(0.75_0.16_85/0.55)]"
