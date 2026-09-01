@@ -27,7 +27,7 @@ export function AppShell({
 }: {
   children: ReactNode;
   title?: string;
-  navVariant?: "classic" | "floating" | "morph" | "aurora";
+  navVariant?: "classic" | "floating" | "morph" | "aurora" | "elevated";
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -45,7 +45,36 @@ export function AppShell({
       </div>
 
       {/* Mobile bottom tab bar */}
-      {navVariant === "aurora" ? (
+      {navVariant === "elevated" ? (
+        /* Elevated dock: white card, active tab lifts into a navy squircle */
+        <nav className="fixed inset-x-4 bottom-4 z-40 md:hidden">
+          <ul className="grid grid-cols-5 items-end rounded-[1.6rem] border border-border bg-surface/95 px-2 py-2 shadow-float backdrop-blur">
+            {TABS.map((tab) => {
+              const active = pathname === tab.to;
+              const Icon = tab.icon;
+              return (
+                <li key={tab.to}>
+                  <Link
+                    to={tab.to}
+                    className="flex flex-col items-center gap-1 text-[11px] font-bold text-muted-foreground"
+                  >
+                    <span
+                      className={`grid size-10 place-items-center rounded-2xl transition-all duration-300 ${
+                        active
+                          ? "-translate-y-2 bg-brand-gradient text-primary-foreground shadow-float"
+                          : ""
+                      }`}
+                    >
+                      <Icon className="size-5" strokeWidth={active ? 2.4 : 1.8} />
+                    </span>
+                    <span className={active ? "-mt-1 text-brand" : ""}>{tab.label}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : navVariant === "aurora" ? (
         /* Aurora dock: dark glass bar, gold indicator rail above the active tab */
         <nav className="fixed inset-x-3 bottom-3 z-40 md:hidden">
           <ul className="grid grid-cols-5 gap-1 rounded-[1.75rem] bg-brand-gradient p-2 shadow-float">
