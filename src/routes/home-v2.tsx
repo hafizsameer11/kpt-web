@@ -143,16 +143,16 @@ function HomeV2Screen() {
                     type="button"
                     onClick={() => setHidden((v) => !v)}
                     aria-label={hidden ? "Show balances" : "Hide balances"}
-                    className="grid size-9 place-items-center rounded-full border border-border bg-surface text-muted-foreground transition-colors hover:text-foreground"
+                    className="grid size-9 place-items-center rounded-full border border-white/25 bg-white/10 text-primary-foreground/80 transition-colors hover:bg-white/20 hover:text-primary-foreground"
                   >
                     {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
                 </div>
-                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-bold text-gold">
+                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-bold text-[oklch(0.87_0.15_94)]">
                   <ArrowUpRight className="size-3.5" /> +₦38,200 · +1.58% this month
                 </p>
               </div>
-              <div className="hidden gap-1 rounded-full border border-border bg-surface p-1 md:flex">
+              <div className="hidden gap-1 rounded-full border border-white/20 bg-white/10 p-1 md:flex">
                 {RANGES.map((r) => (
                   <button
                     key={r}
@@ -160,8 +160,8 @@ function HomeV2Screen() {
                     onClick={() => setRange(r)}
                     className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${
                       range === r
-                        ? "bg-gold text-gold-foreground"
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "bg-gold-gradient text-gold-foreground"
+                        : "text-primary-foreground/70 hover:text-primary-foreground"
                     }`}
                   >
                     {r}
