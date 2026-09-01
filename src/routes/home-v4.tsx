@@ -393,17 +393,17 @@ function HomeV4() {
                 <Lightbulb className="size-4 text-gold" /> Smart insight
               </div>
               <p className="mt-2 text-sm font-semibold text-accent-foreground">
-                Your ₦500,000 wallet balance isn't invested.
+                Your {naira(WALLET_BALANCE)} wallet balance isn't invested.
               </p>
               <p className="mt-1 text-xs text-accent-foreground/80">
                 Plans from 18.5% p.a. · 30–365 day tenors · ₦50,000 minimum.
               </p>
-              <button
-                type="button"
-                className="mt-4 w-full rounded-full bg-brand px-5 py-2.5 text-sm font-bold text-brand-foreground"
+              <Link
+                to="/invest"
+                className="mt-4 block rounded-full bg-brand px-5 py-2.5 text-center text-sm font-bold text-brand-foreground"
               >
                 Explore investments
-              </button>
+              </Link>
             </section>
 
             <section className="rounded-3xl bg-surface p-5 shadow-card">
@@ -411,10 +411,17 @@ function HomeV4() {
               <p className="mt-2 text-base font-bold">Fixed Income · 90 days</p>
               <p className="mt-1 text-2xl font-extrabold tracking-tight">{mask(750000)}</p>
               <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-                <span>Matures 14 Oct 2026</span>
+                <span>Matures 24 Sep 2026</span>
                 <span className="rounded-full bg-accent px-2.5 py-1 font-bold text-accent-foreground">
                   23 days left
                 </span>
+              </div>
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-secondary">
+                <div className="h-full rounded-full bg-gold-gradient" style={{ width: "74%" }} />
+              </div>
+              <div className="mt-1.5 flex justify-between text-xs text-muted-foreground">
+                <span>Started 26 Jun 2026</span>
+                <span>74% of term</span>
               </div>
               <p className="mt-4 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
                 Funds in your wallet are available for investment or withdrawal, and do not earn
@@ -427,12 +434,9 @@ function HomeV4() {
                 <h2 className="text-base font-extrabold tracking-tight">
                   Recent activity
                 </h2>
-                <button
-                  type="button"
-                  className="text-xs font-bold text-brand"
-                >
+                <Link to="/portfolio" className="text-xs font-bold text-brand">
                   See all
-                </button>
+                </Link>
               </div>
               <ul className="mt-3 divide-y divide-border">
                 {ACTIVITY.map((item) => (
@@ -468,23 +472,31 @@ function HomeV4() {
               </ul>
             </section>
 
-            <section>
-              <h2 className="text-base font-extrabold tracking-tight">For you</h2>
-              <div className="mt-3 space-y-3">
-                {FEED.map((item, i) => (
-                  <article key={item.title} className="rounded-3xl bg-surface p-5 shadow-card">
-              <FeedThumb index={i} />
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                      {item.tag}
-                    </span>
-                    <h3 className="mt-2 text-sm font-bold leading-snug">{item.title}</h3>
-                    <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{item.body}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
           </div>
         </div>
+        )}
+
+        {!isNewUser && (
+          <section className="mt-6">
+            <h2 className="text-base font-extrabold tracking-tight">For you</h2>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {FEED.map((item, i) => (
+                <article
+                  key={item.title}
+                  className="flex flex-col rounded-3xl bg-surface p-5 shadow-card"
+                >
+                  <FeedThumb index={i} />
+                  <span className="mt-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    {item.tag}
+                  </span>
+                  <h3 className="mt-2 text-sm font-bold leading-snug">{item.title}</h3>
+                  <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                    {item.body}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </section>
         )}
       </main>
       </div>
