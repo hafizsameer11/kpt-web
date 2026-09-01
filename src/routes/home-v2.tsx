@@ -17,13 +17,13 @@ import { Logo } from "@/components/kipit/Logo";
 export const Route = createFileRoute("/home-v2")({
   head: () => ({
     meta: [
-      { title: "Kipit Home (New Design) — Dark Bento Dashboard" },
+      { title: "Kipit Home (New Design) — Bento Dashboard" },
       {
         name: "description",
         content:
-          "An alternate Kipit home experience: deep navy private-banking aesthetic, gold accents and a bento grid of portfolio, wallet, earnings and maturity.",
+          "An alternate Kipit home experience: light bento dashboard in Kipit navy and gold, with portfolio, wallet, earnings and maturity cards.",
       },
-      { property: "og:title", content: "Kipit Home (New Design) — Dark Bento Dashboard" },
+      { property: "og:title", content: "Kipit Home (New Design) — Bento Dashboard" },
       {
         property: "og:description",
         content: "A bold new take on the Kipit home dashboard.",
@@ -125,14 +125,14 @@ function HomeV2Screen() {
 
         {/* Hero portfolio panel */}
         <section className="grid gap-4 lg:grid-cols-3">
-          <article className="relative overflow-hidden rounded-3xl border border-border bg-brand-gradient p-6 shadow-card md:p-8 lg:col-span-2">
+          <article className="relative overflow-hidden rounded-3xl border border-border bg-brand-gradient p-6 text-primary-foreground shadow-card md:p-8 lg:col-span-2">
             <div
               aria-hidden
-              className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-gold/10 blur-3xl"
+              className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-white/10 blur-3xl"
             />
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
                   Good morning, Adaeze
                 </p>
                 <div className="mt-3 flex items-center gap-3">
