@@ -17,13 +17,13 @@ import { Logo } from "@/components/kipit/Logo";
 export const Route = createFileRoute("/home-v2")({
   head: () => ({
     meta: [
-      { title: "Kipit Home (New Design) — Dark Bento Dashboard" },
+      { title: "Kipit Home (New Design) — Bento Dashboard" },
       {
         name: "description",
         content:
-          "An alternate Kipit home experience: deep navy private-banking aesthetic, gold accents and a bento grid of portfolio, wallet, earnings and maturity.",
+          "An alternate Kipit home experience: light bento dashboard in Kipit navy and gold, with portfolio, wallet, earnings and maturity cards.",
       },
-      { property: "og:title", content: "Kipit Home (New Design) — Dark Bento Dashboard" },
+      { property: "og:title", content: "Kipit Home (New Design) — Bento Dashboard" },
       {
         property: "og:description",
         content: "A bold new take on the Kipit home dashboard.",
@@ -125,14 +125,14 @@ function HomeV2Screen() {
 
         {/* Hero portfolio panel */}
         <section className="grid gap-4 lg:grid-cols-3">
-          <article className="relative overflow-hidden rounded-3xl border border-border bg-brand-gradient p-6 shadow-card md:p-8 lg:col-span-2">
+          <article className="relative overflow-hidden rounded-3xl border border-border bg-brand-gradient p-6 text-primary-foreground shadow-card md:p-8 lg:col-span-2">
             <div
               aria-hidden
-              className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-gold/10 blur-3xl"
+              className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-white/10 blur-3xl"
             />
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
                   Good morning, Adaeze
                 </p>
                 <div className="mt-3 flex items-center gap-3">
@@ -143,16 +143,16 @@ function HomeV2Screen() {
                     type="button"
                     onClick={() => setHidden((v) => !v)}
                     aria-label={hidden ? "Show balances" : "Hide balances"}
-                    className="grid size-9 place-items-center rounded-full border border-border bg-surface text-muted-foreground transition-colors hover:text-foreground"
+                    className="grid size-9 place-items-center rounded-full border border-white/25 bg-white/10 text-primary-foreground/80 transition-colors hover:bg-white/20 hover:text-primary-foreground"
                   >
                     {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
                 </div>
-                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-bold text-gold">
+                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-bold text-[oklch(0.87_0.15_94)]">
                   <ArrowUpRight className="size-3.5" /> +₦38,200 · +1.58% this month
                 </p>
               </div>
-              <div className="hidden gap-1 rounded-full border border-border bg-surface p-1 md:flex">
+              <div className="hidden gap-1 rounded-full border border-white/20 bg-white/10 p-1 md:flex">
                 {RANGES.map((r) => (
                   <button
                     key={r}
@@ -160,8 +160,8 @@ function HomeV2Screen() {
                     onClick={() => setRange(r)}
                     className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${
                       range === r
-                        ? "bg-gold text-gold-foreground"
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "bg-gold-gradient text-gold-foreground"
+                        : "text-primary-foreground/70 hover:text-primary-foreground"
                     }`}
                   >
                     {r}
@@ -184,7 +184,7 @@ function HomeV2Screen() {
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="stroke-gold"
+                stroke="oklch(0.86 0.15 92)"
               />
             </svg>
 
@@ -196,8 +196,8 @@ function HomeV2Screen() {
                   onClick={() => setRange(r)}
                   className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
                     range === r
-                      ? "bg-gold text-gold-foreground"
-                      : "border border-border bg-surface text-muted-foreground"
+                      ? "bg-gold-gradient text-gold-foreground"
+                      : "border border-white/20 bg-white/10 text-primary-foreground/80"
                   }`}
                 >
                   {r}
@@ -336,16 +336,26 @@ function HomeV2Screen() {
               <article
                 key={item.title}
                 className={`w-72 shrink-0 rounded-3xl border border-border p-5 shadow-card transition-colors hover:border-gold/40 md:w-auto ${
-                  i === 0 ? "bg-brand-gradient" : "bg-surface"
+                  i === 0 ? "bg-brand-gradient text-primary-foreground" : "bg-surface"
                 }`}
               >
-                <span className="inline-block rounded-full border border-gold/40 bg-gold/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-gold">
+                <span
+                  className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${
+                    i === 0
+                      ? "border border-white/25 bg-white/10 text-[oklch(0.87_0.15_94)]"
+                      : "border border-gold/40 bg-gold/10 text-gold"
+                  }`}
+                >
                   {item.tag}
                 </span>
                 <h3 className="mt-3 font-display text-base font-bold leading-snug">
                   {item.title}
                 </h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                <p
+                  className={`mt-1.5 text-xs leading-relaxed ${
+                    i === 0 ? "text-primary-foreground/75" : "text-muted-foreground"
+                  }`}
+                >
                   {item.body}
                 </p>
               </article>
