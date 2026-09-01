@@ -528,6 +528,7 @@ function MobileTabBar() {
 
 function HomeV5() {
   const isNewUser = useIsNewUser();
+  const { hidden } = useBalanceVisibility();
   return (
     <div className="type-v5 min-h-screen bg-background">
       <DashboardSidebar activePath="/home-v5" walletBalance={WALLET_BALANCE} hideBalance={hidden} />
