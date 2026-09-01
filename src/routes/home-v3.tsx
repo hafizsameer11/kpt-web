@@ -151,11 +151,13 @@ const NAV: { label: string; to: string; icon: LucideIcon }[] = [
 function HomeV3Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNewUser = useIsNewUser();
+  const [range, setRange] = useState("1M");
+  const tf = TIMEFRAMES.find((t) => t.id === range) ?? TIMEFRAMES[2];
 
   return (
     <div className="type-v3 min-h-screen bg-background">
       {/* ============ Desktop sidebar ============ */}
-      <DashboardSidebar hideBalance={hidden} walletBalance={500000} />
+      <DashboardSidebar hideBalance={hidden} walletBalance={WALLET_BALANCE} />
 
       {/* ============ Main column ============ */}
       <main className="pb-32 md:pl-64 md:pb-16">
