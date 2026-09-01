@@ -17,6 +17,7 @@ import { Logo } from "@/components/kipit/Logo";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
+import { GreetingText } from "@/components/kipit/SpecBlocks";
 
 
 export const Route = createFileRoute("/")({
@@ -82,7 +83,7 @@ function HomeScreen() {
               AO
             </div>
             <div>
-              <p className="text-xs opacity-75">Good morning</p>
+              <p className="text-xs opacity-75"><GreetingText /></p>
               <p className="text-sm font-bold">Adaeze O.</p>
             </div>
           </div>
@@ -122,7 +123,7 @@ function HomeScreen() {
       <section className="hidden md:block">
         <div className="flex items-end justify-between">
           <div>
-            <p className="text-sm text-muted-foreground">Good morning</p>
+            <p className="text-sm text-muted-foreground"><GreetingText /></p>
             <h1 className="text-3xl font-extrabold tracking-tight">Adaeze O.</h1>
           </div>
           <button

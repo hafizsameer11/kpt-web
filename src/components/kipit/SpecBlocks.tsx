@@ -68,3 +68,8 @@ export function TierStatusCard({
     </div>
   );
 }
+
+/** Inline time-aware greeting text, e.g. "Good afternoon". */
+export function GreetingText() {
+  return <>{useGreeting()}</>;
+}
