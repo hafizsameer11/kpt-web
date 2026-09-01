@@ -184,7 +184,7 @@ function HomeV2Screen() {
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="stroke-gold"
+                stroke="oklch(0.86 0.15 92)"
               />
             </svg>
 
@@ -196,8 +196,8 @@ function HomeV2Screen() {
                   onClick={() => setRange(r)}
                   className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
                     range === r
-                      ? "bg-gold text-gold-foreground"
-                      : "border border-border bg-surface text-muted-foreground"
+                      ? "bg-gold-gradient text-gold-foreground"
+                      : "border border-white/20 bg-white/10 text-primary-foreground/80"
                   }`}
                 >
                   {r}
@@ -336,16 +336,26 @@ function HomeV2Screen() {
               <article
                 key={item.title}
                 className={`w-72 shrink-0 rounded-3xl border border-border p-5 shadow-card transition-colors hover:border-gold/40 md:w-auto ${
-                  i === 0 ? "bg-brand-gradient" : "bg-surface"
+                  i === 0 ? "bg-brand-gradient text-primary-foreground" : "bg-surface"
                 }`}
               >
-                <span className="inline-block rounded-full border border-gold/40 bg-gold/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-gold">
+                <span
+                  className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${
+                    i === 0
+                      ? "border border-white/25 bg-white/10 text-[oklch(0.87_0.15_94)]"
+                      : "border border-gold/40 bg-gold/10 text-gold"
+                  }`}
+                >
                   {item.tag}
                 </span>
                 <h3 className="mt-3 font-display text-base font-bold leading-snug">
                   {item.title}
                 </h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                <p
+                  className={`mt-1.5 text-xs leading-relaxed ${
+                    i === 0 ? "text-primary-foreground/75" : "text-muted-foreground"
+                  }`}
+                >
                   {item.body}
                 </p>
               </article>
