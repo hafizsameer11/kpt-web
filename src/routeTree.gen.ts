@@ -18,6 +18,7 @@ import { Route as HomeV5RouteImport } from './routes/home-v5'
 import { Route as HomeV6RouteImport } from './routes/home-v6'
 import { Route as HomeV7RouteImport } from './routes/home-v7'
 import { Route as HomeV8RouteImport } from './routes/home-v8'
+import { Route as HomeV9RouteImport } from './routes/home-v9'
 import { Route as InvestRouteImport } from './routes/invest'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
@@ -68,6 +69,11 @@ const HomeV8Route = HomeV8RouteImport.update({
   path: '/home-v8',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HomeV9Route = HomeV9RouteImport.update({
+  id: '/home-v9',
+  path: '/home-v9',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InvestRoute = InvestRouteImport.update({
   id: '/invest',
   path: '/invest',
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/home-v6': typeof HomeV6Route
   '/home-v7': typeof HomeV7Route
   '/home-v8': typeof HomeV8Route
+  '/home-v9': typeof HomeV9Route
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/home-v6': typeof HomeV6Route
   '/home-v7': typeof HomeV7Route
   '/home-v8': typeof HomeV8Route
+  '/home-v9': typeof HomeV9Route
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/home-v6': typeof HomeV6Route
   '/home-v7': typeof HomeV7Route
   '/home-v8': typeof HomeV8Route
+  '/home-v9': typeof HomeV9Route
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/home-v6'
     | '/home-v7'
     | '/home-v8'
+    | '/home-v9'
     | '/invest'
     | '/notifications'
     | '/portfolio'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/home-v6'
     | '/home-v7'
     | '/home-v8'
+    | '/home-v9'
     | '/invest'
     | '/notifications'
     | '/portfolio'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/home-v6'
     | '/home-v7'
     | '/home-v8'
+    | '/home-v9'
     | '/invest'
     | '/notifications'
     | '/portfolio'
@@ -193,6 +205,7 @@ export interface RootRouteChildren {
   HomeV6Route: typeof HomeV6Route
   HomeV7Route: typeof HomeV7Route
   HomeV8Route: typeof HomeV8Route
+  HomeV9Route: typeof HomeV9Route
   InvestRoute: typeof InvestRoute
   NotificationsRoute: typeof NotificationsRoute
   PortfolioRoute: typeof PortfolioRoute
@@ -264,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeV8RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/home-v9': {
+      id: '/home-v9'
+      path: '/home-v9'
+      fullPath: '/home-v9'
+      preLoaderRoute: typeof HomeV9RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/invest': {
       id: '/invest'
       path: '/invest'
@@ -305,6 +325,7 @@ const rootRouteChildren: RootRouteChildren = {
   HomeV6Route: HomeV6Route,
   HomeV7Route: HomeV7Route,
   HomeV8Route: HomeV8Route,
+  HomeV9Route: HomeV9Route,
   InvestRoute: InvestRoute,
   NotificationsRoute: NotificationsRoute,
   PortfolioRoute: PortfolioRoute,
