@@ -87,7 +87,7 @@ const INVESTED_TOTAL = PLANS.reduce((s, p) => s + p.amount, 0);
 const TOTAL_BALANCE = INVESTED_TOTAL + WALLET_BALANCE;
 const BLENDED_YIELD =
   PLANS.reduce((s, p) => s + p.amount * p.yield, 0) / INVESTED_TOTAL;
-const NEXT = PLANS[0];
+const NEXT = PLANS[0]!;
 
 const QUICK_ACTIONS = [
   { label: "Add money", icon: ArrowDownLeft, to: "/portfolio" },
@@ -137,7 +137,7 @@ const WEEK = [
 const WEEK_TOTAL = WEEK.reduce((s, d) => s + d.amount, 0);
 const WEEK_MAX = Math.max(...WEEK.map((d) => d.amount));
 
-const FEED = [
+const FEED: { tag: string; title: string; body: string; to: string }[] = [
   {
     tag: "Product update",
     title: "Fixed Income now settles same-day",
@@ -158,6 +158,8 @@ const FEED = [
   },
 ];
 
+const FEATURE = FEED[0]!;
+
 function sparkPath(points: number[]) {
   const step = 360 / (points.length - 1);
   return points.map((p, i) => `${(i * step).toFixed(1)},${(100 - p).toFixed(1)}`).join(" ");
@@ -169,7 +171,7 @@ function AllocationRing({ hidden }: { hidden: boolean }) {
     ...PLANS.map((p, i) => ({
       label: p.name,
       value: p.amount,
-      cls: ["stroke-gold", "stroke-brand", "stroke-warning"][i],
+      cls: (["stroke-gold", "stroke-brand", "stroke-warning"][i] ?? "stroke-gold") as string,
     })),
     { label: "Wallet", value: WALLET_BALANCE, cls: "stroke-muted-foreground" },
   ];
@@ -525,19 +527,19 @@ function HomeV9Screen() {
               </div>
               <div className="mt-4 grid gap-3 md:grid-cols-6 md:gap-4">
                 <Link
-                  to={FEED[0].to}
+                  to={FEATURE.to}
                   className="group overflow-hidden rounded-[28px] border border-border bg-surface shadow-card transition-colors hover:border-gold/40 md:col-span-3"
                 >
                   <FeedThumb index={0} className="mb-0 h-44 rounded-none md:h-56" />
                   <div className="p-5">
                     <span className="inline-block rounded-full border border-gold/40 bg-gold/10 px-2.5 py-1 text-xs font-bold uppercase tracking-widest text-gold">
-                      {FEED[0].tag}
+                      {FEATURE.tag}
                     </span>
                     <h3 className="mt-3 font-display text-lg font-bold leading-snug">
-                      {FEED[0].title}
+                      {FEATURE.title}
                     </h3>
                     <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                      {FEED[0].body}
+                      {FEATURE.body}
                     </p>
                   </div>
                 </Link>
