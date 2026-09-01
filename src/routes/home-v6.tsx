@@ -440,7 +440,8 @@ function ContentFeed() {
 function MobileTabBar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden">
+    /* Bamboo-style: solid navy bar, gold active icon chip */
+    <nav className="fixed inset-x-0 bottom-0 z-40 bg-brand-gradient pb-[env(safe-area-inset-bottom)] md:hidden">
       <ul className="grid grid-cols-5">
         {TABS.map((tab) => {
           const active = pathname === tab.to;
@@ -449,16 +450,19 @@ function MobileTabBar() {
             <li key={tab.to}>
               <Link
                 to={tab.to}
-                className={`flex flex-col items-center gap-0.5 py-2 text-[10px] font-semibold ${
-                  active ? "text-brand" : "text-muted-foreground"
+                className={`flex flex-col items-center gap-1 py-2.5 text-[10px] font-semibold transition-colors ${
+                  active
+                    ? "text-[oklch(0.87_0.15_94)]"
+                    : "text-primary-foreground/55"
                 }`}
               >
-                <Icon
-                  className="size-5"
-                  strokeWidth={active ? 2.4 : 1.8}
-                  fill={active ? "currentColor" : "none"}
-                  fillOpacity={active ? 0.12 : 0}
-                />
+                <span
+                  className={`grid size-9 place-items-center rounded-full transition-colors ${
+                    active ? "bg-gold-gradient text-gold-foreground" : ""
+                  }`}
+                >
+                  <Icon className="size-4.5" strokeWidth={active ? 2.4 : 1.8} />
+                </span>
                 {tab.label}
               </Link>
             </li>

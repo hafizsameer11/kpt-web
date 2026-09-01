@@ -395,27 +395,26 @@ function HomeV4() {
       </main>
       </div>
 
-      {/* Mobile bottom tab bar — raised gold home indicator style */}
+      {/* Mobile bottom tab bar — minimal with gold underline indicator */}
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
         <ul className="grid grid-cols-5">
           {TABS.map((tab) => {
             const active = pathname === tab.to;
             const Icon = tab.icon;
             return (
-              <li key={tab.to}>
+              <li key={tab.to} className="relative">
+                {active && (
+                  <span className="absolute inset-x-6 top-0 h-0.5 rounded-full bg-gold" />
+                )}
                 <Link
                   to={tab.to}
-                  className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold transition-colors ${
-                    active ? "text-brand" : "text-muted-foreground"
+                  className={`flex flex-col items-center gap-1 py-2.5 text-[11px] transition-colors ${
+                    active
+                      ? "font-bold text-brand"
+                      : "font-medium text-muted-foreground"
                   }`}
                 >
-                  <span
-                    className={`grid size-9 place-items-center rounded-full transition-colors ${
-                      active ? "bg-brand text-brand-foreground" : ""
-                    }`}
-                  >
-                    <Icon className="size-5" strokeWidth={active ? 2.4 : 1.8} />
-                  </span>
+                  <Icon className="size-5" strokeWidth={active ? 2.4 : 1.6} />
                   {tab.label}
                 </Link>
               </li>
