@@ -455,17 +455,20 @@ function HomeV12Screen() {
                     <ul className="mt-5 flex items-end gap-3">
                       {FORECAST.map((f) => (
                         <li key={f.month} className="flex flex-1 flex-col items-center gap-2">
-                          <span className="text-xs font-semibold text-muted-foreground">
-                            {hidden ? "•••" : short(f.amount)}
-                          </span>
-                          <span
-                            className="block w-full rounded-t-xl bg-brand-gradient"
-                            style={{ height: `${Math.max(8, (f.amount / FORECAST_MAX) * 110)}px` }}
-                          />
+                          <div className="flex h-32 w-full flex-col justify-end gap-2">
+                            <span className="text-center text-xs font-semibold text-muted-foreground">
+                              {hidden ? "•••" : short(f.amount)}
+                            </span>
+                            <span
+                              className="block w-full rounded-t-xl bg-brand-gradient"
+                              style={{ height: `${Math.max(8, (f.amount / FORECAST_MAX) * 100)}px` }}
+                            />
+                          </div>
                           <span className="text-xs text-muted-foreground">{f.month}</span>
                         </li>
                       ))}
                     </ul>
+
 
                   </section>
 
