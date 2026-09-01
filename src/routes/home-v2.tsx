@@ -6,9 +6,9 @@ import {
   Bell,
   Eye,
   EyeOff,
+  Lightbulb,
   Plus,
   Receipt,
-  Sparkles,
   Wallet,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
@@ -303,7 +303,7 @@ function HomeV2Screen() {
           <article className="flex flex-col justify-between rounded-3xl border border-gold/30 bg-accent/40 p-6 shadow-card">
             <div className="flex gap-3">
               <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gold-gradient text-gold-foreground">
-                <Sparkles className="size-5" />
+                <Lightbulb className="size-5" />
               </span>
               <div>
                 <p className="text-sm font-bold text-foreground">
