@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowDownLeft,
@@ -53,6 +54,31 @@ export const Route = createFileRoute("/home-v5")({
 
 const naira = (value: number) =>
   `₦${value.toLocaleString("en-NG", { maximumFractionDigits: 0 })}`;
+
+/** Single source of truth for the numbers shown on this screen. */
+const WALLET_BALANCE = 86500;
+
+const RANGES = [
+  { key: "1D", change: 4120, pct: 0.19 },
+  { key: "1W", change: 32410, pct: 1.51 },
+  { key: "1M", change: 118400, pct: 5.75 },
+  { key: "1Y", change: 402900, pct: 22.7 },
+  { key: "All", change: 676500, pct: 45.1 },
+] as const;
+
+/** Daily interest that sums exactly to the weekly total. */
+const WEEKLY = [
+  { day: "M", value: 3200 },
+  { day: "T", value: 4100 },
+  { day: "W", value: 3800 },
+  { day: "T", value: 5200 },
+  { day: "F", value: 4600 },
+  { day: "S", value: 6100 },
+  { day: "S", value: 5410 },
+];
+const WEEKLY_TOTAL = WEEKLY.reduce((sum, d) => sum + d.value, 0);
+const WEEKLY_MAX = Math.max(...WEEKLY.map((d) => d.value));
+const BEST_DAY = WEEKLY.reduce((a, b) => (b.value > a.value ? b : a));
 
 type Tab = { label: string; to: string; icon: LucideIcon };
 const TABS: Tab[] = [
