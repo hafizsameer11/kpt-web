@@ -87,14 +87,15 @@ function HomeScreen() {
           </div>
           <div className="flex items-center gap-3">
             <Logo tone="light" className="text-lg" />
-            <button
-              type="button"
+            <Link
+              to="/notifications"
               aria-label="Notifications"
               className="relative grid size-10 place-items-center rounded-full bg-brand-foreground/15"
             >
               <Bell className="size-5" />
               <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-gold" />
-            </button>
+            </Link>
+
           </div>
         </div>
 
