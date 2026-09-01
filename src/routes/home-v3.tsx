@@ -269,7 +269,7 @@ function HomeV3Screen() {
             ].map((s) => (
               <div key={s.label} className="px-4 text-center">
                 <p className="text-lg font-extrabold tracking-tight text-brand md:text-2xl">{s.value}</p>
-                <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground md:text-xs">
+                <p className="mt-1 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   {s.label}
                 </p>
               </div>
@@ -283,8 +283,8 @@ function HomeV3Screen() {
             <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground">
               <Wallet className="size-4" /> Wallet balance
             </div>
-            <p className="mt-2 text-2xl font-extrabold tracking-tight">{mask(500000)}</p>
-            <p className="mt-1 text-xs text-muted-foreground">Available funds: {mask(500000)}</p>
+            <p className="mt-2 text-2xl font-extrabold tracking-tight">{mask(WALLET_BALANCE)}</p>
+            <p className="mt-1 text-xs text-muted-foreground">Available to invest or withdraw</p>
             <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
               Funds in your wallet are available for investment or withdrawal. Wallet funds do
               not earn investment returns.
@@ -293,13 +293,23 @@ function HomeV3Screen() {
 
           <article className="rounded-3xl border border-border bg-surface p-5 shadow-card">
             <p className="text-sm font-bold text-muted-foreground">Weekly earnings</p>
-            <p className="mt-2 text-2xl font-extrabold tracking-tight text-success">{mask(12480)}</p>
+            <p className="mt-2 text-2xl font-extrabold tracking-tight text-success">{mask(WEEKLY_TOTAL)}</p>
             <p className="mt-1 text-xs text-muted-foreground">Interest earned this week</p>
-            <div className="mt-4 flex h-14 items-end gap-1.5">
-              {[38, 52, 44, 66, 58, 80, 72].map((h, i) => (
-                <span key={i} style={{ height: `${h}%` }} className="flex-1 rounded-t-md bg-gold-gradient" />
+            <div className="mt-4 flex items-end gap-1.5">
+              {WEEKLY.map((d) => (
+                <div key={d.day} className="flex flex-1 flex-col items-center gap-1.5">
+                  <span
+                    title={`${d.day}: ${naira(d.value)}`}
+                    style={{ height: `${Math.round((d.value / WEEKLY_MAX) * 56)}px` }}
+                    className="w-full rounded-t-md bg-gold-gradient"
+                  />
+                  <span className="text-xs font-semibold text-muted-foreground">{d.day[0]}</span>
+                </div>
               ))}
             </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Best day: {WEEKLY_BEST.day} · {mask(WEEKLY_BEST.value)}
+            </p>
           </article>
 
           <article className="rounded-3xl border border-border bg-surface p-5 shadow-card">
@@ -307,7 +317,7 @@ function HomeV3Screen() {
             <p className="mt-2 text-base font-bold">Kipit Fixed Income · 90 days</p>
             <p className="mt-1 text-2xl font-extrabold tracking-tight">{mask(750000)}</p>
             <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-              <span>Matures 14 Oct 2026</span>
+              <span>Matures 24 Sep 2026</span>
               <span className="rounded-full bg-accent px-2.5 py-1 font-bold text-accent-foreground">
                 23 days left
               </span>
