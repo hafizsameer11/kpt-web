@@ -16,7 +16,7 @@ import { Logo } from "@/components/kipit/Logo";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
-import { GreetingText } from "@/components/kipit/SpecBlocks";
+import { GreetingText, TierStatusCard, WalletNote } from "@/components/kipit/SpecBlocks";
 
 export const Route = createFileRoute("/home-v2")({
   head: () => ({
@@ -370,6 +370,11 @@ function HomeV2Screen() {
               </article>
             ))}
           </div>
+        </section>
+
+        <section className="mt-8 space-y-3">
+          <TierStatusCard />
+          <WalletNote />
         </section>
 
         </>

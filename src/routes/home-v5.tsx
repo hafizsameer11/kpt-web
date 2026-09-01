@@ -31,7 +31,7 @@ import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { productArt } from "@/components/kipit/art";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
-import { GreetingText } from "@/components/kipit/SpecBlocks";
+import { GreetingText, TierStatusCard, WalletNote } from "@/components/kipit/SpecBlocks";
 
 export const Route = createFileRoute("/home-v5")({
   head: () => ({
@@ -566,6 +566,10 @@ function HomeV5() {
             <div className="space-y-5">
               <Todos />
               <ActivityFeed />
+            </div>
+            <div className="space-y-3 lg:col-span-3">
+              <TierStatusCard />
+              <WalletNote />
             </div>
             <div className="lg:col-span-3">
               <ContentFeed />
