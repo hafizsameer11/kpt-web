@@ -11,6 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Logo } from "./Logo";
+import { GreetingText } from "@/components/kipit/SpecBlocks";
 
 export type SidebarItem = { label: string; to: string; icon: LucideIcon };
 
@@ -118,7 +119,7 @@ export function DashboardTopBar({ title = "Dashboard" }: { title?: string }) {
         <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
           {title}
         </p>
-        <p className="text-sm font-bold">Good morning, Adaeze</p>
+        <p className="text-sm font-bold"><GreetingText />, Adaeze</p>
       </div>
       <div className="ml-auto flex items-center gap-3">
         <button

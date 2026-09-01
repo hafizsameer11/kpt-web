@@ -16,6 +16,7 @@ import { Logo } from "@/components/kipit/Logo";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
+import { GreetingText } from "@/components/kipit/SpecBlocks";
 
 export const Route = createFileRoute("/home-v2")({
   head: () => ({
@@ -140,7 +141,7 @@ function HomeV2Screen() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
-                  Good morning, Adaeze
+                  <GreetingText />, Adaeze
                 </p>
                 <div className="mt-3 flex items-center gap-3">
                   <h1 className="font-display text-4xl font-bold tracking-tight md:text-5xl">

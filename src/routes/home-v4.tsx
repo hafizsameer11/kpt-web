@@ -28,6 +28,7 @@ import { Logo } from "@/components/kipit/Logo";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
+import { GreetingText } from "@/components/kipit/SpecBlocks";
 
 export const Route = createFileRoute("/home-v4")({
   head: () => ({
@@ -180,7 +181,7 @@ function HomeV4() {
             AO
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Good morning</p>
+            <p className="text-xs text-muted-foreground"><GreetingText /></p>
             <p className="text-xs font-bold">Adaeze O.</p>
           </div>
         </div>
@@ -201,7 +202,7 @@ function HomeV4() {
         {/* Desktop greeting */}
         <div className="mb-5 hidden items-end justify-between md:flex">
           <div>
-            <p className="text-sm text-muted-foreground">Good morning</p>
+            <p className="text-sm text-muted-foreground"><GreetingText /></p>
             <h1 className="text-2xl font-extrabold tracking-tight">Adaeze O.</h1>
           </div>
         </div>
