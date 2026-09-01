@@ -1,9 +1,12 @@
+import { useRef, useState } from "react";
 import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowDownLeft,
   ArrowUpRight,
   Bell,
+  ChevronLeft,
   ChevronRight,
+  CircleDollarSign,
   Compass,
   Eye,
   EyeOff,
@@ -12,12 +15,14 @@ import {
   Landmark,
   Lightbulb,
   PieChart,
+  PiggyBank,
   Plus,
   Search,
   Settings,
   TrendingDown,
   TrendingUp,
   Wallet,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 import {
