@@ -208,8 +208,8 @@ function WalletCard() {
   const { hidden } = useBalanceVisibility();
   return (
     <section className="rounded-2xl border border-border bg-card p-4 shadow-card">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <span className="grid size-10 place-items-center rounded-xl bg-brand/10 text-brand">
             <Wallet className="size-5" />
           </span>
