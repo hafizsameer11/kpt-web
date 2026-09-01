@@ -125,6 +125,10 @@ function HomeV2Screen() {
           </div>
         </header>
 
+        {isNewUser ? (
+          <NewUserEmptyState />
+        ) : (
+        <>
         {/* Hero portfolio panel */}
         <section className="grid gap-4 lg:grid-cols-3">
           <article className="relative overflow-hidden rounded-3xl border border-border bg-brand-gradient p-6 text-primary-foreground shadow-card md:p-8 lg:col-span-2">
@@ -365,6 +369,8 @@ function HomeV2Screen() {
           </div>
         </section>
 
+        </>
+        )}
       </AppShell>
     </div>
   );
