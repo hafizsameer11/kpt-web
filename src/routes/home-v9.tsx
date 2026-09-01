@@ -20,6 +20,7 @@ import { Logo } from "@/components/kipit/Logo";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
+import { TierStatusCard, WalletNote, useGreeting } from "@/components/kipit/SpecBlocks";
 
 export const Route = createFileRoute("/home-v9")({
   head: () => ({
@@ -225,6 +226,7 @@ function AllocationRing({ hidden }: { hidden: boolean }) {
 function HomeV9Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNewUser = useIsNewUser();
+  const greeting = useGreeting();
   const [range, setRange] = useState<Range>("1M");
   const series = SERIES[range];
   const spark = sparkPath(series.points);
@@ -255,6 +257,7 @@ function HomeV9Screen() {
             </div>
           </div>
         </header>
+        <p className="mb-4 text-sm font-semibold text-muted-foreground">{greeting}, Adaeze</p>
 
         {isNewUser ? (
           <NewUserEmptyState />
@@ -570,6 +573,10 @@ function HomeV9Screen() {
                   ))}
                 </div>
               </div>
+            <section className="space-y-3">
+              <TierStatusCard />
+              <WalletNote />
+            </section>
             </section>
           </>
         )}

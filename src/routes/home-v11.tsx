@@ -20,6 +20,7 @@ import { AppShell } from "@/components/kipit/AppShell";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
+import { TierStatusCard, WalletNote, useGreeting } from "@/components/kipit/SpecBlocks";
 
 export const Route = createFileRoute("/home-v11")({
   head: () => ({
@@ -254,6 +255,7 @@ const QUICK = [
 function HomeV11Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNew = useIsNewUser();
+  const greeting = useGreeting();
   const [range, setRange] = useState<Range>("1M");
   const series = SERIES[range];
 
@@ -265,6 +267,12 @@ function HomeV11Screen() {
             <NewUserEmptyState />
           ) : (
             <>
+              <header className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-muted-foreground">{greeting},</p>
+                  <p className="truncate text-lg font-extrabold text-foreground">Adaeze Okafor</p>
+                </div>
+              </header>
               {/* Aurora console */}
               <section className="relative overflow-hidden rounded-[2rem] bg-brand-gradient text-primary-foreground shadow-float">
                 <div
@@ -525,6 +533,11 @@ function HomeV11Screen() {
                     </Link>
                   ))}
                 </div>
+              <section className="space-y-3">
+                <TierStatusCard />
+                <WalletNote />
+              </section>
+
               </section>
             </>
           )}

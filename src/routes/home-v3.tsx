@@ -26,6 +26,7 @@ import { Logo } from "@/components/kipit/Logo";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
+import { TierStatusCard, WalletNote, useGreeting } from "@/components/kipit/SpecBlocks";
 
 export const Route = createFileRoute("/home-v3")({
   head: () => ({
@@ -150,6 +151,7 @@ const NAV: { label: string; to: string; icon: LucideIcon }[] = [
 
 function HomeV3Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
+  const greeting = useGreeting();
   const isNewUser = useIsNewUser();
   const [range, setRange] = useState("1M");
   const pathname = useRouterState({ select: (r) => r.location.pathname });
@@ -169,7 +171,10 @@ function HomeV3Screen() {
           <div aria-hidden className="pointer-events-none absolute -bottom-32 -left-16 size-72 rounded-full bg-gold/15 blur-3xl" />
 
           <div className="relative flex items-center justify-between md:hidden">
-            <Logo tone="light" className="text-2xl" />
+            <div className="min-w-0">
+              <Logo tone="light" className="text-2xl" />
+              <p className="mt-1 text-xs font-semibold text-primary-foreground/70">{greeting}, Adaeze</p>
+            </div>
             <Link
               to="/notifications"
               aria-label="Notifications"
@@ -182,7 +187,10 @@ function HomeV3Screen() {
 
           <div className="relative mt-8 flex items-end justify-between gap-4 md:mt-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary-foreground/65">
+              <p className="hidden text-sm font-semibold text-primary-foreground/80 md:block">
+                {greeting}, Adaeze
+              </p>
+              <p className="mt-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary-foreground/65 md:mt-3">
                 Total balance
               </p>
               <div className="mt-2 flex items-center gap-3">
@@ -452,6 +460,10 @@ function HomeV3Screen() {
               </article>
             ))}
           </div>
+        </section>
+        <section className="mt-10 space-y-3 px-5 md:mx-8 md:px-10">
+          <TierStatusCard />
+          <WalletNote />
         </section>
         </>
         )}
