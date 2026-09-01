@@ -199,6 +199,11 @@
 .type-v8 .font-display {
   font-family: "Urbanist", ui-sans-serif, system-ui, sans-serif;
 }
+.type-v9,
+.type-v9 .font-display {
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.015em;
+}
 
 @layer base {
   * {
