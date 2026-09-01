@@ -16,6 +16,7 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react";
+import { DashboardSidebar } from "@/components/kipit/DashboardSidebar";
 import { Logo } from "@/components/kipit/Logo";
 
 export const Route = createFileRoute("/home-v3")({
