@@ -27,7 +27,7 @@ export function AppShell({
 }: {
   children: ReactNode;
   title?: string;
-  navVariant?: "classic" | "floating";
+  navVariant?: "classic" | "floating" | "morph";
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -45,7 +45,33 @@ export function AppShell({
       </div>
 
       {/* Mobile bottom tab bar */}
-      {navVariant === "floating" ? (
+      {navVariant === "morph" ? (
+        /* Morphing bar: the active tab expands into a navy pill with its label */
+        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur md:hidden">
+          <ul className="flex items-center justify-between gap-1">
+            {TABS.map((tab) => {
+              const active = pathname === tab.to;
+              const Icon = tab.icon;
+              return (
+                <li key={tab.to} className={active ? "flex-1" : ""}>
+                  <Link
+                    to={tab.to}
+                    aria-label={tab.label}
+                    className={`flex items-center justify-center gap-2 rounded-full py-2.5 text-xs font-semibold transition-all duration-300 ${
+                      active
+                        ? "bg-brand-gradient px-4 text-primary-foreground shadow-float"
+                        : "px-3 text-muted-foreground"
+                    }`}
+                  >
+                    <Icon className="size-5" strokeWidth={active ? 2.4 : 1.8} />
+                    {active && <span className="truncate">{tab.label}</span>}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : navVariant === "floating" ? (
         /* Floating pill dock with gold active pill */
         <nav className="fixed inset-x-4 bottom-4 z-40 md:hidden">
           <ul className="grid grid-cols-5 rounded-full border border-border bg-surface/95 p-1.5 shadow-float backdrop-blur">
