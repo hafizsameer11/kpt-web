@@ -162,11 +162,13 @@ function HomeV4() {
   const { hidden, toggle, mask, naira } = useBalanceVisibility();
   const isNewUser = useIsNewUser();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [rangeIdx, setRangeIdx] = useState(2);
+  const range = RANGES[rangeIdx];
 
   return (
     <div className="type-v4 min-h-screen bg-secondary/60">
       {/* Desktop dashboard sidebar */}
-      <DashboardSidebar hideBalance={hidden} />
+      <DashboardSidebar hideBalance={hidden} walletBalance={WALLET_BALANCE} />
       <div className="md:pl-64">
         <DashboardTopBar title="Dashboard" />
 
