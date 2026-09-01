@@ -348,15 +348,15 @@ function HomeV4() {
                 </Link>
               </div>
               <div className="mt-3 space-y-3">
-                {PLANS.map((plan) => (
+                {PLANS.map(({ icon: PlanIcon, ...plan }) => (
                   <article
                     key={plan.name}
                     className="rounded-3xl bg-surface p-5 shadow-card transition-transform active:scale-[0.99]"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand text-brand-foreground">
-                          <TrendingUp className="size-5" />
+                        <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand text-gold">
+                          <PlanIcon className="size-5" />
                         </span>
                         <div>
                           <h3 className="text-sm font-bold">{plan.name}</h3>
@@ -369,7 +369,7 @@ function HomeV4() {
                         <p className="text-base font-extrabold">
                           {mask(plan.amount)}
                         </p>
-                        <p className="text-[11px] font-semibold text-muted-foreground">
+                        <p className="text-xs font-semibold text-muted-foreground">
                           {plan.daysLeft} days left
                         </p>
                       </div>
