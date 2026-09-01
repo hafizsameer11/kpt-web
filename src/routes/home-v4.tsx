@@ -164,7 +164,7 @@ function HomeV4() {
   const isNewUser = useIsNewUser();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [rangeIdx, setRangeIdx] = useState(2);
-  const range = RANGES[rangeIdx];
+  const range = RANGES[rangeIdx] ?? RANGES[2]!;
 
   return (
     <div className="type-v4 min-h-screen bg-secondary/60">
