@@ -1,19 +1,23 @@
 import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import {
+  ArrowDownLeft,
   ArrowDownToLine,
-  ArrowUpRight,
   ArrowUpFromLine,
+  ArrowUpRight,
   Bell,
+  ChevronRight,
   Compass,
   Eye,
   EyeOff,
   Home,
+  MoreHorizontal,
   PieChart,
   PlusCircle,
   Settings,
   Sparkles,
   TrendingUp,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { Logo } from "@/components/kipit/Logo";
@@ -21,13 +25,13 @@ import { Logo } from "@/components/kipit/Logo";
 export const Route = createFileRoute("/home-v4")({
   head: () => ({
     meta: [
-      { title: "Kipit Home — Editorial Concept" },
+      { title: "Kipit Home — Neo-Fintech Concept" },
       {
         name: "description",
         content:
-          "An editorial magazine-style home for Kipit: portfolio headline, plan ledger and curated stories.",
+          "A modern neo-fintech home for Kipit: balance card, quick actions, active plans and recent activity.",
       },
-      { property: "og:title", content: "Kipit Home — Editorial Concept" },
+      { property: "og:title", content: "Kipit Home — Neo-Fintech Concept" },
       {
         property: "og:description",
         content:
@@ -52,49 +56,52 @@ const TABS: Tab[] = [
 
 const PLANS = [
   {
-    name: "Kipit Fixed Income",
-    tenor: "90 days",
+    name: "Fixed Income · 90 days",
     rate: "18.5% p.a.",
     amount: 750000,
-    matures: "14 Oct 2026",
     daysLeft: 23,
     progress: 74,
   },
   {
-    name: "Kipit Yield Note",
-    tenor: "180 days",
+    name: "Yield Note · 180 days",
     rate: "21.0% p.a.",
     amount: 1200000,
-    matures: "02 Dec 2026",
     daysLeft: 72,
     progress: 48,
   },
   {
-    name: "Kipit Starter",
-    tenor: "30 days",
+    name: "Starter · 30 days",
     rate: "15.0% p.a.",
     amount: 500000,
-    matures: "30 Sep 2026",
     daysLeft: 9,
     progress: 88,
   },
 ];
 
-const STORIES = [
+const ACTIVITY = [
   {
-    tag: "Product update",
-    title: "Fixed Income now settles same-day",
-    body: "Maturity payouts land in your wallet within minutes of maturity.",
+    title: "Interest payout · Fixed Income",
+    time: "Today, 09:12",
+    amount: 12480,
+    kind: "credit" as const,
   },
   {
-    tag: "Education",
-    title: "Understanding tenor and effective yield",
-    body: "A 3-minute read on how rate and tenor shape your real return.",
+    title: "Investment · Yield Note",
+    time: "28 Aug, 14:30",
+    amount: -200000,
+    kind: "debit" as const,
   },
   {
-    tag: "Announcement",
-    title: "Tier 2 verification is now instant",
-    body: "Upgrade with your BVN and NIN to raise your transaction limits.",
+    title: "Wallet top-up · GTBank",
+    time: "26 Aug, 11:05",
+    amount: 500000,
+    kind: "credit" as const,
+  },
+  {
+    title: "Withdrawal to Access Bank",
+    time: "21 Aug, 16:44",
+    amount: -150000,
+    kind: "debit" as const,
   },
 ];
 
@@ -104,11 +111,11 @@ function HomeV4() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Desktop: centered pill nav */}
-      <header className="sticky top-4 z-40 hidden md:block">
-        <div className="mx-auto flex max-w-4xl items-center justify-between gap-6 rounded-full border border-border bg-surface/95 py-2 pl-5 pr-2 shadow-card backdrop-blur">
-          <Logo className="text-xl" />
+    <div className="min-h-screen bg-secondary/60">
+      {/* Desktop top nav */}
+      <header className="sticky top-0 z-40 hidden border-b border-border bg-surface/95 backdrop-blur md:block">
+        <div className="mx-auto flex h-16 max-w-6xl items-center gap-8 px-6">
+          <Logo className="text-2xl" />
           <nav className="flex items-center gap-1">
             {TABS.map((tab) => {
               const active = pathname === tab.to;
@@ -119,7 +126,7 @@ function HomeV4() {
                   className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
                     active
                       ? "bg-brand text-brand-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                   }`}
                 >
                   {tab.label}
@@ -127,11 +134,11 @@ function HomeV4() {
               );
             })}
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-3">
             <button
               type="button"
               aria-label="Notifications"
-              className="relative grid size-10 place-items-center rounded-full bg-secondary text-foreground"
+              className="relative grid size-10 place-items-center rounded-full bg-secondary text-foreground transition-colors hover:bg-accent"
             >
               <Bell className="size-5" />
               <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-gold" />
@@ -143,40 +150,53 @@ function HomeV4() {
         </div>
       </header>
 
-      {/* Mobile: slim top bar */}
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-background/95 px-5 py-3 backdrop-blur md:hidden">
-        <Logo className="text-xl" />
+      {/* Mobile slim header */}
+      <header className="sticky top-0 z-40 flex items-center justify-between bg-secondary/60 px-5 py-4 backdrop-blur md:hidden">
+        <div className="flex items-center gap-2.5">
+          <div className="grid size-9 place-items-center rounded-full bg-brand text-xs font-bold text-brand-foreground">
+            AO
+          </div>
+          <div>
+            <p className="text-[11px] text-muted-foreground">Good morning</p>
+            <p className="text-xs font-bold">Adaeze O.</p>
+          </div>
+        </div>
         <div className="flex items-center gap-2">
+          <Logo className="text-lg" />
           <button
             type="button"
             aria-label="Notifications"
-            className="relative grid size-9 place-items-center rounded-full bg-secondary"
+            className="relative grid size-9 place-items-center rounded-full bg-surface shadow-card"
           >
             <Bell className="size-4" />
             <span className="absolute right-2 top-2 size-1.5 rounded-full bg-gold" />
           </button>
-          <div className="grid size-9 place-items-center rounded-full bg-brand text-xs font-bold text-brand-foreground">
-            AO
-          </div>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-4xl px-5 pb-32 pt-8 md:pb-20 md:pt-12">
-        {/* Editorial masthead */}
-        <section>
-          <div className="flex items-center justify-between border-b-2 border-brand pb-3 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-            <span>Good morning, Adaeze</span>
-            <span>Tue 1 Sep 2026</span>
+      <main className="mx-auto w-full max-w-6xl px-4 pb-28 pt-4 md:px-6 md:pb-16 md:pt-8">
+        {/* Desktop greeting */}
+        <div className="mb-5 hidden items-end justify-between md:flex">
+          <div>
+            <p className="text-sm text-muted-foreground">Good morning</p>
+            <h1 className="text-2xl font-extrabold tracking-tight">Adaeze O.</h1>
           </div>
+        </div>
 
-          <div className="mt-8 flex flex-wrap items-end justify-between gap-6">
-            <div>
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                Total portfolio value
+        <div className="grid gap-4 lg:grid-cols-5">
+          {/* Left column: balance + plans */}
+          <div className="lg:col-span-3">
+            {/* Balance card */}
+            <section className="rounded-3xl bg-brand-gradient p-6 text-brand-foreground shadow-float md:p-7">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold opacity-75">
+                  Total portfolio value
+                </p>
                 <button
                   type="button"
                   onClick={() => setHidden((v) => !v)}
                   aria-label={hidden ? "Show balances" : "Hide balances"}
+                  className="grid size-8 place-items-center rounded-full bg-brand-foreground/15"
                 >
                   {hidden ? (
                     <EyeOff className="size-4" />
@@ -185,149 +205,173 @@ function HomeV4() {
                   )}
                 </button>
               </div>
-              <p className="mt-2 font-display text-6xl font-extrabold tracking-tight md:text-7xl">
+              <p className="mt-2 text-4xl font-extrabold tracking-tight md:text-5xl">
                 {mask(2450000)}
               </p>
-              <p className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-success">
-                <TrendingUp className="size-4" /> +₦38,200 this month
-                <span className="font-semibold text-muted-foreground">
-                  · +1.58%
-                </span>
+              <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand-foreground/15 px-3 py-1 text-xs font-semibold">
+                <TrendingUp className="size-3.5" /> +₦38,200 · +1.58% this month
               </p>
-            </div>
 
-            {/* Vertical quick actions */}
-            <div className="flex gap-2 md:flex-col">
+              <div className="mt-6 grid grid-cols-2 gap-2">
+                <div className="rounded-2xl bg-brand-foreground/10 p-3.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold opacity-75">
+                    <Wallet className="size-3.5" /> Wallet
+                  </div>
+                  <p className="mt-1 text-lg font-extrabold">{mask(500000)}</p>
+                </div>
+                <div className="rounded-2xl bg-brand-foreground/10 p-3.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold opacity-75">
+                    <Sparkles className="size-3.5" /> Earned this week
+                  </div>
+                  <p className="mt-1 text-lg font-extrabold text-gold">
+                    {mask(12480)}
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Quick actions pill */}
+            <section className="mt-4 grid grid-cols-4 gap-1 rounded-3xl bg-surface p-2 shadow-card">
               {[
-                { label: "Add", icon: ArrowDownToLine },
+                { label: "Add Money", icon: ArrowDownToLine },
                 { label: "Withdraw", icon: ArrowUpFromLine },
-                { label: "New plan", icon: PlusCircle },
+                { label: "New Plan", icon: PlusCircle },
+                { label: "More", icon: MoreHorizontal },
               ].map(({ label, icon: Icon }) => (
                 <button
                   key={label}
                   type="button"
-                  className="inline-flex items-center gap-2 rounded-full border border-brand px-4 py-2 text-xs font-bold text-brand transition-colors hover:bg-brand hover:text-brand-foreground"
+                  className="flex flex-col items-center gap-1.5 rounded-2xl px-2 py-3 transition-colors hover:bg-secondary active:scale-95"
                 >
-                  <Icon className="size-4" /> {label}
+                  <span className="grid size-10 place-items-center rounded-full bg-accent text-accent-foreground">
+                    <Icon className="size-4.5" />
+                  </span>
+                  <span className="text-[11px] font-semibold">{label}</span>
                 </button>
               ))}
-            </div>
-          </div>
-        </section>
+            </section>
 
-        {/* Ledger: wallet + earnings inline rule rows */}
-        <section className="mt-10 divide-y divide-border border-y border-border">
-          {[
-            { label: "Wallet balance", value: mask(500000), note: "Available to invest or withdraw" },
-            { label: "Weekly earnings", value: mask(12480), note: "Interest earned this week" },
-            { label: "Total earned", value: mask(386400), note: "Lifetime interest" },
-          ].map((row) => (
-            <div
-              key={row.label}
-              className="flex flex-wrap items-baseline justify-between gap-2 py-4"
-            >
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                  {row.label}
-                </p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{row.note}</p>
+            {/* Plans */}
+            <section className="mt-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-extrabold tracking-tight">
+                  Active plans
+                </h2>
+                <Link
+                  to="/portfolio"
+                  className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
+                >
+                  View all <ChevronRight className="size-3.5" />
+                </Link>
               </div>
-              <p className="font-display text-2xl font-extrabold tracking-tight md:text-3xl">
-                {row.value}
-              </p>
-            </div>
-          ))}
-        </section>
-
-        {/* Plans ledger with editorial index numbers */}
-        <section className="mt-12">
-          <div className="flex items-baseline justify-between">
-            <h2 className="font-display text-2xl font-extrabold tracking-tight">
-              Active plans
-            </h2>
-            <Link
-              to="/portfolio"
-              className="inline-flex items-center gap-1 text-xs font-bold text-brand"
-            >
-              View all <ArrowUpRight className="size-3.5" />
-            </Link>
-          </div>
-          <div className="mt-4 divide-y divide-border border-y-2 border-brand">
-            {PLANS.map((plan, i) => (
-              <article key={plan.name} className="flex gap-4 py-5 md:gap-6">
-                <span className="font-display text-3xl font-extrabold text-gold md:text-4xl">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div className="flex-1">
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <h3 className="text-base font-bold">{plan.name}</h3>
-                    <p className="font-display text-xl font-extrabold">
-                      {mask(plan.amount)}
-                    </p>
-                  </div>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {plan.tenor} · {plan.rate} · matures {plan.matures}
-                  </p>
-                  <div className="mt-3 flex items-center gap-3">
-                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
+              <div className="mt-3 space-y-3">
+                {PLANS.map((plan) => (
+                  <article
+                    key={plan.name}
+                    className="rounded-3xl bg-surface p-5 shadow-card transition-transform active:scale-[0.99]"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand text-brand-foreground">
+                          <TrendingUp className="size-5" />
+                        </span>
+                        <div>
+                          <h3 className="text-sm font-bold">{plan.name}</h3>
+                          <p className="text-xs font-semibold text-gold">
+                            {plan.rate}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-base font-extrabold">
+                          {mask(plan.amount)}
+                        </p>
+                        <p className="text-[11px] font-semibold text-muted-foreground">
+                          {plan.daysLeft} days left
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-3.5 h-1.5 overflow-hidden rounded-full bg-secondary">
                       <div
-                        className="h-full rounded-full bg-brand"
+                        className="h-full rounded-full bg-gold-gradient"
                         style={{ width: `${plan.progress}%` }}
                       />
                     </div>
-                    <span className="text-[11px] font-bold text-muted-foreground">
-                      {plan.daysLeft} days left
-                    </span>
-                  </div>
-                </div>
-              </article>
-            ))}
+                  </article>
+                ))}
+              </div>
+            </section>
           </div>
-        </section>
 
-        {/* Recommendation banner */}
-        <section className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-brand-gradient p-6 text-brand-foreground">
-          <div className="flex items-center gap-3">
-            <Sparkles className="size-5 text-gold" />
-            <p className="text-sm font-bold">
-              Your ₦500,000 wallet balance isn't currently invested.
-              <span className="block text-xs font-medium opacity-75">
+          {/* Right column: insight + activity */}
+          <div className="space-y-4 lg:col-span-2">
+            <section className="rounded-3xl border border-gold/40 bg-accent p-5">
+              <div className="flex items-center gap-2 text-sm font-bold text-accent-foreground">
+                <Sparkles className="size-4 text-gold" /> Smart insight
+              </div>
+              <p className="mt-2 text-sm font-semibold text-accent-foreground">
+                Your ₦500,000 wallet balance isn't invested.
+              </p>
+              <p className="mt-1 text-xs text-accent-foreground/80">
                 Plans from 18.5% p.a. · 30–365 day tenors · ₦50,000 minimum.
-              </span>
-            </p>
-          </div>
-          <button
-            type="button"
-            className="rounded-full bg-gold px-5 py-2.5 text-sm font-bold text-gold-foreground"
-          >
-            Explore investments
-          </button>
-        </section>
+              </p>
+              <button
+                type="button"
+                className="mt-4 w-full rounded-full bg-brand px-5 py-2.5 text-sm font-bold text-brand-foreground"
+              >
+                Explore investments
+              </button>
+            </section>
 
-        {/* Stories grid */}
-        <section className="mt-12">
-          <h2 className="font-display text-2xl font-extrabold tracking-tight">
-            For you
-          </h2>
-          <div className="mt-4 grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3">
-            {STORIES.map((item) => (
-              <article key={item.title} className="bg-surface p-5">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gold">
-                  {item.tag}
-                </span>
-                <h3 className="mt-2 text-sm font-bold leading-snug">
-                  {item.title}
-                </h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                  {item.body}
-                </p>
-              </article>
-            ))}
+            <section className="rounded-3xl bg-surface p-5 shadow-card">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-extrabold tracking-tight">
+                  Recent activity
+                </h2>
+                <button
+                  type="button"
+                  className="text-xs font-bold text-brand"
+                >
+                  See all
+                </button>
+              </div>
+              <ul className="mt-3 divide-y divide-border">
+                {ACTIVITY.map((item) => (
+                  <li key={item.title} className="flex items-center gap-3 py-3.5">
+                    <span
+                      className={`grid size-10 shrink-0 place-items-center rounded-full ${
+                        item.kind === "credit"
+                          ? "bg-accent text-success"
+                          : "bg-secondary text-muted-foreground"
+                      }`}
+                    >
+                      {item.kind === "credit" ? (
+                        <ArrowDownLeft className="size-4.5" />
+                      ) : (
+                        <ArrowUpRight className="size-4.5" />
+                      )}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-bold">{item.title}</p>
+                      <p className="text-xs text-muted-foreground">{item.time}</p>
+                    </div>
+                    <p
+                      className={`text-sm font-extrabold ${
+                        item.kind === "credit" ? "text-success" : ""
+                      }`}
+                    >
+                      {item.amount > 0 ? "+" : "−"}
+                      {naira(Math.abs(item.amount))}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </section>
           </div>
-        </section>
+        </div>
       </main>
 
-      {/* Mobile: underline-style tab bar */}
+      {/* Mobile bottom tab bar — raised gold home indicator style */}
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
         <ul className="grid grid-cols-5">
           {TABS.map((tab) => {
@@ -337,17 +381,18 @@ function HomeV4() {
               <li key={tab.to}>
                 <Link
                   to={tab.to}
-                  className={`relative flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold ${
+                  className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold transition-colors ${
                     active ? "text-brand" : "text-muted-foreground"
                   }`}
                 >
-                  <Icon className="size-5" strokeWidth={active ? 2.4 : 1.8} />
-                  {tab.label}
                   <span
-                    className={`absolute -top-px h-0.5 w-8 rounded-full bg-gold transition-opacity ${
-                      active ? "opacity-100" : "opacity-0"
+                    className={`grid size-9 place-items-center rounded-full transition-colors ${
+                      active ? "bg-brand text-brand-foreground" : ""
                     }`}
-                  />
+                  >
+                    <Icon className="size-5" strokeWidth={active ? 2.4 : 1.8} />
+                  </span>
+                  {tab.label}
                 </Link>
               </li>
             );
