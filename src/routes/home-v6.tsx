@@ -488,7 +488,7 @@ function HomeV6() {
                   <EarningsAndMaturity />
                   <Recommendation />
                 </div>
-                <div className="space-y-5">
+<div className="min-w-0 space-y-5">
                   <WalletCard />
                   <Activity />
                 </div>
