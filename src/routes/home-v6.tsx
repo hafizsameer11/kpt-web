@@ -220,7 +220,7 @@ function WalletCard() {
             </p>
           </div>
         </div>
-        <div className="flex shrink-0 flex-wrap justify-end gap-2">
+        <div className="flex flex-wrap justify-end gap-2">
           <button className="rounded-lg bg-brand px-3 py-2 text-xs font-bold text-brand-foreground transition hover:brightness-110">
             Add money
           </button>
