@@ -20,6 +20,7 @@ import { AppShell } from "@/components/kipit/AppShell";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
+import { TierStatusCard, WalletNote, useGreeting } from "@/components/kipit/SpecBlocks";
 
 export const Route = createFileRoute("/home-v11")({
   head: () => ({
@@ -525,6 +526,11 @@ function HomeV11Screen() {
                     </Link>
                   ))}
                 </div>
+              <section className="space-y-3">
+                <TierStatusCard />
+                <WalletNote />
+              </section>
+
               </section>
             </>
           )}
