@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowDownLeft,
@@ -8,13 +9,16 @@ import {
   Eye,
   EyeOff,
   Home,
+  Landmark,
   Lightbulb,
   PieChart,
+  PiggyBank,
   Plus,
   Receipt,
   Settings,
   TrendingUp,
   Wallet,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 import { DashboardSidebar } from "@/components/kipit/DashboardSidebar";
