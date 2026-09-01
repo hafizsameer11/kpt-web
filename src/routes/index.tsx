@@ -8,8 +8,8 @@ import {
   Eye,
   EyeOff,
   FileText,
+  Lightbulb,
   PlusCircle,
-  Sparkles,
   TrendingUp,
   Wallet,
 } from "lucide-react";
@@ -204,7 +204,7 @@ function HomeScreen() {
       <section className="mt-4 rounded-3xl border border-gold/40 bg-accent p-5 md:mt-6 md:flex md:items-center md:justify-between md:gap-6">
         <div className="flex gap-3">
           <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold-gradient text-gold-foreground">
-            <Sparkles className="size-5" />
+            <Lightbulb className="size-5" />
           </span>
           <div>
             <p className="text-sm font-bold text-accent-foreground">
