@@ -104,7 +104,7 @@ function HomeV2Screen() {
 
   return (
     <div className="theme-v2">
-      <AppShell>
+      <AppShell navVariant="floating">
         {/* Mobile header */}
         <header className="-mx-4 -mt-0 mb-6 border-b border-border bg-surface px-5 pb-6 pt-5 md:hidden">
           <div className="flex items-center justify-between">
