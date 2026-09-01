@@ -257,7 +257,7 @@ function WalletEarningsMaturity() {
           {mask(WALLET_BALANCE)}
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
-          Available to invest or withdraw. Wallet funds do not earn returns.
+          Available to invest or withdraw anytime. Wallet funds do not earn interest or investment returns.
         </p>
 
         <p className="mt-5 text-xs font-bold text-muted-foreground">Next maturity</p>

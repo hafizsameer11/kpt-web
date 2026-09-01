@@ -180,8 +180,8 @@ function HomeScreen() {
             Available funds: {mask(500000)}
           </p>
           <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-            Funds in your wallet are available for investment or withdrawal. Wallet funds
-            do not earn investment returns.
+            Funds in your wallet are available for investment or withdrawal anytime. Wallet funds
+            do not earn interest or investment returns.
           </p>
         </article>
 
