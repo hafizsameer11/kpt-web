@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -152,6 +152,7 @@ function HomeV3Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNewUser = useIsNewUser();
   const [range, setRange] = useState("1M");
+  const pathname = useRouterState({ select: (r) => r.location.pathname });
   const tf = TIMEFRAMES.find((t) => t.id === range) ?? TIMEFRAMES[2]!;
 
   return (
