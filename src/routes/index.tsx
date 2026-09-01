@@ -254,7 +254,9 @@ function HomeScreen() {
           ))}
         </div>
       </section>
-
+      </>
+      )}
     </AppShell>
+
   );
 }
