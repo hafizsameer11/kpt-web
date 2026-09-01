@@ -23,6 +23,7 @@ import { AppShell } from "@/components/kipit/AppShell";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
+import { TierStatusCard, WalletNote, useGreeting } from "@/components/kipit/SpecBlocks";
 
 export const Route = createFileRoute("/home-v12")({
   head: () => ({
@@ -264,6 +265,7 @@ const RULES = [
 function HomeV12Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNew = useIsNewUser();
+  const greeting = useGreeting();
   const [range, setRange] = useState<Range>("1M");
   const [done, setDone] = useState<string[]>([TODOS[0]!.label]);
   const [rules, setRules] = useState(() => RULES.map((r) => r.on));
@@ -277,6 +279,12 @@ function HomeV12Screen() {
             <NewUserEmptyState />
           ) : (
             <>
+              <header className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-muted-foreground">{greeting},</p>
+                  <p className="truncate text-lg font-extrabold text-foreground">Adaeze Okafor</p>
+                </div>
+              </header>
               <div className="grid gap-6 lg:grid-cols-5">
                 {/* Hero */}
                 <section className="relative overflow-hidden rounded-[2rem] bg-brand-gradient p-6 text-primary-foreground shadow-float sm:p-8 lg:col-span-3">
@@ -643,6 +651,11 @@ function HomeV12Screen() {
                     </Link>
                   ))}
                 </div>
+              <section className="space-y-3">
+                <TierStatusCard />
+                <WalletNote />
+              </section>
+
               </section>
             </>
           )}

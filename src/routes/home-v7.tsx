@@ -32,6 +32,7 @@ import {
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
+import { TierStatusCard, WalletNote, useGreeting, GreetingText } from "@/components/kipit/SpecBlocks";
 
 export const Route = createFileRoute("/home-v7")({
   head: () => ({
@@ -162,7 +163,7 @@ function GreetingHeader() {
         AO
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-xs text-muted-foreground">Good morning</p>
+        <p className="text-xs text-muted-foreground"><GreetingText /></p>
         <p className="truncate text-base font-extrabold text-foreground">Adaeze O.</p>
       </div>
       <button
@@ -607,6 +608,10 @@ function HomeV7() {
                   <Watchlist />
                   <WalletCard />
                   <Activity />
+                </div>
+                <div className="min-w-0 space-y-3 lg:col-span-3">
+                  <TierStatusCard />
+                  <WalletNote />
                 </div>
               </div>
             </>

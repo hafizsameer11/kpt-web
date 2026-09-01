@@ -31,6 +31,7 @@ import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { productArt } from "@/components/kipit/art";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
+import { GreetingText, TierStatusCard, WalletNote } from "@/components/kipit/SpecBlocks";
 
 export const Route = createFileRoute("/home-v5")({
   head: () => ({
@@ -163,7 +164,7 @@ function Greeting() {
           AO
         </div>
         <div>
-          <p className="text-xs text-muted-foreground">Good morning,</p>
+          <p className="text-xs text-muted-foreground"><GreetingText />,</p>
           <h1 className="text-base font-bold text-foreground">Adaeze O.</h1>
         </div>
       </div>
@@ -256,7 +257,7 @@ function WalletEarningsMaturity() {
           {mask(WALLET_BALANCE)}
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
-          Available to invest or withdraw. Wallet funds do not earn returns.
+          Available to invest or withdraw anytime. Wallet funds do not earn interest or investment returns.
         </p>
 
         <p className="mt-5 text-xs font-bold text-muted-foreground">Next maturity</p>
@@ -565,6 +566,10 @@ function HomeV5() {
             <div className="space-y-5">
               <Todos />
               <ActivityFeed />
+            </div>
+            <div className="space-y-3 lg:col-span-3">
+              <TierStatusCard />
+              <WalletNote />
             </div>
             <div className="lg:col-span-3">
               <ContentFeed />
