@@ -83,7 +83,7 @@ const FEED = [
 
 const TONE: Record<string, string> = {
   brand: "bg-brand/10 text-brand",
-  gold: "bg-accent/15 text-gold-600",
+  gold: "bg-accent/15 text-gold-foreground",
   violet: "bg-violet/10 text-violet",
   teal: "bg-teal/10 text-teal",
 };
@@ -129,11 +129,11 @@ function SectionTitle({ children, action }: { children: string; action?: string 
 function PortfolioHero() {
   const { hidden, toggle } = useBalanceVisibility();
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-brand-gradient p-5 text-primary-foreground shadow-float md:p-7">
+    <section className="relative overflow-hidden rounded-3xl bg-brand-gradient p-5 text-brand-foreground shadow-float md:p-7">
       <div className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-gold/15 blur-2xl" />
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary-foreground/70">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-foreground/70">
             Portfolio value
           </p>
           <div className="mt-1 flex items-center gap-2">
@@ -143,18 +143,18 @@ function PortfolioHero() {
             <button
               onClick={toggle}
               aria-label={hidden ? "Show balance" : "Hide balance"}
-              className="rounded-full bg-primary-foreground/10 p-1.5 transition hover:bg-primary-foreground/20"
+              className="rounded-full bg-brand-foreground/10 p-1.5 transition hover:bg-brand-foreground/20"
             >
               {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
             </button>
           </div>
-          <p className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-gold-300">
+          <p className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-gold">
             <TrendingUp className="size-4" /> +{hidden ? "••••" : naira(96400)} (5.6%) this month
           </p>
         </div>
         <Link
           to="/notifications"
-          className="relative rounded-full bg-primary-foreground/10 p-2.5 transition hover:bg-primary-foreground/20"
+          className="relative rounded-full bg-brand-foreground/10 p-2.5 transition hover:bg-brand-foreground/20"
           aria-label="Notifications"
         >
           <Bell className="size-5" />
@@ -163,15 +163,15 @@ function PortfolioHero() {
       </div>
 
       <div className="mt-4">
-        <Sparkline data={CHART} className="h-20 w-full text-gold-300 md:h-24" />
+        <Sparkline data={CHART} className="h-20 w-full text-gold md:h-24" />
         <div className="mt-2 flex gap-1.5 overflow-x-auto">
           {RANGES.map((r, i) => (
             <button
               key={r}
               className={`rounded-full px-3 py-1 text-xs font-bold transition ${
                 i === 1
-                  ? "bg-gold text-brand-950"
-                  : "bg-primary-foreground/10 text-primary-foreground/80 hover:bg-primary-foreground/20"
+                  ? "bg-gold text-gold-foreground"
+                  : "bg-brand-foreground/10 text-brand-foreground/80 hover:bg-brand-foreground/20"
               }`}
             >
               {r}
@@ -190,8 +190,8 @@ function PortfolioHero() {
             key={label}
             className={`inline-flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-bold transition ${
               primary
-                ? "bg-gold text-brand-950 hover:brightness-105"
-                : "bg-primary-foreground/10 hover:bg-primary-foreground/20"
+                ? "bg-gold text-gold-foreground hover:brightness-105"
+                : "bg-brand-foreground/10 hover:bg-brand-foreground/20"
             }`}
           >
             <Icon className="size-4" /> {label}
@@ -207,7 +207,7 @@ function PortfolioHero() {
 function WalletCard() {
   const { hidden } = useBalanceVisibility();
   return (
-    <section className="rounded-2xl border border-border bg-card p-4 shadow-soft">
+    <section className="rounded-2xl border border-border bg-card p-4 shadow-card">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="grid size-10 place-items-center rounded-xl bg-brand/10 text-brand">
@@ -221,7 +221,7 @@ function WalletCard() {
           </div>
         </div>
         <div className="flex gap-2">
-          <button className="rounded-lg bg-brand px-3 py-2 text-xs font-bold text-primary-foreground transition hover:brightness-110">
+          <button className="rounded-lg bg-brand px-3 py-2 text-xs font-bold text-brand-foreground transition hover:brightness-110">
             Add money
           </button>
           <button className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-2 text-xs font-bold text-foreground transition hover:bg-muted">
@@ -243,7 +243,7 @@ function Holdings() {
   return (
     <section>
       <SectionTitle action="View all">My investments</SectionTitle>
-      <ul className="divide-y divide-border rounded-2xl border border-border bg-card shadow-soft">
+      <ul className="divide-y divide-border rounded-2xl border border-border bg-card shadow-card">
         {HOLDINGS.map((h) => (
           <li key={h.ticker} className="flex items-center gap-3 px-4 py-3.5">
             <span className={`grid size-10 shrink-0 place-items-center rounded-xl text-xs font-extrabold ${TONE[h.tone]}`}>
@@ -287,7 +287,7 @@ function Movers() {
         {MOVERS.map((m) => (
           <div
             key={m.ticker}
-            className="w-40 shrink-0 snap-start rounded-2xl border border-border bg-card p-4 shadow-soft"
+            className="w-40 shrink-0 snap-start rounded-2xl border border-border bg-card p-4 shadow-card"
           >
             <p className="text-xs font-extrabold tracking-wide text-foreground">{m.ticker}</p>
             <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{m.name}</p>
@@ -315,7 +315,7 @@ function EarningsAndMaturity() {
   const { hidden } = useBalanceVisibility();
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      <section className="rounded-2xl border border-border bg-card p-4 shadow-soft">
+      <section className="rounded-2xl border border-border bg-card p-4 shadow-card">
         <p className="text-xs font-semibold text-muted-foreground">Earned this week</p>
         <p className="mt-1 text-xl font-extrabold tabular-nums text-foreground">
           {hidden ? "₦••••••" : naira(42150)}
@@ -332,9 +332,9 @@ function EarningsAndMaturity() {
         <p className="mt-2 text-[11px] text-muted-foreground">Mon – Sun</p>
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-4 shadow-soft">
+      <section className="rounded-2xl border border-border bg-card p-4 shadow-card">
         <div className="flex items-center gap-2">
-          <span className="grid size-8 place-items-center rounded-lg bg-accent/15 text-gold-600">
+          <span className="grid size-8 place-items-center rounded-lg bg-accent/15 text-gold-foreground">
             <Landmark className="size-4" />
           </span>
           <p className="text-xs font-semibold text-muted-foreground">Next maturity</p>
@@ -359,7 +359,7 @@ function EarningsAndMaturity() {
 function Recommendation() {
   return (
     <section className="flex items-center gap-3 rounded-2xl border border-gold/30 bg-accent/10 p-4">
-      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-gold text-brand-950">
+      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-gold text-gold-foreground">
         <Lightbulb className="size-5" />
       </span>
       <div className="min-w-0 flex-1">
@@ -370,7 +370,7 @@ function Recommendation() {
       </div>
       <Link
         to="/explore"
-        className="shrink-0 rounded-lg bg-brand px-3 py-2 text-xs font-bold text-primary-foreground transition hover:brightness-110"
+        className="shrink-0 rounded-lg bg-brand px-3 py-2 text-xs font-bold text-brand-foreground transition hover:brightness-110"
       >
         Explore
       </Link>
@@ -383,7 +383,7 @@ function Activity() {
   return (
     <section>
       <SectionTitle action="See all">Recent activity</SectionTitle>
-      <ul className="divide-y divide-border rounded-2xl border border-border bg-card shadow-soft">
+      <ul className="divide-y divide-border rounded-2xl border border-border bg-card shadow-card">
         {ACTIVITY.map((a) => (
           <li key={a.label} className="flex items-center gap-3 px-4 py-3.5">
             <span
@@ -419,7 +419,7 @@ function ContentFeed() {
         {FEED.map((f) => (
           <article
             key={f.title}
-            className="rounded-2xl border border-border bg-card p-4 shadow-soft transition hover:shadow-float"
+            className="rounded-2xl border border-border bg-card p-4 shadow-card transition hover:shadow-float"
           >
             <span className="inline-block rounded-full bg-brand/10 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-brand">
               {f.tag}
