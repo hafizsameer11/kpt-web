@@ -353,23 +353,33 @@ function HomeV3Screen() {
         {/* My plans — horizontal scroll cards */}
         <section className="mt-10">
           <div className="flex items-end justify-between px-5 md:mx-8 md:px-10">
-            <h2 className="text-xl font-extrabold tracking-tight">My plans</h2>
+            <div>
+              <h2 className="text-xl font-extrabold tracking-tight">My plans</h2>
+              <p className="mt-0.5 text-xs text-muted-foreground md:hidden">Swipe to see all {PLANS.length} plans →</p>
+            </div>
             <Link to="/invest" className="text-xs font-bold text-gold">
               New plan →
             </Link>
           </div>
           <div className="mt-4 flex gap-4 overflow-x-auto px-5 pb-2 no-scrollbar md:mx-8 md:grid md:grid-cols-3 md:overflow-visible md:px-10">
-            {PLANS.map((plan) => (
+            {PLANS.map((plan) => {
+              const PlanIcon = plan.icon;
+              return (
               <article
                 key={plan.name}
                 className="w-72 shrink-0 rounded-3xl border border-border bg-surface p-5 shadow-card transition-colors hover:border-gold/50 md:w-auto"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="font-bold leading-snug">{plan.name}</h3>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{plan.tenor} · matures {plan.matures}</p>
+                  <div className="flex gap-3">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-accent text-brand">
+                      <PlanIcon className="size-5" />
+                    </span>
+                    <div>
+                      <h3 className="font-bold leading-snug">{plan.name}</h3>
+                      <p className="mt-0.5 text-xs text-muted-foreground">{plan.tenor} · matures {plan.matures}</p>
+                    </div>
                   </div>
-                  <span className="shrink-0 rounded-full bg-accent px-2.5 py-1 text-[10px] font-bold text-accent-foreground">
+                  <span className="shrink-0 rounded-full bg-accent px-2.5 py-1 text-xs font-bold text-accent-foreground">
                     {plan.yield}
                   </span>
                 </div>
@@ -380,11 +390,13 @@ function HomeV3Screen() {
                     style={{ width: `${Math.round(plan.progress * 100)}%` }}
                   />
                 </div>
-                <p className="mt-2 text-[11px] font-semibold text-muted-foreground">
-                  {Math.round(plan.progress * 100)}% to maturity
-                </p>
+                <div className="mt-2 flex items-center justify-between text-xs font-semibold text-muted-foreground">
+                  <span>Started {plan.started}</span>
+                  <span>{Math.round(plan.progress * 100)}% to maturity</span>
+                </div>
               </article>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -392,9 +404,9 @@ function HomeV3Screen() {
         <section className="mt-10 px-5 md:mx-8 md:px-10">
           <div className="flex items-end justify-between">
             <h2 className="text-xl font-extrabold tracking-tight">Recent activity</h2>
-            <button type="button" className="text-xs font-bold text-gold">
+            <Link to="/portfolio" className="text-xs font-bold text-gold">
               View all
-            </button>
+            </Link>
           </div>
           <ul className="mt-4 space-y-2">
             {ACTIVITY.map((item) => {
