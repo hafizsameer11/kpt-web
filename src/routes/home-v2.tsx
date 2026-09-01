@@ -14,6 +14,7 @@ import {
 import { AppShell } from "@/components/kipit/AppShell";
 import { Logo } from "@/components/kipit/Logo";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
+import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 
 export const Route = createFileRoute("/home-v2")({
@@ -345,6 +346,7 @@ function HomeV2Screen() {
                   i === 0 ? "bg-brand-gradient text-primary-foreground" : "bg-surface"
                 }`}
               >
+              <FeedThumb index={i} />
                 <span
                   className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${
                     i === 0

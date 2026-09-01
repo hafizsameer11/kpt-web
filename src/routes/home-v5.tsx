@@ -27,6 +27,7 @@ import {
   DashboardTopBar,
 } from "@/components/kipit/DashboardSidebar";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
+import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 
 export const Route = createFileRoute("/home-v5")({
@@ -286,8 +287,9 @@ function ContentFeed() {
     <section>
       <h2 className="mb-3 text-sm font-bold text-foreground">For you</h2>
       <div className="grid gap-3 sm:grid-cols-3">
-        {FEED.map((item) => (
+        {FEED.map((item, i) => (
           <article key={item.title} className="rounded-3xl bg-card p-5 shadow-card">
+              <FeedThumb index={i} />
             <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
               {item.tag}
             </span>
