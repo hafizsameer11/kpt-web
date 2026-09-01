@@ -255,6 +255,7 @@ const QUICK = [
 function HomeV11Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNew = useIsNewUser();
+  const greeting = useGreeting();
   const [range, setRange] = useState<Range>("1M");
   const series = SERIES[range];
 
