@@ -49,11 +49,13 @@ export const Route = createFileRoute("/home-v3")({
 const naira = (value: number) =>
   `₦${value.toLocaleString("en-NG", { maximumFractionDigits: 0 })}`;
 
-const QUICK_ACTIONS: { label: string; icon: LucideIcon }[] = [
-  { label: "Add", icon: ArrowDownLeft },
-  { label: "Withdraw", icon: ArrowUpRight },
-  { label: "New Plan", icon: Plus },
-  { label: "Statements", icon: Receipt },
+const WALLET_BALANCE = 500000;
+
+const QUICK_ACTIONS: { label: string; icon: LucideIcon; to: string }[] = [
+  { label: "Add", icon: ArrowDownLeft, to: "/invest" },
+  { label: "Withdraw", icon: ArrowUpRight, to: "/portfolio" },
+  { label: "New Plan", icon: Plus, to: "/invest" },
+  { label: "Statements", icon: Receipt, to: "/portfolio" },
 ];
 
 const PLANS = [
@@ -63,7 +65,9 @@ const PLANS = [
     amount: 750000,
     yield: "18.5% p.a.",
     progress: 0.74,
-    matures: "14 Oct 2026",
+    started: "26 Jun 2026",
+    matures: "24 Sep 2026",
+    icon: Landmark,
   },
   {
     name: "Kipit Flex Yield",
@@ -71,7 +75,9 @@ const PLANS = [
     amount: 1200000,
     yield: "19.2% p.a.",
     progress: 0.38,
-    matures: "02 Jan 2027",
+    started: "25 Jun 2026",
+    matures: "22 Dec 2026",
+    icon: Zap,
   },
   {
     name: "Kipit Goal — Rent",
@@ -79,9 +85,36 @@ const PLANS = [
     amount: 500000,
     yield: "17.8% p.a.",
     progress: 0.16,
-    matures: "30 Aug 2027",
+    started: "05 Jul 2026",
+    matures: "05 Jul 2027",
+    icon: PiggyBank,
   },
 ];
+
+const INVESTED_TOTAL = PLANS.reduce((sum, p) => sum + p.amount, 0);
+const TOTAL_BALANCE = INVESTED_TOTAL + WALLET_BALANCE;
+
+const TIMEFRAMES = [
+  { id: "1D", gain: 4820, pct: 0.16, label: "today" },
+  { id: "1W", gain: 12480, pct: 0.43, label: "this week" },
+  { id: "1M", gain: 38200, pct: 1.31, label: "this month" },
+  { id: "6M", gain: 214600, pct: 7.85, label: "past 6 months" },
+  { id: "1Y", gain: 386400, pct: 15.1, label: "past year" },
+  { id: "All", gain: 452900, pct: 18.2, label: "all time" },
+];
+
+const WEEKLY = [
+  { day: "Mon", value: 1240 },
+  { day: "Tue", value: 1680 },
+  { day: "Wed", value: 1420 },
+  { day: "Thu", value: 2100 },
+  { day: "Fri", value: 1860 },
+  { day: "Sat", value: 2380 },
+  { day: "Sun", value: 1800 },
+];
+const WEEKLY_TOTAL = WEEKLY.reduce((sum, d) => sum + d.value, 0);
+const WEEKLY_MAX = Math.max(...WEEKLY.map((d) => d.value));
+const WEEKLY_BEST = WEEKLY.reduce((a, b) => (b.value > a.value ? b : a));
 
 const ACTIVITY: { icon: LucideIcon; title: string; detail: string; amount: string; positive: boolean }[] = [
   { icon: TrendingUp, title: "Interest payout", detail: "Kipit Fixed Income · Today, 09:12", amount: "+₦12,480", positive: true },
@@ -109,7 +142,7 @@ const FEED = [
 ];
 
 const NAV: { label: string; to: string; icon: LucideIcon }[] = [
-  { label: "Home", to: "/", icon: Home },
+  { label: "Home", to: "/home-v3", icon: Home },
   { label: "Explore", to: "/explore", icon: Compass },
   { label: "Portfolio", to: "/portfolio", icon: PieChart },
   { label: "Settings", to: "/settings", icon: Settings },
