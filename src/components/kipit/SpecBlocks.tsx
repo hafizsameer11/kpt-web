@@ -1,12 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { FileText, ShieldCheck } from "lucide-react";
+import { useEffect, useState } from "react";
 
-/** Time-of-day greeting used across every home concept. */
+/** Time-of-day greeting used across every home concept. Hydration-safe. */
 export function useGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Good morning";
-  if (hour < 17) return "Good afternoon";
-  return "Good evening";
+  const [greeting, setGreeting] = useState("Good day");
+  useEffect(() => {
+    const hour = new Date().getHours();
+    setGreeting(hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening");
+  }, []);
+  return greeting;
 }
 
 /** PRD: wallet funds are always available and never earn interest. */
