@@ -123,6 +123,7 @@
 
 /* Alternate "private banking" dark navy theme — used by the /home-v2 page */
 .theme-v2 {
+  color: var(--foreground);
   --background: oklch(0.17 0.032 256);
   --surface: oklch(0.215 0.038 256);
   --foreground: oklch(0.96 0.008 250);
