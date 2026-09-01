@@ -265,11 +265,22 @@ function Products() {
             <Link
               key={p.name}
               to="/invest"
-              className="rounded-2xl border border-border bg-card p-4 shadow-card transition hover:shadow-float"
+              className="overflow-hidden rounded-2xl border border-border bg-card shadow-card transition hover:shadow-float"
             >
+              <img
+                src={productArt(p.name)}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                width={768}
+                height={512}
+                className="h-20 w-full object-cover"
+              />
+              <div className="p-4">
               <span className={`grid size-10 place-items-center rounded-xl ${TONE[p.tone]}`}>
                 <Icon className="size-5" />
               </span>
+
               <p className="mt-2.5 text-sm font-extrabold text-foreground">{p.name}</p>
               <p className="text-[11px] leading-snug text-muted-foreground">{p.desc}</p>
               <p className="mt-2 text-base font-extrabold tabular-nums text-foreground">
