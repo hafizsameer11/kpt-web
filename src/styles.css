@@ -173,6 +173,33 @@
   font-family: "Syne", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Per-home type systems: each concept gets its own typeface */
+.type-v3,
+.type-v3 .font-display {
+  font-family: "Sora", ui-sans-serif, system-ui, sans-serif;
+}
+.type-v4,
+.type-v4 .font-display {
+  font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+.type-v5,
+.type-v5 .font-display {
+  font-family: "Nunito", ui-sans-serif, system-ui, sans-serif;
+}
+.type-v6,
+.type-v6 .font-display {
+  font-family: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+.type-v7,
+.type-v7 .font-display {
+  font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
+}
+.type-v8,
+.type-v8 .font-display {
+  font-family: "Urbanist", ui-sans-serif, system-ui, sans-serif;
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
