@@ -1,13 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
 import {
   ArrowDownLeft,
   ArrowUpRight,
   Bell,
+  ChevronRight,
   Compass,
   Eye,
   EyeOff,
   Home,
+  Lightbulb,
   PieChart,
   Plus,
   Receipt,
@@ -18,6 +19,8 @@ import {
 } from "lucide-react";
 import { DashboardSidebar } from "@/components/kipit/DashboardSidebar";
 import { Logo } from "@/components/kipit/Logo";
+import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
+import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 
 export const Route = createFileRoute("/home-v3")({
   head: () => ({
@@ -45,7 +48,7 @@ const QUICK_ACTIONS: { label: string; icon: LucideIcon }[] = [
   { label: "Add", icon: ArrowDownLeft },
   { label: "Withdraw", icon: ArrowUpRight },
   { label: "New Plan", icon: Plus },
-  { label: "History", icon: Receipt },
+  { label: "Statements", icon: Receipt },
 ];
 
 const PLANS = [
@@ -82,6 +85,24 @@ const ACTIVITY: { icon: LucideIcon; title: string; detail: string; amount: strin
   { icon: ArrowUpRight, title: "Withdrawal", detail: "To GTBank •• 4521 · 24 Aug", amount: "-₦50,000", positive: false },
 ];
 
+const FEED = [
+  {
+    tag: "Product update",
+    title: "Kipit Fixed Income now settles same-day",
+    body: "Maturity payouts land in your wallet within minutes of maturity.",
+  },
+  {
+    tag: "Education",
+    title: "Understanding tenor and effective yield",
+    body: "A 3-minute read on how rate and tenor shape your real return.",
+  },
+  {
+    tag: "Announcement",
+    title: "Tier 2 verification is now instant",
+    body: "Upgrade with your BVN and NIN to raise your transaction limits.",
+  },
+];
+
 const NAV: { label: string; to: string; icon: LucideIcon }[] = [
   { label: "Home", to: "/", icon: Home },
   { label: "Explore", to: "/explore", icon: Compass },
@@ -90,8 +111,8 @@ const NAV: { label: string; to: string; icon: LucideIcon }[] = [
 ];
 
 function HomeV3Screen() {
-  const [hidden, setHidden] = useState(false);
-  const mask = (value: number) => (hidden ? "₦ • • • • • •" : naira(value));
+  const { hidden, toggle, mask } = useBalanceVisibility();
+  const isNewUser = useIsNewUser();
 
   return (
     <div className="min-h-screen bg-background">
@@ -108,14 +129,14 @@ function HomeV3Screen() {
 
           <div className="relative flex items-center justify-between md:hidden">
             <Logo tone="light" className="text-2xl" />
-            <button
-              type="button"
+            <Link
+              to="/notifications"
               aria-label="Notifications"
               className="relative grid size-10 place-items-center rounded-full bg-white/10 text-primary-foreground"
             >
               <Bell className="size-5" />
               <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-gold" />
-            </button>
+            </Link>
           </div>
 
           <div className="relative mt-8 flex items-end justify-between gap-4 md:mt-2">
@@ -129,7 +150,7 @@ function HomeV3Screen() {
                 </h1>
                 <button
                   type="button"
-                  onClick={() => setHidden((v) => !v)}
+                  onClick={toggle}
                   aria-label={hidden ? "Show balance" : "Hide balance"}
                   className="grid size-9 place-items-center rounded-full bg-white/10 text-primary-foreground/80 transition-colors hover:bg-white/20"
                 >
@@ -140,17 +161,23 @@ function HomeV3Screen() {
                 <TrendingUp className="size-3.5" /> +1.58% this month
               </p>
             </div>
-            <button
-              type="button"
+            <Link
+              to="/notifications"
               aria-label="Notifications"
               className="relative hidden size-11 place-items-center rounded-full bg-white/10 text-primary-foreground md:grid"
             >
               <Bell className="size-5" />
               <span className="absolute right-3 top-3 size-2 rounded-full bg-gold" />
-            </button>
+            </Link>
           </div>
         </header>
 
+        {isNewUser ? (
+          <div className="relative z-10 -mt-9 px-5 md:mx-8 md:px-10">
+            <NewUserEmptyState />
+          </div>
+        ) : (
+        <>
         {/* Quick actions — overlapping the hero edge */}
         <section className="relative z-10 -mt-9 px-5 md:mx-8 md:px-10">
           <div className="grid grid-cols-4 gap-3 rounded-3xl border border-border bg-surface p-4 shadow-float">
@@ -184,6 +211,69 @@ function HomeV3Screen() {
                 </p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Wallet · weekly earnings · next maturity */}
+        <section className="mt-8 grid gap-4 px-5 md:mx-8 md:grid-cols-3 md:px-10">
+          <article className="rounded-3xl border border-border bg-surface p-5 shadow-card">
+            <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground">
+              <Wallet className="size-4" /> Wallet balance
+            </div>
+            <p className="mt-2 text-2xl font-extrabold tracking-tight">{mask(500000)}</p>
+            <p className="mt-1 text-xs text-muted-foreground">Available funds: {mask(500000)}</p>
+            <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+              Funds in your wallet are available for investment or withdrawal. Wallet funds do
+              not earn investment returns.
+            </p>
+          </article>
+
+          <article className="rounded-3xl border border-border bg-surface p-5 shadow-card">
+            <p className="text-sm font-bold text-muted-foreground">Weekly earnings</p>
+            <p className="mt-2 text-2xl font-extrabold tracking-tight text-success">{mask(12480)}</p>
+            <p className="mt-1 text-xs text-muted-foreground">Interest earned this week</p>
+            <div className="mt-4 flex h-14 items-end gap-1.5">
+              {[38, 52, 44, 66, 58, 80, 72].map((h, i) => (
+                <span key={i} style={{ height: `${h}%` }} className="flex-1 rounded-t-md bg-gold-gradient" />
+              ))}
+            </div>
+          </article>
+
+          <article className="rounded-3xl border border-border bg-surface p-5 shadow-card">
+            <p className="text-sm font-bold text-muted-foreground">Next maturity</p>
+            <p className="mt-2 text-base font-bold">Kipit Fixed Income · 90 days</p>
+            <p className="mt-1 text-2xl font-extrabold tracking-tight">{mask(750000)}</p>
+            <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+              <span>Matures 14 Oct 2026</span>
+              <span className="rounded-full bg-accent px-2.5 py-1 font-bold text-accent-foreground">
+                23 days left
+              </span>
+            </div>
+          </article>
+        </section>
+
+        {/* Investment recommendation */}
+        <section className="mt-6 px-5 md:mx-8 md:px-10">
+          <div className="rounded-3xl border border-gold/40 bg-accent p-5 md:flex md:items-center md:justify-between md:gap-6">
+            <div className="flex gap-3">
+              <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold-gradient text-gold-foreground">
+                <Lightbulb className="size-5" />
+              </span>
+              <div>
+                <p className="text-sm font-bold text-accent-foreground">
+                  Your ₦500,000 wallet balance isn&apos;t currently invested.
+                </p>
+                <p className="mt-1 text-xs text-accent-foreground/80">
+                  Plans from 18.5% p.a. · 30–365 day tenors · ₦50,000 minimum.
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/explore"
+              className="mt-4 inline-flex w-full items-center justify-center gap-1 rounded-full bg-brand px-5 py-3 text-sm font-bold text-brand-foreground md:mt-0 md:w-auto"
+            >
+              Explore Investments <ChevronRight className="size-4" />
+            </Link>
           </div>
         </section>
 
@@ -260,6 +350,24 @@ function HomeV3Screen() {
             })}
           </ul>
         </section>
+
+        {/* Content feed */}
+        <section className="mt-10 px-5 md:mx-8 md:px-10">
+          <h2 className="text-xl font-extrabold tracking-tight">For you</h2>
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            {FEED.map((item) => (
+              <article key={item.title} className="rounded-3xl border border-border bg-surface p-5 shadow-card">
+                <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                  {item.tag}
+                </span>
+                <h3 className="mt-2 text-sm font-bold leading-snug">{item.title}</h3>
+                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{item.body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+        </>
+        )}
       </main>
 
       {/* ============ Mobile floating dock nav with gold center FAB ============ */}
