@@ -151,6 +151,7 @@ const NAV: { label: string; to: string; icon: LucideIcon }[] = [
 
 function HomeV3Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
+  const greeting = useGreeting();
   const isNewUser = useIsNewUser();
   const [range, setRange] = useState("1M");
   const pathname = useRouterState({ select: (r) => r.location.pathname });
@@ -170,7 +171,10 @@ function HomeV3Screen() {
           <div aria-hidden className="pointer-events-none absolute -bottom-32 -left-16 size-72 rounded-full bg-gold/15 blur-3xl" />
 
           <div className="relative flex items-center justify-between md:hidden">
-            <Logo tone="light" className="text-2xl" />
+            <div className="min-w-0">
+              <Logo tone="light" className="text-2xl" />
+              <p className="mt-1 text-xs font-semibold text-primary-foreground/70">{greeting}, Adaeze</p>
+            </div>
             <Link
               to="/notifications"
               aria-label="Notifications"

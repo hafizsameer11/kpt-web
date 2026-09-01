@@ -278,6 +278,12 @@ function HomeV12Screen() {
             <NewUserEmptyState />
           ) : (
             <>
+              <header className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-muted-foreground">{greeting},</p>
+                  <p className="truncate text-lg font-extrabold text-foreground">Adaeze Okafor</p>
+                </div>
+              </header>
               <div className="grid gap-6 lg:grid-cols-5">
                 {/* Hero */}
                 <section className="relative overflow-hidden rounded-[2rem] bg-brand-gradient p-6 text-primary-foreground shadow-float sm:p-8 lg:col-span-3">
