@@ -443,7 +443,7 @@ function HomeV3Screen() {
             {FEED.map((item, i) => (
               <article key={item.title} className="rounded-3xl border border-border bg-surface p-5 shadow-card">
               <FeedThumb index={i} />
-                <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   {item.tag}
                 </span>
                 <h3 className="mt-2 text-sm font-bold leading-snug">{item.title}</h3>
@@ -458,41 +458,44 @@ function HomeV3Screen() {
 
       {/* ============ Mobile floating dock nav with gold center FAB ============ */}
       <nav className="fixed inset-x-4 bottom-4 z-40 md:hidden">
-        <div className="relative flex items-center justify-between rounded-full border border-border bg-surface/95 px-6 py-3 shadow-float backdrop-blur">
+        <div className="relative flex items-end justify-between rounded-3xl border border-border bg-surface/95 px-4 py-2.5 shadow-float backdrop-blur">
           {NAV.slice(0, 2).map((item) => {
             const Icon = item.icon;
-            const active = item.label === "Home";
+            const active = pathname === item.to;
             return (
               <Link
                 key={item.label}
                 to={item.to}
-                aria-label={item.label}
-                className={`grid size-11 place-items-center rounded-full transition-colors ${
-                  active ? "bg-accent text-gold" : "text-muted-foreground"
+                className={`flex w-16 flex-col items-center gap-1 rounded-2xl py-1.5 transition-colors ${
+                  active ? "text-gold" : "text-muted-foreground"
                 }`}
               >
                 <Icon className="size-5" strokeWidth={active ? 2.4 : 1.8} />
+                <span className="text-xs font-bold">{item.label}</span>
               </Link>
             );
           })}
           <span className="w-14" aria-hidden />
           {NAV.slice(2).map((item) => {
             const Icon = item.icon;
+            const active = pathname === item.to;
             return (
               <Link
                 key={item.label}
                 to={item.to}
-                aria-label={item.label}
-                className="grid size-11 place-items-center rounded-full text-muted-foreground transition-colors"
+                className={`flex w-16 flex-col items-center gap-1 rounded-2xl py-1.5 transition-colors ${
+                  active ? "text-gold" : "text-muted-foreground"
+                }`}
               >
-                <Icon className="size-5" strokeWidth={1.8} />
+                <Icon className="size-5" strokeWidth={active ? 2.4 : 1.8} />
+                <span className="text-xs font-bold">{item.label}</span>
               </Link>
             );
           })}
           <Link
             to="/invest"
             aria-label="Invest"
-            className="absolute left-1/2 top-0 grid size-14 -translate-x-1/2 -translate-y-1/3 place-items-center rounded-full bg-gold-gradient text-gold-foreground shadow-float ring-4 ring-background transition-transform active:scale-95"
+            className="absolute left-1/2 top-0 grid size-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-gold-gradient text-gold-foreground shadow-float ring-4 ring-background transition-transform active:scale-95"
           >
             <Plus className="size-6" strokeWidth={2.5} />
           </Link>
