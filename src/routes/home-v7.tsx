@@ -418,6 +418,7 @@ function ContentFeed() {
 function MobileTabBar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
+    /* Trove-style: icon-only bar, gold dot under the active tab */
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden">
       <ul className="grid grid-cols-5">
         {TABS.map((tab) => {
@@ -427,17 +428,20 @@ function MobileTabBar() {
             <li key={tab.to}>
               <Link
                 to={tab.to}
-                className={`flex flex-col items-center gap-0.5 py-2 text-[10px] font-semibold ${
+                aria-label={tab.label}
+                className={`flex flex-col items-center gap-1 py-3 transition-colors ${
                   active ? "text-brand" : "text-muted-foreground"
                 }`}
               >
                 <Icon
-                  className="size-5"
-                  strokeWidth={active ? 2.4 : 1.8}
-                  fill={active ? "currentColor" : "none"}
-                  fillOpacity={active ? 0.12 : 0}
+                  className="size-5.5"
+                  strokeWidth={active ? 2.4 : 1.6}
                 />
-                {tab.label}
+                <span
+                  className={`size-1.5 rounded-full transition-colors ${
+                    active ? "bg-gold" : "bg-transparent"
+                  }`}
+                />
               </Link>
             </li>
           );
