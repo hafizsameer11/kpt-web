@@ -323,7 +323,7 @@ function MobileTabBar() {
 function HomeV5() {
   return (
     <div className="min-h-screen bg-background">
-      <DashboardSidebar activeTo="/home-v5" />
+      <DashboardSidebar activePath="/home-v5" />
       <div className="md:pl-64">
         <DashboardTopBar title="Savings" />
         <main className="mx-auto w-full max-w-2xl space-y-5 px-4 pb-28 pt-5 md:max-w-none md:px-8 md:pb-16">
