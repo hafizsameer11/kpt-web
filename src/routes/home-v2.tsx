@@ -241,21 +241,30 @@ function HomeV2Screen() {
           </article>
         </section>
 
-        {/* Quick actions — pill row */}
-        <section className="mt-4 grid grid-cols-4 gap-2 md:gap-3">
-          {QUICK_ACTIONS.map(({ label, icon: Icon }) => (
-            <button
-              key={label}
-              type="button"
-              className="group flex flex-col items-center gap-2 rounded-2xl border border-border bg-surface p-3.5 shadow-card transition-all hover:border-gold/50 active:scale-95 md:flex-row md:justify-center md:gap-2.5"
-            >
-              <Icon className="size-5 text-gold transition-transform group-hover:-translate-y-0.5" />
-              <span className="text-[11px] font-semibold leading-tight md:text-sm">
-                {label}
-              </span>
-            </button>
-          ))}
+        {/* Quick actions — segmented card row */}
+        <section className="mt-4 overflow-hidden rounded-3xl border border-border bg-surface shadow-card">
+          <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4 sm:divide-y-0">
+            {QUICK_ACTIONS.map(({ label, icon: Icon }) => (
+              <button
+                key={label}
+                type="button"
+                className="group relative flex items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-accent/40 active:bg-accent/60 md:px-5"
+              >
+                <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold/12 text-gold transition-all group-hover:bg-gold-gradient group-hover:text-gold-foreground">
+                  <Icon className="size-4.5" />
+                </span>
+                <span className="min-w-0 text-[13px] font-semibold leading-tight md:text-sm">
+                  {label}
+                </span>
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-gold-gradient transition-transform duration-300 group-hover:scale-x-100"
+                />
+              </button>
+            ))}
+          </div>
         </section>
+
 
         {/* Earnings + maturity + nudge */}
         <section className="mt-4 grid gap-4 md:grid-cols-3">
