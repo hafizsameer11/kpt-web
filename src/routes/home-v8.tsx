@@ -351,7 +351,7 @@ function Plans() {
               to="/invest"
               className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card transition hover:shadow-float"
             >
-              <div className="relative h-14 w-full overflow-hidden bg-primary">
+              <div className="relative h-14 w-full bg-primary">
                 <img
                   src={productArt(p.name)}
                   alt=""
