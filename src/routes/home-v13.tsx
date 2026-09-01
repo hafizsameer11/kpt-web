@@ -224,8 +224,10 @@ function HomeV13Screen() {
 
   const delta = useMemo(() => {
     const p = SERIES[frame].points;
-    const change = p[p.length - 1] - p[0];
-    return { change, pct: (change / p[0]) * 100 };
+    const start = p[0] ?? 1;
+    const end = p[p.length - 1] ?? start;
+    const change = end - start;
+    return { change, pct: (change / start) * 100 };
   }, [frame]);
 
   const maxPayout = Math.max(...PAYOUTS.map((p) => p.amount));
