@@ -16,8 +16,8 @@ export function NewUserEmptyState() {
         className="h-40 w-full object-cover sm:h-52"
       />
       <div className="p-8 pt-6">
+      <h2 className="text-xl font-extrabold tracking-tight">
 
-      <h2 className="mt-4 text-xl font-extrabold tracking-tight">
         Start building your portfolio.
       </h2>
       <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
