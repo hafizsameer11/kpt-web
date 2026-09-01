@@ -270,7 +270,7 @@ function HomeV2Screen() {
         <section className="mt-4 grid gap-4 md:grid-cols-3">
           <article className="rounded-3xl border border-border bg-surface p-6 shadow-card">
             <div className="flex items-baseline justify-between">
-              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                 Weekly earnings
               </p>
               <span className="text-xs font-bold text-success">+8.2%</span>
@@ -278,13 +278,15 @@ function HomeV2Screen() {
             <p className="mt-3 font-display text-3xl font-bold tracking-tight text-gold">
               {mask(12480)}
             </p>
-            <div className="mt-5 flex h-16 items-end gap-1.5">
+            <div className="mt-5 flex h-20 items-center gap-2">
               {[38, 52, 44, 66, 58, 80, 72].map((h, i) => (
                 <span
                   key={i}
-                  style={{ height: `${h}%` }}
-                  className={`flex-1 rounded-full ${
-                    i === 5 ? "bg-gold-gradient" : "bg-secondary"
+                  style={{ width: `${Math.max(h, 28)}%` }}
+                  className={`h-10 shrink-0 rounded-full transition-all ${
+                    i === 5
+                      ? "bg-gold-gradient shadow-[0_6px_18px_-6px_oklch(0.75_0.16_85/0.55)]"
+                      : "bg-secondary"
                   }`}
                 />
               ))}
