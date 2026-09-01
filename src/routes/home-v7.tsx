@@ -458,7 +458,7 @@ function MobileTabBar() {
 function HomeV7() {
   const isNewUser = useIsNewUser();
   return (
-    <div className="min-h-screen bg-background">
+    <div className="type-v7 min-h-screen bg-background">
       <DashboardSidebar activePath="/home-v7" />
       <div className="md:pl-64">
         <DashboardTopBar title="Home" />

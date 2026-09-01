@@ -478,7 +478,7 @@ function MobileTabBar() {
 function HomeV6() {
   const isNewUser = useIsNewUser();
   return (
-    <div className="min-h-screen bg-background">
+    <div className="type-v6 min-h-screen bg-background">
       <DashboardSidebar activePath="/home-v6" />
       <div className="md:pl-64">
         <DashboardTopBar title="Investing" />
