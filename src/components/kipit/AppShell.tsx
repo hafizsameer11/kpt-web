@@ -30,6 +30,8 @@ export function AppShell({
   navVariant?: "classic" | "floating" | "morph" | "aurora" | "elevated";
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isActive = (to: string) =>
+    to === "/" ? pathname === "/" || pathname.startsWith("/home-v") : pathname === to;
 
   return (
     <div className="min-h-screen bg-background">
@@ -50,7 +52,7 @@ export function AppShell({
         <nav className="fixed inset-x-4 bottom-4 z-40 md:hidden">
           <ul className="grid grid-cols-5 items-end rounded-[1.6rem] border border-border bg-surface/95 px-2 py-2 shadow-float backdrop-blur">
             {TABS.map((tab) => {
-              const active = pathname === tab.to;
+              const active = isActive(tab.to);
               const Icon = tab.icon;
               return (
                 <li key={tab.to}>
@@ -79,7 +81,7 @@ export function AppShell({
         <nav className="fixed inset-x-3 bottom-3 z-40 md:hidden">
           <ul className="grid grid-cols-5 gap-1 rounded-[1.75rem] bg-brand-gradient p-2 shadow-float">
             {TABS.map((tab) => {
-              const active = pathname === tab.to;
+              const active = isActive(tab.to);
               const Icon = tab.icon;
               return (
                 <li key={tab.to}>
@@ -110,7 +112,7 @@ export function AppShell({
         <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur md:hidden">
           <ul className="flex items-center justify-between gap-1">
             {TABS.map((tab) => {
-              const active = pathname === tab.to;
+              const active = isActive(tab.to);
               const Icon = tab.icon;
               return (
                 <li key={tab.to} className={active ? "flex-1" : ""}>
@@ -136,7 +138,7 @@ export function AppShell({
         <nav className="fixed inset-x-4 bottom-4 z-40 md:hidden">
           <ul className="grid grid-cols-5 rounded-full border border-border bg-surface/95 p-1.5 shadow-float backdrop-blur">
             {TABS.map((tab) => {
-              const active = pathname === tab.to;
+              const active = isActive(tab.to);
               const Icon = tab.icon;
               return (
                 <li key={tab.to}>
@@ -160,7 +162,7 @@ export function AppShell({
         <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
           <ul className="grid grid-cols-5">
             {TABS.map((tab) => {
-              const active = pathname === tab.to;
+              const active = isActive(tab.to);
               const Icon = tab.icon;
               return (
                 <li key={tab.to}>
