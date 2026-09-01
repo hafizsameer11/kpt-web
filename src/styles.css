@@ -271,3 +271,14 @@
   }
 }
 
+
+/* v13 — the definitive Kipit home: one tight grotesque, heavy display weights */
+.type-v13 {
+  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.011em;
+}
+.type-v13 .font-display {
+  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
