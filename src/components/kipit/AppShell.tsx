@@ -23,9 +23,11 @@ const TABS: Tab[] = [
 export function AppShell({
   children,
   title = "Dashboard",
+  navVariant = "classic",
 }: {
   children: ReactNode;
   title?: string;
+  navVariant?: "classic" | "floating";
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
