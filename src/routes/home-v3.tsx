@@ -116,7 +116,7 @@ function HomeV3Screen() {
   const isNewUser = useIsNewUser();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="type-v3 min-h-screen bg-background">
       {/* ============ Desktop sidebar ============ */}
       <DashboardSidebar hideBalance={hidden} walletBalance={500000} />
 

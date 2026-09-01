@@ -132,7 +132,7 @@ function HomeV4() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <div className="min-h-screen bg-secondary/60">
+    <div className="type-v4 min-h-screen bg-secondary/60">
       {/* Desktop dashboard sidebar */}
       <DashboardSidebar hideBalance={hidden} />
       <div className="md:pl-64">

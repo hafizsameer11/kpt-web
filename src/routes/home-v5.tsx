@@ -450,7 +450,7 @@ function MobileTabBar() {
 function HomeV5() {
   const isNewUser = useIsNewUser();
   return (
-    <div className="min-h-screen bg-background">
+    <div className="type-v5 min-h-screen bg-background">
       <DashboardSidebar activePath="/home-v5" />
       <div className="md:pl-64">
         <DashboardTopBar title="Savings" />
