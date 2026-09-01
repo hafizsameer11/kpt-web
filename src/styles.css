@@ -159,6 +159,11 @@
   --font-display: "Syne", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* @theme inline bakes font utilities at build time, so override the scope directly */
+.theme-v2 .font-display {
+  font-family: "Syne", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
