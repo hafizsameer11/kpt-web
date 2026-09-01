@@ -425,8 +425,8 @@ function HomeV4() {
                 <span>74% of term</span>
               </div>
               <p className="mt-4 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground">
-                Funds in your wallet are available for investment or withdrawal, and do not earn
-                investment returns.
+                Funds in your wallet are available for investment or withdrawal anytime, and do not earn
+                interest or investment returns.
               </p>
             </section>
 

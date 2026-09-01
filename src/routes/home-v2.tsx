@@ -229,7 +229,7 @@ function HomeV2Screen() {
                 {mask(500000)}
               </p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                Available to invest or withdraw. Wallet funds do not earn returns.
+                Available to invest or withdraw anytime. Wallet funds do not earn interest or investment returns.
               </p>
             </div>
             <button
