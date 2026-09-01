@@ -307,12 +307,22 @@ function ProductCard({ product }: { product: Product }) {
   const { mask } = useBalanceVisibility();
   return (
     <button
-      className={`flex flex-col items-start gap-3 rounded-3xl p-5 text-left shadow-card transition-transform hover:-translate-y-0.5 ${product.card}`}
+      className={`relative flex flex-col items-start gap-3 overflow-hidden rounded-3xl p-5 text-left shadow-card transition-transform hover:-translate-y-0.5 ${product.card}`}
     >
-      <span className="grid size-10 place-items-center rounded-2xl bg-white/15">
+      <img
+        src={productArt(product.name)}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        width={768}
+        height={512}
+        className="pointer-events-none absolute inset-0 size-full object-cover opacity-25 mix-blend-luminosity"
+      />
+      <span className="relative grid size-10 place-items-center rounded-2xl bg-white/15">
         <Icon className="size-5" />
       </span>
-      <span>
+      <span className="relative">
+
         <span className="block text-sm font-bold">{product.name}</span>
         <span className="mt-0.5 block text-xs opacity-80">
           {product.blurb}
