@@ -483,7 +483,7 @@ function HomeV6() {
             <>
               <PortfolioHero />
               <div className="grid gap-5 lg:grid-cols-3">
-                <div className="space-y-5 lg:col-span-2">
+                <div className="min-w-0 space-y-5 lg:col-span-2">
                   <Holdings />
                   <EarningsAndMaturity />
                   <Recommendation />
@@ -492,10 +492,10 @@ function HomeV6() {
                   <WalletCard />
                   <Activity />
                 </div>
-                <div className="lg:col-span-3">
+                <div className="min-w-0 lg:col-span-3">
                   <Movers />
                 </div>
-                <div className="lg:col-span-3">
+                <div className="min-w-0 lg:col-span-3">
                   <ContentFeed />
                 </div>
               </div>
