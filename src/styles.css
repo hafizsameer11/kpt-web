@@ -225,6 +225,16 @@
   letter-spacing: -0.02em;
 }
 
+/* v12 — friendly geometric UI with a heavy display face */
+.type-v12 {
+  font-family: "Onest", ui-sans-serif, system-ui, sans-serif;
+}
+.type-v12 .font-display {
+  font-family: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
