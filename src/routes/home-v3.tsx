@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -18,6 +17,8 @@ import {
 } from "lucide-react";
 import { DashboardSidebar } from "@/components/kipit/DashboardSidebar";
 import { Logo } from "@/components/kipit/Logo";
+import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
+import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 
 export const Route = createFileRoute("/home-v3")({
   head: () => ({
@@ -45,7 +46,7 @@ const QUICK_ACTIONS: { label: string; icon: LucideIcon }[] = [
   { label: "Add", icon: ArrowDownLeft },
   { label: "Withdraw", icon: ArrowUpRight },
   { label: "New Plan", icon: Plus },
-  { label: "History", icon: Receipt },
+  { label: "Statements", icon: Receipt },
 ];
 
 const PLANS = [
@@ -90,8 +91,8 @@ const NAV: { label: string; to: string; icon: LucideIcon }[] = [
 ];
 
 function HomeV3Screen() {
-  const [hidden, setHidden] = useState(false);
-  const mask = (value: number) => (hidden ? "₦ • • • • • •" : naira(value));
+  const { hidden, toggle, mask } = useBalanceVisibility();
+  const isNewUser = useIsNewUser();
 
   return (
     <div className="min-h-screen bg-background">
@@ -108,14 +109,14 @@ function HomeV3Screen() {
 
           <div className="relative flex items-center justify-between md:hidden">
             <Logo tone="light" className="text-2xl" />
-            <button
-              type="button"
+            <Link
+              to="/notifications"
               aria-label="Notifications"
               className="relative grid size-10 place-items-center rounded-full bg-white/10 text-primary-foreground"
             >
               <Bell className="size-5" />
               <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-gold" />
-            </button>
+            </Link>
           </div>
 
           <div className="relative mt-8 flex items-end justify-between gap-4 md:mt-2">
@@ -129,7 +130,7 @@ function HomeV3Screen() {
                 </h1>
                 <button
                   type="button"
-                  onClick={() => setHidden((v) => !v)}
+                  onClick={toggle}
                   aria-label={hidden ? "Show balance" : "Hide balance"}
                   className="grid size-9 place-items-center rounded-full bg-white/10 text-primary-foreground/80 transition-colors hover:bg-white/20"
                 >
@@ -140,17 +141,23 @@ function HomeV3Screen() {
                 <TrendingUp className="size-3.5" /> +1.58% this month
               </p>
             </div>
-            <button
-              type="button"
+            <Link
+              to="/notifications"
               aria-label="Notifications"
               className="relative hidden size-11 place-items-center rounded-full bg-white/10 text-primary-foreground md:grid"
             >
               <Bell className="size-5" />
               <span className="absolute right-3 top-3 size-2 rounded-full bg-gold" />
-            </button>
+            </Link>
           </div>
         </header>
 
+        {isNewUser ? (
+          <div className="relative z-10 -mt-9 px-5 md:mx-8 md:px-10">
+            <NewUserEmptyState />
+          </div>
+        ) : (
+        <>
         {/* Quick actions — overlapping the hero edge */}
         <section className="relative z-10 -mt-9 px-5 md:mx-8 md:px-10">
           <div className="grid grid-cols-4 gap-3 rounded-3xl border border-border bg-surface p-4 shadow-float">
