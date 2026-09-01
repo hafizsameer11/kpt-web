@@ -37,6 +37,8 @@ export function NewUserEmptyState() {
           Explore Investments
         </Link>
       </div>
+      </div>
+
     </section>
   );
 }
