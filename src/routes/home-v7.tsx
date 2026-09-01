@@ -271,13 +271,13 @@ function WalletCard() {
     <section className="rounded-2xl border border-border bg-card p-4 shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="grid size-10 place-items-center rounded-xl bg-brand/10 text-brand">
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand">
             <Wallet className="size-5" />
           </span>
-          <div>
+          <div className="min-w-0">
             <p className="text-xs font-semibold text-muted-foreground">Kipit Wallet</p>
             <p className="text-lg font-extrabold tabular-nums text-foreground">
-              {hidden ? "₦••••••" : naira(128500)}
+              {hidden ? MASK : naira(WALLET_BALANCE)}
             </p>
           </div>
         </div>
@@ -285,7 +285,7 @@ function WalletCard() {
           <FileText className="size-3.5" /> Statements
         </button>
       </div>
-      <p className="mt-3 rounded-lg bg-muted/60 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+      <p className="mt-3 rounded-lg bg-muted/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
         Funds in your wallet don’t earn returns until invested. Move money into a plan to start growing it.
       </p>
     </section>
@@ -295,25 +295,65 @@ function WalletCard() {
 /* ----------------------------- discover ----------------------------- */
 
 function Discover() {
+  const railRef = useRef<HTMLDivElement>(null);
+
+  const scrollBy = (dir: 1 | -1) => {
+    railRef.current?.scrollBy({ left: dir * 220, behavior: "smooth" });
+  };
+
   return (
     <section>
-      <SectionTitle action="See all">Discover investments</SectionTitle>
-      <div className="flex snap-x gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {DISCOVER.map((d) => (
-          <div
-            key={d.name}
-            className="w-44 shrink-0 snap-start rounded-2xl border border-border bg-card p-4 shadow-card transition hover:shadow-float"
-          >
-            <span className={`grid size-10 place-items-center rounded-xl text-xs font-extrabold ${TONE[d.tone]}`}>
-              {d.name.slice(0, 2)}
-            </span>
-            <p className="mt-3 text-sm font-bold leading-snug text-foreground">{d.name}</p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">{d.meta}</p>
-            <button className="mt-3 w-full rounded-lg bg-brand py-2 text-xs font-bold text-brand-foreground transition hover:brightness-110">
-              Start investing
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h2 className="text-base font-extrabold text-foreground">Discover investments</h2>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-brand">
+            See all <ChevronRight className="size-3.5" />
+          </span>
+          <div className="hidden gap-1 md:flex">
+            <button
+              onClick={() => scrollBy(-1)}
+              aria-label="Scroll products left"
+              className="grid size-7 place-items-center rounded-full border border-border bg-card text-muted-foreground transition hover:bg-muted"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+            <button
+              onClick={() => scrollBy(1)}
+              aria-label="Scroll products right"
+              className="grid size-7 place-items-center rounded-full border border-border bg-card text-muted-foreground transition hover:bg-muted"
+            >
+              <ChevronRight className="size-4" />
             </button>
           </div>
-        ))}
+        </div>
+      </div>
+
+      <div className="relative">
+        <div
+          ref={railRef}
+          className="flex snap-x items-stretch gap-3 overflow-x-auto pb-1 pr-8 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {DISCOVER.map((d) => {
+            const Icon = d.icon;
+            return (
+              <div
+                key={d.name}
+                className="flex w-44 shrink-0 snap-start flex-col rounded-2xl border border-border bg-card p-4 shadow-card transition hover:shadow-float"
+              >
+                <span className={`grid size-10 place-items-center rounded-xl ${TONE[d.tone]}`}>
+                  <Icon className="size-5" />
+                </span>
+                <p className="mt-3 text-sm font-bold leading-snug text-foreground">{d.name}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{d.meta}</p>
+                <button className="mt-auto w-full rounded-lg bg-brand pt-2 pb-2 text-xs font-bold text-brand-foreground transition hover:brightness-110 [margin-top:0.75rem]">
+                  Start investing
+                </button>
+              </div>
+            );
+          })}
+        </div>
+        {/* fade affordance so the rail reads as scrollable, not clipped */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-background to-transparent" />
       </div>
     </section>
   );
@@ -326,29 +366,33 @@ function Watchlist() {
     <section>
       <SectionTitle action="Markets">Watchlist</SectionTitle>
       <ul className="divide-y divide-border rounded-2xl border border-border bg-card shadow-card">
-        {WATCHLIST.map((w) => (
-          <li key={w.ticker} className="flex items-center gap-3 px-4 py-3.5">
-            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand/10 text-[10px] font-extrabold text-brand">
-              {w.ticker.slice(0, 2)}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-bold text-foreground">{w.ticker}</span>
-              <span className="text-xs text-muted-foreground">{w.name}</span>
-            </span>
-            <Sparkline
-              data={w.change >= 0 ? [2, 4, 3, 6, 5, 8, 10] : [10, 8, 9, 6, 7, 4, 2]}
-              className={`hidden h-7 w-14 sm:block ${w.change >= 0 ? "text-success" : "text-destructive"}`}
-            />
-            <span
-              className={`inline-flex items-center gap-0.5 text-sm font-extrabold ${
-                w.change >= 0 ? "text-success" : "text-destructive"
-              }`}
-            >
-              {w.change >= 0 ? <TrendingUp className="size-3.5" /> : <TrendingDown className="size-3.5" />}
-              {w.change >= 0 ? "+" : ""}{w.change}%
-            </span>
-          </li>
-        ))}
+        {WATCHLIST.map((w) => {
+          const up = w.change >= 0;
+          return (
+            <li key={w.ticker} className="flex items-center gap-3 px-4 py-3.5">
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand/10 text-xs font-extrabold text-brand">
+                {w.ticker.slice(0, 2)}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-bold text-foreground">{w.ticker}</span>
+                <span className="text-xs text-muted-foreground">{w.name}</span>
+              </span>
+              <Sparkline
+                data={up ? [2, 4, 3, 6, 5, 8, 10] : [10, 8, 9, 6, 7, 4, 2]}
+                className={`hidden h-7 w-14 sm:block ${up ? "text-gold" : "text-brand/40"}`}
+              />
+              <span
+                className={`inline-flex items-center gap-0.5 text-sm font-extrabold ${
+                  up ? "text-success" : "text-destructive"
+                }`}
+              >
+                {up ? <TrendingUp className="size-3.5" /> : <TrendingDown className="size-3.5" />}
+                {up ? "+" : ""}
+                {w.change}%
+              </span>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
@@ -363,18 +407,26 @@ function EarningsAndMaturity() {
       <section className="rounded-2xl border border-border bg-card p-4 shadow-card">
         <p className="text-xs font-semibold text-muted-foreground">Earned this week</p>
         <p className="mt-1 text-xl font-extrabold tabular-nums text-foreground">
-          {hidden ? "₦••••••" : naira(42150)}
+          {hidden ? MASK : naira(WEEKLY_TOTAL)}
         </p>
-        <div className="mt-3 flex h-16 items-end gap-1.5">
-          {WEEKLY.map((h, i) => (
-            <div
-              key={i}
-              className={`flex-1 rounded-t-md ${i === WEEKLY.length - 1 ? "bg-gold" : "bg-brand/20"}`}
-              style={{ height: `${h}%` }}
-            />
+        <div className="mt-3 flex h-20 items-end gap-1.5">
+          {WEEKLY.map((d, i) => (
+            <div key={d.day} className="flex h-full flex-1 flex-col justify-end gap-1.5">
+              <div
+                title={`${d.day}: ${hidden ? MASK : naira(d.value)}`}
+                className={`rounded-t-md ${i === WEEKLY.length - 1 ? "bg-gold" : "bg-brand/20"}`}
+                style={{ height: `${(d.value / WEEKLY_MAX) * 100}%` }}
+              />
+              <span className="text-center text-[0.7rem] font-semibold text-muted-foreground">
+                {d.day.slice(0, 1)}
+              </span>
+            </div>
           ))}
         </div>
-        <p className="mt-2 text-[11px] text-muted-foreground">Mon – Sun</p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Best day <span className="font-semibold text-foreground">Sun</span> ·{" "}
+          {hidden ? MASK : naira(WEEKLY_MAX)}
+        </p>
       </section>
 
       <section className="rounded-2xl border border-border bg-card p-4 shadow-card">
@@ -386,18 +438,24 @@ function EarningsAndMaturity() {
         </div>
         <p className="mt-2 text-sm font-bold text-foreground">Treasury Notes · 91-Day</p>
         <p className="text-xl font-extrabold tabular-nums text-foreground">
-          {hidden ? "₦••••••" : naira(460000)}
+          {hidden ? MASK : naira(460000)}
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
           Matures <span className="font-semibold text-foreground">12 Sep 2026</span> · 11 days left
         </p>
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
-          <div className="h-full w-[78%] rounded-full bg-gold" />
+        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
+          <div className="h-full rounded-full bg-gold" style={{ width: `${MATURITY_PROGRESS}%` }} />
+        </div>
+        <div className="mt-1.5 flex items-center justify-between text-xs text-muted-foreground">
+          <span>13 Jun</span>
+          <span className="font-semibold text-foreground">{MATURITY_PROGRESS}% of term</span>
+          <span>12 Sep</span>
         </div>
       </section>
     </div>
   );
 }
+
 
 /* ----------------------- recommendation & feed ----------------------- */
 
