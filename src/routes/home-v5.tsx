@@ -348,7 +348,7 @@ function ContentFeed() {
         {FEED.map((item, i) => (
           <article key={item.title} className="rounded-3xl bg-card p-5 shadow-card">
               <FeedThumb index={i} />
-            <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
               {item.tag}
             </span>
             <h3 className="mt-2 text-sm font-bold leading-snug">{item.title}</h3>
@@ -506,7 +506,7 @@ function MobileTabBar() {
             <li key={tab.to}>
               <Link
                 to={tab.to}
-                className={`flex flex-col items-center gap-0.5 py-2 text-[10px] font-semibold ${
+                className={`flex flex-col items-center gap-0.5 py-2 text-xs font-semibold ${
                   active ? "text-brand" : "text-muted-foreground"
                 }`}
               >
@@ -530,7 +530,7 @@ function HomeV5() {
   const isNewUser = useIsNewUser();
   return (
     <div className="type-v5 min-h-screen bg-background">
-      <DashboardSidebar activePath="/home-v5" />
+      <DashboardSidebar activePath="/home-v5" walletBalance={WALLET_BALANCE} hideBalance={hidden} />
       <div className="md:pl-64">
         <DashboardTopBar title="Savings" />
         <main className="mx-auto w-full max-w-2xl space-y-5 px-4 pb-28 pt-5 md:max-w-none md:px-8 md:pb-16">
