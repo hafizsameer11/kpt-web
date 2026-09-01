@@ -187,14 +187,17 @@ function GreetingHeader() {
 
 function BalanceCard() {
   const { hidden, toggle } = useBalanceVisibility();
+  const [rangeKey, setRangeKey] = useState<string>("1M");
+  const range = RANGES.find((r) => r.key === rangeKey) ?? RANGES[2];
+
   return (
     <section className="overflow-hidden rounded-3xl bg-brand-gradient p-5 text-brand-foreground shadow-float md:p-6">
-      <div className="flex items-start justify-between gap-3">
+      <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
         <div className="min-w-0">
           <p className="text-xs font-semibold text-brand-foreground/70">Total portfolio value</p>
           <div className="mt-1 flex items-center gap-2">
             <h1 className="text-3xl font-extrabold tabular-nums md:text-4xl">
-              {hidden ? "₦••••••" : naira(1830150)}
+              {hidden ? MASK : naira(PORTFOLIO_VALUE)}
             </h1>
             <button
               onClick={toggle}
@@ -205,16 +208,46 @@ function BalanceCard() {
             </button>
           </div>
           <p className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-gold">
-            <TrendingUp className="size-4" /> +{hidden ? "••••" : naira(96400)} (5.6%) this month
+            <TrendingUp className="size-4" /> +{hidden ? "••••" : naira(range.change)} ({range.pct}%)
+            <span className="text-brand-foreground/70">
+              {range.key === "All" ? "all time" : `past ${range.label}`}
+            </span>
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-[11px] font-semibold text-brand-foreground/70">Kipit Wallet</p>
-          <p className="text-sm font-extrabold tabular-nums">{hidden ? "₦••••••" : naira(128500)}</p>
-        </div>
+
+        <Sparkline
+          key={range.key}
+          data={range.series}
+          className="h-16 w-full text-gold md:w-56"
+        />
       </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-2">
+      <div
+        role="tablist"
+        aria-label="Performance timeframe"
+        className="mt-4 flex gap-1.5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {RANGES.map((r) => {
+          const active = r.key === rangeKey;
+          return (
+            <button
+              key={r.key}
+              role="tab"
+              aria-selected={active}
+              onClick={() => setRangeKey(r.key)}
+              className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
+                active
+                  ? "bg-gold text-gold-foreground"
+                  : "bg-brand-foreground/10 text-brand-foreground/80 hover:bg-brand-foreground/20"
+              }`}
+            >
+              {r.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-5 grid gap-2 sm:grid-cols-3">
         <button className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gold py-2.5 text-sm font-bold text-gold-foreground transition hover:brightness-105">
           <Plus className="size-4" /> Invest
         </button>
@@ -228,6 +261,7 @@ function BalanceCard() {
     </section>
   );
 }
+
 
 /* ------------------------------ wallet ------------------------------ */
 
