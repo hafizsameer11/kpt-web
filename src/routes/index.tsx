@@ -142,8 +142,15 @@ function HomeScreen() {
         </div>
       </section>
 
+      {isNewUser ? (
+        <div className="mt-5">
+          <NewUserEmptyState />
+        </div>
+      ) : (
+      <>
       {/* Quick actions */}
       <section className="mt-5 grid grid-cols-4 gap-2 md:mt-6 md:gap-4">
+
         {QUICK_ACTIONS.map(({ label, icon: Icon }) => (
           <button
             key={label}
