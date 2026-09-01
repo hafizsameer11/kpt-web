@@ -366,18 +366,19 @@ function HomeV12Screen() {
                         {hidden ? "₦••••" : `+${naira(WEEK_TOTAL)}`}
                       </span>
                     </div>
-                    <ul className="mt-5 flex h-28 items-end gap-2">
+                    <ul className="mt-5 flex items-end gap-2">
                       {WEEK.map((d) => (
                         <li key={d.day} className="flex flex-1 flex-col items-center gap-2">
                           <span className="sr-only">{`${d.day}: ${naira(d.amount)}`}</span>
                           <span
-                            className="w-full rounded-t-lg bg-gold-gradient"
-                            style={{ height: `${(d.amount / WEEK_MAX) * 100}%` }}
+                            className="block w-full rounded-t-lg bg-gold-gradient"
+                            style={{ height: `${Math.max(6, (d.amount / WEEK_MAX) * 88)}px` }}
                           />
                           <span className="text-xs text-muted-foreground">{d.day}</span>
                         </li>
                       ))}
                     </ul>
+
                   </section>
                 </div>
               </div>
