@@ -208,8 +208,8 @@ function WalletCard() {
   const { hidden } = useBalanceVisibility();
   return (
     <section className="rounded-2xl border border-border bg-card p-4 shadow-card">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <span className="grid size-10 place-items-center rounded-xl bg-brand/10 text-brand">
             <Wallet className="size-5" />
           </span>
@@ -220,7 +220,7 @@ function WalletCard() {
             </p>
           </div>
         </div>
-        <div className="flex shrink-0 flex-wrap justify-end gap-2">
+        <div className="flex flex-wrap justify-end gap-2">
           <button className="rounded-lg bg-brand px-3 py-2 text-xs font-bold text-brand-foreground transition hover:brightness-110">
             Add money
           </button>
@@ -483,19 +483,19 @@ function HomeV6() {
             <>
               <PortfolioHero />
               <div className="grid gap-5 lg:grid-cols-3">
-                <div className="space-y-5 lg:col-span-2">
+                <div className="min-w-0 space-y-5 lg:col-span-2">
                   <Holdings />
                   <EarningsAndMaturity />
                   <Recommendation />
                 </div>
-                <div className="space-y-5">
+<div className="min-w-0 space-y-5">
                   <WalletCard />
                   <Activity />
                 </div>
-                <div className="lg:col-span-3">
+                <div className="min-w-0 lg:col-span-3">
                   <Movers />
                 </div>
-                <div className="lg:col-span-3">
+                <div className="min-w-0 lg:col-span-3">
                   <ContentFeed />
                 </div>
               </div>
