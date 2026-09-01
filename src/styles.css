@@ -214,6 +214,17 @@
   letter-spacing: -0.01em;
 }
 
+/* v11 — high-contrast editorial display over a tight grotesque UI face */
+.type-v11 {
+  font-family: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.011em;
+}
+.type-v11 .font-display {
+  font-family: "Fraunces", ui-serif, Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
