@@ -67,8 +67,9 @@ const FEED = [
 ];
 
 function HomeScreen() {
-  const [hidden, setHidden] = useState(false);
-  const mask = (value: number) => (hidden ? "₦••••••" : naira(value));
+  const { hidden, toggle, mask } = useBalanceVisibility();
+  const isNewUser = useIsNewUser();
+
 
   return (
     <AppShell>
