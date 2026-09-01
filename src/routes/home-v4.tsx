@@ -514,7 +514,7 @@ function HomeV4() {
                 )}
                 <Link
                   to={tab.to}
-                  className={`flex flex-col items-center gap-1 py-2.5 text-[11px] transition-colors ${
+                  className={`flex flex-col items-center gap-1 py-2.5 text-xs transition-colors ${
                     active
                       ? "font-bold text-brand"
                       : "font-medium text-muted-foreground"
