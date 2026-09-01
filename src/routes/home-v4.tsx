@@ -11,11 +11,11 @@ import {
   Eye,
   EyeOff,
   Home,
+  Lightbulb,
   MoreHorizontal,
   PieChart,
   PlusCircle,
   Settings,
-  Sparkles,
   TrendingUp,
   Wallet,
   type LucideIcon,
@@ -221,7 +221,7 @@ function HomeV4() {
                 </div>
                 <div className="rounded-2xl bg-brand-foreground/10 p-3.5">
                   <div className="flex items-center gap-1.5 text-[11px] font-semibold opacity-75">
-                    <Sparkles className="size-3.5" /> Earned this week
+                    <TrendingUp className="size-3.5" /> Earned this week
                   </div>
                   <p className="mt-1 text-lg font-extrabold text-gold">
                     {mask(12480)}
@@ -307,7 +307,7 @@ function HomeV4() {
           <div className="space-y-4 lg:col-span-2">
             <section className="rounded-3xl border border-gold/40 bg-accent p-5">
               <div className="flex items-center gap-2 text-sm font-bold text-accent-foreground">
-                <Sparkles className="size-4 text-gold" /> Smart insight
+                <Lightbulb className="size-4 text-gold" /> Smart insight
               </div>
               <p className="mt-2 text-sm font-semibold text-accent-foreground">
                 Your ₦500,000 wallet balance isn't invested.
