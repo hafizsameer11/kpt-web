@@ -265,6 +265,7 @@ const RULES = [
 function HomeV12Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNew = useIsNewUser();
+  const greeting = useGreeting();
   const [range, setRange] = useState<Range>("1M");
   const [done, setDone] = useState<string[]>([TODOS[0]!.label]);
   const [rules, setRules] = useState(() => RULES.map((r) => r.on));

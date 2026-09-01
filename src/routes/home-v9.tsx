@@ -226,6 +226,7 @@ function AllocationRing({ hidden }: { hidden: boolean }) {
 function HomeV9Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNewUser = useIsNewUser();
+  const greeting = useGreeting();
   const [range, setRange] = useState<Range>("1M");
   const series = SERIES[range];
   const spark = sparkPath(series.points);
