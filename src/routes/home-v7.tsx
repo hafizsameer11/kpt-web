@@ -345,9 +345,11 @@ function Discover() {
                 </span>
                 <p className="mt-3 text-sm font-bold leading-snug text-foreground">{d.name}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">{d.meta}</p>
-                <button className="mt-auto w-full rounded-lg bg-brand pt-2 pb-2 text-xs font-bold text-brand-foreground transition hover:brightness-110 [margin-top:0.75rem]">
-                  Start investing
-                </button>
+                <div className="mt-auto pt-3">
+                  <button className="w-full rounded-lg bg-brand py-2 text-xs font-bold text-brand-foreground transition hover:brightness-110">
+                    Start investing
+                  </button>
+                </div>
               </div>
             );
           })}
@@ -505,7 +507,7 @@ function Activity() {
               <span className="text-xs text-muted-foreground">{a.time}</span>
             </span>
             <span className={`text-sm font-bold tabular-nums ${a.credit ? "text-success" : "text-foreground"}`}>
-              {hidden ? "₦••••••" : `${a.credit ? "+" : "−"}${naira(a.amount)}`}
+              {hidden ? MASK : `${a.credit ? "+" : "−"}${naira(a.amount)}`}
             </span>
           </li>
         ))}
@@ -518,18 +520,18 @@ function ContentFeed() {
   return (
     <section>
       <SectionTitle>For you</SectionTitle>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {FEED.map((f, i) => (
           <article
             key={f.title}
-            className="rounded-2xl border border-border bg-card p-4 shadow-card transition hover:shadow-float"
+            className="flex h-full flex-col rounded-2xl border border-border bg-card p-4 shadow-card transition hover:shadow-float"
           >
-              <FeedThumb index={i} />
+            <FeedThumb index={i} />
             <span className="inline-block rounded-full bg-brand/10 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-brand">
               {f.tag}
             </span>
             <h3 className="mt-2 text-sm font-bold leading-snug text-foreground">{f.title}</h3>
-            <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-brand">
+            <span className="mt-auto pt-2 inline-flex items-center gap-1 text-xs font-semibold text-brand">
               Read <ChevronRight className="size-3.5" />
             </span>
           </article>
@@ -581,12 +583,13 @@ function MobileTabBar() {
 
 function HomeV7() {
   const isNewUser = useIsNewUser();
+  const { hidden } = useBalanceVisibility();
   return (
     <div className="type-v7 min-h-screen bg-background">
-      <DashboardSidebar activePath="/home-v7" />
+      <DashboardSidebar activePath="/home-v7" walletBalance={WALLET_BALANCE} hideBalance={hidden} />
       <div className="md:pl-64">
         <DashboardTopBar title="Home" />
-        <main className="mx-auto w-full max-w-2xl space-y-5 px-4 pb-28 pt-5 md:max-w-none md:px-8 md:pb-16">
+        <main className="mx-auto w-full max-w-2xl space-y-5 px-4 pb-28 pt-5 md:max-w-[1400px] md:px-8 md:pb-16">
           {isNewUser ? (
             <NewUserEmptyState />
           ) : (
