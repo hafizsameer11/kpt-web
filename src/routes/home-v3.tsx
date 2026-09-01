@@ -187,7 +187,10 @@ function HomeV3Screen() {
 
           <div className="relative mt-8 flex items-end justify-between gap-4 md:mt-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary-foreground/65">
+              <p className="hidden text-sm font-semibold text-primary-foreground/80 md:block">
+                {greeting}, Adaeze
+              </p>
+              <p className="mt-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary-foreground/65 md:mt-3">
                 Total balance
               </p>
               <div className="mt-2 flex items-center gap-3">
