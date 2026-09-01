@@ -45,7 +45,38 @@ export function AppShell({
       </div>
 
       {/* Mobile bottom tab bar */}
-      {navVariant === "morph" ? (
+      {navVariant === "aurora" ? (
+        /* Aurora dock: dark glass bar, gold indicator rail above the active tab */
+        <nav className="fixed inset-x-3 bottom-3 z-40 md:hidden">
+          <ul className="grid grid-cols-5 gap-1 rounded-[1.75rem] bg-brand-gradient p-2 shadow-float">
+            {TABS.map((tab) => {
+              const active = pathname === tab.to;
+              const Icon = tab.icon;
+              return (
+                <li key={tab.to}>
+                  <Link
+                    to={tab.to}
+                    className="flex flex-col items-center gap-1 rounded-3xl py-2 text-[11px] font-semibold text-primary-foreground/60"
+                  >
+                    <span
+                      className={`h-0.5 w-6 rounded-full transition-colors ${
+                        active ? "bg-gold" : "bg-transparent"
+                      }`}
+                    />
+                    <Icon
+                      className={`size-5 ${active ? "text-gold" : ""}`}
+                      strokeWidth={active ? 2.4 : 1.8}
+                    />
+                    <span className={active ? "text-primary-foreground" : ""}>
+                      {tab.label}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : navVariant === "morph" ? (
         /* Morphing bar: the active tab expands into a navy pill with its label */
         <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur md:hidden">
           <ul className="flex items-center justify-between gap-1">
