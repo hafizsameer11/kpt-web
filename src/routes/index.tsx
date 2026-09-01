@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   ArrowDownToLine,
@@ -244,19 +244,6 @@ function HomeScreen() {
         </div>
       </section>
 
-      {/* Design switcher */}
-      <Link
-        to="/home-v2"
-        className="fixed bottom-24 right-4 z-50 inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-bold text-brand-foreground shadow-float md:bottom-6"
-      >
-        Try design 2 →
-      </Link>
-      <Link
-        to="/home-v3"
-        className="fixed bottom-[8.5rem] right-4 z-50 inline-flex items-center gap-1.5 rounded-full bg-gold px-4 py-2 text-xs font-bold text-gold-foreground shadow-float md:bottom-[4.5rem]"
-      >
-        Try design 3 →
-      </Link>
     </AppShell>
   );
 }

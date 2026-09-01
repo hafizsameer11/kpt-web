@@ -346,21 +346,6 @@ function HomeV3Screen() {
         </div>
       </nav>
 
-      {/* Design switcher */}
-      <div className="fixed right-4 top-4 z-50 flex flex-col gap-2 md:top-auto md:bottom-6">
-        <Link
-          to="/"
-          className="inline-flex items-center rounded-full border border-gold/50 bg-surface px-4 py-2 text-xs font-bold text-gold shadow-float"
-        >
-          ← Design 1
-        </Link>
-        <Link
-          to="/home-v2"
-          className="inline-flex items-center rounded-full border border-gold/50 bg-surface px-4 py-2 text-xs font-bold text-gold shadow-float"
-        >
-          ← Design 2
-        </Link>
-      </div>
     </div>
   );
 }
