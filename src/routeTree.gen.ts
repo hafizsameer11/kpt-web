@@ -14,6 +14,7 @@ import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as HomeV10RouteImport } from './routes/home-v10'
 import { Route as HomeV11RouteImport } from './routes/home-v11'
 import { Route as HomeV12RouteImport } from './routes/home-v12'
+import { Route as HomeV13RouteImport } from './routes/home-v13'
 import { Route as HomeV2RouteImport } from './routes/home-v2'
 import { Route as HomeV3RouteImport } from './routes/home-v3'
 import { Route as HomeV4RouteImport } from './routes/home-v4'
@@ -50,6 +51,11 @@ const HomeV11Route = HomeV11RouteImport.update({
 const HomeV12Route = HomeV12RouteImport.update({
   id: '/home-v12',
   path: '/home-v12',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeV13Route = HomeV13RouteImport.update({
+  id: '/home-v13',
+  path: '/home-v13',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeV2Route = HomeV2RouteImport.update({
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/home-v10': typeof HomeV10Route
   '/home-v11': typeof HomeV11Route
   '/home-v12': typeof HomeV12Route
+  '/home-v13': typeof HomeV13Route
   '/home-v2': typeof HomeV2Route
   '/home-v3': typeof HomeV3Route
   '/home-v4': typeof HomeV4Route
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/home-v10': typeof HomeV10Route
   '/home-v11': typeof HomeV11Route
   '/home-v12': typeof HomeV12Route
+  '/home-v13': typeof HomeV13Route
   '/home-v2': typeof HomeV2Route
   '/home-v3': typeof HomeV3Route
   '/home-v4': typeof HomeV4Route
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/home-v10': typeof HomeV10Route
   '/home-v11': typeof HomeV11Route
   '/home-v12': typeof HomeV12Route
+  '/home-v13': typeof HomeV13Route
   '/home-v2': typeof HomeV2Route
   '/home-v3': typeof HomeV3Route
   '/home-v4': typeof HomeV4Route
@@ -179,6 +188,7 @@ export interface FileRouteTypes {
     | '/home-v10'
     | '/home-v11'
     | '/home-v12'
+    | '/home-v13'
     | '/home-v2'
     | '/home-v3'
     | '/home-v4'
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/home-v10'
     | '/home-v11'
     | '/home-v12'
+    | '/home-v13'
     | '/home-v2'
     | '/home-v3'
     | '/home-v4'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/home-v10'
     | '/home-v11'
     | '/home-v12'
+    | '/home-v13'
     | '/home-v2'
     | '/home-v3'
     | '/home-v4'
@@ -237,6 +249,7 @@ export interface RootRouteChildren {
   HomeV10Route: typeof HomeV10Route
   HomeV11Route: typeof HomeV11Route
   HomeV12Route: typeof HomeV12Route
+  HomeV13Route: typeof HomeV13Route
   HomeV2Route: typeof HomeV2Route
   HomeV3Route: typeof HomeV3Route
   HomeV4Route: typeof HomeV4Route
@@ -286,6 +299,13 @@ declare module '@tanstack/react-router' {
       path: '/home-v12'
       fullPath: '/home-v12'
       preLoaderRoute: typeof HomeV12RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home-v13': {
+      id: '/home-v13'
+      path: '/home-v13'
+      fullPath: '/home-v13'
+      preLoaderRoute: typeof HomeV13RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home-v2': {
@@ -381,6 +401,7 @@ const rootRouteChildren: RootRouteChildren = {
   HomeV10Route: HomeV10Route,
   HomeV11Route: HomeV11Route,
   HomeV12Route: HomeV12Route,
+  HomeV13Route: HomeV13Route,
   HomeV2Route: HomeV2Route,
   HomeV3Route: HomeV3Route,
   HomeV4Route: HomeV4Route,
