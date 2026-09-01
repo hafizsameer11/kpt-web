@@ -287,7 +287,9 @@ function Products() {
                 {hidden ? "₦••••••" : naira(p.value)}
               </p>
               <p className="text-[11px] font-bold text-gold-foreground">{p.rate}</p>
+              </div>
             </Link>
+
           );
         })}
       </div>
