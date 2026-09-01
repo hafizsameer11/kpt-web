@@ -151,7 +151,7 @@ function GrowthCurve({ points }: { points: number[] }) {
     const d = coords
       .map(([x, y], i) => {
         if (i === 0) return `M ${x} ${y}`;
-        const [px, py] = coords[i - 1];
+        const [px, py] = coords[i - 1]!;
         const cx = (px + x) / 2;
         return `C ${cx} ${py}, ${cx} ${y}, ${x} ${y}`;
       })
