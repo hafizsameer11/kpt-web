@@ -21,6 +21,7 @@ import { Logo } from "@/components/kipit/Logo";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
+import { TierStatusCard, WalletNote, useGreeting } from "@/components/kipit/SpecBlocks";
 
 export const Route = createFileRoute("/home-v10")({
   head: () => ({
@@ -520,6 +521,10 @@ function HomeV10Screen() {
                   </Link>
                 ))}
               </div>
+            <section className="space-y-3">
+              <TierStatusCard />
+              <WalletNote />
+            </section>
             </section>
           </div>
         )}
