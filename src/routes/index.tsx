@@ -15,6 +15,7 @@ import {
 import { AppShell } from "@/components/kipit/AppShell";
 import { Logo } from "@/components/kipit/Logo";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
+import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 
 
@@ -238,11 +239,12 @@ function HomeScreen() {
       <section className="mt-6">
         <h2 className="text-lg font-extrabold tracking-tight">For you</h2>
         <div className="mt-3 grid gap-3 md:grid-cols-3">
-          {FEED.map((item) => (
+          {FEED.map((item, i) => (
             <article
               key={item.title}
               className="rounded-3xl bg-surface p-5 shadow-card transition-transform active:scale-[0.99]"
             >
+              <FeedThumb index={i} />
               <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                 {item.tag}
               </span>

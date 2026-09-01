@@ -27,6 +27,8 @@ import {
   DashboardTopBar,
 } from "@/components/kipit/DashboardSidebar";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
+import { productArt } from "@/components/kipit/art";
+import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 
 export const Route = createFileRoute("/home-v5")({
@@ -286,8 +288,9 @@ function ContentFeed() {
     <section>
       <h2 className="mb-3 text-sm font-bold text-foreground">For you</h2>
       <div className="grid gap-3 sm:grid-cols-3">
-        {FEED.map((item) => (
+        {FEED.map((item, i) => (
           <article key={item.title} className="rounded-3xl bg-card p-5 shadow-card">
+              <FeedThumb index={i} />
             <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
               {item.tag}
             </span>
@@ -305,12 +308,22 @@ function ProductCard({ product }: { product: Product }) {
   const { mask } = useBalanceVisibility();
   return (
     <button
-      className={`flex flex-col items-start gap-3 rounded-3xl p-5 text-left shadow-card transition-transform hover:-translate-y-0.5 ${product.card}`}
+      className={`relative flex flex-col items-start gap-3 overflow-hidden rounded-3xl p-5 text-left shadow-card transition-transform hover:-translate-y-0.5 ${product.card}`}
     >
-      <span className="grid size-10 place-items-center rounded-2xl bg-white/15">
+      <img
+        src={productArt(product.name)}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        width={768}
+        height={512}
+        className="pointer-events-none absolute inset-0 size-full object-cover opacity-25 mix-blend-luminosity"
+      />
+      <span className="relative grid size-10 place-items-center rounded-2xl bg-white/15">
         <Icon className="size-5" />
       </span>
-      <span>
+      <span className="relative">
+
         <span className="block text-sm font-bold">{product.name}</span>
         <span className="mt-0.5 block text-xs opacity-80">
           {product.blurb}
