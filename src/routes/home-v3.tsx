@@ -186,7 +186,7 @@ function HomeV3Screen() {
               </p>
               <div className="mt-2 flex items-center gap-3">
                 <h1 className="text-4xl font-extrabold tracking-tight md:text-6xl">
-                  {mask(2450000)}
+                  {mask(TOTAL_BALANCE)}
                 </h1>
                 <button
                   type="button"
@@ -197,8 +197,12 @@ function HomeV3Screen() {
                   {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
               </div>
+              <p className="mt-2 text-xs font-medium text-primary-foreground/70">
+                Invested {mask(INVESTED_TOTAL)} · Wallet {mask(WALLET_BALANCE)}
+              </p>
               <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-[oklch(0.87_0.15_94)]">
-                <TrendingUp className="size-3.5" /> +1.58% this month
+                <TrendingUp className="size-3.5" />
+                {hidden ? "• • •" : `+${naira(tf.gain)}`} · +{tf.pct}% {tf.label}
               </p>
             </div>
             <Link
@@ -209,6 +213,25 @@ function HomeV3Screen() {
               <Bell className="size-5" />
               <span className="absolute right-3 top-3 size-2 rounded-full bg-gold" />
             </Link>
+          </div>
+
+          {/* Timeframe controls */}
+          <div className="relative mt-6 flex gap-1.5 overflow-x-auto no-scrollbar">
+            {TIMEFRAMES.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setRange(t.id)}
+                aria-pressed={t.id === range}
+                className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-bold transition-colors ${
+                  t.id === range
+                    ? "bg-gold text-gold-foreground"
+                    : "bg-white/10 text-primary-foreground/75 hover:bg-white/20"
+                }`}
+              >
+                {t.id}
+              </button>
+            ))}
           </div>
         </header>
 
@@ -221,17 +244,17 @@ function HomeV3Screen() {
         {/* Quick actions — overlapping the hero edge */}
         <section className="relative z-10 -mt-9 px-5 md:mx-8 md:px-10">
           <div className="grid grid-cols-4 gap-3 rounded-3xl border border-border bg-surface p-4 shadow-float">
-            {QUICK_ACTIONS.map(({ label, icon: Icon }) => (
-              <button
+            {QUICK_ACTIONS.map(({ label, icon: Icon, to }) => (
+              <Link
                 key={label}
-                type="button"
+                to={to}
                 className="group flex flex-col items-center gap-2 transition-transform active:scale-95"
               >
                 <span className="grid size-12 place-items-center rounded-2xl bg-brand text-brand-foreground transition-colors group-hover:bg-gold group-hover:text-gold-foreground">
                   <Icon className="size-5" />
                 </span>
-                <span className="text-[11px] font-bold text-foreground">{label}</span>
-              </button>
+                <span className="text-xs font-bold text-foreground">{label}</span>
+              </Link>
             ))}
           </div>
         </section>
