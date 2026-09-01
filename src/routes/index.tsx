@@ -243,6 +243,14 @@ function HomeScreen() {
           ))}
         </div>
       </section>
+
+      {/* Design switcher */}
+      <Link
+        to="/home-v2"
+        className="fixed bottom-24 right-4 z-50 inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-bold text-brand-foreground shadow-float md:bottom-6"
+      >
+        Try new design →
+      </Link>
     </AppShell>
   );
 }
