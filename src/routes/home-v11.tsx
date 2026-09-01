@@ -266,6 +266,12 @@ function HomeV11Screen() {
             <NewUserEmptyState />
           ) : (
             <>
+              <header className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-muted-foreground">{greeting},</p>
+                  <p className="truncate text-lg font-extrabold text-foreground">Adaeze Okafor</p>
+                </div>
+              </header>
               {/* Aurora console */}
               <section className="relative overflow-hidden rounded-[2rem] bg-brand-gradient text-primary-foreground shadow-float">
                 <div

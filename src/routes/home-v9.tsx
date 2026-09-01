@@ -256,6 +256,7 @@ function HomeV9Screen() {
             </div>
           </div>
         </header>
+        <p className="mb-4 text-sm font-semibold text-muted-foreground">{greeting}, Adaeze</p>
 
         {isNewUser ? (
           <NewUserEmptyState />

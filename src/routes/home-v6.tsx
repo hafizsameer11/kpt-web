@@ -254,6 +254,7 @@ function PortfolioHero() {
 
 function WalletCard() {
   const { hidden } = useBalanceVisibility();
+  const greeting = useGreeting();
   return (
     <section className="rounded-2xl border border-border bg-card p-4 shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -554,6 +555,12 @@ function HomeV6() {
       <div className="md:pl-64">
         <DashboardTopBar title="Investing" />
         <main className="mx-auto w-full max-w-2xl space-y-5 px-4 pb-28 pt-5 md:max-w-[1400px] md:px-8 md:pb-16">
+          <header className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-muted-foreground">{greeting},</p>
+              <p className="truncate text-lg font-extrabold text-foreground">Adaeze Okafor</p>
+            </div>
+          </header>
           {isNewUser ? (
             <NewUserEmptyState />
           ) : (
