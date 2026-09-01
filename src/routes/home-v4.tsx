@@ -316,7 +316,7 @@ function HomeV4() {
               <div className="mt-4 flex h-28 items-end gap-2">
                 {WEEK.map((d, i) => (
                   <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
-                    <div className="flex w-full flex-1 items-end">
+                    <div className="flex h-24 w-full items-end">
                       <div
                         className="w-full rounded-t-lg bg-gold-gradient"
                         style={{ height: `${(d.value / WEEK_MAX) * 100}%` }}
