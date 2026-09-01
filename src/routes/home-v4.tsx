@@ -64,6 +64,7 @@ const PLANS = [
     amount: 750000,
     daysLeft: 23,
     progress: 74,
+    icon: Landmark,
   },
   {
     name: "Yield Note · 180 days",
@@ -71,6 +72,7 @@ const PLANS = [
     amount: 1200000,
     daysLeft: 72,
     progress: 48,
+    icon: Zap,
   },
   {
     name: "Starter · 30 days",
@@ -78,8 +80,35 @@ const PLANS = [
     amount: 500000,
     daysLeft: 9,
     progress: 88,
+    icon: PiggyBank,
   },
 ];
+
+const PORTFOLIO_VALUE = PLANS.reduce((sum, p) => sum + p.amount, 0);
+const WALLET_BALANCE = 500000;
+
+const RANGES = [
+  { label: "1D", change: 1180, pct: 0.05, note: "today" },
+  { label: "1W", change: 12480, pct: 0.51, note: "this week" },
+  { label: "1M", change: 38200, pct: 1.58, note: "this month" },
+  { label: "3M", change: 104600, pct: 4.46, note: "in 3 months" },
+  { label: "1Y", change: 331500, pct: 15.65, note: "in a year" },
+  { label: "All", change: 450000, pct: 22.5, note: "all time" },
+] as const;
+
+// Daily earnings that sum exactly to the 1W figure (₦12,480)
+const WEEK = [
+  { day: "M", value: 1620 },
+  { day: "T", value: 1740 },
+  { day: "W", value: 1860 },
+  { day: "T", value: 1580 },
+  { day: "F", value: 2210 },
+  { day: "S", value: 1990 },
+  { day: "S", value: 1480 },
+];
+const WEEK_TOTAL = WEEK.reduce((s, d) => s + d.value, 0);
+const WEEK_BEST = WEEK.reduce((a, b) => (b.value > a.value ? b : a));
+const WEEK_MAX = Math.max(...WEEK.map((d) => d.value));
 
 const ACTIVITY = [
   {
