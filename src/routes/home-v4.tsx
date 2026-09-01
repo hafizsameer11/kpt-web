@@ -113,7 +113,6 @@ function HomeV4() {
 
   return (
     <div className="min-h-screen bg-secondary/60">
-      {/* Desktop top nav */}
       {/* Desktop dashboard sidebar */}
       <DashboardSidebar hideBalance={hidden} />
       <div className="md:pl-64">
@@ -339,6 +338,7 @@ function HomeV4() {
           </div>
         </div>
       </main>
+      </div>
 
       {/* Mobile bottom tab bar — raised gold home indicator style */}
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
