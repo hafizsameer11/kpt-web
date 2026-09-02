@@ -105,6 +105,101 @@ function fullDate(i: number, total: number) {
   });
 }
 
+function DayDetail({ day, onClose }: { day: number; onClose: () => void }) {
+  const { mask } = useBalanceVisibility();
+  const isMobile = useIsMobile();
+  const value = CALL_ACCRUAL_TREND[day]!;
+  const prev = day > 0 ? CALL_ACCRUAL_TREND[day - 1] ?? null : null;
+  const change = prev !== null ? value - prev : 0;
+  const cumulative = CALL_ACCRUAL_TREND.slice(0, day + 1).reduce((a, b) => a + b, 0);
+  const isToday = day === CALL_ACCRUAL_TREND.length - 1;
+
+  const body = (
+    <div className="text-center">
+      <div className="relative bg-brand-gradient px-6 pb-7 pt-8 text-primary-foreground">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 grid size-8 place-items-center rounded-full bg-white/10 press"
+          aria-label="Close"
+        >
+          <X className="size-4" />
+        </button>
+        <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+          {isToday ? "Today" : fullDate(day, CALL_ACCRUAL_TREND.length)}
+        </p>
+        <p className="mt-3 font-display text-[40px] font-extrabold leading-none tracking-[-0.03em] text-gold text-num">
+          {mask(value)}
+        </p>
+        <p className="mt-2 text-[12px] font-medium text-primary-foreground/70">
+          Interest earned
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-px bg-border">
+        <div className="bg-card p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            vs previous day
+          </p>
+          <p className={`mt-1 text-[15px] font-extrabold text-num ${change >= 0 ? "text-brand" : "text-destructive"}`}>
+            {change >= 0 ? "+" : ""}
+            {mask(change)}
+          </p>
+        </div>
+        <div className="bg-card p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Running total
+          </p>
+          <p className="mt-1 text-[15px] font-extrabold text-num">
+            {mask(cumulative)}
+          </p>
+        </div>
+      </div>
+
+      <div className="px-5 pb-6 pt-4">
+        <p className="text-[12px] leading-relaxed text-muted-foreground">
+          {isToday
+            ? "Today's interest is based on your current Call Account balance. It will be credited with your monthly payout on the 1st."
+            : `Interest for ${fullDate(day, CALL_ACCRUAL_TREND.length)} has already been credited to your running balance.`}
+        </p>
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-5 w-full rounded-2xl bg-brand py-3 text-[12px] font-extrabold text-brand-foreground press"
+        >
+          Done
+        </button>
+      </div>
+    </div>
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer open onOpenChange={(open) => !open && onClose()}>
+        <DrawerContent className="overflow-hidden rounded-t-[2rem] border-0 bg-card p-0 pb-6">
+          <DrawerTitle className="sr-only">Interest details</DrawerTitle>
+          <DrawerDescription className="sr-only">
+            Detailed interest information for {fullDate(day, CALL_ACCRUAL_TREND.length)}
+          </DrawerDescription>
+          {body}
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  return (
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-sm overflow-hidden rounded-3xl border-0 bg-card p-0 shadow-2xl">
+        <DialogTitle className="sr-only">Interest details</DialogTitle>
+        <DialogDescription className="sr-only">
+          Detailed interest information for {fullDate(day, CALL_ACCRUAL_TREND.length)}
+        </DialogDescription>
+        {body}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function CallAccountScreen() {
   const { mask, hidden, toggle } = useBalanceVisibility();
   const pts = trendPoints(CALL_ACCRUAL_TREND, 300, 88);
