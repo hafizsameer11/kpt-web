@@ -182,7 +182,7 @@ function InvestScreen() {
           </section>
 
           {/* Active plans shortcut */}
-          <section className="card-surface mt-5 p-4 md:p-6">
+          <section className="card-surface mt-7 p-4 md:p-6">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="font-display text-base font-extrabold">Your active plans</h2>
               <Link
