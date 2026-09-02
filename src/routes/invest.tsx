@@ -262,89 +262,61 @@ function InvestScreen() {
 
           {/* Invest tools — MOB-069 / MOB-071 / MOB-072 / MOB-075 entry points */}
           <section className="mt-7">
-            <div className="mb-3 flex items-center justify-between px-1">
-              <h2 className="font-display text-base font-extrabold">Invest tools</h2>
-              <span className="text-[11px] font-bold text-muted-foreground">4 tools</span>
-            </div>
-            <div className="relative -mx-4 md:mx-0">
-              <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible md:px-0">
-                {[
-                  {
-                    icon: Calculator,
-                    label: "Calculator",
-                    note: "Model your payout before you commit",
-                    theme: "navy",
-                  },
-                  {
-                    icon: Repeat,
-                    label: "Auto-invest",
-                    note: "Fund your plans on a schedule",
-                    theme: "gold",
-                  },
-                  {
-                    icon: Gift,
-                    label: "Gift invest",
-                    note: "Send a plan to someone",
-                    theme: "navy",
-                  },
-                  {
-                    icon: RefreshCw,
-                    label: "Roll over",
-                    note: "Reinvest automatically at maturity",
-                    theme: "gold",
-                  },
-                ].map((t) => (
-                  <button
-                    key={t.label}
-                    type="button"
-                    className={`group relative flex w-[155px] shrink-0 snap-start flex-col justify-between overflow-hidden rounded-[1.75rem] p-4 text-left transition-all active:scale-[0.98] md:w-auto md:rounded-[2rem] md:p-5 ${
-                      t.theme === "gold"
-                        ? "border border-gold/20 bg-gradient-to-br from-gold/20 to-gold/5"
-                        : "bg-brand-gradient text-primary-foreground"
+            <h2 className="mb-3 px-1 font-display text-base font-extrabold">Invest tools</h2>
+            <div className="space-y-3">
+              {[
+                {
+                  icon: Calculator,
+                  label: "Calculator",
+                  note: "Model your payout before you commit",
+                  accent: "navy",
+                },
+                {
+                  icon: Repeat,
+                  label: "Auto-invest",
+                  note: "Fund your plans on a schedule",
+                  accent: "gold",
+                },
+                {
+                  icon: Gift,
+                  label: "Gift invest",
+                  note: "Send a plan to someone",
+                  accent: "navy",
+                },
+                {
+                  icon: RefreshCw,
+                  label: "Roll over",
+                  note: "Reinvest automatically at maturity",
+                  accent: "gold",
+                },
+              ].map((t, i) => (
+                <button
+                  key={t.label}
+                  type="button"
+                  className="group relative flex w-full items-center gap-4 overflow-hidden rounded-[1.75rem] border border-border/60 bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md md:rounded-[2rem] md:p-5"
+                >
+                  <span
+                    aria-hidden
+                    className={`pointer-events-none absolute -right-10 -top-10 size-28 rounded-full ${
+                      t.accent === "gold" ? "bg-gold/10" : "bg-brand/8"
                     }`}
+                  />
+                  <span
+                    className={`relative grid size-12 shrink-0 place-items-center rounded-2xl ${
+                      t.accent === "gold"
+                        ? "bg-gold-gradient text-gold-foreground shadow-sm"
+                        : "bg-brand text-brand-foreground"
+                    } transition-transform group-hover:scale-105`}
                   >
-                    <span
-                      aria-hidden
-                      className={`pointer-events-none absolute -right-8 -top-8 size-32 rounded-full blur-2xl ${
-                        t.theme === "gold" ? "bg-gold/25" : "bg-white/10"
-                      }`}
-                    />
-                    <span
-                      className={`relative grid size-12 place-items-center rounded-2xl ${
-                        t.theme === "gold"
-                          ? "bg-gold-gradient text-gold-foreground shadow-sm"
-                          : "bg-white/15 text-primary-foreground"
-                      } transition-transform group-hover:scale-105`}
-                    >
-                      <t.icon className="size-5" />
-                    </span>
-                    <div className="relative mt-8">
-                      <span
-                        className={`block text-sm font-extrabold ${
-                          t.theme === "gold" ? "text-foreground" : "text-primary-foreground"
-                        }`}
-                      >
-                        {t.label}
-                      </span>
-                      <span
-                        className={`mt-1 block text-[11px] leading-snug ${
-                          t.theme === "gold" ? "text-muted-foreground" : "text-primary-foreground/70"
-                        }`}
-                      >
-                        {t.note}
-                      </span>
-                    </div>
-                    <ChevronRight
-                      className={`absolute bottom-4 right-4 size-4 transition-all group-hover:translate-x-0.5 ${
-                        t.theme === "gold"
-                          ? "text-muted-foreground/40 group-hover:text-brand"
-                          : "text-white/40 group-hover:text-white"
-                      }`}
-                      aria-hidden
-                    />
-                  </button>
-                ))}
-              </div>
+                    <t.icon className="size-5" />
+                  </span>
+                  <span className="relative min-w-0 flex-1">
+                    <span className="block text-sm font-extrabold text-foreground">{t.label}</span>
+                    <span className="mt-0.5 block text-[12px] text-muted-foreground">{t.note}</span>
+                  </span>
+                  <ChevronRight className="relative size-4 shrink-0 text-muted-foreground/40 transition-all group-hover:translate-x-0.5 group-hover:text-brand" />
+                </button>
+              ))}
             </div>
           </section>
 
