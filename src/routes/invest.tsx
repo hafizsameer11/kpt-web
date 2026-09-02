@@ -44,7 +44,7 @@ function InvestScreen() {
     <AppShell title="Invest" navVariant="elevated">
       <div className="pb-2">
         {/* ── Header canvas ─────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden rounded-b-[1.25rem] bg-brand-gradient px-5 pb-10 pt-9 text-primary-foreground md:mx-0 md:rounded-[2.5rem] md:px-8 md:pb-14 md:pt-12 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-14 md:pt-12 md:shadow-float">
           {/* Soft aurora glows */}
           <span
             aria-hidden
@@ -110,10 +110,10 @@ function InvestScreen() {
         </section>
 
         {/* ── Sheet ─────────────────────────────────────────────────── */}
-        <div className="relative -mx-4 -mt-2 rounded-t-[1.25rem] bg-background px-4 pt-4 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
+        <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
           <span
             aria-hidden
-            className="mx-auto mb-2 block h-1 w-10 rounded-full bg-border md:hidden"
+            className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
 
