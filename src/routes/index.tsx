@@ -101,25 +101,25 @@ function HomeScreen() {
   const points = toPoints(SERIES[range] ?? SERIES["1M"]!);
 
   return (
-    <div className="theme-v2">
-      <AppShell navVariant="floating">
+    <div>
+      <AppShell navVariant="classic">
         {/* Mobile header — greeting, notifications, profile (MOB-020) */}
-        <header className="-mx-4 mb-6 border-b border-border bg-surface px-5 pb-6 pt-5 md:hidden">
+        <header className="sticky top-0 z-30 -mx-4 mb-5 border-b border-border bg-background/80 px-5 pb-4 pt-5 backdrop-blur-xl md:hidden">
           <div className="flex items-center justify-between gap-3">
             <Logo tone="brand" className="font-display text-2xl" />
             <div className="flex shrink-0 items-center gap-3">
               <Link
                 to="/notifications"
                 aria-label="Notifications"
-                className="relative grid size-10 place-items-center rounded-full border border-border bg-secondary text-foreground"
+                className="relative grid size-10 place-items-center rounded-full border border-border bg-surface text-foreground press"
               >
-                <Bell className="size-5" />
-                <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-gold" />
+                <Bell className="size-[18px]" strokeWidth={1.8} />
+                <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-gold ring-2 ring-surface" />
               </Link>
               <Link
                 to="/settings"
                 aria-label="Profile"
-                className="grid size-10 place-items-center rounded-full bg-gold-gradient text-sm font-bold text-gold-foreground"
+                className="grid size-10 place-items-center rounded-full bg-brand text-xs font-bold text-brand-foreground press"
               >
                 AO
               </Link>
@@ -133,7 +133,7 @@ function HomeScreen() {
           <>
             {/* Portfolio summary + wallet */}
             <section className="grid gap-4 lg:grid-cols-3">
-              <article className="relative overflow-hidden rounded-3xl border border-border bg-brand-gradient p-6 text-primary-foreground shadow-card md:p-8 lg:col-span-2">
+              <article className="relative overflow-hidden rounded-[1.75rem] bg-brand-gradient p-6 text-primary-foreground shadow-float md:p-8 lg:col-span-2">
                 <div
                   aria-hidden
                   className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-white/10 blur-3xl"
@@ -147,7 +147,7 @@ function HomeScreen() {
                       Total portfolio value
                     </p>
                     <div className="mt-1 flex items-center gap-3">
-                      <h1 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
+                      <h1 className="font-display text-[40px] font-bold leading-none tracking-[-0.04em] text-num md:text-[54px]">
                         {mask(TOTAL)}
                       </h1>
                       <button
@@ -169,10 +169,10 @@ function HomeScreen() {
                         key={r}
                         type="button"
                         onClick={() => setRange(r)}
-                        className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${
+                        className={`rounded-full px-3 py-1.5 text-xs font-semibold press ${
                           range === r
-                            ? "bg-gold-gradient text-gold-foreground"
-                            : "text-primary-foreground/70 hover:text-primary-foreground"
+                            ? "bg-white text-brand"
+                            : "text-primary-foreground/60 hover:text-primary-foreground"
                         }`}
                       >
                         {r}
@@ -205,10 +205,10 @@ function HomeScreen() {
                       key={r}
                       type="button"
                       onClick={() => setRange(r)}
-                      className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
+                      className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold press ${
                         range === r
-                          ? "bg-gold-gradient text-gold-foreground"
-                          : "border border-white/20 bg-white/10 text-primary-foreground/80"
+                          ? "bg-white text-brand"
+                          : "border border-white/15 bg-white/10 text-primary-foreground/75"
                       }`}
                     >
                       {r}
@@ -229,17 +229,17 @@ function HomeScreen() {
               </article>
 
               {/* Wallet card (MOB-020) */}
-              <article className="flex flex-col justify-between rounded-3xl border border-border bg-surface p-6 shadow-card">
+              <article className="flex flex-col justify-between rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="grid size-11 place-items-center rounded-2xl bg-gold/15 text-gold">
-                      <Wallet className="size-5" />
+                    <span className="grid size-11 place-items-center rounded-2xl bg-secondary text-brand">
+                      <Wallet className="size-5" strokeWidth={1.8} />
                     </span>
                     <span className="rounded-full border border-border px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                       Wallet
                     </span>
                   </div>
-                  <p className="mt-5 font-display text-3xl font-bold tracking-tight">
+                  <p className="mt-5 font-display text-3xl font-bold tracking-tight text-num">
                     {mask(WALLET)}
                   </p>
                   <p className="mt-1 text-xs font-semibold text-muted-foreground">
@@ -249,10 +249,24 @@ function HomeScreen() {
                     Funds in your wallet are available for investment or withdrawal anytime and
                     do not earn interest or investment returns.
                   </p>
+                  <dl className="mt-5 space-y-2.5 border-t border-border pt-5 text-[13px]">
+                    <div className="flex items-center justify-between gap-3">
+                      <dt className="text-muted-foreground">In plans</dt>
+                      <dd className="font-semibold text-num">{mask(INVESTED)}</dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <dt className="text-muted-foreground">Interest this week</dt>
+                      <dd className="font-semibold text-num">{mask(WEEK_EARNINGS)}</dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <dt className="text-muted-foreground">Next payout</dt>
+                      <dd className="font-semibold">{NEXT_MATURITY.date}</dd>
+                    </div>
+                  </dl>
                 </div>
                 <Link
                   to="/invest"
-                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gold px-5 py-3 text-sm font-bold text-gold-foreground shadow-float transition-transform active:scale-95"
+                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground press hover:opacity-90"
                 >
                   <Plus className="size-4" /> Fund wallet
                 </Link>
@@ -260,23 +274,23 @@ function HomeScreen() {
             </section>
 
             {/* Quick actions */}
-            <section className="mt-4 overflow-hidden rounded-3xl border border-border bg-surface shadow-card">
+            <section className="mt-4 overflow-hidden rounded-[1.75rem] border border-border bg-surface shadow-card">
               <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4 sm:divide-y-0">
                 {QUICK_ACTIONS.map(({ label, icon: Icon, to }) => (
                   <Link
                     key={label}
                     to={to}
-                    className="group relative flex items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-accent/40 md:px-5"
+                    className="group relative flex items-center gap-3 px-4 py-4 text-left press hover:bg-secondary md:px-5"
                   >
-                    <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold/12 text-gold transition-all group-hover:bg-gold-gradient group-hover:text-gold-foreground">
-                      <Icon className="size-4.5" />
+                    <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-secondary text-brand transition-colors group-hover:bg-brand group-hover:text-brand-foreground">
+                      <Icon className="size-4.5" strokeWidth={1.8} />
                     </span>
                     <span className="min-w-0 text-[13px] font-semibold leading-tight md:text-sm">
                       {label}
                     </span>
                     <span
                       aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-gold-gradient transition-transform duration-300 group-hover:scale-x-100"
+                      className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-gold transition-transform duration-300 group-hover:scale-x-100"
                     />
                   </Link>
                 ))}
@@ -285,14 +299,14 @@ function HomeScreen() {
 
             {/* Weekly earnings + next maturity + recommendation */}
             <section className="mt-4 grid gap-4 md:grid-cols-3">
-              <article className="rounded-3xl border border-border bg-surface p-6 shadow-card">
+              <article className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
                 <div className="flex items-baseline justify-between">
                   <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                     Weekly earnings
                   </p>
                   <span className="text-xs font-bold text-success">+8.2%</span>
                 </div>
-                <p className="mt-3 font-display text-3xl font-bold tracking-tight text-gold">
+                <p className="mt-3 font-display text-3xl font-bold tracking-tight text-num text-foreground">
                   {mask(WEEK_EARNINGS)}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -332,7 +346,7 @@ function HomeScreen() {
                 </div>
               </article>
 
-              <article className="flex items-center gap-5 rounded-3xl border border-border bg-surface p-6 shadow-card">
+              <article className="flex items-center gap-5 rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
                 <div className="relative grid shrink-0 place-items-center">
                   <CountdownRing
                     daysLeft={NEXT_MATURITY.daysLeft}
@@ -366,7 +380,7 @@ function HomeScreen() {
                 </div>
               </article>
 
-              <article className="flex flex-col justify-between rounded-3xl border border-gold/30 bg-accent/40 p-6 shadow-card">
+              <article className="flex flex-col justify-between rounded-[1.75rem] border border-border bg-accent p-6 shadow-card">
                 <div className="flex gap-3">
                   <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gold-gradient text-gold-foreground">
                     <Lightbulb className="size-5" />
@@ -382,7 +396,7 @@ function HomeScreen() {
                 </div>
                 <Link
                   to="/explore"
-                  className="mt-5 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-gold px-5 py-3 text-sm font-bold text-gold transition-colors hover:bg-gold hover:text-gold-foreground"
+                  className="mt-5 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground press hover:opacity-90"
                 >
                   Explore Investments <ArrowUpRight className="size-4" />
                 </Link>
@@ -393,7 +407,7 @@ function HomeScreen() {
             <section className="mt-8">
               <div className="flex items-end justify-between">
                 <h2 className="font-display text-xl font-bold tracking-tight">For you</h2>
-                <Link to="/explore" className="text-xs font-bold text-gold">
+                <Link to="/explore" className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-foreground press hover:bg-secondary">
                   View all
                 </Link>
               </div>
@@ -401,7 +415,7 @@ function HomeScreen() {
                 {FEED.map((item, i) => (
                   <article
                     key={item.title}
-                    className={`w-72 shrink-0 rounded-3xl border border-border p-5 shadow-card transition-colors hover:border-gold/40 md:w-auto ${
+                    className={`w-72 shrink-0 rounded-[1.5rem] border border-border p-5 shadow-card press hover:-translate-y-0.5 hover:shadow-float md:w-auto ${
                       i === 0 ? "bg-brand-gradient text-primary-foreground" : "bg-surface"
                     }`}
                   >
@@ -409,8 +423,8 @@ function HomeScreen() {
                     <span
                       className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${
                         i === 0
-                          ? "border border-white/25 bg-white/10 text-[oklch(0.87_0.15_94)]"
-                          : "border border-gold/40 bg-gold/10 text-gold"
+                          ? "border border-white/20 bg-white/10 text-primary-foreground/85"
+                          : "border border-border bg-secondary text-muted-foreground"
                       }`}
                     >
                       {item.tag}
