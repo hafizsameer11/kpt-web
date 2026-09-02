@@ -86,7 +86,7 @@ function AllocationOrbit({ hidden }: { hidden: boolean }) {
     <div className="relative grid size-[168px] shrink-0 place-items-center md:size-[196px]">
       <div
         aria-hidden
-        className="absolute inset-3 rounded-full bg-gold/20 blur-2xl k-breathe"
+        className="absolute inset-3 rounded-full bg-gold/25 blur-2xl k-breathe"
       />
       <svg viewBox="0 0 100 100" className="absolute inset-0 -rotate-90">
         {HOLDINGS.map((h, i) => {
@@ -102,7 +102,7 @@ function AllocationOrbit({ hidden }: { hidden: boolean }) {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="4"
-                className="text-white/10"
+                className="text-secondary"
               />
               <circle
                 cx="50"
@@ -121,13 +121,13 @@ function AllocationOrbit({ hidden }: { hidden: boolean }) {
         })}
       </svg>
       <div className="relative text-center">
-        <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-primary-foreground/50">
+        <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-muted-foreground">
           Invested
         </p>
         <p className="font-display text-[22px] leading-tight text-num md:text-2xl">
           {hidden ? "••••••" : naira(INVESTED)}
         </p>
-        <p className="text-[10px] text-primary-foreground/55">
+        <p className="text-[10px] text-muted-foreground">
           {HOLDINGS.length} active plans
         </p>
       </div>
@@ -213,21 +213,12 @@ function HomeV6Screen() {
     <div className="type-h6">
       <AppShell title="Home" navVariant="orbit">
         {/* ── Midnight canvas: everything lives on one continuous dark field ── */}
-        <div className="relative -mx-4 overflow-hidden bg-brand-gradient px-4 pb-7 pt-4 text-primary-foreground md:mx-0 md:rounded-[2.25rem] md:px-8 md:pb-10 md:pt-7">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -left-24 top-24 size-72 rounded-full bg-gold/20 blur-3xl k-breathe"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-28 -top-28 size-80 rounded-full bg-white/10 blur-3xl"
-          />
-
+        <div className="relative pt-4 md:pt-0">
           {/* Header */}
-          <header className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+          <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 md:hidden">
             <div className="min-w-0">
-              <Logo tone="light" className="font-display text-lg md:hidden" />
-              <p className="mt-0.5 truncate text-[11px] text-primary-foreground/70">
+              <Logo className="font-display text-lg" />
+              <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
                 <GreetingText />, Adaeze
               </p>
             </div>
@@ -235,7 +226,7 @@ function HomeV6Screen() {
               <Link
                 to="/notifications"
                 aria-label="Notifications"
-                className="relative grid size-9 place-items-center rounded-full bg-white/12 press"
+                className="relative grid size-9 place-items-center rounded-full border border-border bg-surface press"
               >
                 <Bell className="size-[17px]" strokeWidth={1.8} />
                 <span className="absolute right-2 top-2 size-1.5 rounded-full bg-gold" />
@@ -243,7 +234,7 @@ function HomeV6Screen() {
               <Link
                 to="/settings"
                 aria-label="Profile"
-                className="grid size-9 place-items-center rounded-full bg-white/18 text-[11px] font-bold press"
+                className="grid size-9 place-items-center rounded-full bg-brand text-[11px] font-bold text-primary-foreground press"
               >
                 AO
               </Link>
@@ -251,9 +242,13 @@ function HomeV6Screen() {
           </header>
 
           {/* Balance + orbit */}
-          <section className="relative mt-6 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-8">
-            <div>
-              <div className="inline-flex rounded-full bg-white/10 p-1">
+          <section className="card-surface relative mt-4 overflow-hidden p-5 md:mt-0 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-8 md:p-8">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-accent blur-3xl k-breathe"
+            />
+            <div className="relative">
+              <div className="inline-flex rounded-full bg-secondary p-1">
                 {LENSES.map((l) => (
                   <button
                     key={l}
@@ -261,8 +256,8 @@ function HomeV6Screen() {
                     onClick={() => setLens(l)}
                     className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-colors ${
                       lens === l
-                        ? "bg-gold-gradient text-gold-foreground"
-                        : "text-primary-foreground/60"
+                        ? "bg-brand text-primary-foreground shadow-card"
+                        : "text-muted-foreground"
                     }`}
                   >
                     {l}
@@ -278,40 +273,40 @@ function HomeV6Screen() {
                   type="button"
                   onClick={toggle}
                   aria-label={hidden ? "Show balances" : "Hide balances"}
-                  className="grid size-7 place-items-center rounded-full bg-white/12 press"
+                  className="grid size-7 place-items-center rounded-full bg-secondary text-muted-foreground press"
                 >
                   {hidden ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
                 </button>
               </div>
-              <p className="mt-2 text-[12px] text-primary-foreground/70">{lensNote}</p>
+              <p className="mt-2 text-[12px] text-muted-foreground">{lensNote}</p>
 
               <div className="mt-4">
                 <GrowthCurve series={WEEK_SERIES} />
-                <div className="mt-1 flex justify-between text-[9px] font-semibold text-primary-foreground/40">
+                <div className="mt-1 flex justify-between text-[9px] font-semibold text-muted-foreground">
                   {WEEK_LABELS.map((d) => (
                     <span key={d}>{d.slice(0, 1)}</span>
                   ))}
                 </div>
-                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-bold text-gold">
+                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 text-[11px] font-bold text-accent-foreground">
                   <ArrowUpRight className="size-3.5" /> {mask(WEEK_EARNINGS)} interest this week
                 </p>
               </div>
             </div>
 
-            <div className="mt-6 flex justify-center md:mt-0">
+            <div className="relative mt-6 flex justify-center md:mt-0">
               <AllocationOrbit hidden={hidden} />
             </div>
           </section>
 
           {/* Quick actions — glass rail */}
-          <section className="relative mt-7 grid grid-cols-4 gap-2 rounded-[1.75rem] border border-white/12 bg-white/[0.07] p-3 backdrop-blur md:gap-4 md:p-5">
+          <section className="card-surface relative mt-4 grid grid-cols-4 gap-2 p-3 md:mt-5 md:gap-4 md:p-5">
             {QUICK_ACTIONS.map((a) => (
               <Link
                 key={a.label}
                 to={a.to}
-                className="flex flex-col items-center gap-1.5 text-[10px] font-bold text-primary-foreground press md:text-xs"
+                className="flex flex-col items-center gap-1.5 text-[10px] font-bold text-brand press md:text-xs"
               >
-                <span className="grid size-11 place-items-center rounded-[1rem] bg-gold-gradient text-gold-foreground shadow-float md:size-12">
+                <span className="grid size-11 place-items-center rounded-[1rem] bg-accent text-accent-foreground md:size-12">
                   <a.icon className="size-[18px]" strokeWidth={2} />
                 </span>
                 <span className="text-center leading-tight">{a.label}</span>
@@ -321,7 +316,7 @@ function HomeV6Screen() {
 
           <div className="md:grid md:grid-cols-3 md:gap-5">
             {/* Maturity countdown */}
-            <article className="relative mt-4 rounded-[1.75rem] border border-white/12 bg-white/[0.06] p-4 backdrop-blur md:col-span-2 md:mt-5 md:p-6">
+            <article className="card-surface relative mt-4 p-4 md:col-span-2 md:mt-5 md:p-6">
               <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4">
                 <div className="relative grid size-[76px] shrink-0 place-items-center md:size-24">
                   <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90">
@@ -331,7 +326,7 @@ function HomeV6Screen() {
                       r="15.5"
                       fill="none"
                       stroke="currentColor"
-                      className="text-white/12"
+                      className="text-secondary"
                       strokeWidth="3.5"
                     />
                     <circle
@@ -350,29 +345,29 @@ function HomeV6Screen() {
                     <p className="font-display text-lg leading-none md:text-2xl">
                       {NEXT_MATURITY.daysLeft}
                     </p>
-                    <p className="text-[9px] font-semibold text-primary-foreground/55">days</p>
+                    <p className="text-[9px] font-semibold text-muted-foreground">days</p>
                   </div>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary-foreground/55">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                     Next maturity
                   </p>
                   <h2 className="mt-1 truncate font-display text-base md:text-xl">
                     {NEXT_MATURITY.name}
                   </h2>
-                  <p className="mt-1 text-[11px] text-primary-foreground/65 md:text-xs">
+                  <p className="mt-1 text-[11px] text-muted-foreground md:text-xs">
                     {NEXT_MATURITY.rate} · {NEXT_MATURITY.tenor} · matures {NEXT_MATURITY.date}
                   </p>
-                  <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-primary-foreground/65 md:text-xs">
+                  <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-muted-foreground md:text-xs">
                     <span>
                       Principal{" "}
-                      <span className="font-bold text-primary-foreground">
+                      <span className="font-bold text-foreground">
                         {mask(NEXT_MATURITY.amount)}
                       </span>
                     </span>
                     <span>
                       Payout{" "}
-                      <span className="font-bold text-gold">
+                      <span className="font-bold text-brand">
                         {mask(NEXT_MATURITY.expectedPayout)}
                       </span>
                     </span>
@@ -382,8 +377,8 @@ function HomeV6Screen() {
             </article>
 
             {/* Weekly interest */}
-            <article className="mt-3 rounded-[1.75rem] border border-white/12 bg-white/[0.06] p-4 backdrop-blur md:mt-5 md:p-6">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary-foreground/55">
+            <article className="mt-3 card-surface p-4 md:mt-5 md:p-6">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                 Interest this week
               </p>
               <p className="mt-1.5 font-display text-2xl text-num md:text-3xl">
@@ -393,10 +388,10 @@ function HomeV6Screen() {
                 {WEEK_SERIES.map((v, i) => (
                   <div key={WEEK_LABELS[i]} className="flex flex-1 flex-col items-center gap-1.5">
                     <div
-                      className={`w-2 rounded-full ${v === maxWeek ? "bg-gold" : "bg-white/20"}`}
+                      className={`w-2 rounded-full ${v === maxWeek ? "bg-gold" : "bg-brand/15"}`}
                       style={{ height: `${16 + (v / maxWeek) * 38}px` }}
                     />
-                    <span className="text-[9px] font-semibold text-primary-foreground/50">
+                    <span className="text-[9px] font-semibold text-muted-foreground">
                       {WEEK_LABELS[i]?.slice(0, 1)}
                     </span>
                   </div>
@@ -411,7 +406,7 @@ function HomeV6Screen() {
               <h2 className="font-display text-lg md:text-xl">Your plans</h2>
               <Link
                 to="/portfolio"
-                className="inline-flex items-center gap-1 text-xs font-bold text-gold press"
+                className="inline-flex items-center gap-1 text-xs font-bold text-brand press"
               >
                 Portfolio <ChevronRight className="size-3.5" />
               </Link>
@@ -422,7 +417,7 @@ function HomeV6Screen() {
                 return (
                   <article
                     key={h.name}
-                    className={`relative overflow-hidden rounded-[1.6rem] border border-white/12 bg-white/[0.06] p-4 backdrop-blur press hover:-translate-y-0.5 md:p-5 ${
+                    className={`relative overflow-hidden card-surface p-4 press hover:-translate-y-0.5 md:p-5 ${
                       i >= 2 ? "hidden md:block" : ""
                     }`}
                   >
@@ -435,24 +430,24 @@ function HomeV6Screen() {
                         <h3 className="truncate font-display text-[15px] md:text-base">
                           {h.name}
                         </h3>
-                        <p className="mt-0.5 text-[11px] text-primary-foreground/60">
+                        <p className="mt-0.5 text-[11px] text-muted-foreground">
                           Matures {h.date}
                         </p>
                       </div>
-                      <span className="shrink-0 rounded-full bg-gold/20 px-2.5 py-1 text-[10px] font-extrabold text-gold">
+                      <span className="shrink-0 rounded-full bg-accent px-2.5 py-1 text-[10px] font-extrabold text-accent-foreground">
                         {h.rate}
                       </span>
                     </div>
                     <p className="mt-3 pl-1 font-display text-xl text-num md:text-2xl">
                       {mask(h.amount)}
                     </p>
-                    <div className="ml-1 mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/12">
+                    <div className="ml-1 mt-2.5 h-1.5 overflow-hidden rounded-full bg-secondary">
                       <div
                         className="h-full rounded-full bg-gold-gradient"
                         style={{ width: `${p}%` }}
                       />
                     </div>
-                    <div className="ml-1 mt-1.5 flex items-center justify-between text-[10px] font-semibold text-primary-foreground/55">
+                    <div className="ml-1 mt-1.5 flex items-center justify-between text-[10px] font-semibold text-muted-foreground">
                       <span>{p}% of tenor complete</span>
                       <span>{h.daysLeft} days left</span>
                     </div>
@@ -463,7 +458,7 @@ function HomeV6Screen() {
           </section>
 
           {/* Idle wallet nudge */}
-          <section className="mt-5 overflow-hidden rounded-[1.75rem] border border-gold/35 bg-gold/[0.12] p-4 backdrop-blur md:mt-6 md:p-6">
+          <section className="mt-4 overflow-hidden rounded-[1.5rem] border border-gold/40 bg-accent p-4 md:mt-5 md:p-6">
             <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3">
               <span className="grid size-9 shrink-0 place-items-center rounded-2xl bg-gold-gradient text-gold-foreground">
                 <Wallet className="size-[18px]" strokeWidth={2} />
@@ -472,13 +467,13 @@ function HomeV6Screen() {
                 <p className="text-sm font-extrabold">
                   {mask(WALLET)} in your wallet earns no interest
                 </p>
-                <p className="mt-1 text-xs leading-relaxed text-primary-foreground/70">
+                <p className="mt-1 text-xs leading-relaxed text-accent-foreground/80">
                   Wallet funds are available for withdrawal at any time. Move them into Kipit
                   Vault at 21.5% p.a. to earn about ₦8,958 a month.
                 </p>
                 <Link
                   to="/invest"
-                  className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold-gradient px-4 py-2 text-xs font-bold text-gold-foreground press"
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-bold text-primary-foreground press"
                 >
                   Invest wallet balance <ArrowUpRight className="size-3.5" />
                 </Link>
@@ -487,10 +482,10 @@ function HomeV6Screen() {
           </section>
 
           {/* Upcoming payouts */}
-          <section className="mt-4 rounded-[1.75rem] border border-white/12 bg-white/[0.06] p-4 backdrop-blur md:mt-5 md:p-6">
+          <section className="mt-4 card-surface p-4 md:mt-5 md:p-6">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-lg md:text-xl">Upcoming payouts</h2>
-              <span className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-bold text-primary-foreground/60">
+              <span className="rounded-full bg-secondary px-2.5 py-1 text-[10px] font-bold text-muted-foreground">
                 Next 30 days
               </span>
             </div>
@@ -502,13 +497,13 @@ function HomeV6Screen() {
                 >
                   <span className="flex flex-col items-center">
                     <span
-                      className={`size-2.5 rounded-full ${i === 0 ? "bg-gold" : "bg-white/25"}`}
+                      className={`size-2.5 rounded-full ${i === 0 ? "bg-gold" : "bg-brand/25"}`}
                     />
-                    {i < PAYOUTS.length - 1 && <span className="mt-1 h-6 w-px bg-white/15" />}
+                    {i < PAYOUTS.length - 1 && <span className="mt-1 h-6 w-px bg-border" />}
                   </span>
                   <span className="min-w-0">
                     <span className="block truncate text-[13px] font-semibold">{p.label}</span>
-                    <span className="block text-[11px] text-primary-foreground/55">{p.date}</span>
+                    <span className="block text-[11px] text-muted-foreground">{p.date}</span>
                   </span>
                   <span className="shrink-0 font-display text-sm text-num">{mask(p.amount)}</span>
                 </li>
@@ -517,19 +512,19 @@ function HomeV6Screen() {
           </section>
 
           {/* Recommendation */}
-          <section className="mt-4 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[1.75rem] border border-white/12 bg-white/[0.06] p-4 backdrop-blur md:mt-5 md:p-6">
-            <span className="grid size-9 shrink-0 place-items-center rounded-2xl bg-white/12 text-gold">
+          <section className="mt-4 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 card-surface p-4 md:mt-5 md:p-6">
+            <span className="grid size-9 shrink-0 place-items-center rounded-2xl bg-brand text-primary-foreground">
               <Lightbulb className="size-[18px]" strokeWidth={2} />
             </span>
             <div className="min-w-0">
               <p className="truncate text-sm font-bold">Recommended: Kipit Vault (365 days)</p>
-              <p className="mt-0.5 text-[11px] text-primary-foreground/60">
+              <p className="mt-0.5 text-[11px] text-muted-foreground">
                 21.5% p.a. · matches your long-tenor pattern
               </p>
             </div>
             <Link
               to="/invest"
-              className="shrink-0 rounded-full bg-gold-gradient px-3.5 py-2 text-[11px] font-bold text-gold-foreground press"
+              className="shrink-0 rounded-full bg-accent px-3.5 py-2 text-[11px] font-bold text-accent-foreground press"
             >
               View
             </Link>
