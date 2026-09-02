@@ -241,6 +241,9 @@ function CallAccountScreen() {
           </section>
 
 
+          {/* Full-month interest calendar */}
+          <MonthInterestCalendar mask={mask} />
+
 
           {/* Product explanation */}
           <section className="mt-4 card-surface p-4 md:p-5">
