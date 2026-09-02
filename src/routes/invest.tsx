@@ -3,8 +3,6 @@ import {
   ArrowUpRight,
   ChevronRight,
   Clock,
-  Lock,
-  PiggyBank,
   ShieldCheck,
   Wallet,
 } from "lucide-react";
