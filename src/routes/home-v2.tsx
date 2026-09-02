@@ -341,8 +341,6 @@ function HomeV2Screen() {
                     </article>
                   );
                 })}
-
-                ))}
               </div>
             </section>
 
