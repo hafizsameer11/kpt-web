@@ -9,9 +9,16 @@ import {
   Plus,
   ShieldCheck,
   TrendingUp,
+  X,
 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import { naira, WALLET } from "@/lib/home-data";
 import {
