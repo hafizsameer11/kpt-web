@@ -355,7 +355,7 @@ function HomeV6Screen() {
                 {FEED.map((f, i) => (
                   <article
                     key={f.title}
-                    className="card-surface w-[78%] shrink-0 snap-start p-3.5 md:w-auto"
+                    className="card-surface w-[38%] shrink-0 snap-start p-3 md:w-auto md:p-3.5"
                   >
                     <FeedThumb index={i} className="h-24" />
                     <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gold">
