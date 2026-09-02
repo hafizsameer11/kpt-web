@@ -1,8 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, ChevronRight, Plus, ShieldCheck } from "lucide-react";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  Calculator,
+  ChevronRight,
+  Gift,
+  Plus,
+  RefreshCw,
+  Repeat,
+  ShieldCheck,
+  Wallet,
+} from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
-import { naira, HOLDINGS } from "@/lib/home-data";
+import { naira, HOLDINGS, WALLET } from "@/lib/home-data";
 import { CALL_ACCOUNT, TENOR_BANDS } from "@/lib/invest-data";
 
 export const Route = createFileRoute("/invest")({
@@ -53,6 +64,12 @@ function InvestScreen() {
               Grow your wealth with Kipit&rsquo;s own plans
             </p>
 
+            {/* Available wallet balance (funding source for MOB-062 / MOB-066) */}
+            <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground/85">
+              <Wallet className="size-3.5" />
+              Wallet available {mask(WALLET)}
+            </p>
+
             {/* Call Account glass card (MOB-061 entry) */}
             <section className="mt-6 rounded-[1.75rem] border border-white/12 bg-white/8 p-5 backdrop-blur-md md:p-6">
               <div className="flex items-start justify-between gap-3">
@@ -69,24 +86,32 @@ function InvestScreen() {
                 {mask(CALL_ACCOUNT.balance)}
               </p>
               <p className="mt-2 text-[12px] text-primary-foreground/60">
-                {CALL_ACCOUNT.liquidity} &middot; earned today {mask(CALL_ACCOUNT.accruedToday)}
+                {CALL_ACCOUNT.liquidity} &middot; min {naira(CALL_ACCOUNT.minimum)} &middot; earned
+                today {mask(CALL_ACCOUNT.accruedToday)}
               </p>
 
-              <div className="mt-5 flex gap-3">
+              <div className="mt-5 flex flex-wrap gap-2.5">
                 <button
                   type="button"
-                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-gold-gradient px-5 py-3 text-xs font-extrabold text-gold-foreground press"
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-gold-gradient px-3 py-3 text-[11px] font-extrabold text-gold-foreground press"
                 >
                   Add money <ArrowUpRight className="size-3.5" />
                 </button>
+                <button
+                  type="button"
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-white/20 bg-white/10 px-3 py-3 text-[11px] font-bold text-primary-foreground press"
+                >
+                  Withdraw <ArrowDownLeft className="size-3.5" />
+                </button>
                 <Link
                   to="/portfolio"
-                  className="inline-flex flex-1 items-center justify-center rounded-full border border-white/20 bg-white/10 px-5 py-3 text-xs font-bold text-primary-foreground press"
+                  className="inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-full border border-white/20 bg-white/10 px-3 py-3 text-[11px] font-bold text-primary-foreground press"
                 >
                   Activity
                 </Link>
               </div>
             </section>
+
 
           </div>
         </section>
@@ -141,45 +166,46 @@ function InvestScreen() {
                       >
                         {featured ? "Most popular" : "Fixed tenor"}
                       </span>
-                      <h3 className="mt-2 font-display text-base font-extrabold md:mt-3 md:text-xl">
-                        {band.days}
+                      <h3 className="mt-2 font-display text-[13px] font-extrabold leading-tight md:mt-3 md:text-base">
+                        {band.name}
                       </h3>
                       <p
-                        className={`mt-0.5 text-[10px] md:text-[11px] ${
+                        className={`mt-0.5 text-[10px] font-semibold md:text-[11px] ${
+                          featured ? "text-primary-foreground/70" : "text-muted-foreground"
+                        }`}
+                      >
+                        {band.days} &middot; min {naira(band.minimum)}
+                      </p>
+                    </div>
+                    <div className="relative mt-4">
+                      <p
+                        className={`text-[9px] md:text-[10px] ${
                           featured ? "text-primary-foreground/60" : "text-muted-foreground"
                         }`}
                       >
-                        Min {naira(band.minimum)}
+                        Rate p.a.
                       </p>
-                    </div>
-                    <div className="relative mt-4 flex items-end justify-between">
-                      <div>
-                        <p
-                          className={`text-[9px] md:text-[10px] ${
-                            featured ? "text-primary-foreground/60" : "text-muted-foreground"
-                          }`}
-                        >
-                          Rate p.a.
-                        </p>
-                        <p
-                          className={`text-xl font-extrabold text-num md:text-2xl ${
-                            featured ? "text-gold" : ""
-                          }`}
-                        >
-                          {band.rate}
-                        </p>
-                      </div>
-                      <span
-                        className={`grid size-9 place-items-center rounded-full md:size-10 ${
+                      <p
+                        className={`text-xl font-extrabold text-num md:text-2xl ${
+                          featured ? "text-gold" : ""
+                        }`}
+                      >
+                        {band.rate}
+                      </p>
+                      <button
+                        type="button"
+                        className={`mt-3 inline-flex w-full items-center justify-center gap-1 rounded-full px-3 py-2 text-[11px] font-extrabold press ${
                           featured
                             ? "bg-gold-gradient text-gold-foreground"
                             : "bg-brand text-brand-foreground"
                         }`}
                       >
-                        <Plus className="size-4 md:size-5" strokeWidth={2.4} />
-                      </span>
+                        <Plus className="size-3.5" strokeWidth={2.6} />
+                        Invest
+                      </button>
                     </div>
                   </article>
+
                 );
               })}
             </div>
@@ -239,6 +265,35 @@ function InvestScreen() {
                 );
               })}
             </ul>
+          </section>
+
+          {/* Invest tools — MOB-069 / MOB-071 / MOB-072 / MOB-075 entry points */}
+          <section className="mt-7">
+            <h2 className="mb-3 px-1 font-display text-base font-extrabold">Invest tools</h2>
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+              {[
+                { icon: Calculator, label: "Calculator", note: "Model your payout" },
+                { icon: Repeat, label: "Auto-invest", note: "Fund on a schedule" },
+                { icon: Gift, label: "Gift invest", note: "Send a plan" },
+                { icon: RefreshCw, label: "Roll over", note: "Reinvest at maturity" },
+              ].map((t) => (
+                <button
+                  key={t.label}
+                  type="button"
+                  className="card-surface flex items-start gap-3 p-3.5 text-left transition-shadow hover:shadow-md md:flex-col md:gap-2"
+                >
+                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-accent/15 text-brand">
+                    <t.icon className="size-4" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[12px] font-bold">{t.label}</span>
+                    <span className="block text-[10px] leading-snug text-muted-foreground">
+                      {t.note}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
           </section>
 
 
