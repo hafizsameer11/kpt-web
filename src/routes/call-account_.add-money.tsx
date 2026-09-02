@@ -93,7 +93,7 @@ function AddMoneyScreen() {
             </p>
 
             {/* Quick amounts */}
-            <div className="mt-5 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            <div className="mt-5 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
               {QUICK.map((q) => (
                 <button
                   key={q}
