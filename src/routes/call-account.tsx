@@ -204,22 +204,38 @@ function CallAccountScreen() {
               </span>
             </div>
 
-            {/* 14-day bars */}
-            <div className="mt-5 flex h-16 items-end gap-[3px] md:h-20">
-              {CALL_ACCRUAL_TREND.map((v, i) => {
-                const peak = Math.max(...CALL_ACCRUAL_TREND, 1);
-                const isToday = i === CALL_ACCRUAL_TREND.length - 1;
-                return (
-                  <span
-                    key={i}
-                    className={`flex-1 rounded-full ${isToday ? "bg-gold" : "bg-brand/15"}`}
-                    style={{ height: `${Math.max(12, (v / peak) * 100)}%` }}
-                  />
-                );
-              })}
+            {/* 14-day streak */}
+            <div className="relative mt-5">
+              <div className="flex items-end justify-between gap-2 overflow-x-auto pb-3 pt-1 scrollbar-hide">
+                {CALL_ACCRUAL_TREND.map((v, i) => {
+                  const isToday = i === CALL_ACCRUAL_TREND.length - 1;
+                  const dayLabel = i === 0 ? "14d" : i === CALL_ACCRUAL_TREND.length - 1 ? "Today" : `-${CALL_ACCRUAL_TREND.length - 1 - i}`;
+                  return (
+                    <div
+                      key={i}
+                      className={`flex shrink-0 flex-col items-center gap-2 rounded-2xl px-2.5 py-3 ${
+                        isToday
+                          ? "bg-brand text-primary-foreground shadow-sm"
+                          : "bg-muted/60 text-foreground"
+                      }`}
+                      style={{ minWidth: isToday ? 76 : 52 }}
+                    >
+                      <span className={`text-[10px] font-semibold ${isToday ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                        {dayLabel}
+                      </span>
+                      <span className={`text-[12px] font-extrabold text-num ${isToday ? "text-gold" : ""}`}>
+                        {mask(v)}
+                      </span>
+                      <span
+                        className={`h-1 w-full rounded-full ${isToday ? "bg-gold" : "bg-border"}`}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
-            <div className="mt-3 flex items-center justify-between border-t border-border/70 pt-3">
+            <div className="mt-1 flex items-center justify-between border-t border-border/70 pt-3">
               <p className="text-[11px] font-semibold text-muted-foreground">Last 14 days</p>
               <p className="text-[12.5px] font-extrabold text-num">
                 {mask(CALL_ACCRUAL_TREND.reduce((a, b) => a + b, 0))}
