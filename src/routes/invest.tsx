@@ -112,80 +112,76 @@ function InvestScreen() {
               </button>
             </div>
 
-            {/* Luxe tenor / rate carousel */}
-            <div className="relative -mx-4 md:mx-0">
-              <div
-                className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-6 md:grid md:grid-cols-4 md:overflow-visible md:px-0"
-              >
-                {TENOR_BANDS.map((b) => (
+            {/* Fixed plans grid — invest-v2 cards in invest-v3 layout */}
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+              {TENOR_BANDS.map((band, i) => {
+                const featured = i === 1;
+                return (
                   <article
-                    key={b.days}
-                    className="relative w-[17rem] shrink-0 snap-center overflow-hidden rounded-[1.5rem] bg-brand p-[1px] shadow-float md:w-auto"
+                    key={band.days}
+                    className={`relative flex flex-col justify-between overflow-hidden rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-5 ${
+                      featured
+                        ? "bg-brand-gradient text-primary-foreground shadow-float"
+                        : "border border-border bg-card"
+                    }`}
                   >
-                    {/* gradient border layer */}
                     <span
                       aria-hidden
-                      className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gold via-gold/30 to-transparent opacity-70"
+                      className={`pointer-events-none absolute -right-10 -top-10 size-28 rounded-full ${
+                        featured ? "bg-gold/20" : "bg-accent/60"
+                      }`}
                     />
-                    <div className="relative flex flex-col items-center rounded-[1.5rem] bg-brand px-6 py-8 text-center">
-                      <span className="mb-3 inline-flex rounded-full bg-gold/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-gold">
-                        Fixed tenor
-                      </span>
-                      <h3 className="text-lg font-medium text-primary-foreground/80">
-                        {b.days}
-                      </h3>
-
-                      <div className="my-5 flex flex-col items-center">
-                        <span className="font-['Fraunces'] text-[3.25rem] font-bold leading-none text-gold">
-                          {parseFloat(b.rate)}<span className="text-[1.75rem]">%</span>
-                        </span>
-                        <span className="mt-1 text-[10px] font-semibold uppercase tracking-widest text-primary-foreground/40">
-                          Per annum
-                        </span>
-                      </div>
-
-                      <div className="mb-6 h-px w-14 bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
-
-                      <p className="text-[11px] font-medium text-primary-foreground/50">
-                        Minimum investment
-                      </p>
-                      <p className="mt-0.5 text-lg font-semibold text-primary-foreground">
-                        {naira(b.minimum)}
-                      </p>
-
-                      <button
-                        type="button"
-                        className="mt-6 inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-gold px-5 py-3 text-xs font-extrabold text-gold-foreground transition-colors hover:bg-gold/90 press"
+                    <div className="relative">
+                      <span
+                        className={`inline-flex rounded-full px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-widest md:px-3 md:text-[10px] ${
+                          featured
+                            ? "bg-white/15 text-primary-foreground"
+                            : "bg-secondary text-muted-foreground"
+                        }`}
                       >
-                        Invest now <ArrowUpRight className="size-3.5" />
-                      </button>
-
-                      {/* ambient glows */}
+                        {featured ? "Most popular" : "Fixed tenor"}
+                      </span>
+                      <h3 className="mt-2 font-display text-base font-extrabold md:mt-3 md:text-xl">
+                        {band.days}
+                      </h3>
+                      <p
+                        className={`mt-0.5 text-[10px] md:text-[11px] ${
+                          featured ? "text-primary-foreground/60" : "text-muted-foreground"
+                        }`}
+                      >
+                        Min {naira(band.minimum)}
+                      </p>
+                    </div>
+                    <div className="relative mt-4 flex items-end justify-between">
+                      <div>
+                        <p
+                          className={`text-[9px] md:text-[10px] ${
+                            featured ? "text-primary-foreground/60" : "text-muted-foreground"
+                          }`}
+                        >
+                          Rate p.a.
+                        </p>
+                        <p
+                          className={`text-xl font-extrabold text-num md:text-2xl ${
+                            featured ? "text-gold" : ""
+                          }`}
+                        >
+                          {band.rate}
+                        </p>
+                      </div>
                       <span
-                        aria-hidden
-                        className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-gold/8 blur-[40px]"
-                      />
-                      <span
-                        aria-hidden
-                        className="pointer-events-none absolute -bottom-10 -left-10 size-28 rounded-full bg-white/5 blur-[36px]"
-                      />
+                        className={`grid size-9 place-items-center rounded-full md:size-10 ${
+                          featured
+                            ? "bg-gold-gradient text-gold-foreground"
+                            : "bg-brand text-brand-foreground"
+                        }`}
+                      >
+                        <Plus className="size-4 md:size-5" strokeWidth={2.4} />
+                      </span>
                     </div>
                   </article>
-                ))}
-              </div>
-
-              {/* carousel dots (mobile only) */}
-              <div className="flex justify-center gap-1.5 pb-2 md:hidden">
-                {TENOR_BANDS.map((b, i) => (
-                  <span
-                    key={b.days}
-                    aria-hidden
-                    className={`h-1.5 rounded-full transition-all ${
-                      i === 0 ? "w-5 bg-brand" : "w-1.5 bg-brand/25"
-                    }`}
-                  />
-                ))}
-              </div>
+                );
+              })}
             </div>
 
           </section>
