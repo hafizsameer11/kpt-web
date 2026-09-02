@@ -119,9 +119,9 @@ function HomeV2Screen() {
               className="pointer-events-none absolute -left-24 bottom-0 size-56 rounded-full bg-white/10 blur-3xl"
             />
 
-            <header className="relative flex items-center justify-between gap-3">
+            <header className="relative flex items-center justify-between gap-3 md:hidden">
               <div className="min-w-0">
-                <Logo tone="light" className="font-display text-xl md:hidden" />
+                <Logo tone="light" className="font-display text-xl" />
                 <p className="mt-1 truncate text-[11px] text-primary-foreground/70">
                   <GreetingText />, Adaeze
                 </p>
@@ -145,57 +145,77 @@ function HomeV2Screen() {
               </div>
             </header>
 
-            {/* Lens switcher — one balance surface, three views */}
-            <div className="relative mt-5 inline-flex rounded-full border border-white/15 bg-white/10 p-1">
-              {LENSES.map((l) => (
-                <button
-                  key={l.key}
-                  type="button"
-                  onClick={() => setLens(l.key)}
-                  className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-colors ${
-                    lens === l.key
-                      ? "bg-surface text-brand"
-                      : "text-primary-foreground/70"
-                  }`}
-                >
-                  {l.label}
-                </button>
-              ))}
+            <div className="relative md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] md:items-center md:gap-10">
+              <div className="min-w-0">
+                {/* Lens switcher — one balance surface, three views */}
+                <div className="mt-5 inline-flex rounded-full border border-white/15 bg-white/10 p-1 md:mt-0">
+                  {LENSES.map((l) => (
+                    <button
+                      key={l.key}
+                      type="button"
+                      onClick={() => setLens(l.key)}
+                      className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-colors ${
+                        lens === l.key
+                          ? "bg-surface text-brand"
+                          : "text-primary-foreground/70"
+                      }`}
+                    >
+                      {l.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mt-4 flex items-end gap-3">
+                  <h1 className="font-display text-[40px] font-extrabold leading-none tracking-[-0.045em] text-num md:text-[56px]">
+                    {mask(active.value)}
+                  </h1>
+                  <button
+                    type="button"
+                    onClick={toggle}
+                    aria-label={hidden ? "Show balances" : "Hide balances"}
+                    className="mb-1 grid size-8 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 press"
+                  >
+                    {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
+                </div>
+                <p className="mt-2 text-[11px] text-primary-foreground/70">{active.note}</p>
+                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-[11px] font-bold text-gold">
+                  <ArrowUpRight className="size-3.5" /> +{naira(WEEK_EARNINGS)} interest this week
+                </p>
+
+                {/* Desktop-only split of balances */}
+                <dl className="mt-6 hidden gap-3 md:grid md:grid-cols-2">
+                  {LENSES.filter((l) => l.key !== "total").map((l) => (
+                    <div
+                      key={l.key}
+                      className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3"
+                    >
+                      <dt className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary-foreground/60">
+                        {l.label}
+                      </dt>
+                      <dd className="mt-1 text-lg font-extrabold text-num">{mask(l.value)}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+
+              {/* Quick actions — thumb row on mobile, panel on desktop */}
+              <div className="mt-6 grid grid-cols-4 gap-2 md:mt-0 md:grid-cols-2 md:gap-3 md:rounded-3xl md:border md:border-white/15 md:bg-white/5 md:p-4">
+                {QUICK_ACTIONS.map((a) => (
+                  <Link
+                    key={a.label}
+                    to={a.to}
+                    className="flex flex-col items-center gap-2 rounded-2xl py-1 text-[10px] font-semibold text-primary-foreground/85 press md:flex-row md:gap-3 md:rounded-2xl md:bg-white/5 md:px-3 md:py-3 md:text-xs md:hover:bg-white/10"
+                  >
+                    <span className="grid size-12 place-items-center rounded-2xl border border-white/15 bg-white/10 md:size-9">
+                      <a.icon className="size-5 md:size-4" strokeWidth={1.9} />
+                    </span>
+                    <span className="text-center leading-tight md:text-left">{a.label}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
 
-            <div className="relative mt-4 flex items-end gap-3">
-              <h1 className="font-display text-[40px] font-extrabold leading-none tracking-[-0.045em] text-num md:text-[56px]">
-                {mask(active.value)}
-              </h1>
-              <button
-                type="button"
-                onClick={toggle}
-                aria-label={hidden ? "Show balances" : "Hide balances"}
-                className="mb-1 grid size-8 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 press"
-              >
-                {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-              </button>
-            </div>
-            <p className="relative mt-2 text-[11px] text-primary-foreground/70">{active.note}</p>
-            <p className="relative mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-[11px] font-bold text-gold">
-              <ArrowUpRight className="size-3.5" /> +{naira(WEEK_EARNINGS)} interest this week
-            </p>
-
-            {/* Quick actions — thumb row on the canvas */}
-            <div className="relative mt-6 grid grid-cols-4 gap-2">
-              {QUICK_ACTIONS.map((a) => (
-                <Link
-                  key={a.label}
-                  to={a.to}
-                  className="flex flex-col items-center gap-2 rounded-2xl py-1 text-[10px] font-semibold text-primary-foreground/85 press"
-                >
-                  <span className="grid size-12 place-items-center rounded-2xl border border-white/15 bg-white/10">
-                    <a.icon className="size-5" strokeWidth={1.9} />
-                  </span>
-                  <span className="text-center leading-tight">{a.label}</span>
-                </Link>
-              ))}
-            </div>
           </section>
 
           {/* ── Sheet that slides over the canvas ──────────────────────── */}
