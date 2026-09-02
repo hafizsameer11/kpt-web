@@ -181,13 +181,16 @@ function AddMoneyScreen() {
 
           {/* CTA */}
           <div className="mt-5">
-            <button
-              type="button"
-              disabled={!valid}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none md:w-auto md:px-10"
+            <Link
+              to="/call-account/review"
+              search={{ amount }}
+              aria-disabled={!valid}
+              className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
+                valid ? "" : "pointer-events-none opacity-40 shadow-none"
+              }`}
             >
               Continue <ArrowRight className="size-4" strokeWidth={2.6} />
-            </button>
+            </Link>
             <p className="mt-2.5 text-center text-[11.5px] text-muted-foreground md:text-left">
               You'll review the amount, rate and funding source before it's confirmed.
             </p>
