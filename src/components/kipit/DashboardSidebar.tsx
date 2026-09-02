@@ -27,8 +27,8 @@ const naira = (value: number) =>
   `₦${value.toLocaleString("en-NG", { maximumFractionDigits: 0 })}`;
 
 /**
- * Fixed desktop dashboard sidebar (navy rail) — hidden on mobile.
- * Pair with a main column that has `md:pl-64`.
+ * Fixed desktop dashboard sidebar — light rail with a navy active pill.
+ * Pair with a main column that has `md:pl-[17rem]`.
  */
 export function DashboardSidebar({
   walletBalance = 500000,
@@ -43,66 +43,71 @@ export function DashboardSidebar({
   const current = activePath ?? pathname;
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-brand-gradient text-primary-foreground md:flex">
-      <div className="px-7 pb-8 pt-8">
-        <Logo tone="light" className="text-3xl" />
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[17rem] flex-col border-r border-border bg-surface md:flex">
+      <div className="px-7 pb-7 pt-7">
+        <Logo tone="brand" className="text-2xl" />
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto px-4">
+      <nav className="flex-1 space-y-0.5 overflow-y-auto px-4">
         {SIDEBAR_NAV.map((item) => {
           const Icon = item.icon;
           const active =
-            item.to === "/" ? current === "/" || current.startsWith("/home-v") : current.startsWith(item.to);
+            item.to === "/"
+              ? current === "/" || current.startsWith("/home-v")
+              : current.startsWith(item.to);
           return (
             <Link
               key={item.to}
               to={item.to}
-              className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-colors ${
+              className={`group relative flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-[13.5px] font-semibold press ${
                 active
-                  ? "bg-white/12 text-primary-foreground"
-                  : "text-primary-foreground/60 hover:bg-white/8 hover:text-primary-foreground"
+                  ? "bg-brand text-brand-foreground shadow-card"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
               }`}
             >
-              <span
-                className={`grid size-9 place-items-center rounded-xl ${
-                  active ? "bg-gold-gradient text-gold-foreground" : "bg-white/10"
-                }`}
-              >
-                <Icon className="size-4.5" />
-              </span>
+              <Icon
+                className="size-[18px]"
+                strokeWidth={active ? 2.2 : 1.8}
+              />
               {item.label}
+              {active && (
+                <span
+                  aria-hidden
+                  className="ml-auto size-1.5 rounded-full bg-gold"
+                />
+              )}
             </Link>
           );
         })}
       </nav>
 
-      <div className="m-4 rounded-2xl bg-white/10 p-4">
-        <p className="text-xs font-semibold uppercase tracking-widest text-primary-foreground/60">
+      <div className="m-4 overflow-hidden rounded-[1.35rem] bg-brand-gradient p-5 text-primary-foreground">
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary-foreground/55">
           Wallet
         </p>
-        <p className="mt-1 text-xl font-extrabold">
+        <p className="mt-1.5 text-[22px] font-bold text-num">
           {hideBalance ? "₦ • • • • • •" : naira(walletBalance)}
         </p>
         <button
           type="button"
-          className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-gold-gradient px-4 py-2.5 text-xs font-bold text-gold-foreground transition-transform active:scale-95"
+          className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-white/12 px-4 py-2.5 text-xs font-bold text-primary-foreground press hover:bg-white/20"
         >
           <Plus className="size-3.5" /> Fund wallet
         </button>
       </div>
 
-      <div className="flex items-center gap-3 border-t border-white/10 px-6 py-5">
-        <div className="grid size-10 place-items-center rounded-full bg-gold-gradient text-sm font-bold text-gold-foreground">
+      <div className="flex items-center gap-3 border-t border-border px-5 py-4">
+        <div className="grid size-9 place-items-center rounded-full bg-brand text-xs font-bold text-brand-foreground">
           AO
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-bold">Adaeze Okafor</p>
-          <p className="text-xs text-primary-foreground/60">Tier 2 verified</p>
+          <p className="truncate text-[13px] font-semibold">Adaeze Okafor</p>
+          <p className="text-[11px] text-muted-foreground">Tier 2 verified</p>
         </div>
         <button
           type="button"
           aria-label="Sign out"
-          className="grid size-8 place-items-center rounded-full text-primary-foreground/60 transition-colors hover:bg-white/10 hover:text-primary-foreground"
+          className="grid size-8 place-items-center rounded-full text-muted-foreground press hover:bg-secondary hover:text-foreground"
         >
           <LogOut className="size-4" />
         </button>
@@ -114,25 +119,29 @@ export function DashboardSidebar({
 /** Desktop dashboard top bar that sits above page content, next to the sidebar. */
 export function DashboardTopBar({ title = "Dashboard" }: { title?: string }) {
   return (
-    <header className="sticky top-0 z-30 hidden h-16 items-center gap-4 border-b border-border bg-surface/90 px-8 backdrop-blur md:flex">
+    <header className="sticky top-0 z-30 hidden h-[72px] items-center gap-4 border-b border-border bg-background/80 px-8 backdrop-blur-xl md:flex">
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-          {title}
+        <h1 className="text-[17px] font-bold tracking-tight">{title}</h1>
+        <p className="text-[12.5px] text-muted-foreground">
+          <GreetingText />, Adaeze
         </p>
-        <p className="text-sm font-bold"><GreetingText />, Adaeze</p>
       </div>
-      <div className="ml-auto flex items-center gap-3">
-        <button
-          type="button"
+      <div className="ml-auto flex items-center gap-2">
+        <Link
+          to="/notifications"
           aria-label="Notifications"
-          className="relative grid size-10 place-items-center rounded-full bg-secondary text-foreground transition-colors hover:bg-accent"
+          className="relative grid size-10 place-items-center rounded-full border border-border bg-surface text-foreground press hover:bg-secondary"
         >
-          <Bell className="size-5" />
-          <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-gold" />
-        </button>
-        <div className="grid size-10 place-items-center rounded-full bg-brand text-sm font-bold text-brand-foreground">
+          <Bell className="size-[18px]" strokeWidth={1.8} />
+          <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-gold ring-2 ring-surface" />
+        </Link>
+        <Link
+          to="/settings"
+          aria-label="Profile"
+          className="grid size-10 place-items-center rounded-full bg-brand text-xs font-bold text-brand-foreground press"
+        >
           AO
-        </div>
+        </Link>
       </div>
     </header>
   );
