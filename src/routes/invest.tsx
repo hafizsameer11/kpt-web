@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, ChevronRight, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, ChevronRight, Plus, ShieldCheck } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import { naira, HOLDINGS } from "@/lib/home-data";
-import { CALL_ACCOUNT, FIXED_PLANS, TENOR_BANDS } from "@/lib/invest-data";
+import { CALL_ACCOUNT, TENOR_BANDS } from "@/lib/invest-data";
 
 export const Route = createFileRoute("/invest")({
   head: () => ({
