@@ -278,6 +278,83 @@ function CallAccountScreen() {
               </div>
             </div>
 
+            {/* Day detail popup */}
+            <Dialog open={selectedDay !== null} onOpenChange={(open) => !open && setSelectedDay(null)}>
+              {selectedDay !== null && (
+                <DialogContent className="max-w-sm overflow-hidden rounded-3xl border-0 bg-card p-0 shadow-2xl">
+                  <DialogTitle className="sr-only">Interest details</DialogTitle>
+                  <DialogDescription className="sr-only">
+                    Detailed interest information for {fullDate(selectedDay, CALL_ACCRUAL_TREND.length)}
+                  </DialogDescription>
+                  {(() => {
+                    const value = CALL_ACCRUAL_TREND[selectedDay]!;
+                    const prev = selectedDay > 0 ? CALL_ACCRUAL_TREND[selectedDay - 1] : null;
+                    const change = prev !== null ? value - prev : 0;
+                    const cumulative = CALL_ACCRUAL_TREND.slice(0, selectedDay + 1).reduce((a, b) => a + b, 0);
+                    const isToday = selectedDay === CALL_ACCRUAL_TREND.length - 1;
+                    return (
+                      <div className="text-center">
+                        <div className="relative bg-brand-gradient px-6 pb-7 pt-8 text-primary-foreground">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedDay(null)}
+                            className="absolute right-4 top-4 grid size-8 place-items-center rounded-full bg-white/10 press"
+                            aria-label="Close"
+                          >
+                            <X className="size-4" />
+                          </button>
+                          <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                            {isToday ? "Today" : fullDate(selectedDay, CALL_ACCRUAL_TREND.length)}
+                          </p>
+                          <p className="mt-3 font-display text-[40px] font-extrabold leading-none tracking-[-0.03em] text-gold text-num">
+                            {mask(value)}
+                          </p>
+                          <p className="mt-2 text-[12px] font-medium text-primary-foreground/70">
+                            Interest earned
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-px bg-border">
+                          <div className="bg-card p-4">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                              vs previous day
+                            </p>
+                            <p className={`mt-1 text-[15px] font-extrabold text-num ${change >= 0 ? "text-brand" : "text-destructive"}`}>
+                              {change >= 0 ? "+" : ""}
+                              {mask(change)}
+                            </p>
+                          </div>
+                          <div className="bg-card p-4">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                              Running total
+                            </p>
+                            <p className="mt-1 text-[15px] font-extrabold text-num">
+                              {mask(cumulative)}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="px-5 pb-6 pt-4">
+                          <p className="text-[12px] leading-relaxed text-muted-foreground">
+                            {isToday
+                              ? "Today's interest is based on your current Call Account balance. It will be credited with your monthly payout on the 1st."
+                              : `Interest for ${fullDate(selectedDay, CALL_ACCRUAL_TREND.length)} has already been credited to your running balance.`}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedDay(null)}
+                            className="mt-5 w-full rounded-2xl bg-brand py-3 text-[12px] font-extrabold text-brand-foreground press"
+                          >
+                            Done
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </DialogContent>
+              )}
+            </Dialog>
+
             <div className="mt-1 flex items-center justify-between border-t border-border/70 pt-3">
               <p className="text-[11px] font-semibold text-muted-foreground">Last 14 days</p>
               <p className="text-[12.5px] font-extrabold text-num">
