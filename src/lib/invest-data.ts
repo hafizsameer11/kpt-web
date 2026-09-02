@@ -7,9 +7,9 @@ export const CALL_ACCOUNT = {
   rate: "14.5% p.a.",
   liquidity: "Withdraw anytime",
   minimum: 5_000,
-  balance: 500_000,
-  accruedToday: 198,
-  accruedThisMonth: 4_120,
+  balance: 25_000_000,
+  accruedToday: 9_932,
+  accruedThisMonth: 298_450,
   blurb:
     "Interest accrues daily on your idle cash and is credited monthly. No lock-in, no penalty.",
 };
