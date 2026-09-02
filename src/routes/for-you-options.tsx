@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/kipit/AppShell";
 import {
+  ForYouBento,
   ForYouCovers,
   ForYouFeature,
   ForYouList,
@@ -13,13 +14,13 @@ export const Route = createFileRoute("/for-you-options")({
       {
         name: "description",
         content:
-          "Compare three For You content card designs for the Kipit home screen: cover stories, reading list and feature plus chips.",
+          "Compare four For You content card designs for the Kipit home screen: cover stories, reading list, feature plus chips and bento mosaic.",
       },
       { property: "og:title", content: "For You Design Options — Kipit" },
       {
         property: "og:description",
         content:
-          "Three side-by-side design directions for the Kipit home For You section.",
+          "Four side-by-side design directions for the Kipit home For You section.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -47,6 +48,12 @@ const OPTIONS = [
     note: "One large navy lead story plus two slim supporting cards.",
     Component: ForYouFeature,
   },
+  {
+    key: "D",
+    name: "Bento mosaic",
+    note: "Asymmetric magazine grid: large lead tile plus smaller supporting tiles.",
+    Component: ForYouBento,
+  },
 ];
 
 function ForYouOptionsScreen() {
@@ -55,7 +62,7 @@ function ForYouOptionsScreen() {
       <div className="space-y-8 pb-4 pt-4">
         <header>
           <h1 className="font-display text-2xl font-extrabold tracking-tight">
-            For you — 3 designs
+            For you — 4 designs
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Pick the one you want and I&apos;ll drop it into Home 2.
