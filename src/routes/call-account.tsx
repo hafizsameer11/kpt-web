@@ -359,14 +359,33 @@ function build14Days(): Day14[] {
   });
 }
 
-/** 14-day interest calendar with per-day detail dialog. */
+function heatClass(value: number, min: number, max: number, isToday: boolean) {
+  if (isToday) return "bg-brand text-primary-foreground shadow-sm";
+  const t = (value - min) / (max - min || 1);
+  if (t > 0.7) return "bg-gold/20 border-gold/30 text-foreground hover:bg-gold/25";
+  if (t > 0.45) return "bg-gold/12 border-gold/20 text-foreground hover:bg-gold/16";
+  if (t > 0.2) return "bg-gold/6 border-gold/10 text-foreground hover:bg-gold/10";
+  return "bg-muted/60 border-border text-foreground hover:bg-muted";
+}
+
+/** 14-day interest heatmap calendar with per-day detail dialog. */
 function FourteenDayCalendar({ mask }: { mask: (n: number) => string }) {
   const days = useMemo(() => build14Days(), []);
   const [selected, setSelected] = useState<Day14 | null>(null);
+  const values = days.map((d) => d.interest);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
   const total = days.reduce((a, d) => a + d.interest, 0);
 
   return (
     <div className="mt-5">
+      <div className="mb-3 flex items-center justify-between">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          Last 14 days
+        </p>
+        <p className="text-[11px] font-extrabold text-num">{mask(total)}</p>
+      </div>
+
       <div className="grid grid-cols-7 gap-2">
         {days.map((d, i) => (
           <button
@@ -374,11 +393,12 @@ function FourteenDayCalendar({ mask }: { mask: (n: number) => string }) {
             type="button"
             onClick={() => setSelected(d)}
             aria-label={`${d.label} interest`}
-            className={`flex flex-col items-center gap-1 rounded-2xl px-1 py-2.5 press transition ${
+            className={`flex aspect-square flex-col items-center justify-center gap-0.5 rounded-2xl border press transition ${heatClass(
+              d.interest,
+              min,
+              max,
               d.isToday
-                ? "bg-brand text-primary-foreground shadow-sm"
-                : "bg-muted/60 text-foreground hover:bg-muted"
-            }`}
+            )}`}
           >
             <span
               className={`text-[9px] font-semibold ${
@@ -394,18 +414,11 @@ function FourteenDayCalendar({ mask }: { mask: (n: number) => string }) {
             >
               {mask(d.interest)}
             </span>
-            <span
-              className={`h-0.5 w-full rounded-full ${
-                d.isToday ? "bg-gold" : "bg-border"
-              }`}
-            />
+            {d.isToday && (
+              <span className="h-1 w-1 rounded-full bg-gold" />
+            )}
           </button>
         ))}
-      </div>
-
-      <div className="mt-4 flex items-center justify-between border-t border-border/70 pt-3">
-        <p className="text-[11px] font-semibold text-muted-foreground">Last 14 days</p>
-        <p className="text-[12.5px] font-extrabold text-num">{mask(total)}</p>
       </div>
 
       <Dialog open={selected !== null} onOpenChange={(o) => !o && setSelected(null)}>
