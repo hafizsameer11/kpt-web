@@ -229,12 +229,13 @@ function HomeV4Screen() {
                         transform="rotate(-90 64 64)"
                       />
                     </svg>
-                    <span className="absolute inset-0 grid place-items-center text-center">
-                      <span className="text-xl font-extrabold">{investedPct}%</span>
-                      <span className="-mt-6 block pt-8 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    <span className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 text-center">
+                      <span className="text-xl font-extrabold leading-none">{investedPct}%</span>
+                      <span className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground">
                         invested
                       </span>
                     </span>
+
                   </div>
                   <dl className="min-w-0 flex-1 space-y-3">
                     <div>
