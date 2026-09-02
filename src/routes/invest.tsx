@@ -187,8 +187,8 @@ function InvestScreen() {
           </section>
 
           {/* Active plans shortcut */}
-          <section className="card-surface mt-7 p-4 md:p-6">
-            <div className="mb-3 flex items-center justify-between">
+          <section className="mt-7">
+            <div className="mb-3 flex items-center justify-between px-1">
               <h2 className="font-display text-base font-extrabold">Your active plans</h2>
               <Link
                 to="/portfolio"
@@ -198,19 +198,49 @@ function InvestScreen() {
               </Link>
             </div>
             <ul className="space-y-3">
-              {HOLDINGS.map((h) => (
-                <li key={h.name} className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">{h.name}</p>
-                    <p className="text-[11px] text-muted-foreground">
-                      {h.rate} · {h.daysLeft} days left · matures {h.date}
-                    </p>
-                  </div>
-                  <p className="shrink-0 text-sm font-bold text-num">{mask(h.amount)}</p>
-                </li>
-              ))}
+              {HOLDINGS.map((h) => {
+                const progress = Math.min(
+                  100,
+                  Math.max(6, Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)),
+                );
+                return (
+                  <li
+                    key={h.name}
+                    className="card-surface relative overflow-hidden p-4 transition-shadow hover:shadow-md"
+                  >
+                    <span className="absolute inset-y-0 left-0 w-1 bg-accent" aria-hidden />
+                    <div className="flex items-start justify-between gap-3 pl-2">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-bold">{h.name}</p>
+                        <p className="mt-1 text-[11px] text-muted-foreground">
+                          Matures {h.date}
+                        </p>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className="text-base font-extrabold text-num">{mask(h.amount)}</p>
+                        <span className="mt-1 inline-flex rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-brand">
+                          {h.rate}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-3 pl-2">
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full bg-brand"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
+                      <div className="mt-1.5 flex items-center justify-between text-[10px] font-semibold text-muted-foreground">
+                        <span>{progress}% of tenor</span>
+                        <span>{h.daysLeft} days left</span>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </section>
+
 
           <p className="mt-4 flex items-start gap-2 px-1 text-[11px] leading-relaxed text-muted-foreground">
             <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
