@@ -1,15 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import {
-  ArrowDownToLine,
-  ArrowUpFromLine,
+  ArrowUpRight,
   Bell,
-  ChevronRight,
   Eye,
   EyeOff,
-  FileText,
   Lightbulb,
-  PlusCircle,
-  TrendingUp,
+  Plus,
   Wallet,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
@@ -18,252 +15,428 @@ import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 import { GreetingText, TierStatusCard, WalletNote } from "@/components/kipit/SpecBlocks";
-
+import {
+  FEED,
+  INVESTED,
+  MONTH_CHANGE,
+  MONTH_CHANGE_PCT,
+  NEXT_MATURITY,
+  QUICK_ACTIONS,
+  TOTAL,
+  WALLET,
+  WEEK_EARNINGS,
+  WEEK_LABELS,
+  naira,
+} from "@/lib/home-data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Kipit Home — Your Investment Dashboard" },
+      { title: "Kipit Home — Portfolio, Wallet & Plans" },
       {
         name: "description",
         content:
-          "See your Kipit portfolio value, wallet balance, weekly earnings and next maturity, and act fast with add money, withdraw and new plan.",
+          "Your Kipit home dashboard: total portfolio value, wallet balance, weekly interest, next maturity countdown and quick actions for funding, withdrawing and investing.",
       },
-      { property: "og:title", content: "Kipit Home — Your Investment Dashboard" },
+      { property: "og:title", content: "Kipit Home — Portfolio, Wallet & Plans" },
       {
         property: "og:description",
         content:
-          "Track your portfolio, wallet and investment plans in one place with Kipit.",
+          "Track portfolio value, wallet, weekly earnings and upcoming maturities in one Kipit dashboard.",
       },
     ],
   }),
   component: HomeScreen,
 });
 
-const naira = (value: number) =>
-  `₦${value.toLocaleString("en-NG", { maximumFractionDigits: 0 })}`;
+const RANGES = ["1W", "1M", "6M", "1Y", "All"] as const;
 
-const QUICK_ACTIONS = [
-  { label: "Add Money", icon: ArrowDownToLine },
-  { label: "Withdraw", icon: ArrowUpFromLine },
-  { label: "New Plan", icon: PlusCircle },
-  { label: "Statements", icon: FileText },
-];
+const SERIES: Record<string, number[]> = {
+  "1W": [82, 78, 84, 74, 80, 68, 62],
+  "1M": [86, 78, 82, 64, 70, 52, 58, 40, 46, 28, 34, 18, 24],
+  "6M": [92, 84, 88, 70, 74, 60, 52, 44, 30, 22],
+  "1Y": [96, 90, 82, 86, 70, 74, 58, 48, 40, 26, 18],
+  All: [98, 88, 90, 72, 66, 54, 40, 30, 16],
+};
 
-const FEED = [
-  {
-    tag: "Product update",
-    title: "Kipit Fixed Income now settles same-day",
-    body: "Maturity payouts land in your wallet within minutes of maturity.",
-  },
-  {
-    tag: "Education",
-    title: "Understanding tenor and effective yield",
-    body: "A 3-minute read on how rate and tenor shape your real return.",
-  },
-  {
-    tag: "Announcement",
-    title: "Tier 2 verification is now instant",
-    body: "Upgrade with your BVN and NIN to raise your transaction limits.",
-  },
-];
+const CHANGE: Record<string, string> = {
+  "1W": "+₦12,480 · +0.42% this week",
+  "1M": `+${naira(MONTH_CHANGE)} · +${MONTH_CHANGE_PCT}% this month`,
+  "6M": "+₦214,600 · +7.8% in 6 months",
+  "1Y": "+₦398,400 · +15.6% this year",
+  All: "+₦612,900 · +26.2% all time",
+};
+
+function toPoints(values: number[]) {
+  const step = 360 / (values.length - 1);
+  return values.map((v, i) => `${(i * step).toFixed(1)},${v}`).join(" ");
+}
+
+function CountdownRing({ daysLeft, total }: { daysLeft: number; total: number }) {
+  const r = 34;
+  const c = 2 * Math.PI * r;
+  const progress = 1 - daysLeft / total;
+  return (
+    <svg viewBox="0 0 84 84" className="size-24 -rotate-90">
+      <circle cx="42" cy="42" r={r} fill="none" strokeWidth="8" className="stroke-secondary" />
+      <circle
+        cx="42"
+        cy="42"
+        r={r}
+        fill="none"
+        strokeWidth="8"
+        strokeLinecap="round"
+        strokeDasharray={c}
+        strokeDashoffset={c * (1 - progress)}
+        className="stroke-gold"
+      />
+    </svg>
+  );
+}
 
 function HomeScreen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNewUser = useIsNewUser();
-
+  const [range, setRange] = useState<string>("1M");
+  const points = toPoints(SERIES[range] ?? SERIES["1M"]!);
 
   return (
-    <AppShell>
-      {/* Mobile app header */}
-      <header className="-mx-4 mb-4 rounded-b-[2rem] bg-brand-gradient px-5 pb-10 pt-6 text-brand-foreground md:hidden">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-full bg-brand-foreground/15 text-sm font-bold">
-              AO
+    <div className="theme-v2">
+      <AppShell navVariant="floating">
+        {/* Mobile header — greeting, notifications, profile (MOB-020) */}
+        <header className="-mx-4 mb-6 border-b border-border bg-surface px-5 pb-6 pt-5 md:hidden">
+          <div className="flex items-center justify-between gap-3">
+            <Logo tone="brand" className="font-display text-2xl" />
+            <div className="flex shrink-0 items-center gap-3">
+              <Link
+                to="/notifications"
+                aria-label="Notifications"
+                className="relative grid size-10 place-items-center rounded-full border border-border bg-secondary text-foreground"
+              >
+                <Bell className="size-5" />
+                <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-gold" />
+              </Link>
+              <Link
+                to="/settings"
+                aria-label="Profile"
+                className="grid size-10 place-items-center rounded-full bg-gold-gradient text-sm font-bold text-gold-foreground"
+              >
+                AO
+              </Link>
             </div>
-            <div>
-              <p className="text-xs opacity-75"><GreetingText /></p>
-              <p className="text-sm font-bold">Adaeze O.</p>
-            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Logo tone="light" className="text-lg" />
-            <Link
-              to="/notifications"
-              aria-label="Notifications"
-              className="relative grid size-10 place-items-center rounded-full bg-brand-foreground/15"
-            >
-              <Bell className="size-5" />
-              <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-gold" />
-            </Link>
+        </header>
 
-          </div>
-        </div>
-
-        <div className="mt-7">
-          <div className="flex items-center gap-2 text-xs opacity-75">
-            Total portfolio value
-            <button
-              type="button"
-              onClick={toggle}
-              aria-label={hidden ? "Show balances" : "Hide balances"}
-            >
-              {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-            </button>
-          </div>
-          <p className="mt-1 text-4xl font-extrabold tracking-tight">{mask(2450000)}</p>
-          <p className="mt-2 inline-flex items-center gap-1 rounded-full bg-brand-foreground/15 px-2.5 py-1 text-xs font-semibold">
-            <TrendingUp className="size-3.5" /> +₦38,200 · +1.58% this month
-          </p>
-        </div>
-      </header>
-
-      {/* Desktop greeting + portfolio */}
-      <section className="hidden md:block">
-        <div className="flex items-end justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground"><GreetingText /></p>
-            <h1 className="text-3xl font-extrabold tracking-tight">Adaeze O.</h1>
-          </div>
-          <button
-            type="button"
-            onClick={toggle}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold"
-          >
-            {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-            {hidden ? "Show balances" : "Hide balances"}
-          </button>
-        </div>
-        <div className="mt-5 rounded-3xl bg-brand-gradient p-8 text-brand-foreground shadow-float">
-          <p className="text-sm opacity-75">Total portfolio value</p>
-          <p className="mt-2 text-5xl font-extrabold tracking-tight">{mask(2450000)}</p>
-          <p className="mt-3 inline-flex items-center gap-1 rounded-full bg-brand-foreground/15 px-3 py-1 text-sm font-semibold">
-            <TrendingUp className="size-4" /> +₦38,200 · +1.58% this month
-          </p>
-        </div>
-      </section>
-
-      {isNewUser ? (
-        <div className="mt-5">
+        {isNewUser ? (
           <NewUserEmptyState />
-        </div>
-      ) : (
-      <>
-      {/* Quick actions */}
-      <section className="mt-5 grid grid-cols-4 gap-2 md:mt-6 md:gap-4">
+        ) : (
+          <>
+            {/* Portfolio summary + wallet */}
+            <section className="grid gap-4 lg:grid-cols-3">
+              <article className="relative overflow-hidden rounded-3xl border border-border bg-brand-gradient p-6 text-primary-foreground shadow-card md:p-8 lg:col-span-2">
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-white/10 blur-3xl"
+                />
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
+                      <GreetingText />, Adaeze
+                    </p>
+                    <p className="mt-3 text-xs text-primary-foreground/70">
+                      Total portfolio value
+                    </p>
+                    <div className="mt-1 flex items-center gap-3">
+                      <h1 className="font-display text-4xl font-bold tracking-tight md:text-5xl">
+                        {mask(TOTAL)}
+                      </h1>
+                      <button
+                        type="button"
+                        onClick={toggle}
+                        aria-label={hidden ? "Show balances" : "Hide balances"}
+                        className="grid size-9 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 text-primary-foreground/80 transition-colors hover:bg-white/20"
+                      >
+                        {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      </button>
+                    </div>
+                    <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-bold text-[oklch(0.87_0.15_94)]">
+                      <ArrowUpRight className="size-3.5" /> {CHANGE[range]}
+                    </p>
+                  </div>
+                  <div className="hidden gap-1 rounded-full border border-white/20 bg-white/10 p-1 md:flex">
+                    {RANGES.map((r) => (
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => setRange(r)}
+                        className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${
+                          range === r
+                            ? "bg-gold-gradient text-gold-foreground"
+                            : "text-primary-foreground/70 hover:text-primary-foreground"
+                        }`}
+                      >
+                        {r}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-        {QUICK_ACTIONS.map(({ label, icon: Icon }) => (
-          <button
-            key={label}
-            type="button"
-            className="flex flex-col items-center gap-2 rounded-2xl bg-surface p-3 text-center shadow-card transition-transform active:scale-95 md:flex-row md:justify-start md:gap-3 md:p-4 md:text-left"
-          >
-            <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-accent text-accent-foreground">
-              <Icon className="size-5" />
-            </span>
-            <span className="text-[11px] font-semibold leading-tight md:text-sm">
-              {label}
-            </span>
-          </button>
-        ))}
-      </section>
+                <svg viewBox="0 0 360 100" className="mt-6 h-24 w-full" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="oklch(0.84 0.155 88 / 0.35)" />
+                      <stop offset="100%" stopColor="oklch(0.84 0.155 88 / 0)" />
+                    </linearGradient>
+                  </defs>
+                  <polygon points={`${points} 360,100 0,100`} fill="url(#sparkFill)" />
+                  <polyline
+                    points={points}
+                    fill="none"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    stroke="oklch(0.86 0.15 92)"
+                  />
+                </svg>
 
-      {/* Wallet + earnings + maturity */}
-      <section className="mt-4 grid gap-4 md:mt-6 md:grid-cols-3">
-        <article className="rounded-3xl bg-surface p-5 shadow-card md:col-span-1">
-          <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-            <Wallet className="size-4" /> Wallet balance
-          </div>
-          <p className="mt-2 text-2xl font-extrabold">{mask(500000)}</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Available funds: {mask(500000)}
-          </p>
-          <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-            Funds in your wallet are available for investment or withdrawal anytime. Wallet funds
-            do not earn interest or investment returns.
-          </p>
-        </article>
+                <div className="mt-4 flex gap-1 overflow-x-auto no-scrollbar md:hidden">
+                  {RANGES.map((r) => (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => setRange(r)}
+                      className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
+                        range === r
+                          ? "bg-gold-gradient text-gold-foreground"
+                          : "border border-white/20 bg-white/10 text-primary-foreground/80"
+                      }`}
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </div>
 
-        <article className="rounded-3xl bg-surface p-5 shadow-card">
-          <p className="text-sm font-semibold text-muted-foreground">Weekly earnings</p>
-          <p className="mt-2 text-2xl font-extrabold text-success">{mask(12480)}</p>
-          <p className="mt-1 text-xs text-muted-foreground">Interest earned this week</p>
-          <div className="mt-4 flex h-14 items-end gap-1.5">
-            {[38, 52, 44, 66, 58, 80, 72].map((h, i) => (
-              <span
-                key={i}
-                style={{ height: `${h}%` }}
-                className="flex-1 rounded-t-md bg-gold-gradient"
-              />
-            ))}
-          </div>
-        </article>
+                <dl className="mt-6 grid grid-cols-2 gap-3 border-t border-white/15 pt-5 text-sm">
+                  <div>
+                    <dt className="text-xs text-primary-foreground/65">Invested</dt>
+                    <dd className="mt-1 font-display text-lg font-bold">{mask(INVESTED)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-primary-foreground/65">Wallet</dt>
+                    <dd className="mt-1 font-display text-lg font-bold">{mask(WALLET)}</dd>
+                  </div>
+                </dl>
+              </article>
 
-        <article className="rounded-3xl bg-surface p-5 shadow-card">
-          <p className="text-sm font-semibold text-muted-foreground">Next maturity</p>
-          <p className="mt-2 text-base font-bold">Kipit Fixed Income · 90 days</p>
-          <p className="mt-1 text-2xl font-extrabold">{mask(750000)}</p>
-          <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-            <span>Matures 14 Oct 2026</span>
-            <span className="rounded-full bg-accent px-2.5 py-1 font-semibold text-accent-foreground">
-              23 days left
-            </span>
-          </div>
-        </article>
-      </section>
+              {/* Wallet card (MOB-020) */}
+              <article className="flex flex-col justify-between rounded-3xl border border-border bg-surface p-6 shadow-card">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="grid size-11 place-items-center rounded-2xl bg-gold/15 text-gold">
+                      <Wallet className="size-5" />
+                    </span>
+                    <span className="rounded-full border border-border px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Wallet
+                    </span>
+                  </div>
+                  <p className="mt-5 font-display text-3xl font-bold tracking-tight">
+                    {mask(WALLET)}
+                  </p>
+                  <p className="mt-1 text-xs font-semibold text-muted-foreground">
+                    Available funds: {mask(WALLET)}
+                  </p>
+                  <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                    Funds in your wallet are available for investment or withdrawal anytime and
+                    do not earn interest or investment returns.
+                  </p>
+                </div>
+                <Link
+                  to="/invest"
+                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gold px-5 py-3 text-sm font-bold text-gold-foreground shadow-float transition-transform active:scale-95"
+                >
+                  <Plus className="size-4" /> Fund wallet
+                </Link>
+              </article>
+            </section>
 
-      {/* Recommendation */}
-      <section className="mt-4 rounded-3xl border border-gold/40 bg-accent p-5 md:mt-6 md:flex md:items-center md:justify-between md:gap-6">
-        <div className="flex gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold-gradient text-gold-foreground">
-            <Lightbulb className="size-5" />
-          </span>
-          <div>
-            <p className="text-sm font-bold text-accent-foreground">
-              Your ₦500,000 wallet balance isn't currently invested.
-            </p>
-            <p className="mt-1 text-xs text-accent-foreground/80">
-              Plans from 18.5% p.a. · 30–365 day tenors · ₦50,000 minimum.
-            </p>
-          </div>
-        </div>
-        <button
-          type="button"
-          className="mt-4 inline-flex w-full items-center justify-center gap-1 rounded-full bg-brand px-5 py-3 text-sm font-bold text-brand-foreground md:mt-0 md:w-auto"
-        >
-          Explore Investments <ChevronRight className="size-4" />
-        </button>
-      </section>
+            {/* Quick actions */}
+            <section className="mt-4 overflow-hidden rounded-3xl border border-border bg-surface shadow-card">
+              <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4 sm:divide-y-0">
+                {QUICK_ACTIONS.map(({ label, icon: Icon, to }) => (
+                  <Link
+                    key={label}
+                    to={to}
+                    className="group relative flex items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-accent/40 md:px-5"
+                  >
+                    <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold/12 text-gold transition-all group-hover:bg-gold-gradient group-hover:text-gold-foreground">
+                      <Icon className="size-4.5" />
+                    </span>
+                    <span className="min-w-0 text-[13px] font-semibold leading-tight md:text-sm">
+                      {label}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-gold-gradient transition-transform duration-300 group-hover:scale-x-100"
+                    />
+                  </Link>
+                ))}
+              </div>
+            </section>
 
-      {/* Content feed */}
-      <section className="mt-6">
-        <h2 className="text-lg font-extrabold tracking-tight">For you</h2>
-        <div className="mt-3 grid gap-3 md:grid-cols-3">
-          {FEED.map((item, i) => (
-            <article
-              key={item.title}
-              className="rounded-3xl bg-surface p-5 shadow-card transition-transform active:scale-[0.99]"
-            >
-              <FeedThumb index={i} />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                {item.tag}
-              </span>
-              <h3 className="mt-2 text-sm font-bold leading-snug">{item.title}</h3>
-              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                {item.body}
-              </p>
-            </article>
-          ))}
-        </div>
-      </section>
-      <section className="mt-8 space-y-3">
-        <TierStatusCard />
-        <WalletNote />
-      </section>
-      </>
-      )}
-    </AppShell>
+            {/* Weekly earnings + next maturity + recommendation */}
+            <section className="mt-4 grid gap-4 md:grid-cols-3">
+              <article className="rounded-3xl border border-border bg-surface p-6 shadow-card">
+                <div className="flex items-baseline justify-between">
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Weekly earnings
+                  </p>
+                  <span className="text-xs font-bold text-success">+8.2%</span>
+                </div>
+                <p className="mt-3 font-display text-3xl font-bold tracking-tight text-gold">
+                  {mask(WEEK_EARNINGS)}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Interest earned in the last 7 days
+                </p>
+                <div className="mt-5 h-24 w-full">
+                  <svg
+                    viewBox="0 0 280 80"
+                    className="h-full w-full overflow-visible"
+                    preserveAspectRatio="none"
+                  >
+                    <defs>
+                      <linearGradient id="weeklyArea" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="oklch(0.75 0.16 85 / 0.45)" />
+                        <stop offset="100%" stopColor="oklch(0.75 0.16 85 / 0)" />
+                      </linearGradient>
+                    </defs>
+                    <polygon
+                      points="0,70 0,52 47,46 93,50 140,34 187,40 233,16 280,22 280,70"
+                      fill="url(#weeklyArea)"
+                    />
+                    <polyline
+                      points="0,52 47,46 93,50 140,34 187,40 233,16 280,22"
+                      fill="none"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      stroke="oklch(0.72 0.17 85)"
+                    />
+                    <circle cx="233" cy="16" r="3.5" className="fill-gold" />
+                  </svg>
+                </div>
+                <div className="mt-1 flex justify-between text-[10px] font-semibold text-muted-foreground">
+                  {WEEK_LABELS.map((d) => (
+                    <span key={d}>{d}</span>
+                  ))}
+                </div>
+              </article>
 
+              <article className="flex items-center gap-5 rounded-3xl border border-border bg-surface p-6 shadow-card">
+                <div className="relative grid shrink-0 place-items-center">
+                  <CountdownRing
+                    daysLeft={NEXT_MATURITY.daysLeft}
+                    total={NEXT_MATURITY.totalDays}
+                  />
+                  <div className="absolute text-center">
+                    <p className="font-display text-xl font-bold leading-none">
+                      {NEXT_MATURITY.daysLeft}
+                    </p>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                      days
+                    </p>
+                  </div>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    Next maturity
+                  </p>
+                  <p className="mt-1.5 text-sm font-bold">
+                    {NEXT_MATURITY.name} · {NEXT_MATURITY.tenor}
+                  </p>
+                  <p className="mt-1 font-display text-2xl font-bold tracking-tight">
+                    {mask(NEXT_MATURITY.amount)}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Matures {NEXT_MATURITY.date} · {NEXT_MATURITY.daysLeft} days left
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Expected payout {mask(NEXT_MATURITY.expectedPayout)}
+                  </p>
+                </div>
+              </article>
+
+              <article className="flex flex-col justify-between rounded-3xl border border-gold/30 bg-accent/40 p-6 shadow-card">
+                <div className="flex gap-3">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gold-gradient text-gold-foreground">
+                    <Lightbulb className="size-5" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-foreground">
+                      Your {naira(WALLET)} wallet balance isn't currently invested.
+                    </p>
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                      Plans from 18.5% p.a. · 30–365 day tenors · ₦50,000 minimum.
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  to="/explore"
+                  className="mt-5 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-gold px-5 py-3 text-sm font-bold text-gold transition-colors hover:bg-gold hover:text-gold-foreground"
+                >
+                  Explore Investments <ArrowUpRight className="size-4" />
+                </Link>
+              </article>
+            </section>
+
+            {/* Content feed */}
+            <section className="mt-8">
+              <div className="flex items-end justify-between">
+                <h2 className="font-display text-xl font-bold tracking-tight">For you</h2>
+                <Link to="/explore" className="text-xs font-bold text-gold">
+                  View all
+                </Link>
+              </div>
+              <div className="-mx-4 mt-4 flex gap-3 overflow-x-auto px-4 pb-2 no-scrollbar md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+                {FEED.map((item, i) => (
+                  <article
+                    key={item.title}
+                    className={`w-72 shrink-0 rounded-3xl border border-border p-5 shadow-card transition-colors hover:border-gold/40 md:w-auto ${
+                      i === 0 ? "bg-brand-gradient text-primary-foreground" : "bg-surface"
+                    }`}
+                  >
+                    <FeedThumb index={i} />
+                    <span
+                      className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${
+                        i === 0
+                          ? "border border-white/25 bg-white/10 text-[oklch(0.87_0.15_94)]"
+                          : "border border-gold/40 bg-gold/10 text-gold"
+                      }`}
+                    >
+                      {item.tag}
+                    </span>
+                    <h3 className="mt-3 font-display text-base font-bold leading-snug">
+                      {item.title}
+                    </h3>
+                    <p
+                      className={`mt-1.5 text-xs leading-relaxed ${
+                        i === 0 ? "text-primary-foreground/75" : "text-muted-foreground"
+                      }`}
+                    >
+                      {item.body}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            <section className="mt-8 space-y-3">
+              <TierStatusCard />
+              <WalletNote />
+            </section>
+          </>
+        )}
+      </AppShell>
+    </div>
   );
 }
