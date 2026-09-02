@@ -137,7 +137,7 @@ function InvestScreen() {
               </button>
             </div>
 
-            {/* Fixed plans grid — invest-v2 cards in invest-v3 layout */}
+            {/* Fixed plans grid */}
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
               {TENOR_BANDS.map((band, i) => {
                 const featured = i === 1;
