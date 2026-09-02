@@ -58,8 +58,8 @@ export const FIXED_PLANS: FixedPlan[] = [
 
 /** Tenor bands surfaced on the Fixed plan landing (MOB-065 / MOB-067). */
 export const TENOR_BANDS = [
-  { days: "30 days", rate: "12.8%", minimum: 10_000 },
-  { days: "90 days", rate: "19.2%", minimum: 100_000 },
-  { days: "180 days", rate: "16.0%", minimum: 50_000 },
-  { days: "365 days", rate: "21.5%", minimum: 250_000 },
+  { name: "Kipit Starter", days: "30 days", rate: "12.8%", minimum: 10_000 },
+  { name: "Kipit Fixed Income", days: "90 days", rate: "19.2%", minimum: 100_000 },
+  { name: "Kipit Target Savings", days: "180 days", rate: "16.0%", minimum: 50_000 },
+  { name: "Kipit Vault", days: "365 days", rate: "21.5%", minimum: 250_000 },
 ];
