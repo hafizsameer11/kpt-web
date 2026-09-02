@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import {
   ArrowDownLeft,
   ArrowLeft,
@@ -11,6 +12,13 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import { naira, WALLET } from "@/lib/home-data";
 import {
@@ -18,6 +26,8 @@ import {
   CALL_ACCRUAL_TREND,
   CALL_ACCOUNT_FACTS,
   CALL_ACTIVITY,
+  buildCallMonth,
+  type CallDayInterest,
 } from "@/lib/invest-data";
 
 export const Route = createFileRoute("/call-account")({
@@ -241,6 +251,9 @@ function CallAccountScreen() {
           </section>
 
 
+          {/* Full-month interest calendar */}
+          <MonthInterestCalendar mask={mask} />
+
 
           {/* Product explanation */}
           <section className="mt-4 card-surface p-4 md:p-5">
@@ -339,5 +352,129 @@ function CallAccountScreen() {
         </div>
       </div>
     </AppShell>
+  );
+}
+
+/** Full-month interest calendar with per-day detail dialog. */
+function MonthInterestCalendar({ mask }: { mask: (n: number) => string }) {
+  const month = useMemo(() => buildCallMonth(), []);
+  const [selected, setSelected] = useState<CallDayInterest | null>(null);
+  const earned = month.days.filter((d) => !d.future);
+  const best = earned.reduce((a, b) => (b.interest > a.interest ? b : a), earned[0]!);
+  const todayDay = earned[earned.length - 1]?.day ?? 0;
+
+  return (
+    <section className="mt-4 card-surface p-4 md:p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            Interest calendar
+          </p>
+          <h2 className="mt-1 font-display text-base font-extrabold">{month.monthLabel}</h2>
+        </div>
+        <div className="text-right">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Month to date
+          </p>
+          <p className="mt-0.5 text-[15px] font-extrabold text-num">{mask(month.total)}</p>
+        </div>
+      </div>
+
+      <div className="mt-4 grid grid-cols-7 gap-1 text-center">
+        {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
+          <span
+            key={`${d}-${i}`}
+            className="pb-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground"
+          >
+            {d}
+          </span>
+        ))}
+        {Array.from({ length: month.firstWeekday }).map((_, i) => (
+          <span key={`pad-${i}`} />
+        ))}
+        {month.days.map((d) => {
+          const isToday = d.day === todayDay;
+          const isBest = !d.future && d.day === best.day;
+          return (
+            <button
+              key={d.day}
+              type="button"
+              disabled={d.future}
+              onClick={() => setSelected(d)}
+              aria-label={`${d.label} interest`}
+              className={`flex aspect-square flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] press transition ${
+                d.future
+                  ? "text-muted-foreground/40"
+                  : isToday
+                    ? "bg-brand text-primary-foreground shadow-sm"
+                    : isBest
+                      ? "bg-gold/20 text-foreground"
+                      : "bg-muted/60 text-foreground hover:bg-muted"
+              }`}
+            >
+              <span
+                className={`text-[11px] font-bold ${isToday ? "text-primary-foreground/75" : ""}`}
+              >
+                {d.day}
+              </span>
+              {!d.future && (
+                <span
+                  className={`text-[9px] font-extrabold text-num ${isToday ? "text-gold" : "text-muted-foreground"}`}
+                >
+                  {mask(d.interest)}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      <p className="mt-3 text-[11px] text-muted-foreground">
+        Tap any day to see the interest earned and balance for that date.
+      </p>
+
+      <Dialog open={selected !== null} onOpenChange={(o) => !o && setSelected(null)}>
+        <DialogContent className="max-w-[320px] rounded-3xl">
+          {selected && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="font-display text-base font-extrabold">
+                  {selected.label}
+                </DialogTitle>
+                <DialogDescription className="text-[12px]">
+                  Daily interest on your Call Account balance.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="mt-1 rounded-2xl bg-muted/60 p-4 text-center">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Interest earned
+                </p>
+                <p className="mt-1 font-display text-[30px] font-extrabold leading-none text-num">
+                  {mask(selected.interest)}
+                </p>
+              </div>
+              <dl className="mt-1 space-y-2 text-[12.5px]">
+                <div className="flex items-center justify-between">
+                  <dt className="text-muted-foreground">Closing balance</dt>
+                  <dd className="font-extrabold text-num">{mask(selected.balance)}</dd>
+                </div>
+                <div className="flex items-center justify-between">
+                  <dt className="text-muted-foreground">Rate applied</dt>
+                  <dd className="font-extrabold">{selected.rate}</dd>
+                </div>
+                <div className="flex items-center justify-between">
+                  <dt className="text-muted-foreground">Status</dt>
+                  <dd className="font-extrabold text-brand">Accrued</dd>
+                </div>
+              </dl>
+              <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                Interest accrues daily and is credited to your Call Account on the 1st of each
+                month.
+              </p>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </section>
   );
 }
