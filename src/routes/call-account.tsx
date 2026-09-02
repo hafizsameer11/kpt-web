@@ -468,6 +468,35 @@ function CallAccountScreen() {
           </section>
 
 
+          {/* Earnings projection */}
+          <section className="mt-4 rounded-3xl border border-border bg-card p-4 md:p-5">
+            <div className="flex items-baseline justify-between gap-2">
+              <h2 className="font-display text-[15px] font-extrabold">Projected earnings</h2>
+              <span className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                At {CALL_ACCOUNT.rate}
+              </span>
+            </div>
+            <p className="mt-1 text-[11.5px] leading-snug text-muted-foreground">
+              Estimated on your current balance of {mask(CALL_ACCOUNT.balance)} if it stays
+              invested. Indicative only — rates may change.
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              {[
+                { label: "Next 30 days", value: (CALL_ACCOUNT.balance * 0.145) / 12 },
+                { label: "Next 12 months", value: CALL_ACCOUNT.balance * 0.145 },
+              ].map((p) => (
+                <div key={p.label} className="rounded-2xl bg-muted/50 px-3.5 py-3">
+                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                    {p.label}
+                  </p>
+                  <p className="mt-1 font-display text-lg font-extrabold leading-none text-brand text-num">
+                    {mask(Math.round(p.value))}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* Activity */}
           <section id="activity" className="mt-7 scroll-mt-20">
             <div className="mb-3 flex items-center justify-between px-1">
@@ -479,12 +508,19 @@ function CallAccountScreen() {
             <ul className="overflow-hidden rounded-3xl border border-border/60 bg-card">
               {CALL_ACTIVITY.map((item, i) => {
                 const credit = item.kind !== "withdrawal";
+                const failed = item.status === "failed";
                 const Icon =
                   item.kind === "interest"
                     ? TrendingUp
                     : item.kind === "deposit"
                       ? ArrowUpRight
                       : ArrowDownLeft;
+                const statusStyle: Record<string, string> = {
+                  successful: "bg-accent/15 text-brand",
+                  processing: "bg-gold/20 text-brand",
+                  pending: "bg-muted text-muted-foreground",
+                  failed: "bg-destructive/10 text-destructive",
+                };
                 return (
                   <li
                     key={item.id}
@@ -494,18 +530,33 @@ function CallAccountScreen() {
                   >
                     <span
                       className={`grid size-10 shrink-0 place-items-center rounded-2xl ${
-                        credit ? "bg-accent/15 text-brand" : "bg-muted text-muted-foreground"
+                        failed
+                          ? "bg-destructive/10 text-destructive"
+                          : credit
+                            ? "bg-accent/15 text-brand"
+                            : "bg-muted text-muted-foreground"
                       }`}
                     >
                       <Icon className="size-[17px]" />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-[13px] font-bold">{item.label}</span>
-                      <span className="block text-[11px] text-muted-foreground">{item.date}</span>
+                      <span className="mt-0.5 flex items-center gap-1.5">
+                        <span className="text-[11px] text-muted-foreground">{item.date}</span>
+                        <span
+                          className={`rounded-full px-1.5 py-0.5 text-[9.5px] font-extrabold uppercase tracking-[0.08em] ${statusStyle[item.status]}`}
+                        >
+                          {item.status}
+                        </span>
+                      </span>
                     </span>
                     <span
                       className={`shrink-0 text-[13px] font-extrabold text-num ${
-                        credit ? "text-brand" : "text-foreground"
+                        failed
+                          ? "text-muted-foreground line-through"
+                          : credit
+                            ? "text-brand"
+                            : "text-foreground"
                       }`}
                     >
                       {credit ? "+" : "−"}
@@ -516,6 +567,7 @@ function CallAccountScreen() {
               })}
             </ul>
           </section>
+
 
         </div>
       </div>
