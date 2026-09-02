@@ -167,10 +167,10 @@ function HomeV7Screen() {
             <Link
               key={a.label}
               to={a.to}
-              className="flex flex-col items-center gap-1.5 text-[10px] font-bold text-brand press md:text-xs"
+              className="flex min-h-[4.5rem] flex-col items-center justify-start gap-1.5 rounded-2xl py-1 text-[11px] font-bold text-brand press md:text-xs"
             >
-              <span className="grid size-10 place-items-center rounded-full bg-accent text-accent-foreground md:size-12 md:rounded-2xl">
-                <a.icon className="size-[18px]" strokeWidth={2} />
+              <span className="grid size-12 shrink-0 place-items-center rounded-full bg-accent text-accent-foreground md:size-12 md:rounded-2xl">
+                <a.icon className="size-5" strokeWidth={2} />
               </span>
               <span className="text-center leading-tight">{a.label}</span>
             </Link>
