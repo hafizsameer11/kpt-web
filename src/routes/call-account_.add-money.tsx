@@ -184,8 +184,10 @@ function AddMoneyScreen() {
             <Link
               to="/call-account/review"
               search={{ amount }}
-              disabled={!valid}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none md:w-auto md:px-10"
+              aria-disabled={!valid}
+              className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
+                valid ? "" : "pointer-events-none opacity-40 shadow-none"
+              }`}
             >
               Continue <ArrowRight className="size-4" strokeWidth={2.6} />
             </Link>
