@@ -63,3 +63,33 @@ export const TENOR_BANDS = [
   { name: "Kipit Target Savings", days: "180 days", rate: "16.0%", minimum: 50_000 },
   { name: "Kipit Vault", days: "365 days", rate: "21.5%", minimum: 250_000 },
 ];
+
+/** MOB-061 — Call Account detail: how interest is earned. */
+export const CALL_ACCOUNT_FACTS = [
+  "Interest accrues daily on your cleared balance.",
+  "Earnings are credited to your Call Account on the 1st of each month.",
+  "Withdraw any amount at any time — no notice, no penalty.",
+  "Managed by Kipit's SEC-licensed partner; rates are indicative and may change.",
+];
+
+export type CallActivity = {
+  id: string;
+  kind: "deposit" | "withdrawal" | "interest";
+  label: string;
+  date: string;
+  amount: number;
+};
+
+/** Recent Call Account activity (MOB-061). */
+export const CALL_ACTIVITY: CallActivity[] = [
+  { id: "a1", kind: "interest", label: "Daily interest", date: "Today", amount: 198 },
+  { id: "a2", kind: "interest", label: "Daily interest", date: "Yesterday", amount: 196 },
+  { id: "a3", kind: "deposit", label: "Added from wallet", date: "28 Aug 2026", amount: 150_000 },
+  { id: "a4", kind: "withdrawal", label: "Withdrawn to wallet", date: "21 Aug 2026", amount: 60_000 },
+  { id: "a5", kind: "interest", label: "Monthly interest credited", date: "01 Aug 2026", amount: 4_120 },
+];
+
+/** 14-day accrual trend (₦ per day) for the detail sparkline. */
+export const CALL_ACCRUAL_TREND = [
+  171, 174, 176, 178, 177, 181, 184, 186, 185, 189, 191, 193, 196, 198,
+];
