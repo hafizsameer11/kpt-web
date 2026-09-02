@@ -30,16 +30,16 @@ import {
   naira,
 } from "@/lib/home-data";
 
-export const Route = createFileRoute("/home-v7")({
+export const Route = createFileRoute("/home-v3")({
   head: () => ({
     meta: [
-      { title: "Kipit Home — Native App Home Screen" },
+      { title: "Kipit Home 3 — Native App Home Screen" },
       {
         name: "description",
         content:
           "Kipit mobile home concept: navy balance header, floating quick actions, tabbed overview, plans and activity with maturity countdowns and payouts.",
       },
-      { property: "og:title", content: "Kipit Home — Native App Home Screen" },
+      { property: "og:title", content: "Kipit Home 3 — Native App Home Screen" },
       {
         property: "og:description",
         content:
@@ -49,7 +49,7 @@ export const Route = createFileRoute("/home-v7")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: HomeV7Screen,
+  component: HomeV3Screen,
 });
 
 const TABS = ["Overview", "Plans", "Activity"] as const;
@@ -57,7 +57,7 @@ type TabKey = (typeof TABS)[number];
 
 const pct = (total: number, left: number) => Math.round(((total - left) / total) * 100);
 
-function HomeV7Screen() {
+function HomeV3Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNewUser = useIsNewUser();
   const [tab, setTab] = useState<TabKey>("Overview");

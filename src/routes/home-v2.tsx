@@ -30,16 +30,16 @@ import {
   naira,
 } from "@/lib/home-data";
 
-export const Route = createFileRoute("/home-v6")({
+export const Route = createFileRoute("/home-v2")({
   head: () => ({
     meta: [
-      { title: "Kipit Home — Mobile Wealth Canvas" },
+      { title: "Kipit Home 2 — Mobile Wealth Canvas" },
       {
         name: "description",
         content:
           "A mobile-first Kipit home: immersive balance canvas, wallet and invested switch, stacked plan cards, maturity countdown, weekly interest and payout timeline.",
       },
-      { property: "og:title", content: "Kipit Home — Mobile Wealth Canvas" },
+      { property: "og:title", content: "Kipit Home 2 — Mobile Wealth Canvas" },
       {
         property: "og:description",
         content:
@@ -49,7 +49,7 @@ export const Route = createFileRoute("/home-v6")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: HomeV6Screen,
+  component: HomeV2Screen,
 });
 
 const LENSES = [
@@ -83,7 +83,7 @@ function WeekStrip() {
   );
 }
 
-function HomeV6Screen() {
+function HomeV2Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNewUser = useIsNewUser();
   const [lens, setLens] = useState<LensKey>("total");
