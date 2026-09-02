@@ -19,7 +19,6 @@ import { ForYouBento } from "@/components/kipit/ForYouVariants";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 import { GreetingText } from "@/components/kipit/SpecBlocks";
 import {
-  FEED,
   HOLDINGS,
   INVESTED,
   MONTH_CHANGE,
