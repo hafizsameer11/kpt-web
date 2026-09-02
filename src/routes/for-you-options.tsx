@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/kipit/AppShell";
 import {
+  ForYouBento,
   ForYouCovers,
   ForYouFeature,
   ForYouList,
