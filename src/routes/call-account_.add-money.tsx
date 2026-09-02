@@ -172,8 +172,8 @@ function AddMoneyScreen() {
                   </p>
                 </div>
               </div>
-              <p className="mt-3 flex items-start gap-1.5 text-[11.5px] text-muted-foreground">
-                <Info className="mt-px size-3.5 shrink-0" />
+              <p className="mt-3 flex items-center gap-1.5 whitespace-nowrap text-[11px] text-muted-foreground">
+                <Info className="size-3.5 shrink-0" />
                 Indicative at {CALL_ACCOUNT.rate} — accrues daily, credited monthly.
               </p>
             </section>
