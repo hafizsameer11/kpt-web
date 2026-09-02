@@ -11,10 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ExploreRouteImport } from './routes/explore'
-import { Route as HomeV2RouteImport } from './routes/home-v2'
-import { Route as HomeV3RouteImport } from './routes/home-v3'
-import { Route as HomeV4RouteImport } from './routes/home-v4'
-import { Route as HomeV5RouteImport } from './routes/home-v5'
 import { Route as HomeV6RouteImport } from './routes/home-v6'
 import { Route as HomeV7RouteImport } from './routes/home-v7'
 import { Route as InvestRouteImport } from './routes/invest'
@@ -30,26 +26,6 @@ const IndexRoute = IndexRouteImport.update({
 const ExploreRoute = ExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeV2Route = HomeV2RouteImport.update({
-  id: '/home-v2',
-  path: '/home-v2',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeV3Route = HomeV3RouteImport.update({
-  id: '/home-v3',
-  path: '/home-v3',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeV4Route = HomeV4RouteImport.update({
-  id: '/home-v4',
-  path: '/home-v4',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeV5Route = HomeV5RouteImport.update({
-  id: '/home-v5',
-  path: '/home-v5',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeV6Route = HomeV6RouteImport.update({
@@ -86,10 +62,6 @@ const SettingsRoute = SettingsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
-  '/home-v2': typeof HomeV2Route
-  '/home-v3': typeof HomeV3Route
-  '/home-v4': typeof HomeV4Route
-  '/home-v5': typeof HomeV5Route
   '/home-v6': typeof HomeV6Route
   '/home-v7': typeof HomeV7Route
   '/invest': typeof InvestRoute
@@ -100,10 +72,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
-  '/home-v2': typeof HomeV2Route
-  '/home-v3': typeof HomeV3Route
-  '/home-v4': typeof HomeV4Route
-  '/home-v5': typeof HomeV5Route
   '/home-v6': typeof HomeV6Route
   '/home-v7': typeof HomeV7Route
   '/invest': typeof InvestRoute
@@ -115,10 +83,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
-  '/home-v2': typeof HomeV2Route
-  '/home-v3': typeof HomeV3Route
-  '/home-v4': typeof HomeV4Route
-  '/home-v5': typeof HomeV5Route
   '/home-v6': typeof HomeV6Route
   '/home-v7': typeof HomeV7Route
   '/invest': typeof InvestRoute
@@ -131,10 +95,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/explore'
-    | '/home-v2'
-    | '/home-v3'
-    | '/home-v4'
-    | '/home-v5'
     | '/home-v6'
     | '/home-v7'
     | '/invest'
@@ -145,10 +105,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/explore'
-    | '/home-v2'
-    | '/home-v3'
-    | '/home-v4'
-    | '/home-v5'
     | '/home-v6'
     | '/home-v7'
     | '/invest'
@@ -159,10 +115,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/explore'
-    | '/home-v2'
-    | '/home-v3'
-    | '/home-v4'
-    | '/home-v5'
     | '/home-v6'
     | '/home-v7'
     | '/invest'
@@ -174,10 +126,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExploreRoute: typeof ExploreRoute
-  HomeV2Route: typeof HomeV2Route
-  HomeV3Route: typeof HomeV3Route
-  HomeV4Route: typeof HomeV4Route
-  HomeV5Route: typeof HomeV5Route
   HomeV6Route: typeof HomeV6Route
   HomeV7Route: typeof HomeV7Route
   InvestRoute: typeof InvestRoute
@@ -200,34 +148,6 @@ declare module '@tanstack/react-router' {
       path: '/explore'
       fullPath: '/explore'
       preLoaderRoute: typeof ExploreRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home-v2': {
-      id: '/home-v2'
-      path: '/home-v2'
-      fullPath: '/home-v2'
-      preLoaderRoute: typeof HomeV2RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home-v3': {
-      id: '/home-v3'
-      path: '/home-v3'
-      fullPath: '/home-v3'
-      preLoaderRoute: typeof HomeV3RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home-v4': {
-      id: '/home-v4'
-      path: '/home-v4'
-      fullPath: '/home-v4'
-      preLoaderRoute: typeof HomeV4RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home-v5': {
-      id: '/home-v5'
-      path: '/home-v5'
-      fullPath: '/home-v5'
-      preLoaderRoute: typeof HomeV5RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home-v6': {
@@ -278,10 +198,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExploreRoute: ExploreRoute,
-  HomeV2Route: HomeV2Route,
-  HomeV3Route: HomeV3Route,
-  HomeV4Route: HomeV4Route,
-  HomeV5Route: HomeV5Route,
   HomeV6Route: HomeV6Route,
   HomeV7Route: HomeV7Route,
   InvestRoute: InvestRoute,
