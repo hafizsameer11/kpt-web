@@ -55,7 +55,7 @@ function SuccessScreen() {
               {naira(amount)}
             </p>
             <p className="mt-3 text-[12.5px] font-medium text-primary-foreground/70">
-              Interest starts accruing today at {CALL_ACCOUNT.rate}.
+              Interest starts accruing today at {CALL_ACCOUNT.rate}
             </p>
           </div>
         </section>
