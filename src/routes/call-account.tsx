@@ -186,8 +186,8 @@ function CallAccountScreen() {
           />
 
           {/* Daily accrual trend */}
-          <section className="card-surface p-4 md:p-5">
-            <div className="flex items-start justify-between gap-3">
+          <section className="card-surface overflow-hidden p-0">
+            <div className="flex items-start justify-between gap-3 px-4 pt-4 md:px-5 md:pt-5">
               <div>
                 <h2 className="font-display text-base font-extrabold">Daily interest</h2>
                 <p className="mt-0.5 text-[11.5px] text-muted-foreground">
@@ -199,35 +199,74 @@ function CallAccountScreen() {
               </span>
             </div>
 
-            <svg
-              viewBox="0 0 300 64"
-              preserveAspectRatio="none"
-              className="mt-4 h-16 w-full"
-              aria-hidden
-            >
-              <defs>
-                <linearGradient id="callFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="var(--gold)" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <path d={`${line} L300,64 L0,64 Z`} fill="url(#callFill)" />
-              <path
-                d={line}
-                fill="none"
-                stroke="var(--gold)"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                vectorEffect="non-scaling-stroke"
+            <div className="relative mt-4">
+              <svg
+                viewBox="0 0 300 88"
+                preserveAspectRatio="none"
+                className="h-24 w-full md:h-32"
+                aria-hidden
+              >
+                <defs>
+                  <linearGradient id="callFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.28" />
+                    <stop offset="100%" stopColor="var(--gold)" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient id="callStroke" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.45" />
+                    <stop offset="100%" stopColor="var(--gold)" stopOpacity="1" />
+                  </linearGradient>
+                </defs>
+                {[22, 44, 66].map((y) => (
+                  <line
+                    key={y}
+                    x1="0"
+                    x2="300"
+                    y1={y}
+                    y2={y}
+                    stroke="var(--border)"
+                    strokeWidth="1"
+                    strokeDasharray="3 6"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                ))}
+                <path d={`${line} L300,88 L0,88 Z`} fill="url(#callFill)" />
+                <path
+                  d={line}
+                  fill="none"
+                  stroke="url(#callStroke)"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+              <span
+                aria-hidden
+                className="pointer-events-none absolute size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold ring-4 ring-gold/20"
+                style={{ left: "calc(100% - 5px)", top: `${(last.y / 88) * 100}%` }}
               />
-            </svg>
+            </div>
 
-            <div className="mt-2 flex items-center justify-between text-[11px] font-semibold text-muted-foreground">
-              <span>14 days ago</span>
-              <span className="text-foreground">Today {mask(CALL_ACCOUNT.accruedToday)}</span>
+            <div className="flex items-end justify-between gap-3 border-t border-border/70 bg-muted/30 px-4 py-3 md:px-5">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  14 days ago
+                </p>
+                <p className="mt-0.5 text-[12.5px] font-bold text-muted-foreground text-num">
+                  {mask(CALL_ACCRUAL_TREND[0] ?? 0)}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  Today
+                </p>
+                <p className="mt-0.5 text-[15px] font-extrabold text-num">
+                  {mask(CALL_ACCOUNT.accruedToday)}
+                </p>
+              </div>
             </div>
           </section>
+
 
           {/* Product explanation */}
           <section className="mt-4 card-surface p-4 md:p-5">
