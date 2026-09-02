@@ -69,9 +69,10 @@ function WeekStrip() {
         return (
           <div key={WEEK_LABELS[i]} className="flex flex-1 flex-col items-center gap-1.5">
             <div
-              className={`w-full rounded-full ${peak ? "bg-gold" : "bg-brand/15"}`}
-              style={{ height: `${18 + (v / max) * 46}px` }}
+              className={`w-2.5 rounded-full ${peak ? "bg-gold" : "bg-brand/15"}`}
+              style={{ height: `${20 + (v / max) * 44}px` }}
             />
+
             <span className="text-[9px] font-semibold text-muted-foreground">
               {WEEK_LABELS[i]?.slice(0, 1)}
             </span>
