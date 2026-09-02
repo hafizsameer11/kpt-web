@@ -366,7 +366,7 @@ function HomeV2Screen() {
             </section>
 
             {/* Idle wallet nudge */}
-            <section className="relative mt-5 overflow-hidden rounded-3xl bg-brand p-4 text-brand-foreground shadow-card md:p-6">
+            <section className="relative mt-5 overflow-hidden rounded-3xl bg-brand p-5 text-brand-foreground shadow-card md:p-6">
               <span
                 aria-hidden
                 className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-gold-gradient opacity-20 blur-2xl"
