@@ -9,6 +9,7 @@ import {
   Plus,
   ShieldCheck,
   TrendingUp,
+  Wallet,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
