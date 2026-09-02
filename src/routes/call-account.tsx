@@ -517,11 +517,6 @@ function CallAccountScreen() {
             </ul>
           </section>
 
-          <p className="mt-4 flex items-start gap-2 px-1 text-[11px] leading-relaxed text-muted-foreground">
-            <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
-            The Call Account rate is indicative per annum, accrues daily and may change with market
-            conditions. Balances are held with Kipit&rsquo;s SEC-licensed partner.
-          </p>
         </div>
       </div>
     </AppShell>
