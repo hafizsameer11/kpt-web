@@ -422,13 +422,14 @@ function HomeV2Screen() {
                   View all
                 </Link>
               </div>
-              <div className="-mx-4 mt-3 flex gap-3 overflow-x-auto px-4 pb-2 no-scrollbar md:mx-0 md:mt-4 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+              <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 no-scrollbar md:mx-0 md:mt-4 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
                 {FEED.map((item, i) => (
                   <article
                     key={item.title}
-                    className={`w-[16.5rem] shrink-0 rounded-3xl border border-border p-4 shadow-card press hover:-translate-y-0.5 hover:shadow-float md:w-auto md:p-5 ${
+                    className={`w-[78vw] max-w-[17.5rem] shrink-0 snap-start rounded-3xl border border-border p-4 shadow-card press hover:-translate-y-0.5 hover:shadow-float md:w-auto md:max-w-none md:p-5 ${
                       i === 0 ? "bg-brand-gradient text-primary-foreground" : "bg-surface"
                     }`}
+
                   >
                     <FeedThumb index={i} />
                     <span
