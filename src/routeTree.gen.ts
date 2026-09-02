@@ -17,6 +17,7 @@ import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
+import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +59,11 @@ const CallAccountAddMoneyRoute = CallAccountAddMoneyRouteImport.update({
   path: '/call-account/add-money',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CallAccountReviewRoute = CallAccountReviewRouteImport.update({
+  id: '/call-account_/review',
+  path: '/call-account/review',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
+  '/call-account/review': typeof CallAccountReviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
+  '/call-account/review': typeof CallAccountReviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
+  '/call-account_/review': typeof CallAccountReviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/settings'
     | '/call-account/add-money'
+    | '/call-account/review'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/settings'
     | '/call-account/add-money'
+    | '/call-account/review'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/settings'
     | '/call-account_/add-money'
+    | '/call-account_/review'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   PortfolioRoute: typeof PortfolioRoute
   SettingsRoute: typeof SettingsRoute
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
+  CallAccountReviewRoute: typeof CallAccountReviewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CallAccountAddMoneyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/call-account_/review': {
+      id: '/call-account_/review'
+      path: '/call-account/review'
+      fullPath: '/call-account/review'
+      preLoaderRoute: typeof CallAccountReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioRoute: PortfolioRoute,
   SettingsRoute: SettingsRoute,
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
+  CallAccountReviewRoute: CallAccountReviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
