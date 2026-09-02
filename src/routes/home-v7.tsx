@@ -132,9 +132,15 @@ function HomeV7Screen() {
           <h1 className="relative mt-1.5 font-display text-[38px] font-extrabold leading-none tracking-[-0.045em] text-num md:text-[52px]">
             {mask(TOTAL)}
           </h1>
-          <p className="relative mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-2.5 py-1 text-[11px] font-bold text-gold">
-            <ArrowUpRight className="size-3.5" /> {naira(WEEK_EARNINGS)} interest this week
-          </p>
+          <div className="relative mt-3 flex flex-wrap items-center gap-2">
+            <p className="inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-2.5 py-1 text-[11px] font-bold text-gold">
+              <ArrowUpRight className="size-3.5" /> {naira(WEEK_EARNINGS)} this week
+            </p>
+            <p className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-primary-foreground/80">
+              +{naira(MONTH_CHANGE)} ({MONTH_CHANGE_PCT}%) this month
+            </p>
+          </div>
+
 
           {/* Invested / Wallet split */}
           <div className="relative mt-5 grid grid-cols-2 gap-2.5">
