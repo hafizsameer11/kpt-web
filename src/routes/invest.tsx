@@ -100,7 +100,7 @@ function InvestScreen() {
                   Withdraw <ArrowDownLeft className="size-3.5" />
                 </button>
                 <Link
-                  to="/portfolio"
+                  to="/call-account"
                   className="inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-full border border-white/20 bg-white/10 px-3 py-3 text-[11px] font-bold text-primary-foreground press"
                 >
                   Activity
