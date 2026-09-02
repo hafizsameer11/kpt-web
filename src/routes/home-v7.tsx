@@ -395,8 +395,6 @@ function HomeV7Screen() {
             ))}
           </div>
         </section>
-          </div>
-        </section>
 
       </div>
     </AppShell>
