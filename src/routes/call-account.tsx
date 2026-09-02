@@ -196,25 +196,30 @@ function CallAccountScreen() {
           />
 
           {/* Daily accrual trend */}
-          <section className="card-surface p-4 md:p-5">
-            <div className="flex items-start justify-between gap-3">
+          <section className="card-surface overflow-hidden p-4 md:p-5">
+            <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   Interest earned today
                 </p>
-                <p className="mt-1 font-display text-[26px] font-extrabold leading-none text-num">
-                  {mask(CALL_ACCOUNT.accruedToday)}
-                </p>
+                <div className="mt-1 flex flex-wrap items-baseline gap-2">
+                  <p className="font-display text-[32px] font-extrabold leading-none text-num">
+                    {mask(CALL_ACCOUNT.accruedToday)}
+                  </p>
+                  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-accent/15 px-2.5 py-1 text-[11px] font-bold text-brand">
+                    <TrendingUp className="size-3.5" /> {CALL_ACCOUNT.rate}
+                  </span>
+                </div>
                 <p className="mt-1.5 text-[11.5px] text-muted-foreground">
                   Accrues daily &middot; credited monthly
                 </p>
               </div>
-              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-accent/15 px-2.5 py-1 text-[11px] font-bold text-brand">
-                <TrendingUp className="size-3.5" /> {CALL_ACCOUNT.rate}
+              <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-accent/15 text-brand">
+                <TrendingUp className="size-5" />
               </span>
             </div>
 
-            {/* 14-day calendar grid — today first, no scroll */}
+            {/* 14-day heatmap calendar — today first, no scroll */}
             <FourteenDayCalendar mask={mask} />
           </section>
 
