@@ -289,49 +289,67 @@ function HomeV4Screen() {
 
             {/* Plan rail */}
             <section className="mt-6">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-lg font-extrabold tracking-tight">Your plans</h2>
+              <div className="flex items-end justify-between gap-3">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
+                    Active investments
+                  </p>
+                  <h2 className="mt-1 text-lg font-extrabold tracking-tight">Your plans</h2>
+                </div>
                 <Link
                   to="/portfolio"
-                  className="inline-flex items-center gap-1 text-xs font-bold text-brand"
+                  className="group inline-flex items-center gap-1 rounded-full border border-border px-3.5 py-2 text-xs font-bold text-brand transition-colors hover:border-gold/60 hover:bg-accent/50"
                 >
-                  View portfolio <ChevronRight className="size-3.5" />
+                  View portfolio
+                  <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </div>
-              <div className="-mx-4 mt-3 flex snap-x gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-3 md:px-0">
+              <div className="-mx-4 mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 [-ms-overflow-style:none] [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:px-0 [&::-webkit-scrollbar]:hidden">
                 {HOLDINGS.map((h) => {
                   const pct = Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100);
                   return (
                     <article
                       key={h.name}
-                      className="w-[78%] shrink-0 snap-start rounded-[1.5rem] border border-border bg-surface p-5 shadow-card md:w-auto"
+                      className="group relative w-[80%] shrink-0 snap-start overflow-hidden rounded-[1.75rem] border border-border bg-surface p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-gold/50 hover:shadow-float md:w-auto"
                     >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold text-accent-foreground">
+                      <span
+                        aria-hidden
+                        className="absolute inset-x-0 top-0 h-1 bg-gold-gradient opacity-70 transition-opacity group-hover:opacity-100"
+                      />
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-bold leading-tight">{h.name}</p>
+                          <p className="mt-1 text-[11px] font-semibold text-muted-foreground">
+                            Matures {h.date}
+                          </p>
+                        </div>
+                        <span className="shrink-0 rounded-full bg-accent px-2.5 py-1 text-[11px] font-extrabold text-accent-foreground">
                           {h.rate}
                         </span>
-                        <span className="text-[11px] font-semibold text-muted-foreground">
+                      </div>
+
+                      <p className="mt-4 text-[28px] font-extrabold leading-none tracking-tight">
+                        {mask(h.amount)}
+                      </p>
+
+                      <div className="mt-5 flex items-center justify-between text-[11px] font-semibold">
+                        <span className="text-muted-foreground">{pct}% elapsed</span>
+                        <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-foreground">
                           {h.daysLeft} days left
                         </span>
                       </div>
-                      <p className="mt-3 truncate text-sm font-bold">{h.name}</p>
-                      <p className="mt-1 text-2xl font-extrabold tracking-tight">
-                        {mask(h.amount)}
-                      </p>
-                      <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-secondary">
+                      <div className="mt-2 h-2 overflow-hidden rounded-full bg-secondary">
                         <span
-                          className="block h-full rounded-full bg-brand-gradient"
+                          className="block h-full rounded-full bg-brand-gradient transition-[width] duration-700"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <p className="mt-2 text-[11px] text-muted-foreground">
-                        {pct}% elapsed · matures {h.date}
-                      </p>
                     </article>
                   );
                 })}
               </div>
             </section>
+
 
             <div className="mt-4 grid items-start gap-4 lg:grid-cols-3">
               {/* Maturity countdown */}
