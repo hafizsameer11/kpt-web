@@ -188,51 +188,19 @@ export function ForYouFeature() {
  * Mobile scrolls horizontally with mixed widths; desktop locks into a bento.
  */
 export function ForYouBento({ className = "" }: { className?: string }) {
-  const [lead, ...rest] = FEED;
+  const cards = FEED.slice(0, 2);
   return (
     <section className={className}>
       <SectionHead />
-      <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 no-scrollbar md:mt-4 md:grid md:grid-cols-2 md:grid-rows-2 md:overflow-visible md:gap-4">
-        {lead && (
-          <article className="card-surface relative flex h-[16rem] w-[78vw] max-w-[18rem] shrink-0 snap-start flex-col justify-between overflow-hidden p-4 press hover:-translate-y-0.5 hover:shadow-float md:col-span-1 md:row-span-2 md:h-auto md:w-auto md:max-w-none md:p-5">
-            <div className="relative -mx-4 -mt-4 h-28 overflow-hidden md:h-48">
-              <img
-                src={feedArt(0)}
-                alt=""
-                aria-hidden="true"
-                loading="lazy"
-                className="size-full object-cover"
-              />
-              <span
-                aria-hidden
-                className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background to-transparent"
-              />
-            </div>
-            <div className="relative mt-2">
-              <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-brand">
-                {lead.tag}
-              </p>
-              <h3 className="mt-1 font-display text-base font-bold leading-snug md:text-lg">
-                {lead.title}
-              </h3>
-              <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground md:text-xs">
-                {lead.body}
-              </p>
-            </div>
-            <span className="mt-3 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.16em] text-gold">
-              Read <ArrowUpRight className="size-3" />
-            </span>
-          </article>
-        )}
-
-        {rest.map((item, i) => (
+      <div className="mt-3 grid grid-cols-2 gap-3 md:mt-4 md:gap-4">
+        {cards.map((item, i) => (
           <article
             key={item.title}
-            className="card-surface relative flex h-[16rem] w-[64vw] max-w-[14.5rem] shrink-0 snap-start flex-col justify-between overflow-hidden p-4 press hover:-translate-y-0.5 hover:shadow-float md:h-auto md:w-auto md:max-w-none"
+            className="card-surface relative flex flex-col justify-between overflow-hidden rounded-[1.25rem] p-3 press hover:-translate-y-0.5 hover:shadow-float md:rounded-[1.75rem] md:p-4"
           >
-            <div className="relative -mx-4 -mt-4 h-28 overflow-hidden md:h-32">
+            <div className="relative -mx-3 -mt-3 h-24 overflow-hidden md:-mx-4 md:-mt-4 md:h-32">
               <img
-                src={feedArt(i + 1)}
+                src={feedArt(i)}
                 alt=""
                 aria-hidden="true"
                 loading="lazy"
@@ -240,21 +208,21 @@ export function ForYouBento({ className = "" }: { className?: string }) {
               />
               <span
                 aria-hidden
-                className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background to-transparent"
+                className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-background to-transparent md:h-8"
               />
             </div>
             <div className="relative mt-2">
               <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-brand">
                 {item.tag}
               </p>
-              <h3 className="mt-1 font-display text-sm font-bold leading-snug md:text-base">
+              <h3 className="mt-1 font-display text-xs font-bold leading-snug md:text-sm">
                 {item.title}
               </h3>
-              <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
+              <p className="mt-1 line-clamp-2 text-[10px] leading-relaxed text-muted-foreground md:text-[11px]">
                 {item.body}
               </p>
             </div>
-            <span className="mt-3 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.16em] text-gold">
+            <span className="mt-2 inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.16em] text-gold md:mt-3 md:text-[10px]">
               Read <ArrowUpRight className="size-3" />
             </span>
           </article>
