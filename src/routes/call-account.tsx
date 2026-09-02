@@ -9,9 +9,16 @@ import {
   Plus,
   ShieldCheck,
   TrendingUp,
+  X,
 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import { naira, WALLET } from "@/lib/home-data";
 import {
@@ -73,6 +80,22 @@ function smoothPath(pts: { x: number; y: number }[]) {
 }
 
 
+function dayLabel(i: number, total: number) {
+  if (i === total - 1) return "Today";
+  if (i === 0) return "14d ago";
+  return `-${total - 1 - i}d`;
+}
+
+function fullDate(i: number, total: number) {
+  const d = new Date();
+  d.setDate(d.getDate() - (total - 1 - i));
+  return d.toLocaleDateString("en-NG", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: d.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
+  });
+}
 
 function CallAccountScreen() {
   const { mask, hidden, toggle } = useBalanceVisibility();
@@ -80,7 +103,8 @@ function CallAccountScreen() {
   const line = smoothPath(pts);
   const last = pts[pts.length - 1] ?? { x: 300, y: 44 };
   const streakRef = useRef<HTMLDivElement>(null);
-  const todayRef = useRef<HTMLDivElement>(null);
+  const todayRef = useRef<HTMLButtonElement>(null);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   useEffect(() => {
     if (streakRef.current && todayRef.current) {
@@ -225,20 +249,22 @@ function CallAccountScreen() {
               >
                 {CALL_ACCRUAL_TREND.map((v, i) => {
                   const isToday = i === CALL_ACCRUAL_TREND.length - 1;
-                  const dayLabel = i === 0 ? "14d" : i === CALL_ACCRUAL_TREND.length - 1 ? "Today" : `-${CALL_ACCRUAL_TREND.length - 1 - i}`;
+                  const label = dayLabel(i, CALL_ACCRUAL_TREND.length);
                   return (
-                    <div
+                    <button
                       key={i}
+                      type="button"
                       ref={isToday ? todayRef : undefined}
-                      className={`flex shrink-0 flex-col items-center gap-2 rounded-2xl px-2.5 py-3 ${
+                      onClick={() => setSelectedDay(i)}
+                      className={`flex shrink-0 flex-col items-center gap-2 rounded-2xl px-2.5 py-3 text-left transition-transform duration-150 active:scale-95 ${
                         isToday
                           ? "bg-brand text-primary-foreground shadow-sm"
-                          : "bg-muted/60 text-foreground"
+                          : "bg-muted/60 text-foreground hover:bg-muted"
                       }`}
                       style={{ minWidth: isToday ? 76 : 52 }}
                     >
                       <span className={`text-[10px] font-semibold ${isToday ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                        {dayLabel}
+                        {label}
                       </span>
                       <span className={`text-[12px] font-extrabold text-num ${isToday ? "text-gold" : ""}`}>
                         {mask(v)}
@@ -246,11 +272,88 @@ function CallAccountScreen() {
                       <span
                         className={`h-1 w-full rounded-full ${isToday ? "bg-gold" : "bg-border"}`}
                       />
-                    </div>
+                    </button>
                   );
                 })}
               </div>
             </div>
+
+            {/* Day detail popup */}
+            <Dialog open={selectedDay !== null} onOpenChange={(open) => !open && setSelectedDay(null)}>
+              {selectedDay !== null && (
+                <DialogContent className="max-w-sm overflow-hidden rounded-3xl border-0 bg-card p-0 shadow-2xl">
+                  <DialogTitle className="sr-only">Interest details</DialogTitle>
+                  <DialogDescription className="sr-only">
+                    Detailed interest information for {fullDate(selectedDay, CALL_ACCRUAL_TREND.length)}
+                  </DialogDescription>
+                  {(() => {
+                    const value = CALL_ACCRUAL_TREND[selectedDay]!;
+                    const prev = selectedDay > 0 ? CALL_ACCRUAL_TREND[selectedDay - 1] ?? null : null;
+                    const change = prev !== null ? value - prev : 0;
+                    const cumulative = CALL_ACCRUAL_TREND.slice(0, selectedDay + 1).reduce((a, b) => a + b, 0);
+                    const isToday = selectedDay === CALL_ACCRUAL_TREND.length - 1;
+                    return (
+                      <div className="text-center">
+                        <div className="relative bg-brand-gradient px-6 pb-7 pt-8 text-primary-foreground">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedDay(null)}
+                            className="absolute right-4 top-4 grid size-8 place-items-center rounded-full bg-white/10 press"
+                            aria-label="Close"
+                          >
+                            <X className="size-4" />
+                          </button>
+                          <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                            {isToday ? "Today" : fullDate(selectedDay, CALL_ACCRUAL_TREND.length)}
+                          </p>
+                          <p className="mt-3 font-display text-[40px] font-extrabold leading-none tracking-[-0.03em] text-gold text-num">
+                            {mask(value)}
+                          </p>
+                          <p className="mt-2 text-[12px] font-medium text-primary-foreground/70">
+                            Interest earned
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-px bg-border">
+                          <div className="bg-card p-4">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                              vs previous day
+                            </p>
+                            <p className={`mt-1 text-[15px] font-extrabold text-num ${change >= 0 ? "text-brand" : "text-destructive"}`}>
+                              {change >= 0 ? "+" : ""}
+                              {mask(change)}
+                            </p>
+                          </div>
+                          <div className="bg-card p-4">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                              Running total
+                            </p>
+                            <p className="mt-1 text-[15px] font-extrabold text-num">
+                              {mask(cumulative)}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="px-5 pb-6 pt-4">
+                          <p className="text-[12px] leading-relaxed text-muted-foreground">
+                            {isToday
+                              ? "Today's interest is based on your current Call Account balance. It will be credited with your monthly payout on the 1st."
+                              : `Interest for ${fullDate(selectedDay, CALL_ACCRUAL_TREND.length)} has already been credited to your running balance.`}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedDay(null)}
+                            className="mt-5 w-full rounded-2xl bg-brand py-3 text-[12px] font-extrabold text-brand-foreground press"
+                          >
+                            Done
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </DialogContent>
+              )}
+            </Dialog>
 
             <div className="mt-1 flex items-center justify-between border-t border-border/70 pt-3">
               <p className="text-[11px] font-semibold text-muted-foreground">Last 14 days</p>
