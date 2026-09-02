@@ -267,6 +267,35 @@ function InvestScreen() {
             </ul>
           </section>
 
+          {/* Invest tools — MOB-069 / MOB-071 / MOB-072 / MOB-075 entry points */}
+          <section className="mt-7">
+            <h2 className="mb-3 px-1 font-display text-base font-extrabold">Invest tools</h2>
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+              {[
+                { icon: Calculator, label: "Calculator", note: "Model your payout" },
+                { icon: Repeat, label: "Auto-invest", note: "Fund on a schedule" },
+                { icon: Gift, label: "Gift invest", note: "Send a plan" },
+                { icon: RefreshCw, label: "Roll over", note: "Reinvest at maturity" },
+              ].map((t) => (
+                <button
+                  key={t.label}
+                  type="button"
+                  className="card-surface flex items-start gap-3 p-3.5 text-left transition-shadow hover:shadow-md md:flex-col md:gap-2"
+                >
+                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-accent/15 text-brand">
+                    <t.icon className="size-4" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[12px] font-bold">{t.label}</span>
+                    <span className="block text-[10px] leading-snug text-muted-foreground">
+                      {t.note}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
+
 
           <p className="mt-4 flex items-start gap-2 px-1 text-[11px] leading-relaxed text-muted-foreground">
             <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
