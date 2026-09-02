@@ -93,13 +93,13 @@ function AddMoneyScreen() {
             </p>
 
             {/* Quick amounts */}
-            <div className="mt-5 flex flex-wrap gap-2">
+            <div className="mt-5 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
               {QUICK.map((q) => (
                 <button
                   key={q}
                   type="button"
                   onClick={() => setRaw(String(q))}
-                  className={`rounded-full border px-3.5 py-2 text-[12px] font-bold press ${
+                  className={`shrink-0 flex-1 rounded-full border py-2 text-[12px] font-bold press ${
                     amount === q
                       ? "border-gold bg-gold text-gold-foreground"
                       : "border-white/15 bg-white/10 text-primary-foreground/90"
@@ -111,7 +111,7 @@ function AddMoneyScreen() {
               <button
                 type="button"
                 onClick={() => setRaw(String(WALLET))}
-                className="rounded-full border border-white/15 bg-white/10 px-3.5 py-2 text-[12px] font-bold text-primary-foreground/90 press"
+                className="shrink-0 flex-1 rounded-full border border-white/15 bg-white/10 py-2 text-[12px] font-bold text-primary-foreground/90 press"
               >
                 Max
               </button>
