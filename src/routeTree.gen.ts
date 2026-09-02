@@ -11,18 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ExploreRouteImport } from './routes/explore'
-import { Route as HomeV10RouteImport } from './routes/home-v10'
-import { Route as HomeV11RouteImport } from './routes/home-v11'
-import { Route as HomeV12RouteImport } from './routes/home-v12'
-import { Route as HomeV13RouteImport } from './routes/home-v13'
 import { Route as HomeV2RouteImport } from './routes/home-v2'
 import { Route as HomeV3RouteImport } from './routes/home-v3'
-import { Route as HomeV4RouteImport } from './routes/home-v4'
-import { Route as HomeV5RouteImport } from './routes/home-v5'
-import { Route as HomeV6RouteImport } from './routes/home-v6'
-import { Route as HomeV7RouteImport } from './routes/home-v7'
-import { Route as HomeV8RouteImport } from './routes/home-v8'
-import { Route as HomeV9RouteImport } from './routes/home-v9'
 import { Route as InvestRouteImport } from './routes/invest'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
@@ -38,26 +28,6 @@ const ExploreRoute = ExploreRouteImport.update({
   path: '/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HomeV10Route = HomeV10RouteImport.update({
-  id: '/home-v10',
-  path: '/home-v10',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeV11Route = HomeV11RouteImport.update({
-  id: '/home-v11',
-  path: '/home-v11',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeV12Route = HomeV12RouteImport.update({
-  id: '/home-v12',
-  path: '/home-v12',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeV13Route = HomeV13RouteImport.update({
-  id: '/home-v13',
-  path: '/home-v13',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const HomeV2Route = HomeV2RouteImport.update({
   id: '/home-v2',
   path: '/home-v2',
@@ -66,36 +36,6 @@ const HomeV2Route = HomeV2RouteImport.update({
 const HomeV3Route = HomeV3RouteImport.update({
   id: '/home-v3',
   path: '/home-v3',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeV4Route = HomeV4RouteImport.update({
-  id: '/home-v4',
-  path: '/home-v4',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeV5Route = HomeV5RouteImport.update({
-  id: '/home-v5',
-  path: '/home-v5',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeV6Route = HomeV6RouteImport.update({
-  id: '/home-v6',
-  path: '/home-v6',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeV7Route = HomeV7RouteImport.update({
-  id: '/home-v7',
-  path: '/home-v7',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeV8Route = HomeV8RouteImport.update({
-  id: '/home-v8',
-  path: '/home-v8',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeV9Route = HomeV9RouteImport.update({
-  id: '/home-v9',
-  path: '/home-v9',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvestRoute = InvestRouteImport.update({
@@ -122,18 +62,8 @@ const SettingsRoute = SettingsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
-  '/home-v10': typeof HomeV10Route
-  '/home-v11': typeof HomeV11Route
-  '/home-v12': typeof HomeV12Route
-  '/home-v13': typeof HomeV13Route
   '/home-v2': typeof HomeV2Route
   '/home-v3': typeof HomeV3Route
-  '/home-v4': typeof HomeV4Route
-  '/home-v5': typeof HomeV5Route
-  '/home-v6': typeof HomeV6Route
-  '/home-v7': typeof HomeV7Route
-  '/home-v8': typeof HomeV8Route
-  '/home-v9': typeof HomeV9Route
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
@@ -142,18 +72,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
-  '/home-v10': typeof HomeV10Route
-  '/home-v11': typeof HomeV11Route
-  '/home-v12': typeof HomeV12Route
-  '/home-v13': typeof HomeV13Route
   '/home-v2': typeof HomeV2Route
   '/home-v3': typeof HomeV3Route
-  '/home-v4': typeof HomeV4Route
-  '/home-v5': typeof HomeV5Route
-  '/home-v6': typeof HomeV6Route
-  '/home-v7': typeof HomeV7Route
-  '/home-v8': typeof HomeV8Route
-  '/home-v9': typeof HomeV9Route
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
@@ -163,18 +83,8 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
-  '/home-v10': typeof HomeV10Route
-  '/home-v11': typeof HomeV11Route
-  '/home-v12': typeof HomeV12Route
-  '/home-v13': typeof HomeV13Route
   '/home-v2': typeof HomeV2Route
   '/home-v3': typeof HomeV3Route
-  '/home-v4': typeof HomeV4Route
-  '/home-v5': typeof HomeV5Route
-  '/home-v6': typeof HomeV6Route
-  '/home-v7': typeof HomeV7Route
-  '/home-v8': typeof HomeV8Route
-  '/home-v9': typeof HomeV9Route
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
@@ -185,18 +95,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/explore'
-    | '/home-v10'
-    | '/home-v11'
-    | '/home-v12'
-    | '/home-v13'
     | '/home-v2'
     | '/home-v3'
-    | '/home-v4'
-    | '/home-v5'
-    | '/home-v6'
-    | '/home-v7'
-    | '/home-v8'
-    | '/home-v9'
     | '/invest'
     | '/notifications'
     | '/portfolio'
@@ -205,18 +105,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/explore'
-    | '/home-v10'
-    | '/home-v11'
-    | '/home-v12'
-    | '/home-v13'
     | '/home-v2'
     | '/home-v3'
-    | '/home-v4'
-    | '/home-v5'
-    | '/home-v6'
-    | '/home-v7'
-    | '/home-v8'
-    | '/home-v9'
     | '/invest'
     | '/notifications'
     | '/portfolio'
@@ -225,18 +115,8 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/explore'
-    | '/home-v10'
-    | '/home-v11'
-    | '/home-v12'
-    | '/home-v13'
     | '/home-v2'
     | '/home-v3'
-    | '/home-v4'
-    | '/home-v5'
-    | '/home-v6'
-    | '/home-v7'
-    | '/home-v8'
-    | '/home-v9'
     | '/invest'
     | '/notifications'
     | '/portfolio'
@@ -246,18 +126,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExploreRoute: typeof ExploreRoute
-  HomeV10Route: typeof HomeV10Route
-  HomeV11Route: typeof HomeV11Route
-  HomeV12Route: typeof HomeV12Route
-  HomeV13Route: typeof HomeV13Route
   HomeV2Route: typeof HomeV2Route
   HomeV3Route: typeof HomeV3Route
-  HomeV4Route: typeof HomeV4Route
-  HomeV5Route: typeof HomeV5Route
-  HomeV6Route: typeof HomeV6Route
-  HomeV7Route: typeof HomeV7Route
-  HomeV8Route: typeof HomeV8Route
-  HomeV9Route: typeof HomeV9Route
   InvestRoute: typeof InvestRoute
   NotificationsRoute: typeof NotificationsRoute
   PortfolioRoute: typeof PortfolioRoute
@@ -280,34 +150,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/home-v10': {
-      id: '/home-v10'
-      path: '/home-v10'
-      fullPath: '/home-v10'
-      preLoaderRoute: typeof HomeV10RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home-v11': {
-      id: '/home-v11'
-      path: '/home-v11'
-      fullPath: '/home-v11'
-      preLoaderRoute: typeof HomeV11RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home-v12': {
-      id: '/home-v12'
-      path: '/home-v12'
-      fullPath: '/home-v12'
-      preLoaderRoute: typeof HomeV12RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home-v13': {
-      id: '/home-v13'
-      path: '/home-v13'
-      fullPath: '/home-v13'
-      preLoaderRoute: typeof HomeV13RouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/home-v2': {
       id: '/home-v2'
       path: '/home-v2'
@@ -320,48 +162,6 @@ declare module '@tanstack/react-router' {
       path: '/home-v3'
       fullPath: '/home-v3'
       preLoaderRoute: typeof HomeV3RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home-v4': {
-      id: '/home-v4'
-      path: '/home-v4'
-      fullPath: '/home-v4'
-      preLoaderRoute: typeof HomeV4RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home-v5': {
-      id: '/home-v5'
-      path: '/home-v5'
-      fullPath: '/home-v5'
-      preLoaderRoute: typeof HomeV5RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home-v6': {
-      id: '/home-v6'
-      path: '/home-v6'
-      fullPath: '/home-v6'
-      preLoaderRoute: typeof HomeV6RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home-v7': {
-      id: '/home-v7'
-      path: '/home-v7'
-      fullPath: '/home-v7'
-      preLoaderRoute: typeof HomeV7RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home-v8': {
-      id: '/home-v8'
-      path: '/home-v8'
-      fullPath: '/home-v8'
-      preLoaderRoute: typeof HomeV8RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/home-v9': {
-      id: '/home-v9'
-      path: '/home-v9'
-      fullPath: '/home-v9'
-      preLoaderRoute: typeof HomeV9RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/invest': {
@@ -398,18 +198,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExploreRoute: ExploreRoute,
-  HomeV10Route: HomeV10Route,
-  HomeV11Route: HomeV11Route,
-  HomeV12Route: HomeV12Route,
-  HomeV13Route: HomeV13Route,
   HomeV2Route: HomeV2Route,
   HomeV3Route: HomeV3Route,
-  HomeV4Route: HomeV4Route,
-  HomeV5Route: HomeV5Route,
-  HomeV6Route: HomeV6Route,
-  HomeV7Route: HomeV7Route,
-  HomeV8Route: HomeV8Route,
-  HomeV9Route: HomeV9Route,
   InvestRoute: InvestRoute,
   NotificationsRoute: NotificationsRoute,
   PortfolioRoute: PortfolioRoute,
