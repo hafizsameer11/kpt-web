@@ -434,6 +434,37 @@ function CallAccountScreen() {
             </div>
           </section>
 
+          {/* Banner CTA */}
+          <section className="group relative mt-4 overflow-hidden rounded-[2rem] border border-gold/25 bg-gradient-to-br from-brand to-brand-dark p-5 shadow-float md:p-6">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -right-16 -top-16 size-40 rounded-full bg-gold/15 blur-3xl"
+            />
+            <span
+              aria-hidden
+              className="pointer-events-none -bottom-12 -left-12 size-28 rounded-full bg-gold/10 blur-2xl"
+            />
+            <div className="relative flex items-center gap-4">
+              <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gold-gradient shadow-[0_4px_14px_rgba(212,175,55,0.28)]">
+                <Wallet className="size-6 text-brand" strokeWidth={2.4} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-display text-[15px] font-extrabold leading-tight text-primary-foreground">
+                  Move idle wallet cash to earn {CALL_ACCOUNT.rate}
+                </p>
+                <p className="mt-1 text-[11.5px] leading-snug text-primary-foreground/65">
+                  Your wallet balance is sitting still — put it to work today.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="shrink-0 rounded-full bg-gold px-4 py-2.5 text-[12px] font-extrabold text-gold-foreground press"
+              >
+                Add money
+              </button>
+            </div>
+          </section>
+
           {/* Wallet + projected earnings — unified card */}
           <section className="mt-4 overflow-hidden rounded-3xl border border-border bg-card">
             {/* Top: wallet available */}
