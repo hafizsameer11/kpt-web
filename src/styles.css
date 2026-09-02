@@ -379,3 +379,21 @@
   backdrop-filter: blur(20px) saturate(150%);
   border: 1px solid oklch(1 0 0 / 0.22);
 }
+
+/* Home 8 — "Glass timeline" type system + frosted surfaces */
+.type-h8 {
+  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.012em;
+}
+.type-h8 .font-display {
+  font-family: "Syne", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.k-glass8 {
+  background: color-mix(in oklch, var(--color-surface) 62%, transparent);
+  backdrop-filter: blur(26px) saturate(170%);
+  border: 1px solid color-mix(in oklch, white 60%, transparent);
+  box-shadow: 0 24px 50px -34px oklch(0.24 0.07 254 / 0.5);
+}
