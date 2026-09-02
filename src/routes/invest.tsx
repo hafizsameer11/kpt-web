@@ -170,14 +170,25 @@ function InvestScreen() {
               </button>
             </div>
 
-            {/* Tenor / rate overview */}
-            <div className="mb-4 grid grid-cols-4 gap-2">
-              {TENOR_BANDS.map((b) => (
-                <div key={b.days} className="rounded-2xl bg-secondary px-2 py-2.5 text-center">
-                  <p className="text-[10px] font-semibold text-muted-foreground">{b.days}</p>
-                  <p className="mt-0.5 text-sm font-extrabold text-brand text-num">{b.rate}</p>
-                </div>
-              ))}
+            {/* Tenor / rate carousel */}
+            <div className="relative -mx-4 mb-4 md:mx-0">
+              <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 md:grid md:grid-cols-4 md:overflow-visible md:px-0">
+                {TENOR_BANDS.map((b, i) => (
+                  <div
+                    key={b.days}
+                    className="card-surface relative w-[8.5rem] shrink-0 snap-start p-4 md:w-auto"
+                  >
+                    <span className="absolute left-0 top-0 h-full w-1 rounded-l-2xl bg-gold" />
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      {b.days}
+                    </p>
+                    <p className="mt-1 text-2xl font-extrabold text-brand text-num">{b.rate}</p>
+                    <p className="mt-2 text-[10px] font-medium text-muted-foreground">
+                      Min {naira(b.minimum)}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="grid gap-2.5 md:grid-cols-2 md:gap-4">
