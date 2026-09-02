@@ -148,24 +148,20 @@ function HomeV7Screen() {
           </div>
         </section>
 
-        {/* ── Floating quick-actions card overlapping the header ────── */}
-        <section className="relative z-10 -mx-4 -mt-8 px-4 md:mx-0 md:mt-4 md:px-0">
-          <div className="rounded-t-[2rem] border border-border/60 bg-surface px-3 pb-3 pt-5 shadow-card md:rounded-3xl md:border md:px-5 md:py-5">
-            <div className="grid grid-cols-4 gap-1 md:gap-4">
-              {QUICK_ACTIONS.map((a) => (
-                <Link
-                  key={a.label}
-                  to={a.to}
-                  className="flex flex-col items-center gap-1.5 text-[10px] font-bold text-brand press md:text-xs"
-                >
-                  <span className="grid size-10 place-items-center rounded-full bg-accent text-accent-foreground md:size-12 md:rounded-2xl">
-                    <a.icon className="size-[18px]" strokeWidth={2} />
-                  </span>
-                  <span className="text-center leading-tight">{a.label}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
+        {/* ── Floating quick actions overlapping the header ─────────── */}
+        <section className="relative z-10 -mx-4 -mt-8 grid grid-cols-4 gap-1 rounded-t-[2rem] bg-background px-4 pb-2 pt-5 md:mx-0 md:mt-4 md:gap-4 md:rounded-3xl md:border md:border-border md:bg-surface md:px-5 md:py-5">
+          {QUICK_ACTIONS.map((a) => (
+            <Link
+              key={a.label}
+              to={a.to}
+              className="flex flex-col items-center gap-1.5 text-[10px] font-bold text-brand press md:text-xs"
+            >
+              <span className="grid size-10 place-items-center rounded-full bg-accent text-accent-foreground md:size-12 md:rounded-2xl">
+                <a.icon className="size-[18px]" strokeWidth={2} />
+              </span>
+              <span className="text-center leading-tight">{a.label}</span>
+            </Link>
+          ))}
         </section>
 
         {/* ── Mobile segmented tabs ─────────────────────────────────── */}
