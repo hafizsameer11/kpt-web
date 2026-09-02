@@ -61,6 +61,7 @@ function ReviewScreen() {
   const [pin, setPin] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const isMobile = useIsMobile();
 
   const valid = amount >= CALL_ACCOUNT.minimum && amount <= WALLET;
   const dailyInterest = Math.round((amount * RATE) / 365);
