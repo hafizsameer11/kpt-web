@@ -93,19 +93,19 @@ function InvestScreen() {
               <div className="mt-5 flex flex-wrap gap-2.5">
                 <button
                   type="button"
-                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-gold-gradient px-4 py-3 text-xs font-extrabold text-gold-foreground press"
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-gold-gradient px-3 py-3 text-[11px] font-extrabold text-gold-foreground press"
                 >
                   Add money <ArrowUpRight className="size-3.5" />
                 </button>
                 <button
                   type="button"
-                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-3 text-xs font-bold text-primary-foreground press"
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-white/20 bg-white/10 px-3 py-3 text-[11px] font-bold text-primary-foreground press"
                 >
                   Withdraw <ArrowDownLeft className="size-3.5" />
                 </button>
                 <Link
                   to="/portfolio"
-                  className="inline-flex flex-1 items-center justify-center rounded-full border border-white/20 bg-white/10 px-4 py-3 text-xs font-bold text-primary-foreground press"
+                  className="inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-full border border-white/20 bg-white/10 px-3 py-3 text-[11px] font-bold text-primary-foreground press"
                 >
                   Activity
                 </Link>
