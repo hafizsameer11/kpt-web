@@ -19,6 +19,8 @@ import {
   FEED,
   HOLDINGS,
   INVESTED,
+  MONTH_CHANGE,
+  MONTH_CHANGE_PCT,
   NEXT_MATURITY,
   PAYOUTS,
   QUICK_ACTIONS,
@@ -62,7 +64,12 @@ function HomeV7Screen() {
   const isNewUser = useIsNewUser();
   const [tab, setTab] = useState<TabKey>("Overview");
   const maxWeek = Math.max(...WEEK_SERIES);
-  const show = (t: TabKey) => (tab === t ? "" : "hidden md:block");
+  const minWeek = Math.min(...WEEK_SERIES);
+  // Scale bars against the series floor so daily variation is actually visible.
+  const barHeight = (v: number) =>
+    16 + ((v - minWeek) / Math.max(1, maxWeek - minWeek)) * 52;
+  const show = (t: TabKey) =>
+    tab === t ? "animate-in fade-in slide-in-from-bottom-1 duration-200" : "hidden md:block";
 
   if (isNewUser) {
     return (
@@ -125,9 +132,15 @@ function HomeV7Screen() {
           <h1 className="relative mt-1.5 font-display text-[38px] font-extrabold leading-none tracking-[-0.045em] text-num md:text-[52px]">
             {mask(TOTAL)}
           </h1>
-          <p className="relative mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-2.5 py-1 text-[11px] font-bold text-gold">
-            <ArrowUpRight className="size-3.5" /> {naira(WEEK_EARNINGS)} interest this week
-          </p>
+          <div className="relative mt-3 flex flex-wrap items-center gap-2">
+            <p className="inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-2.5 py-1 text-[11px] font-bold text-gold">
+              <ArrowUpRight className="size-3.5" /> {naira(WEEK_EARNINGS)} this week
+            </p>
+            <p className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-primary-foreground/80">
+              +{naira(MONTH_CHANGE)} ({MONTH_CHANGE_PCT}%) this month
+            </p>
+          </div>
+
 
           {/* Invested / Wallet split */}
           <div className="relative mt-5 grid grid-cols-2 gap-2.5">
@@ -154,10 +167,10 @@ function HomeV7Screen() {
             <Link
               key={a.label}
               to={a.to}
-              className="flex flex-col items-center gap-1.5 text-[10px] font-bold text-brand press md:text-xs"
+              className="flex min-h-[4.5rem] flex-col items-center justify-start gap-1.5 rounded-2xl py-1 text-[11px] font-bold text-brand press md:text-xs"
             >
-              <span className="grid size-10 place-items-center rounded-full bg-accent text-accent-foreground md:size-12 md:rounded-2xl">
-                <a.icon className="size-[18px]" strokeWidth={2} />
+              <span className="grid size-12 shrink-0 place-items-center rounded-full bg-accent text-accent-foreground md:size-12 md:rounded-2xl">
+                <a.icon className="size-5" strokeWidth={2} />
               </span>
               <span className="text-center leading-tight">{a.label}</span>
             </Link>
@@ -206,6 +219,13 @@ function HomeV7Screen() {
                 style={{ width: `${pct(NEXT_MATURITY.totalDays, NEXT_MATURITY.daysLeft)}%` }}
               />
             </div>
+            <div className="mt-1.5 flex items-center justify-between text-[10px] font-semibold text-muted-foreground">
+              <span>Started · day 0</span>
+              <span>
+                {pct(NEXT_MATURITY.totalDays, NEXT_MATURITY.daysLeft)}% elapsed
+              </span>
+              <span>Matures {NEXT_MATURITY.date}</span>
+            </div>
             <div className="mt-2.5 flex items-center justify-between text-[11px] md:text-xs">
               <span className="text-muted-foreground">Principal {mask(NEXT_MATURITY.amount)}</span>
               <span className="font-bold">Payout {mask(NEXT_MATURITY.expectedPayout)}</span>
@@ -220,12 +240,12 @@ function HomeV7Screen() {
             <p className="mt-1.5 font-display text-2xl font-extrabold text-num">
               {mask(WEEK_EARNINGS)}
             </p>
-            <div className="mt-4 flex items-end gap-1.5">
+            <div className="mt-4 flex h-[86px] items-end gap-1.5">
               {WEEK_SERIES.map((v, i) => (
                 <div key={WEEK_LABELS[i]} className="flex flex-1 flex-col items-center gap-1.5">
                   <div
-                    className={`w-2.5 rounded-full ${v === maxWeek ? "bg-gold" : "bg-brand/15"}`}
-                    style={{ height: `${18 + (v / maxWeek) * 40}px` }}
+                    className={`w-2.5 rounded-full transition-all ${v === maxWeek ? "bg-gold" : "bg-brand/20"}`}
+                    style={{ height: `${barHeight(v)}px` }}
                   />
                   <span className="text-[9px] font-semibold text-muted-foreground">
                     {WEEK_LABELS[i]?.slice(0, 1)}
@@ -238,7 +258,7 @@ function HomeV7Screen() {
 
         {/* Idle wallet nudge (overview) */}
         <section
-          className={`${show("Overview")} mt-3 overflow-hidden rounded-3xl border border-gold/40 bg-accent p-4 md:mt-4 md:p-6`}
+          className="mt-3 overflow-hidden rounded-3xl border border-gold/40 bg-accent p-4 md:mt-4 md:p-6"
         >
           <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3">
             <span className="grid size-9 shrink-0 place-items-center rounded-2xl bg-gold text-gold-foreground">
@@ -338,18 +358,18 @@ function HomeV7Screen() {
         </section>
 
         {/* ── For you ───────────────────────────────────────────────── */}
-        <section className={`${show("Overview")} mt-6`}>
+        <section className="mt-6">
           <div className="flex items-end justify-between">
             <h2 className="font-display text-lg font-bold tracking-tight md:text-xl">For you</h2>
             <Link to="/explore" className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-foreground press hover:bg-secondary">
               View all
             </Link>
           </div>
-          <div className="-mx-4 mt-3 flex gap-3 overflow-x-auto px-4 pb-2 no-scrollbar md:mx-0 md:mt-4 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+          <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 no-scrollbar md:mx-0 md:mt-4 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
             {FEED.map((item, i) => (
               <article
                 key={item.title}
-                className={`w-[16.5rem] shrink-0 rounded-3xl border border-border p-4 shadow-card press hover:-translate-y-0.5 hover:shadow-float md:w-auto md:p-5 ${
+                className={`w-[78%] shrink-0 snap-start rounded-3xl border border-border p-4 shadow-card press hover:-translate-y-0.5 hover:shadow-float md:w-auto md:p-5 ${
                   i === 0 ? "bg-brand-gradient text-primary-foreground" : "bg-surface"
                 }`}
               >
