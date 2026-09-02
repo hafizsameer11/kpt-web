@@ -30,7 +30,7 @@ import {
   naira,
 } from "@/lib/home-data";
 
-export const Route = createFileRoute("/home-v7")({
+export const Route = createFileRoute("/home-v3")({
   head: () => ({
     meta: [
       { title: "Kipit Home — Native App Home Screen" },
@@ -57,7 +57,7 @@ type TabKey = (typeof TABS)[number];
 
 const pct = (total: number, left: number) => Math.round(((total - left) / total) * 100);
 
-function HomeV7Screen() {
+function HomeV3Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNewUser = useIsNewUser();
   const [tab, setTab] = useState<TabKey>("Overview");
