@@ -71,7 +71,7 @@ function InvestScreen() {
                   className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary-foreground/75 underline-offset-4 hover:underline"
                 >
                   {CALL_ACCOUNT.name}
-                </span>
+                </Link>
                 <span className="shrink-0 rounded-full bg-gold-gradient px-3 py-1 text-[11px] font-extrabold text-gold-foreground">
                   {CALL_ACCOUNT.rate}
                 </span>
