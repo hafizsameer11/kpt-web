@@ -288,7 +288,7 @@ function CallAccountScreen() {
                   </DialogDescription>
                   {(() => {
                     const value = CALL_ACCRUAL_TREND[selectedDay]!;
-                    const prev = selectedDay > 0 ? CALL_ACCRUAL_TREND[selectedDay - 1] : null;
+                    const prev = selectedDay > 0 ? CALL_ACCRUAL_TREND[selectedDay - 1] ?? null : null;
                     const change = prev !== null ? value - prev : 0;
                     const cumulative = CALL_ACCRUAL_TREND.slice(0, selectedDay + 1).reduce((a, b) => a + b, 0);
                     const isToday = selectedDay === CALL_ACCRUAL_TREND.length - 1;
