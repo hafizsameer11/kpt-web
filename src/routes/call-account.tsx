@@ -484,16 +484,19 @@ function CallAccountScreen() {
                 If your current balance of {mask(CALL_ACCOUNT.balance)} stays invested.
                 Indicative only — rates may change.
               </p>
-              <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="mt-4 flex gap-4 border-t border-border/60 pt-4">
                 {[
                   { label: "Next 30 days", value: (CALL_ACCOUNT.balance * 0.145) / 12 },
                   { label: "Next 12 months", value: CALL_ACCOUNT.balance * 0.145 },
-                ].map((p) => (
-                  <div key={p.label} className="rounded-2xl bg-card px-3.5 py-3 shadow-sm">
+                ].map((p, i, arr) => (
+                  <div
+                    key={p.label}
+                    className={`flex-1 ${i < arr.length - 1 ? "border-r border-border/60 pr-4" : ""}`}
+                  >
                     <p className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                       {p.label}
                     </p>
-                    <p className="mt-1 font-display text-lg font-extrabold leading-none text-brand text-num">
+                    <p className="mt-1 font-display text-[22px] font-extrabold leading-none text-brand text-num">
                       {mask(Math.round(p.value))}
                     </p>
                   </div>
