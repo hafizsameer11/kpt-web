@@ -9,11 +9,10 @@ import {
   RefreshCw,
   Repeat,
   ShieldCheck,
-  Wallet,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
-import { naira, HOLDINGS, WALLET } from "@/lib/home-data";
+import { naira, HOLDINGS } from "@/lib/home-data";
 import { CALL_ACCOUNT, TENOR_BANDS } from "@/lib/invest-data";
 
 export const Route = createFileRoute("/invest")({
@@ -62,12 +61,6 @@ function InvestScreen() {
             </h1>
             <p className="mt-2 text-[13px] leading-relaxed text-primary-foreground/70 md:text-sm">
               Grow your wealth with Kipit&rsquo;s own plans
-            </p>
-
-            {/* Available wallet balance (funding source for MOB-062 / MOB-066) */}
-            <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground/85">
-              <Wallet className="size-3.5" />
-              Wallet available {mask(WALLET)}
             </p>
 
             {/* Call Account glass card (MOB-061 entry) */}
@@ -280,14 +273,14 @@ function InvestScreen() {
                 <button
                   key={t.label}
                   type="button"
-                  className="card-surface flex items-start gap-3 p-3.5 text-left transition-shadow hover:shadow-md md:flex-col md:gap-2"
+                  className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card p-3.5 text-left shadow-sm transition-all hover:border-brand/20 hover:shadow-md"
                 >
-                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-accent/15 text-brand">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-muted text-brand">
                     <t.icon className="size-4" />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-[12px] font-bold">{t.label}</span>
-                    <span className="block text-[10px] leading-snug text-muted-foreground">
+                    <span className="block text-[13px] font-bold text-foreground">{t.label}</span>
+                    <span className="block text-[11px] leading-snug text-muted-foreground">
                       {t.note}
                     </span>
                   </span>
