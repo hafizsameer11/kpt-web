@@ -436,64 +436,69 @@ function CallAccountScreen() {
             </div>
           </section>
 
-          {/* Add money shortcut */}
-          <section className="mt-4 overflow-hidden rounded-3xl border border-border bg-card p-4 md:p-5">
-            <div className="flex items-start gap-3">
-              <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-gold/15 text-brand">
-                <Wallet className="size-5" strokeWidth={2.2} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-baseline justify-between gap-2">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                    Wallet available
-                  </p>
-                  <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[10.5px] font-extrabold text-brand">
-                    {CALL_ACCOUNT.rate}
-                  </span>
+          {/* Wallet + projected earnings — unified card */}
+          <section className="mt-4 overflow-hidden rounded-3xl border border-border bg-card">
+            {/* Top: wallet available */}
+            <div className="p-4 md:p-5">
+              <div className="flex items-start gap-3">
+                <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-gold/15 text-brand">
+                  <Wallet className="size-5" strokeWidth={2.2} />
                 </div>
-                <p className="mt-1 font-display text-xl font-extrabold leading-none">
-                  {mask(WALLET)}
-                </p>
-                <p className="mt-1.5 text-[11.5px] leading-snug text-muted-foreground">
-                  Idle cash — move it here to start earning daily.
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              className="press mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-brand px-4 py-3 text-[12.5px] font-extrabold text-brand-foreground"
-            >
-              <Plus className="size-4" strokeWidth={2.6} /> Add money
-            </button>
-          </section>
-
-
-          {/* Earnings projection */}
-          <section className="mt-4 rounded-3xl border border-border bg-card p-4 md:p-5">
-            <div className="flex items-baseline justify-between gap-2">
-              <h2 className="font-display text-[15px] font-extrabold">Projected earnings</h2>
-              <span className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                At {CALL_ACCOUNT.rate}
-              </span>
-            </div>
-            <p className="mt-1 text-[11.5px] leading-snug text-muted-foreground">
-              Estimated on your current balance of {mask(CALL_ACCOUNT.balance)} if it stays
-              invested. Indicative only — rates may change.
-            </p>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              {[
-                { label: "Next 30 days", value: (CALL_ACCOUNT.balance * 0.145) / 12 },
-                { label: "Next 12 months", value: CALL_ACCOUNT.balance * 0.145 },
-              ].map((p) => (
-                <div key={p.label} className="rounded-2xl bg-muted/50 px-3.5 py-3">
-                  <p className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                    {p.label}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                      Wallet available
+                    </p>
+                    <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[10.5px] font-extrabold text-brand">
+                      {CALL_ACCOUNT.rate}
+                    </span>
+                  </div>
+                  <p className="mt-1 font-display text-xl font-extrabold leading-none">
+                    {mask(WALLET)}
                   </p>
-                  <p className="mt-1 font-display text-lg font-extrabold leading-none text-brand text-num">
-                    {mask(Math.round(p.value))}
+                  <p className="mt-1.5 text-[11.5px] leading-snug text-muted-foreground">
+                    Idle cash — move it here to start earning daily.
                   </p>
                 </div>
-              ))}
+              </div>
+              <button
+                type="button"
+                className="press mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-brand px-4 py-3 text-[12.5px] font-extrabold text-brand-foreground"
+              >
+                <Plus className="size-4" strokeWidth={2.6} /> Add money
+              </button>
+            </div>
+
+            {/* Divider */}
+            <div className="h-px bg-border" />
+
+            {/* Bottom: projected earnings */}
+            <div className="bg-muted/20 p-4 md:p-5">
+              <div className="flex items-baseline justify-between gap-2">
+                <h2 className="font-display text-[15px] font-extrabold">Projected earnings</h2>
+                <span className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                  At {CALL_ACCOUNT.rate}
+                </span>
+              </div>
+              <p className="mt-1 text-[11.5px] leading-snug text-muted-foreground">
+                If your current balance of {mask(CALL_ACCOUNT.balance)} stays invested.
+                Indicative only — rates may change.
+              </p>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                {[
+                  { label: "Next 30 days", value: (CALL_ACCOUNT.balance * 0.145) / 12 },
+                  { label: "Next 12 months", value: CALL_ACCOUNT.balance * 0.145 },
+                ].map((p) => (
+                  <div key={p.label} className="rounded-2xl bg-card px-3.5 py-3 shadow-sm">
+                    <p className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                      {p.label}
+                    </p>
+                    <p className="mt-1 font-display text-lg font-extrabold leading-none text-brand text-num">
+                      {mask(Math.round(p.value))}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
 
