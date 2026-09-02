@@ -41,7 +41,7 @@ export function ForYouCovers() {
             />
             <span
               aria-hidden
-              className="absolute inset-0 bg-gradient-to-t from-brand via-brand/80 to-transparent"
+              className="absolute inset-x-0 bottom-0 top-1/3 bg-gradient-to-t from-brand via-brand/90 to-transparent"
             />
             <div className="relative flex h-full flex-col justify-end p-5 text-primary-foreground">
               <div className="mb-3 flex items-center gap-2">
