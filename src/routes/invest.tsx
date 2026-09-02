@@ -263,31 +263,37 @@ function InvestScreen() {
           {/* Invest tools — MOB-069 / MOB-071 / MOB-072 / MOB-075 entry points */}
           <section className="mt-7">
             <h2 className="mb-3 px-1 font-display text-base font-extrabold">Invest tools</h2>
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-sm md:grid md:grid-cols-2">
               {[
-                { icon: Calculator, label: "Calculator", note: "Model your payout" },
-                { icon: Repeat, label: "Auto-invest", note: "Fund on a schedule" },
-                { icon: Gift, label: "Gift invest", note: "Send a plan" },
-                { icon: RefreshCw, label: "Roll over", note: "Reinvest at maturity" },
-              ].map((t) => (
+                { icon: Calculator, label: "Calculator", note: "Model your payout before you commit" },
+                { icon: Repeat, label: "Auto-invest", note: "Fund your plans on a schedule" },
+                { icon: Gift, label: "Gift invest", note: "Send a plan to someone" },
+                { icon: RefreshCw, label: "Roll over", note: "Reinvest automatically at maturity" },
+              ].map((t, i) => (
                 <button
                   key={t.label}
                   type="button"
-                  className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card p-3.5 text-left shadow-sm transition-all hover:border-brand/20 hover:shadow-md"
+                  className={`group flex w-full items-center gap-3.5 px-4 py-4 text-left transition-colors hover:bg-muted/50 ${
+                    i > 0 ? "border-t border-border/50 md:border-t-0" : ""
+                  } ${i >= 2 ? "md:border-t md:border-border/50" : ""} ${
+                    i % 2 === 1 ? "md:border-l md:border-border/50" : ""
+                  }`}
                 >
-                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-muted text-brand">
-                    <t.icon className="size-4" />
+                  <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand text-brand-foreground transition-transform group-hover:scale-105">
+                    <t.icon className="size-[18px]" />
                   </span>
-                  <span className="min-w-0">
-                    <span className="block text-[13px] font-bold text-foreground">{t.label}</span>
-                    <span className="block text-[11px] leading-snug text-muted-foreground">
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-bold text-foreground">{t.label}</span>
+                    <span className="block truncate text-[11.5px] text-muted-foreground">
                       {t.note}
                     </span>
                   </span>
+                  <ChevronRight className="size-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
                 </button>
               ))}
             </div>
           </section>
+
 
 
           <p className="mt-4 flex items-start gap-2 px-1 text-[11px] leading-relaxed text-muted-foreground">
