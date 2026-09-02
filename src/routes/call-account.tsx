@@ -366,25 +366,73 @@ function CallAccountScreen() {
 
 
           {/* Product explanation */}
-          <section className="mt-4 card-surface p-4 md:p-5">
-            <div className="flex items-center gap-2">
-              <Info className="size-4 shrink-0 text-brand" />
-              <h2 className="font-display text-base font-extrabold">How it works</h2>
+          <section className="group relative mt-4 overflow-hidden rounded-[2rem] border border-gold/20 bg-brand p-5 shadow-float md:p-6">
+            {/* Outer glow */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -inset-1 rounded-[2.25rem] bg-gradient-to-r from-gold/20 to-gold-foreground/20 opacity-50 blur-xl transition duration-1000 group-hover:opacity-75"
+            />
+            {/* Background accents */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -right-16 -top-16 size-32 rounded-full bg-gold/10 blur-3xl"
+            />
+            <span
+              aria-hidden
+              className="pointer-events-none -bottom-12 -left-12 size-24 rounded-full bg-gold/10 blur-2xl"
+            />
+            {/* Shine sweep */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-20 transition-transform duration-1000 group-hover:translate-x-full"
+            />
+
+            <div className="relative">
+              {/* Header */}
+              <div className="flex items-center gap-3.5">
+                <div className="grid size-12 place-items-center rounded-2xl bg-gold-gradient shadow-[0_4px_14px_rgba(212,175,55,0.28)]">
+                  <Info className="size-6 text-brand" strokeWidth={2.5} />
+                </div>
+                <div>
+                  <h2 className="font-display text-lg font-extrabold text-primary-foreground">
+                    How it works
+                  </h2>
+                  <span className="mt-1 block h-0.5 w-8 rounded-full bg-gold" />
+                </div>
+              </div>
+
+              {/* Intro */}
+              <p className="mt-5 text-[12.5px] leading-relaxed text-primary-foreground/75">
+                Interest accrues daily on your{" "}
+                <span className="font-semibold text-primary-foreground">idle cash</span> and is
+                credited monthly.{" "}
+                <span className="font-semibold text-gold">No lock-in, no penalty.</span>
+              </p>
+
+              {/* Facts */}
+              <ul className="mt-6 space-y-4">
+                {CALL_ACCOUNT_FACTS.map((fact, i) => (
+                  <li
+                    key={fact}
+                    className={`flex gap-3.5 text-[12.5px] leading-relaxed ${
+                      i === CALL_ACCOUNT_FACTS.length - 1
+                        ? "border-t border-gold/10 pt-4 text-primary-foreground/55"
+                        : "text-primary-foreground/85"
+                    }`}
+                  >
+                    {i === CALL_ACCOUNT_FACTS.length - 1 ? (
+                      <ShieldCheck className="mt-0.5 size-4 shrink-0 text-gold/70" />
+                    ) : (
+                      <span
+                        aria-hidden
+                        className="mt-[7px] size-1.5 shrink-0 rounded-full bg-gold ring-4 ring-gold/10"
+                      />
+                    )}
+                    {fact}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <p className="mt-2 text-[12.5px] leading-relaxed text-muted-foreground">
-              {CALL_ACCOUNT.blurb}
-            </p>
-            <ul className="mt-3 space-y-2">
-              {CALL_ACCOUNT_FACTS.map((fact) => (
-                <li key={fact} className="flex gap-2 text-[12px] leading-relaxed text-foreground/85">
-                  <span
-                    aria-hidden
-                    className="mt-[7px] size-1.5 shrink-0 rounded-full bg-accent"
-                  />
-                  {fact}
-                </li>
-              ))}
-            </ul>
           </section>
 
           {/* Add money shortcut */}
