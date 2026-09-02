@@ -293,7 +293,7 @@ function InvestScreen() {
                 <button
                   key={t.label}
                   type="button"
-                  className="group flex w-full items-center gap-4 overflow-hidden rounded-[1.75rem] border border-border/60 bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md md:rounded-[2rem] md:p-5"
+                  className="group relative flex w-full items-center gap-4 overflow-hidden rounded-[1.75rem] border border-border/60 bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md md:rounded-[2rem] md:p-5"
                 >
                   <span
                     aria-hidden
