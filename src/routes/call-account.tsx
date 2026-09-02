@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   TrendingUp,
 } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import { naira, WALLET } from "@/lib/home-data";
@@ -78,6 +79,17 @@ function CallAccountScreen() {
   const pts = trendPoints(CALL_ACCRUAL_TREND, 300, 88);
   const line = smoothPath(pts);
   const last = pts[pts.length - 1] ?? { x: 300, y: 44 };
+  const streakRef = useRef<HTMLDivElement>(null);
+  const todayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (streakRef.current && todayRef.current) {
+      const container = streakRef.current;
+      const today = todayRef.current;
+      const scrollLeft = today.offsetLeft - container.clientWidth / 2 + today.clientWidth / 2;
+      container.scrollTo({ left: Math.max(0, scrollLeft), behavior: "instant" });
+    }
+  }, []);
 
 
   return (
@@ -206,13 +218,18 @@ function CallAccountScreen() {
 
             {/* 14-day streak */}
             <div className="relative mt-5">
-              <div className="flex items-end justify-between gap-2 overflow-x-auto pb-3 pt-1 scrollbar-hide">
+              <div
+                ref={streakRef}
+                className="flex items-end justify-between gap-2 overflow-x-auto pb-3 pt-1 scrollbar-hide"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              >
                 {CALL_ACCRUAL_TREND.map((v, i) => {
                   const isToday = i === CALL_ACCRUAL_TREND.length - 1;
                   const dayLabel = i === 0 ? "14d" : i === CALL_ACCRUAL_TREND.length - 1 ? "Today" : `-${CALL_ACCRUAL_TREND.length - 1 - i}`;
                   return (
                     <div
                       key={i}
+                      ref={isToday ? todayRef : undefined}
                       className={`flex shrink-0 flex-col items-center gap-2 rounded-2xl px-2.5 py-3 ${
                         isToday
                           ? "bg-brand text-primary-foreground shadow-sm"
