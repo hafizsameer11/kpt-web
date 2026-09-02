@@ -140,10 +140,10 @@ function HomeV4Screen() {
           <NewUserEmptyState />
         ) : (
           <>
-            <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
+            <div className="grid items-start gap-3 md:gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
               {/* Growth cockpit */}
-              <section className="overflow-hidden rounded-[1.75rem] bg-brand-gradient p-6 text-primary-foreground shadow-float md:p-8">
-                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+              <section className="overflow-hidden rounded-3xl md:rounded-[1.75rem] bg-brand-gradient p-5 md:p-6 text-primary-foreground shadow-float md:p-8">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 md:gap-4">
                   <div className="min-w-0">
                     <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-primary-foreground/60">
                       Total portfolio value
@@ -209,7 +209,7 @@ function HomeV4Screen() {
               </section>
 
               {/* Allocation ring */}
-              <section className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+              <section className="rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 md:p-6 shadow-card">
                 <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Allocation
                 </p>
@@ -264,7 +264,7 @@ function HomeV4Screen() {
 
             {/* Quick actions */}
             <section className="mt-4 overflow-hidden rounded-3xl border border-border bg-surface shadow-card">
-              <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4 sm:divide-y-0">
+              <div className="grid grid-cols-4 divide-x divide-border">
                 {QUICK_ACTIONS.map(({ label, icon: Icon, to }) => (
                   <Link
                     key={label}
@@ -274,7 +274,7 @@ function HomeV4Screen() {
                     <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold/12 text-gold transition-all group-hover:bg-gold-gradient group-hover:text-gold-foreground">
                       <Icon className="size-4.5" />
                     </span>
-                    <span className="min-w-0 text-[13px] font-semibold leading-tight md:text-sm">
+                    <span className="min-w-0 text-[11px] font-semibold leading-tight md:text-sm">
                       {label}
                     </span>
                     <span
@@ -304,13 +304,13 @@ function HomeV4Screen() {
                   <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </div>
-              <div className="-mx-4 mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 [-ms-overflow-style:none] [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:px-0 [&::-webkit-scrollbar]:hidden">
+              <div className="-mx-4 mt-4 flex snap-x snap-mandatory gap-3 md:gap-4 overflow-x-auto px-4 pb-3 [-ms-overflow-style:none] [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:px-0 [&::-webkit-scrollbar]:hidden">
                 {HOLDINGS.map((h) => {
                   const pct = Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100);
                   return (
                     <article
                       key={h.name}
-                      className="group relative w-[80%] shrink-0 snap-start overflow-hidden rounded-[1.75rem] border border-border bg-surface p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-gold/50 hover:shadow-float md:w-auto"
+                      className="group relative w-[80%] shrink-0 snap-start overflow-hidden rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-gold/50 hover:shadow-float md:w-auto"
                     >
                       <span
                         aria-hidden
@@ -351,13 +351,13 @@ function HomeV4Screen() {
             </section>
 
 
-            <div className="mt-4 grid items-start gap-4 lg:grid-cols-3">
+            <div className="mt-4 grid items-start gap-3 md:gap-4 lg:grid-cols-3">
               {/* Maturity countdown */}
-              <section className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+              <section className="rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 md:p-6 shadow-card">
                 <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   <Target className="size-4" /> Next maturity
                 </p>
-                <div className="mt-4 flex items-center gap-4">
+                <div className="mt-4 flex items-center gap-3 md:gap-4">
                   <div className="relative shrink-0">
                     <svg width="88" height="88" viewBox="0 0 128 128" role="img" aria-label="Maturity progress">
                       <circle cx="64" cy="64" r="52" fill="none" stroke="var(--secondary)" strokeWidth="14" />
@@ -392,7 +392,7 @@ function HomeV4Screen() {
               </section>
 
               {/* Weekly interest */}
-              <section className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+              <section className="rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 md:p-6 shadow-card">
                 <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Interest this week
                 </p>
@@ -413,7 +413,7 @@ function HomeV4Screen() {
               </section>
 
               {/* Payout schedule */}
-              <section className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+              <section className="rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 md:p-6 shadow-card">
                 <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Upcoming payouts
                 </p>
@@ -437,8 +437,8 @@ function HomeV4Screen() {
             </div>
 
             {/* Wallet + recommendation */}
-            <section className="mt-4 grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-              <div className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+            <section className="mt-4 grid items-start gap-3 md:gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+              <div className="rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 md:p-6 shadow-card">
                 <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   <Wallet className="size-4" /> Wallet
                 </p>
@@ -455,7 +455,7 @@ function HomeV4Screen() {
                 </Link>
               </div>
 
-              <div className="grid gap-4 rounded-[1.75rem] border border-gold/40 bg-accent p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+              <div className="grid gap-3 md:gap-4 rounded-3xl md:rounded-[1.75rem] border border-gold/40 bg-accent p-5 md:p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
                 <div className="flex min-w-0 gap-3">
                   <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold-gradient text-gold-foreground">
                     <Lightbulb className="size-5" />
@@ -479,7 +479,7 @@ function HomeV4Screen() {
             </section>
 
             {/* For you */}
-            <section className="mt-8">
+            <section className="mt-6 md:mt-8">
               <h2 className="text-lg font-extrabold tracking-tight">For you</h2>
               <div className="mt-3 grid gap-3 md:grid-cols-3">
                 {FEED.map((item, i) => (
