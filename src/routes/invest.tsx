@@ -42,23 +42,58 @@ function InvestScreen() {
     <AppShell title="Invest" navVariant="elevated">
       <div className="pb-2">
         {/* ── Header canvas ─────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-10 pt-5 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-8 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-16 pt-10 text-primary-foreground md:mx-0 md:rounded-[2.5rem] md:px-8 md:pb-20 md:pt-14 md:shadow-float">
+          {/* Soft aurora glows */}
           <span
             aria-hidden
-            className="pointer-events-none absolute -right-24 -top-28 size-64 rounded-full bg-gold/20 blur-3xl"
+            className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
           />
-          <div className="relative grid gap-3 md:max-w-3xl md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
-            <div className="min-w-0">
-              <h1 className="font-display text-[22px] font-extrabold leading-tight tracking-[-0.03em] md:text-3xl">
-                Invest with Kipit
-              </h1>
-              <p className="mt-1.5 text-[11px] text-primary-foreground/70 md:text-sm">
-                Rate, tenor and minimum shown upfront.
-              </p>
+          <span
+            aria-hidden
+            className="pointer-events-none -bottom-28 -left-20 size-64 rounded-full bg-white/10 blur-[56px]"
+          />
+
+          {/* Decorative gold orbit ring */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-10 top-6 size-40 rounded-full border border-gold/20 md:right-8 md:top-8 md:size-48"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-2 top-14 size-24 rounded-full border border-gold/10 md:right-16 md:top-16 md:size-28"
+          />
+
+          <div className="relative md:max-w-3xl">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                <span className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground/85 backdrop-blur-sm">
+                  <Wallet className="size-3" /> Wallet {mask(500_000)}
+                </span>
+                <h1 className="font-display text-[28px] font-extrabold leading-[1.05] tracking-[-0.035em] md:text-[40px]">
+                  Invest with
+                  <br />
+                  <span className="text-gold">Kipit</span>
+                </h1>
+                <p className="mt-3 max-w-[18rem] text-[13px] leading-relaxed text-primary-foreground/75 md:max-w-md md:text-sm">
+                  Transparent rates, clear tenors, and minimums shown upfront. Choose liquidity or lock in for more.
+                </p>
+              </div>
             </div>
-            <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-primary-foreground/85">
-              <Wallet className="size-3.5" /> Wallet {mask(500_000)}
-            </p>
+
+            {/* Quick trust chips */}
+            <div className="mt-8 flex flex-wrap items-center gap-2">
+              {[
+                { label: "Daily interest", icon: Clock },
+                { label: "SEC-licensed partner", icon: ShieldCheck },
+              ].map((chip) => (
+                <span
+                  key={chip.label}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-[10px] font-semibold text-primary-foreground/85 backdrop-blur-sm"
+                >
+                  <chip.icon className="size-3" /> {chip.label}
+                </span>
+              ))}
+            </div>
           </div>
         </section>
 
