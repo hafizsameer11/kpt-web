@@ -149,7 +149,7 @@ function HomeV7Screen() {
         </section>
 
         {/* ── Floating quick actions overlapping the header ─────────── */}
-        <section className="relative z-10 -mx-4 -mt-8 grid grid-cols-4 gap-1 rounded-t-[2rem] bg-surface px-4 pb-4 pt-5 md:mx-0 md:mt-4 md:gap-4 md:rounded-3xl md:border md:border-border md:px-5 md:py-5">
+        <section className="relative z-10 -mx-4 -mt-8 grid grid-cols-4 gap-1 rounded-t-[2rem] bg-background px-4 pb-2 pt-5 md:mx-0 md:mt-4 md:gap-4 md:rounded-3xl md:border md:border-border md:bg-surface md:px-5 md:py-5">
           {QUICK_ACTIONS.map((a) => (
             <Link
               key={a.label}
