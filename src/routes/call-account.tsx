@@ -215,39 +215,7 @@ function CallAccountScreen() {
             </div>
 
             {/* 14-day calendar grid — today first, no scroll */}
-            <div className="mt-5 grid grid-cols-7 gap-2">
-              {[...CALL_ACCRUAL_TREND].reverse().map((v, i) => {
-                const isToday = i === 0;
-                const dayLabel = isToday ? "Today" : i === 1 ? "1d" : `${i}d`;
-                return (
-                  <div
-                    key={i}
-                    className={`flex flex-col items-center gap-1 rounded-2xl px-1 py-2.5 ${
-                      isToday
-                        ? "bg-brand text-primary-foreground shadow-sm"
-                        : "bg-muted/60 text-foreground"
-                    }`}
-                  >
-                    <span className={`text-[9px] font-semibold ${isToday ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                      {dayLabel}
-                    </span>
-                    <span className={`text-[11px] font-extrabold text-num ${isToday ? "text-gold" : ""}`}>
-                      {mask(v)}
-                    </span>
-                    <span
-                      className={`h-0.5 w-full rounded-full ${isToday ? "bg-gold" : "bg-border"}`}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-4 flex items-center justify-between border-t border-border/70 pt-3">
-              <p className="text-[11px] font-semibold text-muted-foreground">Last 14 days</p>
-              <p className="text-[12.5px] font-extrabold text-num">
-                {mask(CALL_ACCRUAL_TREND.reduce((a, b) => a + b, 0))}
-              </p>
-            </div>
+            <FourteenDayCalendar mask={mask} />
           </section>
 
 
@@ -352,6 +320,132 @@ function CallAccountScreen() {
         </div>
       </div>
     </AppShell>
+  );
+}
+
+type Day14 = {
+  label: string;
+  interest: number;
+  balance: number;
+  rate: string;
+  isToday: boolean;
+};
+
+function build14Days(): Day14[] {
+  const ref = new Date();
+  const today = ref.getDate();
+  const year = ref.getFullYear();
+  const month = ref.getMonth();
+  return [...CALL_ACCRUAL_TREND].reverse().map((interest, i) => {
+    const isToday = i === 0;
+    const date = new Date(year, month, today - i);
+    const label = isToday
+      ? "Today"
+      : i === 1
+        ? "Yesterday"
+        : date.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+    return {
+      label,
+      interest,
+      balance: CALL_ACCOUNT.balance - i * 900,
+      rate: CALL_ACCOUNT.rate,
+      isToday,
+    };
+  });
+}
+
+/** 14-day interest calendar with per-day detail dialog. */
+function FourteenDayCalendar({ mask }: { mask: (n: number) => string }) {
+  const days = useMemo(() => build14Days(), []);
+  const [selected, setSelected] = useState<Day14 | null>(null);
+  const total = days.reduce((a, d) => a + d.interest, 0);
+
+  return (
+    <div className="mt-5">
+      <div className="grid grid-cols-7 gap-2">
+        {days.map((d, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => setSelected(d)}
+            aria-label={`${d.label} interest`}
+            className={`flex flex-col items-center gap-1 rounded-2xl px-1 py-2.5 press transition ${
+              d.isToday
+                ? "bg-brand text-primary-foreground shadow-sm"
+                : "bg-muted/60 text-foreground hover:bg-muted"
+            }`}
+          >
+            <span
+              className={`text-[9px] font-semibold ${
+                d.isToday ? "text-primary-foreground/70" : "text-muted-foreground"
+              }`}
+            >
+              {d.label}
+            </span>
+            <span
+              className={`text-[11px] font-extrabold text-num ${
+                d.isToday ? "text-gold" : ""
+              }`}
+            >
+              {mask(d.interest)}
+            </span>
+            <span
+              className={`h-0.5 w-full rounded-full ${
+                d.isToday ? "bg-gold" : "bg-border"
+              }`}
+            />
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4 flex items-center justify-between border-t border-border/70 pt-3">
+        <p className="text-[11px] font-semibold text-muted-foreground">Last 14 days</p>
+        <p className="text-[12.5px] font-extrabold text-num">{mask(total)}</p>
+      </div>
+
+      <Dialog open={selected !== null} onOpenChange={(o) => !o && setSelected(null)}>
+        <DialogContent className="max-w-[320px] rounded-3xl">
+          {selected && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="font-display text-base font-extrabold">
+                  {selected.label}
+                </DialogTitle>
+                <DialogDescription className="text-[12px]">
+                  Daily interest on your Call Account balance.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="mt-1 rounded-2xl bg-muted/60 p-4 text-center">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Interest earned
+                </p>
+                <p className="mt-1 font-display text-[30px] font-extrabold leading-none text-num">
+                  {mask(selected.interest)}
+                </p>
+              </div>
+              <dl className="mt-1 space-y-2 text-[12.5px]">
+                <div className="flex items-center justify-between">
+                  <dt className="text-muted-foreground">Closing balance</dt>
+                  <dd className="font-extrabold text-num">{mask(selected.balance)}</dd>
+                </div>
+                <div className="flex items-center justify-between">
+                  <dt className="text-muted-foreground">Rate applied</dt>
+                  <dd className="font-extrabold">{selected.rate}</dd>
+                </div>
+                <div className="flex items-center justify-between">
+                  <dt className="text-muted-foreground">Status</dt>
+                  <dd className="font-extrabold text-brand">Accrued</dd>
+                </div>
+              </dl>
+              <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                Interest accrues daily and is credited to your Call Account on the 1st of each
+                month.
+              </p>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
 
