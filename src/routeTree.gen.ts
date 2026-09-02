@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CallAccountRouteImport } from './routes/call-account'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as InvestRouteImport } from './routes/invest'
 import { Route as NotificationsRouteImport } from './routes/notifications'
@@ -19,6 +20,11 @@ import { Route as SettingsRouteImport } from './routes/settings'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CallAccountRoute = CallAccountRouteImport.update({
+  id: '/call-account',
+  path: '/call-account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExploreRoute = ExploreRouteImport.update({
@@ -49,6 +55,7 @@ const SettingsRoute = SettingsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
@@ -75,13 +84,26 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/explore' | '/invest' | '/notifications' | '/portfolio' | '/settings'
+    | '/'
+    | '/call-account'
+    | '/explore'
+    | '/invest'
+    | '/notifications'
+    | '/portfolio'
+    | '/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/explore' | '/invest' | '/notifications' | '/portfolio' | '/settings'
+    | '/'
+    | '/call-account'
+    | '/explore'
+    | '/invest'
+    | '/notifications'
+    | '/portfolio'
+    | '/settings'
   id:
     | '__root__'
     | '/'
+    | '/call-account'
     | '/explore'
     | '/invest'
     | '/notifications'
@@ -91,6 +113,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CallAccountRoute: typeof CallAccountRoute
   ExploreRoute: typeof ExploreRoute
   InvestRoute: typeof InvestRoute
   NotificationsRoute: typeof NotificationsRoute
@@ -105,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/call-account': {
+      id: '/call-account'
+      path: '/call-account'
+      fullPath: '/call-account'
+      preLoaderRoute: typeof CallAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/explore': {
@@ -147,6 +177,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CallAccountRoute: CallAccountRoute,
   ExploreRoute: ExploreRoute,
   InvestRoute: InvestRoute,
   NotificationsRoute: NotificationsRoute,

@@ -66,9 +66,12 @@ function InvestScreen() {
             {/* Call Account glass card (MOB-061 entry) */}
             <section className="mt-6 rounded-[1.75rem] border border-white/12 bg-white/8 p-5 backdrop-blur-md md:p-6">
               <div className="flex items-start justify-between gap-3">
-                <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary-foreground/75">
+                <Link
+                  to="/call-account"
+                  className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary-foreground/75 underline-offset-4 hover:underline"
+                >
                   {CALL_ACCOUNT.name}
-                </span>
+                </Link>
                 <span className="shrink-0 rounded-full bg-gold-gradient px-3 py-1 text-[11px] font-extrabold text-gold-foreground">
                   {CALL_ACCOUNT.rate}
                 </span>
@@ -97,7 +100,7 @@ function InvestScreen() {
                   Withdraw <ArrowDownLeft className="size-3.5" />
                 </button>
                 <Link
-                  to="/portfolio"
+                  to="/call-account"
                   className="inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-full border border-white/20 bg-white/10 px-3 py-3 text-[11px] font-bold text-primary-foreground press"
                 >
                   Activity
