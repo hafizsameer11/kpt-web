@@ -42,26 +42,26 @@ function InvestScreen() {
     <AppShell title="Invest" navVariant="elevated">
       <div className="pb-2">
         {/* ── Header canvas ─────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-12 pt-6 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-8 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-10 pt-5 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-8 md:pt-8 md:shadow-float">
           <span
             aria-hidden
-            className="pointer-events-none absolute -right-20 -top-24 size-64 rounded-full bg-gold/25 blur-3xl"
+            className="pointer-events-none absolute -right-24 -top-28 size-64 rounded-full bg-gold/20 blur-3xl"
           />
-          <div className="relative max-w-xl">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary-foreground/60">
-              Invest
-            </p>
-            <h1 className="mt-2 font-display text-[26px] font-extrabold leading-tight tracking-[-0.03em] md:text-4xl">
-              Kipit's own investment products
-            </h1>
-            <p className="mt-2 text-xs text-primary-foreground/75 md:text-sm">
-              Every product shows its rate, liquidity or tenor, and minimum before you commit.
-            </p>
-            <p className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-primary-foreground/85">
-              <Wallet className="size-3.5" /> Wallet available {mask(500_000)}
+          <div className="relative grid gap-3 md:max-w-3xl md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+            <div className="min-w-0">
+              <h1 className="font-display text-[22px] font-extrabold leading-tight tracking-[-0.03em] md:text-3xl">
+                Invest with Kipit
+              </h1>
+              <p className="mt-1.5 text-[11px] text-primary-foreground/70 md:text-sm">
+                Rate, tenor and minimum shown upfront.
+              </p>
+            </div>
+            <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-primary-foreground/85">
+              <Wallet className="size-3.5" /> Wallet {mask(500_000)}
             </p>
           </div>
         </section>
+
 
         {/* ── Sheet ─────────────────────────────────────────────────── */}
         <div className="relative -mx-4 -mt-7 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
