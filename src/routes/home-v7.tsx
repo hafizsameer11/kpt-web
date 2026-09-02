@@ -219,6 +219,13 @@ function HomeV7Screen() {
                 style={{ width: `${pct(NEXT_MATURITY.totalDays, NEXT_MATURITY.daysLeft)}%` }}
               />
             </div>
+            <div className="mt-1.5 flex items-center justify-between text-[10px] font-semibold text-muted-foreground">
+              <span>Started · day 0</span>
+              <span>
+                {pct(NEXT_MATURITY.totalDays, NEXT_MATURITY.daysLeft)}% elapsed
+              </span>
+              <span>Matures {NEXT_MATURITY.date}</span>
+            </div>
             <div className="mt-2.5 flex items-center justify-between text-[11px] md:text-xs">
               <span className="text-muted-foreground">Principal {mask(NEXT_MATURITY.amount)}</span>
               <span className="font-bold">Payout {mask(NEXT_MATURITY.expectedPayout)}</span>
@@ -233,12 +240,12 @@ function HomeV7Screen() {
             <p className="mt-1.5 font-display text-2xl font-extrabold text-num">
               {mask(WEEK_EARNINGS)}
             </p>
-            <div className="mt-4 flex items-end gap-1.5">
+            <div className="mt-4 flex h-[86px] items-end gap-1.5">
               {WEEK_SERIES.map((v, i) => (
                 <div key={WEEK_LABELS[i]} className="flex flex-1 flex-col items-center gap-1.5">
                   <div
-                    className={`w-2.5 rounded-full ${v === maxWeek ? "bg-gold" : "bg-brand/15"}`}
-                    style={{ height: `${18 + (v / maxWeek) * 40}px` }}
+                    className={`w-2.5 rounded-full transition-all ${v === maxWeek ? "bg-gold" : "bg-brand/20"}`}
+                    style={{ height: `${barHeight(v)}px` }}
                   />
                   <span className="text-[9px] font-semibold text-muted-foreground">
                     {WEEK_LABELS[i]?.slice(0, 1)}
