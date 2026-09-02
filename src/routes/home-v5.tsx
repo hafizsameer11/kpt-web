@@ -331,7 +331,7 @@ function HomeV5Screen() {
               Portfolio <ChevronRight className="size-3.5" />
             </Link>
           </div>
-          <div className="mt-3 space-y-2.5 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
+          <div className="mt-3 space-y-2.5 md:grid md:grid-cols-3 md:gap-4 md:space-y-0">
             {HOLDINGS.map((h) => {
               const p = progress(h.totalDays, h.daysLeft);
               return (
