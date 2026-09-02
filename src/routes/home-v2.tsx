@@ -166,7 +166,7 @@ function HomeV2Screen() {
               ))}
             </section>
 
-            <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+            <div className="mt-4 grid items-start gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
               {/* Holdings / payouts ledger */}
               <section className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
                 <div className="flex gap-1 rounded-full bg-secondary p-1">
