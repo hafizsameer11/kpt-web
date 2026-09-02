@@ -62,18 +62,28 @@ type LensKey = (typeof LENSES)[number]["key"];
 
 function WeekStrip() {
   const max = Math.max(...WEEK_SERIES);
+  const min = Math.min(...WEEK_SERIES);
   return (
-    <div className="flex items-end gap-1.5">
+    <div className="flex h-24 items-end gap-1.5">
       {WEEK_SERIES.map((v, i) => {
         const peak = v === max;
+        const pct = 22 + ((v - min) / Math.max(max - min, 1)) * 78;
         return (
-          <div key={WEEK_LABELS[i]} className="flex flex-1 flex-col items-center gap-1.5">
+          <div key={WEEK_LABELS[i]} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
+            <span
+              className={`text-[9px] font-bold ${peak ? "text-brand" : "text-transparent"}`}
+            >
+              {naira(v)}
+            </span>
             <div
-              className={`w-2.5 rounded-full ${peak ? "bg-gold" : "bg-brand/15"}`}
-              style={{ height: `${20 + (v / max) * 44}px` }}
+              className={`w-full rounded-t-lg rounded-b-sm ${
+                peak ? "bg-gold-gradient" : "bg-brand/15"
+              }`}
+              style={{ height: `${pct}%` }}
             />
-
-            <span className="text-[9px] font-semibold text-muted-foreground">
+            <span
+              className={`text-[9px] font-semibold ${peak ? "text-foreground" : "text-muted-foreground"}`}
+            >
               {WEEK_LABELS[i]?.slice(0, 1)}
             </span>
           </div>
@@ -82,6 +92,7 @@ function WeekStrip() {
     </div>
   );
 }
+
 
 function HomeV2Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
@@ -108,9 +119,9 @@ function HomeV2Screen() {
               className="pointer-events-none absolute -left-24 bottom-0 size-56 rounded-full bg-white/10 blur-3xl"
             />
 
-            <header className="relative flex items-center justify-between gap-3">
+            <header className="relative flex items-center justify-between gap-3 md:hidden">
               <div className="min-w-0">
-                <Logo tone="light" className="font-display text-xl md:hidden" />
+                <Logo tone="light" className="font-display text-xl" />
                 <p className="mt-1 truncate text-[11px] text-primary-foreground/70">
                   <GreetingText />, Adaeze
                 </p>
@@ -134,57 +145,77 @@ function HomeV2Screen() {
               </div>
             </header>
 
-            {/* Lens switcher — one balance surface, three views */}
-            <div className="relative mt-5 inline-flex rounded-full border border-white/15 bg-white/10 p-1">
-              {LENSES.map((l) => (
-                <button
-                  key={l.key}
-                  type="button"
-                  onClick={() => setLens(l.key)}
-                  className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-colors ${
-                    lens === l.key
-                      ? "bg-surface text-brand"
-                      : "text-primary-foreground/70"
-                  }`}
-                >
-                  {l.label}
-                </button>
-              ))}
+            <div className="relative md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] md:items-center md:gap-10">
+              <div className="min-w-0">
+                {/* Lens switcher — one balance surface, three views */}
+                <div className="mt-5 inline-flex rounded-full border border-white/15 bg-white/10 p-1 md:mt-0">
+                  {LENSES.map((l) => (
+                    <button
+                      key={l.key}
+                      type="button"
+                      onClick={() => setLens(l.key)}
+                      className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-colors ${
+                        lens === l.key
+                          ? "bg-surface text-brand"
+                          : "text-primary-foreground/70"
+                      }`}
+                    >
+                      {l.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mt-4 flex items-end gap-3">
+                  <h1 className="font-display text-[40px] font-extrabold leading-none tracking-[-0.045em] text-num md:text-[56px]">
+                    {mask(active.value)}
+                  </h1>
+                  <button
+                    type="button"
+                    onClick={toggle}
+                    aria-label={hidden ? "Show balances" : "Hide balances"}
+                    className="mb-1 grid size-8 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 press"
+                  >
+                    {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
+                </div>
+                <p className="mt-2 text-[11px] text-primary-foreground/70">{active.note}</p>
+                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-[11px] font-bold text-gold">
+                  <ArrowUpRight className="size-3.5" /> +{naira(WEEK_EARNINGS)} interest this week
+                </p>
+
+                {/* Desktop-only split of balances */}
+                <dl className="mt-6 hidden gap-3 md:grid md:grid-cols-2">
+                  {LENSES.filter((l) => l.key !== "total").map((l) => (
+                    <div
+                      key={l.key}
+                      className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3"
+                    >
+                      <dt className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary-foreground/60">
+                        {l.label}
+                      </dt>
+                      <dd className="mt-1 text-lg font-extrabold text-num">{mask(l.value)}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+
+              {/* Quick actions — thumb row on mobile, panel on desktop */}
+              <div className="mt-6 grid grid-cols-4 gap-2 md:mt-0 md:grid-cols-2 md:gap-3 md:rounded-3xl md:border md:border-white/15 md:bg-white/5 md:p-4">
+                {QUICK_ACTIONS.map((a) => (
+                  <Link
+                    key={a.label}
+                    to={a.to}
+                    className="flex flex-col items-center gap-2 rounded-2xl py-1 text-[10px] font-semibold text-primary-foreground/85 press md:flex-row md:gap-3 md:rounded-2xl md:bg-white/5 md:px-3 md:py-3 md:text-xs md:hover:bg-white/10"
+                  >
+                    <span className="grid size-12 place-items-center rounded-2xl border border-white/15 bg-white/10 md:size-9">
+                      <a.icon className="size-5 md:size-4" strokeWidth={1.9} />
+                    </span>
+                    <span className="text-center leading-tight md:text-left">{a.label}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
 
-            <div className="relative mt-4 flex items-end gap-3">
-              <h1 className="font-display text-[40px] font-extrabold leading-none tracking-[-0.045em] text-num md:text-[56px]">
-                {mask(active.value)}
-              </h1>
-              <button
-                type="button"
-                onClick={toggle}
-                aria-label={hidden ? "Show balances" : "Hide balances"}
-                className="mb-1 grid size-8 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 press"
-              >
-                {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-              </button>
-            </div>
-            <p className="relative mt-2 text-[11px] text-primary-foreground/70">{active.note}</p>
-            <p className="relative mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-[11px] font-bold text-gold">
-              <ArrowUpRight className="size-3.5" /> +{naira(WEEK_EARNINGS)} interest this week
-            </p>
-
-            {/* Quick actions — thumb row on the canvas */}
-            <div className="relative mt-6 grid grid-cols-4 gap-2">
-              {QUICK_ACTIONS.map((a) => (
-                <Link
-                  key={a.label}
-                  to={a.to}
-                  className="flex flex-col items-center gap-2 rounded-2xl py-1 text-[10px] font-semibold text-primary-foreground/85 press"
-                >
-                  <span className="grid size-12 place-items-center rounded-2xl border border-white/15 bg-white/10">
-                    <a.icon className="size-5" strokeWidth={1.9} />
-                  </span>
-                  <span className="text-center leading-tight">{a.label}</span>
-                </Link>
-              ))}
-            </div>
           </section>
 
           {/* ── Sheet that slides over the canvas ──────────────────────── */}
@@ -263,36 +294,53 @@ function HomeV2Screen() {
                   All plans <ChevronRight className="size-3.5" />
                 </Link>
               </div>
-              <div className="grid gap-2.5 md:grid-cols-3">
-                {HOLDINGS.map((h, i) => (
-                  <article
-                    key={h.name}
-                    className="card-surface flex items-center gap-3 p-4 press md:block"
-                  >
-                    <span
-                      className={`h-11 w-1.5 shrink-0 rounded-full md:mb-3 md:h-1.5 md:w-10 ${
-                        i === 0 ? "bg-gold" : i === 1 ? "bg-brand" : "bg-teal"
-                      }`}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-bold">{h.name}</p>
-                      <p className="mt-0.5 text-[11px] text-muted-foreground">
-                        {h.rate} · {h.daysLeft} days left · {h.date}
-                      </p>
-                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary">
-                        <div
-                          className="h-full rounded-full bg-brand"
-                          style={{
-                            width: `${Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)}%`,
-                          }}
-                        />
+              <div className="grid gap-2.5 md:grid-cols-3 md:gap-4">
+                {HOLDINGS.map((h, i) => {
+                  const progress = Math.round(
+                    ((h.totalDays - h.daysLeft) / h.totalDays) * 100,
+                  );
+                  const rail = i === 0 ? "bg-gold" : i === 1 ? "bg-brand" : "bg-teal";
+                  return (
+                    <article
+                      key={h.name}
+                      className="card-surface flex items-center gap-3 p-4 press md:block md:p-5 md:transition-all md:hover:-translate-y-0.5 md:hover:shadow-float"
+                    >
+                      <span
+                        className={`h-11 w-1.5 shrink-0 rounded-full md:mb-3 md:h-1.5 md:w-12 ${rail}`}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-bold md:text-base">{h.name}</p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground md:hidden">
+                          {h.rate} · {h.daysLeft} days left · {h.date}
+                        </p>
+                        <div className="mt-1 hidden items-center gap-2 md:flex">
+                          <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-foreground">
+                            {h.rate}
+                          </span>
+                          <span className="text-[11px] text-muted-foreground">
+                            {h.daysLeft} days left
+                          </span>
+                        </div>
+                        <p className="mt-3 hidden font-display text-xl font-extrabold text-num md:block">
+                          {mask(h.amount)}
+                        </p>
+                        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary md:mt-3">
+                          <div
+                            className={`h-full rounded-full ${i === 0 ? "bg-gold-gradient" : "bg-brand"}`}
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <div className="mt-2 hidden items-center justify-between text-[11px] md:flex">
+                          <span className="text-muted-foreground">{progress}% complete</span>
+                          <span className="font-semibold">Matures {h.date}</span>
+                        </div>
                       </div>
-                    </div>
-                    <p className="shrink-0 text-sm font-extrabold text-num md:mt-3 md:block">
-                      {mask(h.amount)}
-                    </p>
-                  </article>
-                ))}
+                      <p className="shrink-0 text-sm font-extrabold text-num md:hidden">
+                        {mask(h.amount)}
+                      </p>
+                    </article>
+                  );
+                })}
               </div>
             </section>
 
@@ -374,13 +422,14 @@ function HomeV2Screen() {
                   View all
                 </Link>
               </div>
-              <div className="-mx-4 mt-3 flex gap-3 overflow-x-auto px-4 pb-2 no-scrollbar md:mx-0 md:mt-4 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+              <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 no-scrollbar md:mx-0 md:mt-4 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
                 {FEED.map((item, i) => (
                   <article
                     key={item.title}
-                    className={`w-[16.5rem] shrink-0 rounded-3xl border border-border p-4 shadow-card press hover:-translate-y-0.5 hover:shadow-float md:w-auto md:p-5 ${
+                    className={`w-[78vw] max-w-[17.5rem] shrink-0 snap-start rounded-3xl border border-border p-4 shadow-card press hover:-translate-y-0.5 hover:shadow-float md:w-auto md:max-w-none md:p-5 ${
                       i === 0 ? "bg-brand-gradient text-primary-foreground" : "bg-surface"
                     }`}
+
                   >
                     <FeedThumb index={i} />
                     <span
