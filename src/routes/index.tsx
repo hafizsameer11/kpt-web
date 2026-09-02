@@ -3,427 +3,421 @@ import { useState } from "react";
 import {
   ArrowUpRight,
   Bell,
+  ChevronRight,
   Eye,
   EyeOff,
   Lightbulb,
-  Plus,
   Wallet,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { Logo } from "@/components/kipit/Logo";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
-import { ForYouBento } from "@/components/kipit/ForYouVariants";
+import { ForYouFeature } from "@/components/kipit/ForYouVariants";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 import { GreetingText } from "@/components/kipit/SpecBlocks";
 import {
+  HOLDINGS,
   INVESTED,
-  MONTH_CHANGE,
-  MONTH_CHANGE_PCT,
   NEXT_MATURITY,
+  PAYOUTS,
   QUICK_ACTIONS,
   TOTAL,
   WALLET,
   WEEK_EARNINGS,
   WEEK_LABELS,
+  WEEK_SERIES,
   naira,
 } from "@/lib/home-data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Kipit Home — Portfolio, Wallet & Plans" },
+      { title: "Kipit — Invest with clarity" },
       {
         name: "description",
         content:
-          "Your Kipit home dashboard: total portfolio value, wallet balance, weekly interest, next maturity countdown and quick actions for funding, withdrawing and investing.",
+          "A mobile-first Kipit home: immersive balance canvas, wallet and invested switch, stacked plan cards, maturity countdown, weekly interest and payout timeline.",
       },
-      { property: "og:title", content: "Kipit Home — Portfolio, Wallet & Plans" },
+      { property: "og:title", content: "Kipit — Invest with clarity" },
       {
         property: "og:description",
         content:
-          "Track portfolio value, wallet, weekly earnings and upcoming maturities in one Kipit dashboard.",
+          "Immersive mobile home for Kipit: balances, plans, maturities, payouts and insights in one thumb-friendly screen.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: HomeScreen,
+  component: HomeV2Screen,
 });
 
-const RANGES = ["1W", "1M", "6M", "1Y", "All"] as const;
+const LENSES = [
+  { key: "total", label: "Total", value: TOTAL, note: "Wallet + all active plans" },
+  { key: "invested", label: "Invested", value: INVESTED, note: "Across 3 active plans" },
+  { key: "wallet", label: "Wallet", value: WALLET, note: "Available to invest now" },
+] as const;
 
-const SERIES: Record<string, number[]> = {
-  "1W": [82, 78, 84, 74, 80, 68, 62],
-  "1M": [86, 78, 82, 64, 70, 52, 58, 40, 46, 28, 34, 18, 24],
-  "6M": [92, 84, 88, 70, 74, 60, 52, 44, 30, 22],
-  "1Y": [96, 90, 82, 86, 70, 74, 58, 48, 40, 26, 18],
-  All: [98, 88, 90, 72, 66, 54, 40, 30, 16],
-};
+type LensKey = (typeof LENSES)[number]["key"];
 
-const CHANGE: Record<string, string> = {
-  "1W": "+₦12,480 · +0.42% this week",
-  "1M": `+${naira(MONTH_CHANGE)} · +${MONTH_CHANGE_PCT}% this month`,
-  "6M": "+₦214,600 · +7.8% in 6 months",
-  "1Y": "+₦398,400 · +15.6% this year",
-  All: "+₦612,900 · +26.2% all time",
-};
-
-function toPoints(values: number[]) {
-  const step = 360 / (values.length - 1);
-  return values.map((v, i) => `${(i * step).toFixed(1)},${v}`).join(" ");
-}
-
-function CountdownRing({ daysLeft, total }: { daysLeft: number; total: number }) {
-  const r = 34;
-  const c = 2 * Math.PI * r;
-  const progress = 1 - daysLeft / total;
+function WeekStrip() {
+  const max = Math.max(...WEEK_SERIES);
+  const min = Math.min(...WEEK_SERIES);
   return (
-    <svg viewBox="0 0 84 84" className="size-[84px] -rotate-90 md:size-24">
-      <circle cx="42" cy="42" r={r} fill="none" strokeWidth="8" className="stroke-secondary" />
-      <circle
-        cx="42"
-        cy="42"
-        r={r}
-        fill="none"
-        strokeWidth="8"
-        strokeLinecap="round"
-        strokeDasharray={c}
-        strokeDashoffset={c * (1 - progress)}
-        className="stroke-gold"
-      />
-    </svg>
+    <div className="flex h-14 items-end justify-between gap-1">
+      {WEEK_SERIES.map((v, i) => {
+        const peak = v === max;
+        const pct = 18 + ((v - min) / Math.max(max - min, 1)) * 82;
+        return (
+          <div key={WEEK_LABELS[i]} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
+            <div
+              className={`w-1 rounded-full ${
+                peak ? "bg-gold" : "bg-brand/20"
+              }`}
+              style={{ height: `${pct}%` }}
+            />
+            <span
+              className={`text-[9px] font-semibold ${peak ? "text-foreground" : "text-muted-foreground/70"}`}
+            >
+              {WEEK_LABELS[i]?.slice(0, 1)}
+            </span>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
-function HomeScreen() {
+
+function HomeV2Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const isNewUser = useIsNewUser();
-  const [range, setRange] = useState<string>("1M");
-  const points = toPoints(SERIES[range] ?? SERIES["1M"]!);
+  const [lens, setLens] = useState<LensKey>("total");
+  const active = LENSES.find((l) => l.key === lens) ?? LENSES[0];
 
   return (
-    <div>
-      <AppShell navVariant="classic">
-        {/* Mobile header — greeting, notifications, profile (MOB-020) */}
-        <header className="sticky top-0 z-30 -mx-4 mb-5 border-b border-border bg-background/80 px-5 pb-4 pt-5 backdrop-blur-xl md:hidden">
-          <div className="flex items-center justify-between gap-3">
-            <Logo tone="brand" className="font-display text-2xl" />
-            <div className="flex shrink-0 items-center gap-3">
-              <Link
-                to="/notifications"
-                aria-label="Notifications"
-                className="relative grid size-10 place-items-center rounded-full border border-border bg-surface text-foreground press"
-              >
-                <Bell className="size-[18px]" strokeWidth={1.8} />
-                <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-gold ring-2 ring-surface" />
-              </Link>
-              <Link
-                to="/settings"
-                aria-label="Profile"
-                className="grid size-10 place-items-center rounded-full bg-brand text-xs font-bold text-brand-foreground press"
-              >
-                AO
-              </Link>
-            </div>
-          </div>
-        </header>
-
-        {isNewUser ? (
+    <AppShell title="Home" navVariant="elevated">
+      {isNewUser ? (
+        <div className="pt-5">
           <NewUserEmptyState />
-        ) : (
-          <>
-            {/* Portfolio summary + wallet */}
-            <section className="grid gap-3 md:gap-4 lg:grid-cols-3">
-              <article className="relative overflow-hidden rounded-3xl bg-brand-gradient p-5 text-primary-foreground shadow-float md:rounded-[1.75rem] md:p-8 lg:col-span-2">
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-white/10 blur-3xl"
-                />
-                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary-foreground/70 md:text-xs md:tracking-[0.2em]">
-                      <GreetingText />, Adaeze
-                    </p>
-                    <p className="mt-2.5 text-[11px] text-primary-foreground/70 md:text-xs">
-                      Total portfolio value
-                    </p>
-                    <div className="mt-0.5 flex items-center gap-2.5">
-                      <h1 className="font-display text-[32px] font-bold leading-none tracking-[-0.04em] text-num md:text-[54px]">
-                        {mask(TOTAL)}
-                      </h1>
-                      <button
-                        type="button"
-                        onClick={toggle}
-                        aria-label={hidden ? "Show balances" : "Hide balances"}
-                        className="grid size-8 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 text-primary-foreground/80 transition-colors hover:bg-white/20 md:size-9"
-                      >
-                        {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                      </button>
-                    </div>
-                    <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-[11px] font-bold text-[oklch(0.87_0.15_94)] md:px-3 md:text-xs">
-                      <ArrowUpRight className="size-3.5" /> {CHANGE[range]}
-                    </p>
-                  </div>
-                  <div className="hidden gap-1 rounded-full border border-white/20 bg-white/10 p-1 md:flex">
-                    {RANGES.map((r) => (
-                      <button
-                        key={r}
-                        type="button"
-                        onClick={() => setRange(r)}
-                        className={`rounded-full px-3 py-1.5 text-xs font-semibold press ${
-                          range === r
-                            ? "bg-white text-brand"
-                            : "text-primary-foreground/60 hover:text-primary-foreground"
-                        }`}
-                      >
-                        {r}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+        </div>
+      ) : (
+        <div className="pb-2">
+          {/* ── Immersive navy canvas (full-bleed on mobile) ───────────── */}
+          <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-5 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-10 md:pt-8 md:shadow-float">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-20 -top-24 size-64 rounded-full bg-gold/25 blur-3xl"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -left-24 bottom-0 size-56 rounded-full bg-white/10 blur-3xl"
+            />
 
-                <svg
-                  viewBox="0 0 360 100"
-                  className="mt-4 h-16 w-full md:mt-6 md:h-24"
-                  preserveAspectRatio="none"
+            <header className="relative flex items-center justify-between gap-3 md:hidden">
+              <div className="min-w-0">
+                <Logo tone="light" className="font-display text-xl" />
+                <p className="mt-1 truncate text-[11px] text-primary-foreground/70">
+                  <GreetingText />, Adaeze
+                </p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2.5">
+                <Link
+                  to="/notifications"
+                  aria-label="Notifications"
+                  className="relative grid size-10 place-items-center rounded-full border border-white/20 bg-white/10 press"
                 >
-                  <defs>
-                    <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="oklch(0.84 0.155 88 / 0.35)" />
-                      <stop offset="100%" stopColor="oklch(0.84 0.155 88 / 0)" />
-                    </linearGradient>
-                  </defs>
-                  <polygon points={`${points} 360,100 0,100`} fill="url(#sparkFill)" />
-                  <polyline
-                    points={points}
-                    fill="none"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    stroke="oklch(0.86 0.15 92)"
-                  />
-                </svg>
+                  <Bell className="size-[18px]" strokeWidth={1.8} />
+                  <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-gold" />
+                </Link>
+                <Link
+                  to="/settings"
+                  aria-label="Profile"
+                  className="grid size-10 place-items-center rounded-full bg-white/15 text-xs font-bold press"
+                >
+                  AO
+                </Link>
+              </div>
+            </header>
 
-                <div className="mt-3 flex gap-1 overflow-x-auto no-scrollbar md:hidden">
-                  {RANGES.map((r) => (
+            <div className="relative md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] md:items-center md:gap-10">
+              <div className="min-w-0">
+                {/* Lens switcher — one balance surface, three views */}
+                <div className="mt-5 inline-flex rounded-full border border-white/15 bg-white/10 p-1 md:mt-0">
+                  {LENSES.map((l) => (
                     <button
-                      key={r}
+                      key={l.key}
                       type="button"
-                      onClick={() => setRange(r)}
-                      className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold press ${
-                        range === r
-                          ? "bg-white text-brand"
-                          : "border border-white/15 bg-white/10 text-primary-foreground/75"
+                      onClick={() => setLens(l.key)}
+                      className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-colors ${
+                        lens === l.key
+                          ? "bg-surface text-brand"
+                          : "text-primary-foreground/70"
                       }`}
                     >
-                      {r}
+                      {l.label}
                     </button>
                   ))}
                 </div>
 
-                <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-white/15 pt-4 text-sm md:mt-6 md:pt-5">
-                  <div>
-                    <dt className="text-[11px] text-primary-foreground/65 md:text-xs">Invested</dt>
-                    <dd className="mt-0.5 font-display text-base font-bold md:text-lg">
-                      {mask(INVESTED)}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-[11px] text-primary-foreground/65 md:text-xs">Wallet</dt>
-                    <dd className="mt-0.5 font-display text-base font-bold md:text-lg">
-                      {mask(WALLET)}
-                    </dd>
-                  </div>
-                </dl>
-              </article>
-
-              {/* Wallet card (MOB-020) */}
-              <article className="flex flex-col justify-between rounded-3xl border border-border bg-surface p-5 shadow-card md:rounded-[1.75rem] md:p-6">
-                <div>
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-secondary text-brand md:size-11 md:rounded-2xl">
-                        <Wallet className="size-[18px] md:size-5" strokeWidth={1.8} />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                          Wallet
-                        </p>
-                        <p className="font-display text-xl font-bold tracking-tight text-num md:text-2xl">
-                          {mask(WALLET)}
-                        </p>
-                      </div>
-                    </div>
-                    <Link
-                      to="/invest"
-                      aria-label="Fund wallet"
-                      className="grid size-9 shrink-0 place-items-center rounded-full bg-brand text-brand-foreground press md:hidden"
-                    >
-                      <Plus className="size-4" />
-                    </Link>
-                  </div>
-                  <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground md:text-xs">
-                    Wallet funds are available anytime and do not earn interest.
-                  </p>
-                  <dl className="mt-3 space-y-2 border-t border-border pt-3 text-[12px] md:mt-5 md:space-y-2.5 md:pt-5 md:text-[13px]">
-                    <div className="flex items-center justify-between gap-3">
-                      <dt className="text-muted-foreground">In plans</dt>
-                      <dd className="font-semibold text-num">{mask(INVESTED)}</dd>
-                    </div>
-                    <div className="flex items-center justify-between gap-3">
-                      <dt className="text-muted-foreground">Interest this week</dt>
-                      <dd className="font-semibold text-num">{mask(WEEK_EARNINGS)}</dd>
-                    </div>
-                    <div className="flex items-center justify-between gap-3">
-                      <dt className="text-muted-foreground">Next payout</dt>
-                      <dd className="font-semibold">{NEXT_MATURITY.date}</dd>
-                    </div>
-                  </dl>
-                </div>
-                <Link
-                  to="/invest"
-                  className="mt-6 hidden w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground press hover:opacity-90 md:inline-flex"
-                >
-                  <Plus className="size-4" /> Fund wallet
-                </Link>
-              </article>
-            </section>
-
-            {/* Quick actions */}
-            <section className="mt-3 overflow-hidden rounded-3xl border border-border bg-surface shadow-card md:mt-4 md:rounded-[1.75rem]">
-              <div className="grid grid-cols-4 divide-x divide-border">
-                {QUICK_ACTIONS.map(({ label, icon: Icon, to }) => (
-                  <Link
-                    key={label}
-                    to={to}
-                    className="group relative flex flex-col items-center gap-2 px-1.5 py-3.5 text-center press hover:bg-secondary md:flex-row md:gap-3 md:px-5 md:py-4 md:text-left"
+                <div className="mt-4 flex items-end gap-3">
+                  <h1 className="font-display text-[40px] font-extrabold leading-none tracking-[-0.045em] text-num md:text-[56px]">
+                    {mask(active.value)}
+                  </h1>
+                  <button
+                    type="button"
+                    onClick={toggle}
+                    aria-label={hidden ? "Show balances" : "Hide balances"}
+                    className="mb-1 grid size-8 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 press"
                   >
-                    <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-secondary text-brand transition-colors group-hover:bg-brand group-hover:text-brand-foreground">
-                      <Icon className="size-4.5" strokeWidth={1.8} />
+                    {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
+                </div>
+                <p className="mt-2 text-[11px] text-primary-foreground/70">{active.note}</p>
+                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-[11px] font-bold text-gold">
+                  <ArrowUpRight className="size-3.5" /> +{naira(WEEK_EARNINGS)} interest this week
+                </p>
+
+                {/* Desktop-only split of balances */}
+                <dl className="mt-6 hidden gap-3 md:grid md:grid-cols-2">
+                  {LENSES.filter((l) => l.key !== "total").map((l) => (
+                    <div
+                      key={l.key}
+                      className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3"
+                    >
+                      <dt className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary-foreground/60">
+                        {l.label}
+                      </dt>
+                      <dd className="mt-1 text-lg font-extrabold text-num">{mask(l.value)}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+
+              {/* Quick actions — thumb row on mobile, panel on desktop */}
+              <div className="mt-6 grid grid-cols-4 gap-2 md:mt-0 md:grid-cols-2 md:gap-3 md:rounded-3xl md:border md:border-white/15 md:bg-white/5 md:p-4">
+                {QUICK_ACTIONS.map((a) => (
+                  <Link
+                    key={a.label}
+                    to={a.to}
+                    className="flex flex-col items-center gap-2 rounded-2xl py-1 text-[10px] font-semibold text-primary-foreground/85 press md:flex-row md:gap-3 md:rounded-2xl md:bg-white/5 md:px-3 md:py-3 md:text-xs md:hover:bg-white/10"
+                  >
+                    <span className="grid size-12 place-items-center rounded-2xl border border-white/15 bg-white/10 md:size-9">
+                      <a.icon className="size-5 md:size-4" strokeWidth={1.9} />
                     </span>
-                    <span className="min-w-0 text-[11px] font-semibold leading-tight md:text-sm">
-                      {label}
-                    </span>
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-gold transition-transform duration-300 group-hover:scale-x-100"
-                    />
+                    <span className="text-center leading-tight md:text-left">{a.label}</span>
                   </Link>
                 ))}
               </div>
-            </section>
+            </div>
 
+          </section>
 
-            {/* Weekly earnings + next maturity + recommendation */}
-            <section className="mt-3 grid gap-3 md:mt-4 md:gap-4 md:grid-cols-3">
-              <article className="rounded-3xl border border-border bg-surface p-5 shadow-card md:rounded-[1.75rem] md:p-6">
-                <div className="flex items-baseline justify-between">
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                    Weekly earnings
-                  </p>
-                  <span className="text-xs font-bold text-success">+8.2%</span>
-                </div>
-                <p className="mt-2 font-display text-2xl font-bold tracking-tight text-num text-foreground md:mt-3 md:text-3xl">
-                  {mask(WEEK_EARNINGS)}
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Interest earned in the last 7 days
-                </p>
-                <div className="mt-4 h-20 w-full md:mt-5 md:h-24">
-                  <svg
-                    viewBox="0 0 280 80"
-                    className="h-full w-full overflow-visible"
-                    preserveAspectRatio="none"
-                  >
-                    <defs>
-                      <linearGradient id="weeklyArea" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="oklch(0.75 0.16 85 / 0.45)" />
-                        <stop offset="100%" stopColor="oklch(0.75 0.16 85 / 0)" />
-                      </linearGradient>
-                    </defs>
-                    <polygon
-                      points="0,70 0,52 47,46 93,50 140,34 187,40 233,16 280,22 280,70"
-                      fill="url(#weeklyArea)"
-                    />
-                    <polyline
-                      points="0,52 47,46 93,50 140,34 187,40 233,16 280,22"
-                      fill="none"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      stroke="oklch(0.72 0.17 85)"
-                    />
-                    <circle cx="233" cy="16" r="3.5" className="fill-gold" />
-                  </svg>
-                </div>
-                <div className="mt-1 flex justify-between text-[10px] font-semibold text-muted-foreground">
-                  {WEEK_LABELS.map((d) => (
-                    <span key={d}>{d}</span>
-                  ))}
-                </div>
-              </article>
+          {/* ── Sheet that slides over the canvas ──────────────────────── */}
+          <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
+            <span
+              aria-hidden
+              className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
+            />
 
-              <article className="flex items-center gap-4 rounded-3xl border border-border bg-surface p-5 shadow-card md:rounded-[1.75rem] md:p-6">
-                <div className="relative grid shrink-0 place-items-center">
-                  <CountdownRing
-                    daysLeft={NEXT_MATURITY.daysLeft}
-                    total={NEXT_MATURITY.totalDays}
-                  />
-                  <div className="absolute text-center">
-                    <p className="font-display text-xl font-bold leading-none">
+            <div className="grid gap-3 md:gap-4 lg:grid-cols-3">
+              {/* Maturity countdown */}
+              <article className="card-surface p-4 md:p-6 lg:col-span-2">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                      Next maturity
+                    </p>
+                    <h2 className="mt-1.5 truncate font-display text-lg font-extrabold">
+                      {NEXT_MATURITY.name}
+                    </h2>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {NEXT_MATURITY.tenor} · {NEXT_MATURITY.rate} · matures {NEXT_MATURITY.date}
+                    </p>
+                  </div>
+                  <div className="shrink-0 rounded-2xl bg-brand px-3 py-2 text-center text-brand-foreground">
+                    <p className="text-lg font-extrabold leading-none text-num">
                       {NEXT_MATURITY.daysLeft}
                     </p>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <p className="text-[9px] font-semibold uppercase tracking-wider opacity-75">
                       days
                     </p>
                   </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    Next maturity
-                  </p>
-                  <p className="mt-1.5 text-sm font-bold">
-                    {NEXT_MATURITY.name} · {NEXT_MATURITY.tenor}
-                  </p>
-                  <p className="mt-1 font-display text-2xl font-bold tracking-tight">
-                    {mask(NEXT_MATURITY.amount)}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Matures {NEXT_MATURITY.date} · {NEXT_MATURITY.daysLeft} days left
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Expected payout {mask(NEXT_MATURITY.expectedPayout)}
-                  </p>
+                <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary">
+                  <div
+                    className="h-full rounded-full bg-gold-gradient"
+                    style={{
+                      width: `${Math.round(
+                        ((NEXT_MATURITY.totalDays - NEXT_MATURITY.daysLeft) /
+                          NEXT_MATURITY.totalDays) *
+                          100,
+                      )}%`,
+                    }}
+                  />
+                </div>
+                <div className="mt-3 flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Principal {mask(NEXT_MATURITY.amount)}</span>
+                  <span className="font-bold">
+                    Payout {mask(NEXT_MATURITY.expectedPayout)}
+                  </span>
                 </div>
               </article>
 
-              <article className="flex flex-col justify-between rounded-3xl border border-border bg-accent p-5 shadow-card md:rounded-[1.75rem] md:p-6">
-                <div className="flex gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gold-gradient text-gold-foreground">
-                    <Lightbulb className="size-5" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-bold text-foreground">
-                      Your {naira(WALLET)} wallet balance isn't currently invested.
-                    </p>
-                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                      Plans from 18.5% p.a. · 30–365 day tenors · ₦50,000 minimum.
-                    </p>
-                  </div>
+              {/* Weekly interest */}
+              <article className="card-surface p-4 md:p-6">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                  Interest this week
+                </p>
+                <p className="mt-1.5 font-display text-2xl font-extrabold text-num">
+                  {mask(WEEK_EARNINGS)}
+                </p>
+                <div className="mt-4">
+                  <WeekStrip />
                 </div>
-                <Link
-                  to="/explore"
-                  className="mt-5 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground press hover:opacity-90"
-                >
-                  Explore Investments <ArrowUpRight className="size-4" />
-                </Link>
               </article>
+            </div>
+
+            {/* Stacked plan cards */}
+            <section className="mt-5">
+              <div className="mb-2.5 flex items-center justify-between">
+                <h2 className="font-display text-base font-extrabold">Your plans</h2>
+                <Link
+                  to="/portfolio"
+                  className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
+                >
+                  All plans <ChevronRight className="size-3.5" />
+                </Link>
+              </div>
+              <div className="grid gap-2.5 md:grid-cols-3 md:gap-4">
+                {HOLDINGS.map((h, i) => {
+                  const progress = Math.round(
+                    ((h.totalDays - h.daysLeft) / h.totalDays) * 100,
+                  );
+                  const rail = i === 0 ? "bg-gold" : i === 1 ? "bg-brand" : "bg-teal";
+                  return (
+                    <article
+                      key={h.name}
+                      className="card-surface flex items-center gap-3 p-4 press md:block md:p-5 md:transition-all md:hover:-translate-y-0.5 md:hover:shadow-float"
+                    >
+                      <span
+                        className={`h-11 w-1.5 shrink-0 rounded-full md:mb-3 md:h-1.5 md:w-12 ${rail}`}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-bold md:text-base">{h.name}</p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground md:hidden">
+                          {h.rate} · {h.daysLeft} days left · {h.date}
+                        </p>
+                        <div className="mt-1 hidden items-center gap-2 md:flex">
+                          <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-foreground">
+                            {h.rate}
+                          </span>
+                          <span className="text-[11px] text-muted-foreground">
+                            {h.daysLeft} days left
+                          </span>
+                        </div>
+                        <p className="mt-3 hidden font-display text-xl font-extrabold text-num md:block">
+                          {mask(h.amount)}
+                        </p>
+                        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary md:mt-3">
+                          <div
+                            className={`h-full rounded-full ${i === 0 ? "bg-gold-gradient" : "bg-brand"}`}
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <div className="mt-2 hidden items-center justify-between text-[11px] md:flex">
+                          <span className="text-muted-foreground">{progress}% complete</span>
+                          <span className="font-semibold">Matures {h.date}</span>
+                        </div>
+                      </div>
+                      <p className="shrink-0 text-sm font-extrabold text-num md:hidden">
+                        {mask(h.amount)}
+                      </p>
+                    </article>
+                  );
+                })}
+              </div>
             </section>
 
-            {/* Content feed */}
-            <ForYouBento className="mt-6 md:mt-8" />
+            {/* Idle wallet nudge */}
+            <section className="relative mt-5 overflow-hidden rounded-3xl bg-brand p-5 text-brand-foreground shadow-card md:p-6">
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-gold-gradient opacity-20 blur-2xl"
+              />
+              <div className="relative">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex size-7 items-center justify-center rounded-full bg-brand-foreground/10">
+                    <Wallet className="size-3.5" strokeWidth={2.2} />
+                  </span>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-foreground/70">
+                    Idle cash
+                  </p>
+                </div>
 
-          </>
-        )}
-      </AppShell>
-    </div>
+                <div className="mt-3 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+                  <div className="min-w-0">
+                    <p className="text-3xl font-extrabold tracking-tight text-num">{mask(WALLET)}</p>
+                    <p className="mt-1 text-xs text-brand-foreground/70">
+                      Sitting idle — earning nothing today.
+                    </p>
+                  </div>
+                  <p className="text-right text-xs text-brand-foreground/70">
+                    Could earn{" "}
+                    <span className="block text-lg font-extrabold text-gold text-num">₦8,958</span>
+                    per month
+                  </p>
+                </div>
+
+                <div className="mt-4 h-px w-full bg-brand-foreground/12" />
+
+                <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-[11px] text-brand-foreground/65">
+                    Kipit Vault · 21.5% p.a. · 365-day tenor
+                  </p>
+                  <Link
+                    to="/invest"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-full bg-gold-gradient px-5 py-3 text-xs font-bold text-brand press"
+                  >
+                    Invest wallet <ArrowUpRight className="size-3.5" />
+                  </Link>
+                </div>
+              </div>
+            </section>
+
+            {/* Payout timeline */}
+            <section className="card-surface mt-5 p-4 md:p-6">
+              <h2 className="font-display text-base font-extrabold">Coming up</h2>
+              <ol className="mt-3.5 space-y-3.5">
+                {PAYOUTS.map((p, i) => (
+                  <li key={p.label} className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3">
+                    <span className="relative flex w-3 justify-center">
+                      <span
+                        className={`z-10 mt-1.5 size-2.5 rounded-full ring-4 ring-surface ${
+                          i === 0 ? "bg-gold" : "bg-brand/30"
+                        }`}
+                      />
+                      {i < PAYOUTS.length - 1 && (
+                        <span className="absolute top-3 h-full w-px bg-border" />
+                      )}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">{p.label}</p>
+                      <p className="text-[11px] text-muted-foreground">{p.date}</p>
+                    </div>
+                    <p className="shrink-0 text-sm font-bold text-num">{mask(p.amount)}</p>
+                  </li>
+                ))}
+              </ol>
+            </section>
+
+
+
+            {/* For you */}
+            <ForYouFeature className="mt-5" />
+
+          </div>
+        </div>
+      )}
+    </AppShell>
   );
 }
