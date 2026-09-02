@@ -9,11 +9,10 @@ import {
   RefreshCw,
   Repeat,
   ShieldCheck,
-  Wallet,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
-import { naira, HOLDINGS, WALLET } from "@/lib/home-data";
+import { naira, HOLDINGS } from "@/lib/home-data";
 import { CALL_ACCOUNT, TENOR_BANDS } from "@/lib/invest-data";
 
 export const Route = createFileRoute("/invest")({
@@ -62,12 +61,6 @@ function InvestScreen() {
             </h1>
             <p className="mt-2 text-[13px] leading-relaxed text-primary-foreground/70 md:text-sm">
               Grow your wealth with Kipit&rsquo;s own plans
-            </p>
-
-            {/* Available wallet balance (funding source for MOB-062 / MOB-066) */}
-            <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground/85">
-              <Wallet className="size-3.5" />
-              Wallet available {mask(WALLET)}
             </p>
 
             {/* Call Account glass card (MOB-061 entry) */}
