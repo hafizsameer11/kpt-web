@@ -241,7 +241,7 @@ function ReviewScreen() {
 
       {isMobile ? (
         <Drawer open={open} onOpenChange={(o) => { setOpen(o); if (!o) setPin(""); }}>
-          <DrawerContent className="rounded-t-[2rem] bg-card px-6 pb-8 pt-2">
+          <DrawerContent className="max-h-[92svh] rounded-t-[2rem] bg-card px-6 pb-8 pt-2">
             <DrawerTitle className="sr-only">Enter your PIN</DrawerTitle>
             <DrawerDescription className="sr-only">
               Authorize {naira(amount)} to your Call Account
