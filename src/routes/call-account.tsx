@@ -218,13 +218,18 @@ function CallAccountScreen() {
 
             {/* 14-day streak */}
             <div className="relative mt-5">
-              <div className="flex items-end justify-between gap-2 overflow-x-auto pb-3 pt-1 scrollbar-hide">
+              <div
+                ref={streakRef}
+                className="flex items-end justify-between gap-2 overflow-x-auto pb-3 pt-1 scrollbar-hide"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              >
                 {CALL_ACCRUAL_TREND.map((v, i) => {
                   const isToday = i === CALL_ACCRUAL_TREND.length - 1;
                   const dayLabel = i === 0 ? "14d" : i === CALL_ACCRUAL_TREND.length - 1 ? "Today" : `-${CALL_ACCRUAL_TREND.length - 1 - i}`;
                   return (
                     <div
                       key={i}
+                      ref={isToday ? todayRef : undefined}
                       className={`flex shrink-0 flex-col items-center gap-2 rounded-2xl px-2.5 py-3 ${
                         isToday
                           ? "bg-brand text-primary-foreground shadow-sm"
