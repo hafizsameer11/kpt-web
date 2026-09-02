@@ -294,7 +294,68 @@ function InvestScreen() {
             </div>
           </section>
 
-
+          {/* Invest tools — alternate design (v2) */}
+          <section className="mt-7">
+            <h2 className="mb-3 px-1 font-display text-base font-extrabold">Invest tools</h2>
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+              {[
+                {
+                  icon: Calculator,
+                  label: "Calculator",
+                  note: "Model payout",
+                  tone: "navy",
+                },
+                {
+                  icon: Repeat,
+                  label: "Auto-invest",
+                  note: "Set a schedule",
+                  tone: "gold",
+                },
+                {
+                  icon: Gift,
+                  label: "Gift invest",
+                  note: "Send a plan",
+                  tone: "navy",
+                },
+                {
+                  icon: RefreshCw,
+                  label: "Roll over",
+                  note: "Auto-reinvest",
+                  tone: "gold",
+                },
+              ].map((t) => (
+                <button
+                  key={t.label}
+                  type="button"
+                  className="group relative flex flex-col items-start overflow-hidden rounded-[1.5rem] border border-border/70 bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md md:rounded-[2rem] md:p-5"
+                >
+                  <span
+                    aria-hidden
+                    className={`pointer-events-none absolute -right-6 -top-6 size-24 rounded-full ${
+                      t.tone === "gold" ? "bg-gold/12" : "bg-brand/8"
+                    }`}
+                  />
+                  <span
+                    className={`relative grid size-11 place-items-center rounded-2xl ${
+                      t.tone === "gold"
+                        ? "bg-gold-gradient text-gold-foreground"
+                        : "bg-brand text-brand-foreground"
+                    } transition-transform group-hover:scale-105`}
+                  >
+                    <t.icon className="size-[18px]" />
+                  </span>
+                  <span className="relative mt-4 min-w-0">
+                    <span className="block text-sm font-extrabold text-foreground">{t.label}</span>
+                    <span className="mt-0.5 block text-[11px] text-muted-foreground">{t.note}</span>
+                  </span>
+                  <ChevronRight
+                    className="absolute bottom-4 right-4 size-4 text-muted-foreground/40 transition-all group-hover:translate-x-0.5 group-hover:text-brand"
+                    aria-hidden
+                  />
+                </button>
+              ))}
+            </div>
+          </section>
 
           <p className="mt-4 flex items-start gap-2 px-1 text-[11px] leading-relaxed text-muted-foreground">
             <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
