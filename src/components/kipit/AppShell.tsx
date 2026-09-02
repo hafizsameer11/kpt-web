@@ -38,10 +38,10 @@ export function AppShell({
       {/* Desktop dashboard sidebar */}
       <DashboardSidebar />
 
-      <div className="md:pl-64">
+      <div className="md:pl-[17rem]">
         <DashboardTopBar title={title} />
 
-        <main className="w-full px-4 pb-28 pt-0 md:px-8 md:pb-16 md:pt-8">
+        <main className="mx-auto w-full max-w-[1360px] px-4 pb-28 pt-0 md:px-8 md:pb-16 md:pt-7">
           {children}
         </main>
       </div>
@@ -159,7 +159,7 @@ export function AppShell({
           </ul>
         </nav>
       ) : (
-        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
+        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden">
           <ul className="grid grid-cols-5">
             {TABS.map((tab) => {
               const active = isActive(tab.to);
@@ -168,16 +168,16 @@ export function AppShell({
                 <li key={tab.to}>
                   <Link
                     to={tab.to}
-                    className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold transition-colors ${
-                      active ? "text-brand" : "text-muted-foreground"
+                    className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold press ${
+                      active ? "text-foreground" : "text-muted-foreground"
                     }`}
                   >
                     <span
-                      className={`grid size-9 place-items-center rounded-2xl transition-colors ${
-                        active ? "bg-accent" : ""
+                      className={`relative grid size-9 place-items-center rounded-2xl transition-colors ${
+                        active ? "bg-brand text-brand-foreground" : ""
                       }`}
                     >
-                      <Icon className="size-5" strokeWidth={active ? 2.4 : 1.8} />
+                      <Icon className="size-[19px]" strokeWidth={active ? 2.2 : 1.8} />
                     </span>
                     {tab.label}
                   </Link>
