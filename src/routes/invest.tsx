@@ -42,26 +42,26 @@ function InvestScreen() {
     <AppShell title="Invest" navVariant="elevated">
       <div className="pb-2">
         {/* ── Header canvas ─────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-12 pt-6 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-8 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-10 pt-5 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-8 md:pt-8 md:shadow-float">
           <span
             aria-hidden
-            className="pointer-events-none absolute -right-20 -top-24 size-64 rounded-full bg-gold/25 blur-3xl"
+            className="pointer-events-none absolute -right-24 -top-28 size-64 rounded-full bg-gold/20 blur-3xl"
           />
-          <div className="relative max-w-xl">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary-foreground/60">
-              Invest
-            </p>
-            <h1 className="mt-2 font-display text-[26px] font-extrabold leading-tight tracking-[-0.03em] md:text-4xl">
-              Kipit's own investment products
-            </h1>
-            <p className="mt-2 text-xs text-primary-foreground/75 md:text-sm">
-              Every product shows its rate, liquidity or tenor, and minimum before you commit.
-            </p>
-            <p className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-primary-foreground/85">
-              <Wallet className="size-3.5" /> Wallet available {mask(500_000)}
+          <div className="relative grid gap-3 md:max-w-3xl md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+            <div className="min-w-0">
+              <h1 className="font-display text-[22px] font-extrabold leading-tight tracking-[-0.03em] md:text-3xl">
+                Invest with Kipit
+              </h1>
+              <p className="mt-1.5 text-[11px] text-primary-foreground/70 md:text-sm">
+                Rate, tenor and minimum shown upfront.
+              </p>
+            </div>
+            <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-primary-foreground/85">
+              <Wallet className="size-3.5" /> Wallet {mask(500_000)}
             </p>
           </div>
         </section>
+
 
         {/* ── Sheet ─────────────────────────────────────────────────── */}
         <div className="relative -mx-4 -mt-7 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
@@ -106,11 +106,7 @@ function InvestScreen() {
               ))}
             </dl>
 
-            <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-              {CALL_ACCOUNT.blurb}
-            </p>
-
-            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <div className="mt-4 flex gap-2">
               <button
                 type="button"
                 className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-brand px-5 py-3 text-xs font-bold text-brand-foreground press"
@@ -121,20 +117,16 @@ function InvestScreen() {
                 to="/portfolio"
                 className="inline-flex flex-1 items-center justify-center rounded-full border border-border px-5 py-3 text-xs font-bold press"
               >
-                View activity
+                Activity
               </Link>
             </div>
           </section>
 
           {/* Fixed plans (MOB-065) */}
-          <section className="mt-5">
-            <div className="mb-2.5 flex items-end justify-between gap-3">
-              <div>
-                <h2 className="font-display text-base font-extrabold">Fixed investment plans</h2>
-                <p className="text-[11px] text-muted-foreground">
-                  Lock a tenor, know your payout upfront.
-                </p>
-              </div>
+          <section className="mt-7">
+
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <h2 className="font-display text-base font-extrabold">Fixed plans</h2>
               <button
                 type="button"
                 className="inline-flex shrink-0 items-center gap-0.5 text-xs font-bold text-brand"
@@ -144,12 +136,9 @@ function InvestScreen() {
             </div>
 
             {/* Tenor / rate overview */}
-            <div className="card-surface mb-3 flex gap-2 overflow-x-auto p-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="mb-4 grid grid-cols-4 gap-2">
               {TENOR_BANDS.map((b) => (
-                <div
-                  key={b.days}
-                  className="min-w-[86px] flex-1 rounded-2xl bg-secondary px-3 py-2.5 text-center"
-                >
+                <div key={b.days} className="rounded-2xl bg-secondary px-2 py-2.5 text-center">
                   <p className="text-[10px] font-semibold text-muted-foreground">{b.days}</p>
                   <p className="mt-0.5 text-sm font-extrabold text-brand text-num">{b.rate}</p>
                 </div>
@@ -160,49 +149,40 @@ function InvestScreen() {
               {FIXED_PLANS.map((p) => (
                 <article
                   key={p.name}
-                  className="card-surface p-4 md:p-5 md:transition-all md:hover:-translate-y-0.5 md:hover:shadow-float"
+                  className="card-surface flex items-center gap-3 p-4 press md:p-5 md:transition-all md:hover:-translate-y-0.5 md:hover:shadow-float"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="truncate text-sm font-bold md:text-base">{p.name}</h3>
-                        {p.tag && (
-                          <span className="rounded-full bg-accent px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-accent-foreground">
-                            {p.tag}
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
-                        {p.blurb}
-                      </p>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <h3 className="truncate text-sm font-bold md:text-base">{p.name}</h3>
+                      {p.tag && (
+                        <span className="shrink-0 rounded-full bg-accent px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-accent-foreground">
+                          {p.tag}
+                        </span>
+                      )}
                     </div>
-                    <span className="shrink-0 rounded-full bg-brand px-3 py-1 text-[11px] font-extrabold text-brand-foreground text-num">
-                      {p.rate}
+                    <p className="mt-1.5 flex items-center gap-3 text-[11px] text-muted-foreground">
+                      <span className="inline-flex items-center gap-1">
+                        <Clock className="size-3" /> {p.tenor}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Lock className="size-3" /> Min {naira(p.minimum)}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className="text-sm font-extrabold text-brand text-num">{p.rate}</p>
+                    <span className="mt-1.5 inline-flex items-center gap-0.5 text-[11px] font-bold text-gold-foreground">
+                      Invest <ArrowUpRight className="size-3" />
                     </span>
                   </div>
-
-                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-muted-foreground">
-                    <span className="inline-flex items-center gap-1.5">
-                      <Clock className="size-3.5" /> {p.tenor}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5">
-                      <Lock className="size-3.5" /> Min {naira(p.minimum)}
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-gold-gradient px-5 py-3 text-xs font-bold text-gold-foreground press"
-                  >
-                    Invest now <ArrowUpRight className="size-3.5" />
-                  </button>
                 </article>
               ))}
             </div>
+
           </section>
 
           {/* Active plans shortcut */}
-          <section className="card-surface mt-5 p-4 md:p-6">
+          <section className="card-surface mt-7 p-4 md:p-6">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="font-display text-base font-extrabold">Your active plans</h2>
               <Link
