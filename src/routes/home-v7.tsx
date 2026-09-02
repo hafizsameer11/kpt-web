@@ -149,7 +149,8 @@ function HomeV7Screen() {
         {/* ── Header ─────────────────────────────────────────────── */}
         <header className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 pb-4">
           <div className="min-w-0">
-            <Logo tone="dark" className="font-display text-lg md:hidden" />
+            <Logo tone="brand" className="font-display text-lg md:hidden" />
+
             <p className="mt-0.5 truncate text-xs text-muted-foreground">
               <GreetingText />, <span className="font-semibold text-foreground">Adaeze</span>
             </p>
