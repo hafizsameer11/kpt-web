@@ -172,12 +172,13 @@ function HomeV8Screen() {
                 {WEEK_SERIES.map((v, i) => (
                   <div key={WEEK_LABELS[i]} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
                     <div className="flex w-full flex-1 items-end">
-                    <div
-                      className={`w-full rounded-t-lg ${
-                        i === WEEK_SERIES.length - 1 ? "bg-gold-gradient" : "bg-brand/25"
-                      }`}
-                      style={{ height: `${Math.max(14, (v / weekMax) * 100)}%` }}
-                    />
+                      <div
+                        className={`w-full rounded-t-lg ${
+                          i === WEEK_SERIES.length - 1 ? "bg-gold-gradient" : "bg-brand/25"
+                        }`}
+                        style={{ height: `${Math.max(14, (v / weekMax) * 100)}%` }}
+                      />
+                    </div>
                     <span className="text-[10px] font-semibold text-muted-foreground">
                       {WEEK_LABELS[i]!.slice(0, 1)}
                     </span>
