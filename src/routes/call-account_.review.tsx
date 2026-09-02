@@ -88,6 +88,52 @@ function ReviewScreen() {
     });
   }
 
+  const pinPad = (
+    <>
+      <p className="mt-3 text-center text-[16px] font-extrabold">
+        Enter your PIN
+      </p>
+      <p className="-mt-0.5 text-center text-[12px] text-muted-foreground">
+        Authorize {naira(amount)} to your Call Account
+      </p>
+
+      <div className="mt-4 flex justify-center gap-3">
+        {Array.from({ length: PIN_LENGTH }).map((_, i) => (
+          <span
+            key={i}
+            className={`size-3.5 rounded-full ${
+              i < pin.length ? "bg-gold" : "bg-border"
+            }`}
+          />
+        ))}
+      </div>
+
+      {error && (
+        <p className="mt-3 text-center text-[12px] font-semibold text-destructive">
+          {error}
+        </p>
+      )}
+      {busy && (
+        <p className="mt-3 text-center text-[12px] font-semibold text-muted-foreground">
+          Authorizing…
+        </p>
+      )}
+
+      <div className="mx-auto mt-5 grid max-w-xs grid-cols-3 gap-2.5">
+        {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((k) => (
+          <Key key={k} onClick={() => press(k)}>
+            {k}
+          </Key>
+        ))}
+        <span />
+        <Key onClick={() => press("0")}>0</Key>
+        <Key onClick={() => press("del")} aria-label="Delete">
+          <Delete className="mx-auto size-5" />
+        </Key>
+      </div>
+    </>
+  );
+
   return (
     <AppShell title="Review" navVariant="elevated">
       <div className="pb-2">
