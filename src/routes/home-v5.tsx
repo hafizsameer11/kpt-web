@@ -332,12 +332,12 @@ function HomeV5Screen() {
             </Link>
           </div>
           <div className="mt-3 space-y-2.5 md:grid md:grid-cols-3 md:gap-4 md:space-y-0">
-            {HOLDINGS.map((h) => {
+            {HOLDINGS.map((h, i) => {
               const p = progress(h.totalDays, h.daysLeft);
               return (
                 <article
                   key={h.name}
-                  className="card-surface p-4 press hover:-translate-y-0.5 hover:shadow-float md:p-5"
+                  className={`card-surface p-4 press hover:-translate-y-0.5 hover:shadow-float md:p-5 ${i >= 2 ? "hidden md:block" : ""}`}
                 >
                   <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
                     <div className="min-w-0">
