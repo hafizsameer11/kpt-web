@@ -1,11 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowUpRight,
-  ChevronRight,
-  Clock,
-  ShieldCheck,
-  Wallet,
-} from "lucide-react";
+import { ArrowUpRight, ChevronRight, ShieldCheck } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import { naira, HOLDINGS } from "@/lib/home-data";
