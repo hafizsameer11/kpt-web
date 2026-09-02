@@ -47,7 +47,46 @@ export function AppShell({
       </div>
 
       {/* Mobile bottom tab bar */}
-      {navVariant === "elevated" ? (
+      {navVariant === "orbit" ? (
+        /* Orbit dock: deep navy glass bar, active tab orbits into a gold squircle */
+        <nav className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden">
+          <ul className="grid grid-cols-5 items-end gap-0.5 rounded-[1.9rem] bg-brand-gradient px-2 pb-2.5 pt-3 shadow-float ring-1 ring-white/10">
+            {TABS.map((tab) => {
+              const active = isActive(tab.to);
+              const Icon = tab.icon;
+              return (
+                <li key={tab.to}>
+                  <Link
+                    to={tab.to}
+                    aria-label={tab.label}
+                    className="flex flex-col items-center gap-1.5 press"
+                  >
+                    <span
+                      className={`grid size-10 place-items-center rounded-[1rem] transition-all duration-300 ${
+                        active
+                          ? "-translate-y-2.5 bg-gold-gradient text-gold-foreground shadow-float"
+                          : "text-primary-foreground/55"
+                      }`}
+                    >
+                      <Icon className="size-[19px]" strokeWidth={active ? 2.4 : 1.8} />
+                    </span>
+                    <span
+                      className={`text-[10px] font-bold tracking-tight transition-colors ${
+                        active
+                          ? "-mt-2 text-primary-foreground"
+                          : "text-primary-foreground/45"
+                      }`}
+                    >
+                      {tab.label}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : navVariant === "elevated" ? (
+
         /* Elevated dock: white card, active tab lifts into a navy squircle */
         <nav className="fixed inset-x-4 bottom-4 z-40 md:hidden">
           <ul className="grid grid-cols-5 items-end rounded-[1.6rem] border border-border bg-surface/95 px-2 py-2 shadow-float backdrop-blur">
