@@ -188,8 +188,7 @@ export function ForYouFeature() {
  * Mobile scrolls horizontally with mixed widths; desktop locks into a bento.
  */
 export function ForYouBento({ className = "" }: { className?: string }) {
-  const [first, second] = FEED;
-  const cards = [first, second].filter(Boolean);
+  const cards = FEED.slice(0, 2);
   return (
     <section className={className}>
       <SectionHead />
