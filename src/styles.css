@@ -316,3 +316,14 @@
     transform: scale(0.98);
   }
 }
+
+/* Home 4 — "Aurora" type system: geometric UI face, heavy display face */
+.type-h4 {
+  font-family: "Onest", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.012em;
+}
+.type-h4 .font-display {
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
