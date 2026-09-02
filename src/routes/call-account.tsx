@@ -459,12 +459,12 @@ function CallAccountScreen() {
                   </p>
                 </div>
               </div>
-              <button
-                type="button"
+              <Link
+                to="/call-account/add-money"
                 className="press mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-brand px-4 py-3 text-[12.5px] font-extrabold text-brand-foreground"
               >
                 <Plus className="size-4" strokeWidth={2.6} /> Add money
-              </button>
+              </Link>
             </div>
 
             {/* Divider */}
