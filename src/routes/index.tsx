@@ -249,6 +249,20 @@ function HomeScreen() {
                     Funds in your wallet are available for investment or withdrawal anytime and
                     do not earn interest or investment returns.
                   </p>
+                  <dl className="mt-5 space-y-2.5 border-t border-border pt-5 text-[13px]">
+                    <div className="flex items-center justify-between gap-3">
+                      <dt className="text-muted-foreground">In plans</dt>
+                      <dd className="font-semibold text-num">{mask(INVESTED)}</dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <dt className="text-muted-foreground">Interest this week</dt>
+                      <dd className="font-semibold text-num">{mask(WEEK_EARNINGS)}</dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <dt className="text-muted-foreground">Next payout</dt>
+                      <dd className="font-semibold">{NEXT_MATURITY.date}</dd>
+                    </div>
+                  </dl>
                 </div>
                 <Link
                   to="/invest"
