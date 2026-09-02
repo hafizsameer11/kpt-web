@@ -12,7 +12,7 @@ import {
 import { AppShell } from "@/components/kipit/AppShell";
 import { Logo } from "@/components/kipit/Logo";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
-import { FeedThumb } from "@/components/kipit/FeedThumb";
+import { ForYouBento } from "@/components/kipit/ForYouVariants";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 import { GreetingText } from "@/components/kipit/SpecBlocks";
 import {
