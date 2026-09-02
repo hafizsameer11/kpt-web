@@ -186,12 +186,17 @@ function CallAccountScreen() {
           />
 
           {/* Daily accrual trend */}
-          <section className="card-surface overflow-hidden p-0">
-            <div className="flex items-start justify-between gap-3 px-4 pt-4 md:px-5 md:pt-5">
+          <section className="card-surface p-4 md:p-5">
+            <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className="font-display text-base font-extrabold">Daily interest</h2>
-                <p className="mt-0.5 text-[11.5px] text-muted-foreground">
-                  Last 14 days &middot; credited monthly
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Interest earned today
+                </p>
+                <p className="mt-1 font-display text-[26px] font-extrabold leading-none text-num">
+                  {mask(CALL_ACCOUNT.accruedToday)}
+                </p>
+                <p className="mt-1.5 text-[11.5px] text-muted-foreground">
+                  Accrues daily &middot; credited monthly
                 </p>
               </div>
               <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-accent/15 px-2.5 py-1 text-[11px] font-bold text-brand">
@@ -199,73 +204,29 @@ function CallAccountScreen() {
               </span>
             </div>
 
-            <div className="relative mt-4">
-              <svg
-                viewBox="0 0 300 88"
-                preserveAspectRatio="none"
-                className="h-24 w-full md:h-32"
-                aria-hidden
-              >
-                <defs>
-                  <linearGradient id="callFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.28" />
-                    <stop offset="100%" stopColor="var(--gold)" stopOpacity="0" />
-                  </linearGradient>
-                  <linearGradient id="callStroke" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.45" />
-                    <stop offset="100%" stopColor="var(--gold)" stopOpacity="1" />
-                  </linearGradient>
-                </defs>
-                {[22, 44, 66].map((y) => (
-                  <line
-                    key={y}
-                    x1="0"
-                    x2="300"
-                    y1={y}
-                    y2={y}
-                    stroke="var(--border)"
-                    strokeWidth="1"
-                    strokeDasharray="3 6"
-                    vectorEffect="non-scaling-stroke"
+            {/* 14-day bars */}
+            <div className="mt-5 flex h-16 items-end gap-[3px] md:h-20">
+              {CALL_ACCRUAL_TREND.map((v, i) => {
+                const peak = Math.max(...CALL_ACCRUAL_TREND, 1);
+                const isToday = i === CALL_ACCRUAL_TREND.length - 1;
+                return (
+                  <span
+                    key={i}
+                    className={`flex-1 rounded-full ${isToday ? "bg-gold" : "bg-brand/15"}`}
+                    style={{ height: `${Math.max(12, (v / peak) * 100)}%` }}
                   />
-                ))}
-                <path d={`${line} L300,88 L0,88 Z`} fill="url(#callFill)" />
-                <path
-                  d={line}
-                  fill="none"
-                  stroke="url(#callStroke)"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  vectorEffect="non-scaling-stroke"
-                />
-              </svg>
-              <span
-                aria-hidden
-                className="pointer-events-none absolute size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold ring-4 ring-gold/20"
-                style={{ left: "calc(100% - 5px)", top: `${(last.y / 88) * 100}%` }}
-              />
+                );
+              })}
             </div>
 
-            <div className="flex items-end justify-between gap-3 border-t border-border/70 bg-muted/30 px-4 py-3 md:px-5">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  14 days ago
-                </p>
-                <p className="mt-0.5 text-[12.5px] font-bold text-muted-foreground text-num">
-                  {mask(CALL_ACCRUAL_TREND[0] ?? 0)}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  Today
-                </p>
-                <p className="mt-0.5 text-[15px] font-extrabold text-num">
-                  {mask(CALL_ACCOUNT.accruedToday)}
-                </p>
-              </div>
+            <div className="mt-3 flex items-center justify-between border-t border-border/70 pt-3">
+              <p className="text-[11px] font-semibold text-muted-foreground">Last 14 days</p>
+              <p className="text-[12.5px] font-extrabold text-num">
+                {mask(CALL_ACCRUAL_TREND.reduce((a, b) => a + b, 0))}
+              </p>
             </div>
           </section>
+
 
 
           {/* Product explanation */}
