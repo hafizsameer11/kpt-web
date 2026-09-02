@@ -80,6 +80,22 @@ function smoothPath(pts: { x: number; y: number }[]) {
 }
 
 
+function dayLabel(i: number, total: number) {
+  if (i === total - 1) return "Today";
+  if (i === 0) return "14d ago";
+  return `-${total - 1 - i}d`;
+}
+
+function fullDate(i: number, total: number) {
+  const d = new Date();
+  d.setDate(d.getDate() - (total - 1 - i));
+  return d.toLocaleDateString("en-NG", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: d.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
+  });
+}
 
 function CallAccountScreen() {
   const { mask, hidden, toggle } = useBalanceVisibility();
