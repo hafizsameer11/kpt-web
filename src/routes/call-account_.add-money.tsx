@@ -174,7 +174,7 @@ function AddMoneyScreen() {
               </div>
               <p className="mt-3 flex items-start gap-1.5 text-[11.5px] text-muted-foreground">
                 <Info className="mt-px size-3.5 shrink-0" />
-                Indicative at {CALL_ACCOUNT.rate}. Interest accrues daily and is credited
+                Indicative at {CALL_ACCOUNT.rate.replace(" p.a.", "")}% blank accrues daily and is credited
                 monthly.
               </p>
             </section>
