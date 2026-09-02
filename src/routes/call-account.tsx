@@ -9,10 +9,10 @@ import {
   Plus,
   ShieldCheck,
   TrendingUp,
-  Wallet,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import callBanner from "@/assets/call-banner.jpg";
 import { AppShell } from "@/components/kipit/AppShell";
 import {
   Dialog,
