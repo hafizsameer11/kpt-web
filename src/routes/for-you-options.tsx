@@ -48,6 +48,12 @@ const OPTIONS = [
     note: "One large navy lead story plus two slim supporting cards.",
     Component: ForYouFeature,
   },
+  {
+    key: "D",
+    name: "Bento mosaic",
+    note: "Asymmetric magazine grid: large lead tile plus smaller supporting tiles.",
+    Component: ForYouBento,
+  },
 ];
 
 function ForYouOptionsScreen() {
