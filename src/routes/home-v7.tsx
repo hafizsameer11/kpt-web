@@ -258,7 +258,7 @@ function HomeV7Screen() {
 
         {/* Idle wallet nudge (overview) */}
         <section
-          className={`${show("Overview")} mt-3 overflow-hidden rounded-3xl border border-gold/40 bg-accent p-4 md:mt-4 md:p-6`}
+          className="mt-3 overflow-hidden rounded-3xl border border-gold/40 bg-accent p-4 md:mt-4 md:p-6"
         >
           <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3">
             <span className="grid size-9 shrink-0 place-items-center rounded-2xl bg-gold text-gold-foreground">
