@@ -27,7 +27,7 @@ export const Route = createFileRoute("/call-account_/add-money")({
   component: AddMoneyScreen,
 });
 
-const QUICK = [50_000, 250_000];
+const QUICK = [100_000, 250_000, 500_000];
 
 const RATE = 0.145;
 
