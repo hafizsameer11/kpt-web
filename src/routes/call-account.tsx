@@ -79,6 +79,17 @@ function CallAccountScreen() {
   const pts = trendPoints(CALL_ACCRUAL_TREND, 300, 88);
   const line = smoothPath(pts);
   const last = pts[pts.length - 1] ?? { x: 300, y: 44 };
+  const streakRef = useRef<HTMLDivElement>(null);
+  const todayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (streakRef.current && todayRef.current) {
+      const container = streakRef.current;
+      const today = todayRef.current;
+      const scrollLeft = today.offsetLeft - container.clientWidth / 2 + today.clientWidth / 2;
+      container.scrollTo({ left: Math.max(0, scrollLeft), behavior: "instant" });
+    }
+  }, []);
 
 
   return (
