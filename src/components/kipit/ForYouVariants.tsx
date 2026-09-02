@@ -117,10 +117,10 @@ export function ForYouList() {
  * One large navy feature card followed by slim, text-only chips. Gives the
  * lead story real weight without three heavy cards competing.
  */
-export function ForYouFeature() {
+export function ForYouFeature({ className = "" }: { className?: string }) {
   const [lead, ...rest] = FEED;
   return (
-    <section>
+    <section className={className}>
       <SectionHead />
       <div className="mt-3 grid gap-2.5 md:mt-4 md:grid-cols-[1.4fr_1fr] md:gap-4">
         {lead && (
