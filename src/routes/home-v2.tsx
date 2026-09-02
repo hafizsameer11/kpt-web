@@ -62,18 +62,28 @@ type LensKey = (typeof LENSES)[number]["key"];
 
 function WeekStrip() {
   const max = Math.max(...WEEK_SERIES);
+  const min = Math.min(...WEEK_SERIES);
   return (
-    <div className="flex items-end gap-1.5">
+    <div className="flex h-24 items-end gap-1.5">
       {WEEK_SERIES.map((v, i) => {
         const peak = v === max;
+        const pct = 22 + ((v - min) / Math.max(max - min, 1)) * 78;
         return (
-          <div key={WEEK_LABELS[i]} className="flex flex-1 flex-col items-center gap-1.5">
+          <div key={WEEK_LABELS[i]} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
+            <span
+              className={`text-[9px] font-bold ${peak ? "text-brand" : "text-transparent"}`}
+            >
+              {naira(v)}
+            </span>
             <div
-              className={`w-2.5 rounded-full ${peak ? "bg-gold" : "bg-brand/15"}`}
-              style={{ height: `${20 + (v / max) * 44}px` }}
+              className={`w-full rounded-t-lg rounded-b-sm ${
+                peak ? "bg-gold-gradient" : "bg-brand/15"
+              }`}
+              style={{ height: `${pct}%` }}
             />
-
-            <span className="text-[9px] font-semibold text-muted-foreground">
+            <span
+              className={`text-[9px] font-semibold ${peak ? "text-foreground" : "text-muted-foreground"}`}
+            >
               {WEEK_LABELS[i]?.slice(0, 1)}
             </span>
           </div>
@@ -82,6 +92,7 @@ function WeekStrip() {
     </div>
   );
 }
+
 
 function HomeV2Screen() {
   const { hidden, toggle, mask } = useBalanceVisibility();
