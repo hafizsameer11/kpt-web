@@ -119,7 +119,7 @@ function ReviewScreen() {
         </p>
       )}
 
-      <div className="mx-auto mt-5 grid max-w-xs grid-cols-3 gap-2.5">
+      <div className="mx-auto mt-5 grid w-full max-w-sm auto-rows-max grid-cols-3 gap-x-3 gap-y-2.5">
         {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((k) => (
           <Key key={k} onClick={() => press(k)}>
             {k}
@@ -241,7 +241,7 @@ function ReviewScreen() {
 
       {isMobile ? (
         <Drawer open={open} onOpenChange={(o) => { setOpen(o); if (!o) setPin(""); }}>
-          <DrawerContent className="rounded-t-[2rem] bg-card px-6 pb-8 pt-2">
+          <DrawerContent className="max-h-[92svh] rounded-t-[2rem] bg-card px-6 pb-8 pt-2">
             <DrawerTitle className="sr-only">Enter your PIN</DrawerTitle>
             <DrawerDescription className="sr-only">
               Authorize {naira(amount)} to your Call Account
@@ -281,7 +281,7 @@ function Key({
     <button
       type="button"
       onClick={onClick}
-      className="rounded-2xl border border-border bg-card py-3 font-display text-[18px] font-extrabold text-foreground press"
+      className="h-12 rounded-xl border border-border bg-card font-display text-[17px] font-extrabold text-foreground press"
       {...rest}
     >
       {children}
