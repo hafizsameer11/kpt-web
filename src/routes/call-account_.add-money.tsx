@@ -72,8 +72,8 @@ function AddMoneyScreen() {
               Amount to add
             </p>
 
-            <div className="mt-2 flex items-end gap-1.5">
-              <span className="font-display text-[30px] font-extrabold leading-none text-primary-foreground/60">
+            <div className="mt-2 flex items-baseline gap-1.5">
+              <span className="font-display text-[40px] font-extrabold leading-none text-primary-foreground/60 md:text-[48px]">
                 ₦
               </span>
               <input
