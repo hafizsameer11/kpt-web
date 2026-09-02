@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ExploreRouteImport } from './routes/explore'
+import { Route as ForYouOptionsRouteImport } from './routes/for-you-options'
 import { Route as HomeV2RouteImport } from './routes/home-v2'
 import { Route as HomeV3RouteImport } from './routes/home-v3'
 import { Route as HomeV4RouteImport } from './routes/home-v4'
@@ -31,6 +32,11 @@ const IndexRoute = IndexRouteImport.update({
 const ExploreRoute = ExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForYouOptionsRoute = ForYouOptionsRouteImport.update({
+  id: '/for-you-options',
+  path: '/for-you-options',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeV2Route = HomeV2RouteImport.update({
@@ -92,6 +98,7 @@ const SettingsRoute = SettingsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
+  '/for-you-options': typeof ForYouOptionsRoute
   '/home-v2': typeof HomeV2Route
   '/home-v3': typeof HomeV3Route
   '/home-v4': typeof HomeV4Route
@@ -107,6 +114,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
+  '/for-you-options': typeof ForYouOptionsRoute
   '/home-v2': typeof HomeV2Route
   '/home-v3': typeof HomeV3Route
   '/home-v4': typeof HomeV4Route
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
+  '/for-you-options': typeof ForYouOptionsRoute
   '/home-v2': typeof HomeV2Route
   '/home-v3': typeof HomeV3Route
   '/home-v4': typeof HomeV4Route
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/explore'
+    | '/for-you-options'
     | '/home-v2'
     | '/home-v3'
     | '/home-v4'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/explore'
+    | '/for-you-options'
     | '/home-v2'
     | '/home-v3'
     | '/home-v4'
@@ -170,6 +181,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/explore'
+    | '/for-you-options'
     | '/home-v2'
     | '/home-v3'
     | '/home-v4'
@@ -186,6 +198,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExploreRoute: typeof ExploreRoute
+  ForYouOptionsRoute: typeof ForYouOptionsRoute
   HomeV2Route: typeof HomeV2Route
   HomeV3Route: typeof HomeV3Route
   HomeV4Route: typeof HomeV4Route
@@ -213,6 +226,13 @@ declare module '@tanstack/react-router' {
       path: '/explore'
       fullPath: '/explore'
       preLoaderRoute: typeof ExploreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/for-you-options': {
+      id: '/for-you-options'
+      path: '/for-you-options'
+      fullPath: '/for-you-options'
+      preLoaderRoute: typeof ForYouOptionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home-v2': {
@@ -298,6 +318,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExploreRoute: ExploreRoute,
+  ForYouOptionsRoute: ForYouOptionsRoute,
   HomeV2Route: HomeV2Route,
   HomeV3Route: HomeV3Route,
   HomeV4Route: HomeV4Route,
