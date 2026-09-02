@@ -103,7 +103,7 @@ function CallAccountScreen() {
   const line = smoothPath(pts);
   const last = pts[pts.length - 1] ?? { x: 300, y: 44 };
   const streakRef = useRef<HTMLDivElement>(null);
-  const todayRef = useRef<HTMLDivElement>(null);
+  const todayRef = useRef<HTMLButtonElement>(null);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   useEffect(() => {
