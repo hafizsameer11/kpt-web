@@ -42,19 +42,34 @@ export const Route = createFileRoute("/call-account")({
   component: CallAccountScreen,
 });
 
-/** Smooth SVG path for the 14-day accrual trend. */
-function trendPath(values: number[], w: number, h: number) {
+/** Smooth (Catmull-Rom → bezier) SVG path for the 14-day accrual trend. */
+function trendPoints(values: number[], w: number, h: number) {
   const min = Math.min(...values);
   const max = Math.max(...values);
   const span = max - min || 1;
-  return values
-    .map((v, i) => {
-      const x = (i / (values.length - 1)) * w;
-      const y = h - ((v - min) / span) * (h - 6) - 3;
-      return `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
-    })
-    .join(" ");
+  return values.map((v, i) => ({
+    x: (i / (values.length - 1)) * w,
+    y: h - ((v - min) / span) * (h - 10) - 5,
+  }));
 }
+
+function smoothPath(pts: { x: number; y: number }[]) {
+  if (pts.length < 2) return "";
+  let d = `M${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] ?? pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2] ?? p2;
+    const c1x = p1.x + (p2.x - p0.x) / 6;
+    const c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6;
+    const c2y = p2.y - (p3.y - p1.y) / 6;
+    d += ` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+  }
+  return d;
+}
+
 
 function CallAccountScreen() {
   const { mask, hidden, toggle } = useBalanceVisibility();
