@@ -66,10 +66,10 @@ export const TENOR_BANDS = [
 
 /** MOB-061 — Call Account detail: how interest is earned. */
 export const CALL_ACCOUNT_FACTS = [
-  "Interest accrues daily on your cleared balance.",
-  "Earnings are credited to your Call Account on the 1st of each month.",
-  "Withdraw any amount at any time — no notice, no penalty.",
-  "Managed by Kipit's SEC-licensed partner; rates are indicative and may change.",
+  "Daily interest on your cleared balance.",
+  "Credited monthly on the 1st.",
+  "Withdraw anytime with no penalty.",
+  "Rates are indicative and may change.",
 ];
 
 export type CallActivityStatus = "successful" | "processing" | "pending" | "failed";
