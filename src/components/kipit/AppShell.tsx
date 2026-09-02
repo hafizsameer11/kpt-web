@@ -27,7 +27,7 @@ export function AppShell({
 }: {
   children: ReactNode;
   title?: string;
-  navVariant?: "classic" | "floating" | "morph" | "aurora" | "elevated";
+  navVariant?: "classic" | "floating" | "morph" | "aurora" | "elevated" | "orbit";
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isActive = (to: string) =>
