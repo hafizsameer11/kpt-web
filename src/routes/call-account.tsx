@@ -404,10 +404,8 @@ function CallAccountScreen() {
 
               {/* Intro */}
               <p className="mt-5 text-[12.5px] leading-relaxed text-primary-foreground/75">
-                Interest accrues daily on your{" "}
-                <span className="font-semibold text-primary-foreground">idle cash</span> and is
-                credited monthly.{" "}
-                <span className="font-semibold text-gold">No lock-in, no penalty.</span>
+                Daily interest on idle cash, credited monthly.{" "}
+                <span className="font-semibold text-gold">No lock-in.</span>
               </p>
 
               {/* Facts */}
