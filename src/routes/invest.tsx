@@ -106,11 +106,7 @@ function InvestScreen() {
               ))}
             </dl>
 
-            <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-              {CALL_ACCOUNT.blurb}
-            </p>
-
-            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <div className="mt-4 flex gap-2">
               <button
                 type="button"
                 className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-brand px-5 py-3 text-xs font-bold text-brand-foreground press"
@@ -121,13 +117,14 @@ function InvestScreen() {
                 to="/portfolio"
                 className="inline-flex flex-1 items-center justify-center rounded-full border border-border px-5 py-3 text-xs font-bold press"
               >
-                View activity
+                Activity
               </Link>
             </div>
           </section>
 
           {/* Fixed plans (MOB-065) */}
-          <section className="mt-5">
+          <section className="mt-7">
+
             <div className="mb-2.5 flex items-end justify-between gap-3">
               <div>
                 <h2 className="font-display text-base font-extrabold">Fixed investment plans</h2>
