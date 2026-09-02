@@ -323,27 +323,48 @@ function HomeV2Screen() {
             </section>
 
             {/* Idle wallet nudge */}
-            <section className="mt-5 overflow-hidden rounded-3xl border border-gold/40 bg-accent p-4 md:p-6">
-              <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3">
-                <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold text-gold-foreground">
-                  <Wallet className="size-5" strokeWidth={1.9} />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-extrabold text-accent-foreground">
-                    {mask(WALLET)} is sitting idle
-                  </p>
-                  <p className="mt-1 text-xs text-accent-foreground/80">
-                    Move it into Kipit Vault at 21.5% p.a. and earn about ₦8,958 a month.
-                  </p>
-                  <Link
-                    to="/invest"
-                    className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-bold text-brand-foreground press"
-                  >
-                    Invest wallet <ArrowUpRight className="size-3.5" />
-                  </Link>
+            <section className="mt-5 overflow-hidden rounded-3xl border border-border bg-surface shadow-card">
+              <div className="flex">
+                <span aria-hidden className="w-1.5 shrink-0 bg-gold-gradient" />
+                <div className="min-w-0 flex-1 p-4 md:p-6">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                        <Wallet className="size-3.5" strokeWidth={2} /> Idle cash
+                      </p>
+                      <p className="mt-1.5 text-2xl font-extrabold tracking-tight text-num">
+                        {mask(WALLET)}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Not earning interest in your wallet.
+                      </p>
+                    </div>
+                    <div className="shrink-0 rounded-2xl bg-accent px-3.5 py-2.5 text-right">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-accent-foreground/70">
+                        Could earn
+                      </p>
+                      <p className="text-base font-extrabold text-accent-foreground text-num">
+                        ₦8,958
+                      </p>
+                      <p className="text-[10px] text-accent-foreground/70">per month</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs text-muted-foreground">
+                      Kipit Vault · 21.5% p.a. · 365-day tenor
+                    </p>
+                    <Link
+                      to="/invest"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-full bg-brand px-4 py-2.5 text-xs font-bold text-brand-foreground press"
+                    >
+                      Invest wallet <ArrowUpRight className="size-3.5" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </section>
+
 
             {/* For you */}
             <section className="mt-5">
