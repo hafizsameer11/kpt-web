@@ -249,20 +249,22 @@ function CallAccountScreen() {
               >
                 {CALL_ACCRUAL_TREND.map((v, i) => {
                   const isToday = i === CALL_ACCRUAL_TREND.length - 1;
-                  const dayLabel = i === 0 ? "14d" : i === CALL_ACCRUAL_TREND.length - 1 ? "Today" : `-${CALL_ACCRUAL_TREND.length - 1 - i}`;
+                  const label = dayLabel(i, CALL_ACCRUAL_TREND.length);
                   return (
-                    <div
+                    <button
                       key={i}
+                      type="button"
                       ref={isToday ? todayRef : undefined}
-                      className={`flex shrink-0 flex-col items-center gap-2 rounded-2xl px-2.5 py-3 ${
+                      onClick={() => setSelectedDay(i)}
+                      className={`flex shrink-0 flex-col items-center gap-2 rounded-2xl px-2.5 py-3 text-left transition-transform duration-150 active:scale-95 ${
                         isToday
                           ? "bg-brand text-primary-foreground shadow-sm"
-                          : "bg-muted/60 text-foreground"
+                          : "bg-muted/60 text-foreground hover:bg-muted"
                       }`}
                       style={{ minWidth: isToday ? 76 : 52 }}
                     >
                       <span className={`text-[10px] font-semibold ${isToday ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                        {dayLabel}
+                        {label}
                       </span>
                       <span className={`text-[12px] font-extrabold text-num ${isToday ? "text-gold" : ""}`}>
                         {mask(v)}
@@ -270,7 +272,7 @@ function CallAccountScreen() {
                       <span
                         className={`h-1 w-full rounded-full ${isToday ? "bg-gold" : "bg-border"}`}
                       />
-                    </div>
+                    </button>
                   );
                 })}
               </div>
