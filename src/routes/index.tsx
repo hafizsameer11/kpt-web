@@ -77,7 +77,7 @@ function CountdownRing({ daysLeft, total }: { daysLeft: number; total: number })
   const c = 2 * Math.PI * r;
   const progress = 1 - daysLeft / total;
   return (
-    <svg viewBox="0 0 84 84" className="size-24 -rotate-90">
+    <svg viewBox="0 0 84 84" className="size-[84px] -rotate-90 md:size-24">
       <circle cx="42" cy="42" r={r} fill="none" strokeWidth="8" className="stroke-secondary" />
       <circle
         cx="42"
@@ -314,21 +314,21 @@ function HomeScreen() {
 
 
             {/* Weekly earnings + next maturity + recommendation */}
-            <section className="mt-4 grid gap-4 md:grid-cols-3">
-              <article className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+            <section className="mt-3 grid gap-3 md:mt-4 md:gap-4 md:grid-cols-3">
+              <article className="rounded-3xl border border-border bg-surface p-5 shadow-card md:rounded-[1.75rem] md:p-6">
                 <div className="flex items-baseline justify-between">
                   <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                     Weekly earnings
                   </p>
                   <span className="text-xs font-bold text-success">+8.2%</span>
                 </div>
-                <p className="mt-3 font-display text-3xl font-bold tracking-tight text-num text-foreground">
+                <p className="mt-2 font-display text-2xl font-bold tracking-tight text-num text-foreground md:mt-3 md:text-3xl">
                   {mask(WEEK_EARNINGS)}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Interest earned in the last 7 days
                 </p>
-                <div className="mt-5 h-24 w-full">
+                <div className="mt-4 h-20 w-full md:mt-5 md:h-24">
                   <svg
                     viewBox="0 0 280 80"
                     className="h-full w-full overflow-visible"
@@ -362,7 +362,7 @@ function HomeScreen() {
                 </div>
               </article>
 
-              <article className="flex items-center gap-5 rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+              <article className="flex items-center gap-4 rounded-3xl border border-border bg-surface p-5 shadow-card md:rounded-[1.75rem] md:p-6">
                 <div className="relative grid shrink-0 place-items-center">
                   <CountdownRing
                     daysLeft={NEXT_MATURITY.daysLeft}
@@ -396,7 +396,7 @@ function HomeScreen() {
                 </div>
               </article>
 
-              <article className="flex flex-col justify-between rounded-[1.75rem] border border-border bg-accent p-6 shadow-card">
+              <article className="flex flex-col justify-between rounded-3xl border border-border bg-accent p-5 shadow-card md:rounded-[1.75rem] md:p-6">
                 <div className="flex gap-3">
                   <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gold-gradient text-gold-foreground">
                     <Lightbulb className="size-5" />
@@ -420,18 +420,18 @@ function HomeScreen() {
             </section>
 
             {/* Content feed */}
-            <section className="mt-8">
+            <section className="mt-6 md:mt-8">
               <div className="flex items-end justify-between">
-                <h2 className="font-display text-xl font-bold tracking-tight">For you</h2>
+                <h2 className="font-display text-lg font-bold tracking-tight md:text-xl">For you</h2>
                 <Link to="/explore" className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-foreground press hover:bg-secondary">
                   View all
                 </Link>
               </div>
-              <div className="-mx-4 mt-4 flex gap-3 overflow-x-auto px-4 pb-2 no-scrollbar md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+              <div className="-mx-4 mt-3 flex gap-3 md:mt-4 overflow-x-auto px-4 pb-2 no-scrollbar md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
                 {FEED.map((item, i) => (
                   <article
                     key={item.title}
-                    className={`w-72 shrink-0 rounded-[1.5rem] border border-border p-5 shadow-card press hover:-translate-y-0.5 hover:shadow-float md:w-auto ${
+                    className={`w-[16.5rem] shrink-0 rounded-3xl border border-border p-4 md:w-72 md:p-5 shadow-card press hover:-translate-y-0.5 hover:shadow-float md:w-auto ${
                       i === 0 ? "bg-brand-gradient text-primary-foreground" : "bg-surface"
                     }`}
                   >
