@@ -82,14 +82,14 @@ export type CallActivity = {
 
 /** Recent Call Account activity (MOB-061). */
 export const CALL_ACTIVITY: CallActivity[] = [
-  { id: "a1", kind: "interest", label: "Daily interest", date: "Today", amount: 198 },
-  { id: "a2", kind: "interest", label: "Daily interest", date: "Yesterday", amount: 196 },
-  { id: "a3", kind: "deposit", label: "Added from wallet", date: "28 Aug 2026", amount: 150_000 },
-  { id: "a4", kind: "withdrawal", label: "Withdrawn to wallet", date: "21 Aug 2026", amount: 60_000 },
-  { id: "a5", kind: "interest", label: "Monthly interest credited", date: "01 Aug 2026", amount: 4_120 },
+  { id: "a1", kind: "interest", label: "Daily interest", date: "Today", amount: 9_932 },
+  { id: "a2", kind: "interest", label: "Daily interest", date: "Yesterday", amount: 9_863 },
+  { id: "a3", kind: "deposit", label: "Added from wallet", date: "28 Aug 2026", amount: 5_000_000 },
+  { id: "a4", kind: "withdrawal", label: "Withdrawn to wallet", date: "21 Aug 2026", amount: 2_000_000 },
+  { id: "a5", kind: "interest", label: "Monthly interest credited", date: "01 Aug 2026", amount: 298_450 },
 ];
 
 /** 14-day accrual trend (₦ per day) for the detail sparkline. */
 export const CALL_ACCRUAL_TREND = [
-  171, 174, 176, 178, 177, 181, 184, 186, 185, 189, 191, 193, 196, 198,
+  8_580, 8_720, 8_690, 8_910, 9_050, 9_120, 9_080, 9_340, 9_410, 9_520, 9_680, 9_750, 9_860, 9_932,
 ];
