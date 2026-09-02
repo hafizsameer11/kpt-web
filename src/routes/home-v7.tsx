@@ -64,7 +64,12 @@ function HomeV7Screen() {
   const isNewUser = useIsNewUser();
   const [tab, setTab] = useState<TabKey>("Overview");
   const maxWeek = Math.max(...WEEK_SERIES);
-  const show = (t: TabKey) => (tab === t ? "" : "hidden md:block");
+  const minWeek = Math.min(...WEEK_SERIES);
+  // Scale bars against the series floor so daily variation is actually visible.
+  const barHeight = (v: number) =>
+    16 + ((v - minWeek) / Math.max(1, maxWeek - minWeek)) * 52;
+  const show = (t: TabKey) =>
+    tab === t ? "animate-in fade-in slide-in-from-bottom-1 duration-200" : "hidden md:block";
 
   if (isNewUser) {
     return (
