@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   TrendingUp,
 } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import { naira, WALLET } from "@/lib/home-data";
