@@ -132,34 +132,34 @@ function HomeScreen() {
         ) : (
           <>
             {/* Portfolio summary + wallet */}
-            <section className="grid gap-4 lg:grid-cols-3">
-              <article className="relative overflow-hidden rounded-[1.75rem] bg-brand-gradient p-6 text-primary-foreground shadow-float md:p-8 lg:col-span-2">
+            <section className="grid gap-3 md:gap-4 lg:grid-cols-3">
+              <article className="relative overflow-hidden rounded-3xl bg-brand-gradient p-5 text-primary-foreground shadow-float md:rounded-[1.75rem] md:p-8 lg:col-span-2">
                 <div
                   aria-hidden
                   className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-white/10 blur-3xl"
                 />
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary-foreground/70 md:text-xs md:tracking-[0.2em]">
                       <GreetingText />, Adaeze
                     </p>
-                    <p className="mt-3 text-xs text-primary-foreground/70">
+                    <p className="mt-2.5 text-[11px] text-primary-foreground/70 md:text-xs">
                       Total portfolio value
                     </p>
-                    <div className="mt-1 flex items-center gap-3">
-                      <h1 className="font-display text-[40px] font-bold leading-none tracking-[-0.04em] text-num md:text-[54px]">
+                    <div className="mt-0.5 flex items-center gap-2.5">
+                      <h1 className="font-display text-[32px] font-bold leading-none tracking-[-0.04em] text-num md:text-[54px]">
                         {mask(TOTAL)}
                       </h1>
                       <button
                         type="button"
                         onClick={toggle}
                         aria-label={hidden ? "Show balances" : "Hide balances"}
-                        className="grid size-9 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 text-primary-foreground/80 transition-colors hover:bg-white/20"
+                        className="grid size-8 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 text-primary-foreground/80 transition-colors hover:bg-white/20 md:size-9"
                       >
                         {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                       </button>
                     </div>
-                    <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-bold text-[oklch(0.87_0.15_94)]">
+                    <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-[11px] font-bold text-[oklch(0.87_0.15_94)] md:px-3 md:text-xs">
                       <ArrowUpRight className="size-3.5" /> {CHANGE[range]}
                     </p>
                   </div>
@@ -181,7 +181,11 @@ function HomeScreen() {
                   </div>
                 </div>
 
-                <svg viewBox="0 0 360 100" className="mt-6 h-24 w-full" preserveAspectRatio="none">
+                <svg
+                  viewBox="0 0 360 100"
+                  className="mt-4 h-16 w-full md:mt-6 md:h-24"
+                  preserveAspectRatio="none"
+                >
                   <defs>
                     <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="oklch(0.84 0.155 88 / 0.35)" />
@@ -199,13 +203,13 @@ function HomeScreen() {
                   />
                 </svg>
 
-                <div className="mt-4 flex gap-1 overflow-x-auto no-scrollbar md:hidden">
+                <div className="mt-3 flex gap-1 overflow-x-auto no-scrollbar md:hidden">
                   {RANGES.map((r) => (
                     <button
                       key={r}
                       type="button"
                       onClick={() => setRange(r)}
-                      className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold press ${
+                      className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold press ${
                         range === r
                           ? "bg-white text-brand"
                           : "border border-white/15 bg-white/10 text-primary-foreground/75"
@@ -216,40 +220,51 @@ function HomeScreen() {
                   ))}
                 </div>
 
-                <dl className="mt-6 grid grid-cols-2 gap-3 border-t border-white/15 pt-5 text-sm">
+                <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-white/15 pt-4 text-sm md:mt-6 md:pt-5">
                   <div>
-                    <dt className="text-xs text-primary-foreground/65">Invested</dt>
-                    <dd className="mt-1 font-display text-lg font-bold">{mask(INVESTED)}</dd>
+                    <dt className="text-[11px] text-primary-foreground/65 md:text-xs">Invested</dt>
+                    <dd className="mt-0.5 font-display text-base font-bold md:text-lg">
+                      {mask(INVESTED)}
+                    </dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-primary-foreground/65">Wallet</dt>
-                    <dd className="mt-1 font-display text-lg font-bold">{mask(WALLET)}</dd>
+                    <dt className="text-[11px] text-primary-foreground/65 md:text-xs">Wallet</dt>
+                    <dd className="mt-0.5 font-display text-base font-bold md:text-lg">
+                      {mask(WALLET)}
+                    </dd>
                   </div>
                 </dl>
               </article>
 
               {/* Wallet card (MOB-020) */}
-              <article className="flex flex-col justify-between rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+              <article className="flex flex-col justify-between rounded-3xl border border-border bg-surface p-5 shadow-card md:rounded-[1.75rem] md:p-6">
                 <div>
-                  <div className="flex items-center justify-between">
-                    <span className="grid size-11 place-items-center rounded-2xl bg-secondary text-brand">
-                      <Wallet className="size-5" strokeWidth={1.8} />
-                    </span>
-                    <span className="rounded-full border border-border px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                      Wallet
-                    </span>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-secondary text-brand md:size-11 md:rounded-2xl">
+                        <Wallet className="size-[18px] md:size-5" strokeWidth={1.8} />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                          Wallet
+                        </p>
+                        <p className="font-display text-xl font-bold tracking-tight text-num md:text-2xl">
+                          {mask(WALLET)}
+                        </p>
+                      </div>
+                    </div>
+                    <Link
+                      to="/invest"
+                      aria-label="Fund wallet"
+                      className="grid size-9 shrink-0 place-items-center rounded-full bg-brand text-brand-foreground press md:hidden"
+                    >
+                      <Plus className="size-4" />
+                    </Link>
                   </div>
-                  <p className="mt-5 font-display text-3xl font-bold tracking-tight text-num">
-                    {mask(WALLET)}
+                  <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground md:text-xs">
+                    Wallet funds are available anytime and do not earn interest.
                   </p>
-                  <p className="mt-1 text-xs font-semibold text-muted-foreground">
-                    Available funds: {mask(WALLET)}
-                  </p>
-                  <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-                    Funds in your wallet are available for investment or withdrawal anytime and
-                    do not earn interest or investment returns.
-                  </p>
-                  <dl className="mt-5 space-y-2.5 border-t border-border pt-5 text-[13px]">
+                  <dl className="mt-3 space-y-2 border-t border-border pt-3 text-[12px] md:mt-5 md:space-y-2.5 md:pt-5 md:text-[13px]">
                     <div className="flex items-center justify-between gap-3">
                       <dt className="text-muted-foreground">In plans</dt>
                       <dd className="font-semibold text-num">{mask(INVESTED)}</dd>
@@ -266,7 +281,7 @@ function HomeScreen() {
                 </div>
                 <Link
                   to="/invest"
-                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground press hover:opacity-90"
+                  className="mt-6 hidden w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground press hover:opacity-90 md:inline-flex"
                 >
                   <Plus className="size-4" /> Fund wallet
                 </Link>
@@ -274,18 +289,18 @@ function HomeScreen() {
             </section>
 
             {/* Quick actions */}
-            <section className="mt-4 overflow-hidden rounded-[1.75rem] border border-border bg-surface shadow-card">
-              <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4 sm:divide-y-0">
+            <section className="mt-3 overflow-hidden rounded-3xl border border-border bg-surface shadow-card md:mt-4 md:rounded-[1.75rem]">
+              <div className="grid grid-cols-4 divide-x divide-border">
                 {QUICK_ACTIONS.map(({ label, icon: Icon, to }) => (
                   <Link
                     key={label}
                     to={to}
-                    className="group relative flex items-center gap-3 px-4 py-4 text-left press hover:bg-secondary md:px-5"
+                    className="group relative flex flex-col items-center gap-2 px-1.5 py-3.5 text-center press hover:bg-secondary md:flex-row md:gap-3 md:px-5 md:py-4 md:text-left"
                   >
                     <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-secondary text-brand transition-colors group-hover:bg-brand group-hover:text-brand-foreground">
                       <Icon className="size-4.5" strokeWidth={1.8} />
                     </span>
-                    <span className="min-w-0 text-[13px] font-semibold leading-tight md:text-sm">
+                    <span className="min-w-0 text-[11px] font-semibold leading-tight md:text-sm">
                       {label}
                     </span>
                     <span
@@ -296,6 +311,7 @@ function HomeScreen() {
                 ))}
               </div>
             </section>
+
 
             {/* Weekly earnings + next maturity + recommendation */}
             <section className="mt-4 grid gap-4 md:grid-cols-3">
