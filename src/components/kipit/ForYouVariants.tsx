@@ -181,3 +181,83 @@ export function ForYouFeature() {
     </section>
   );
 }
+
+/**
+ * Variant D — "Bento mosaic".
+ * Asymmetric magazine grid: one large lead tile plus smaller supporting tiles.
+ * Mobile scrolls horizontally with mixed widths; desktop locks into a bento.
+ */
+export function ForYouBento() {
+  const [lead, ...rest] = FEED;
+  return (
+    <section>
+      <SectionHead />
+      <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 no-scrollbar md:mt-4 md:grid md:grid-cols-2 md:grid-rows-2 md:overflow-visible md:gap-4">
+        {lead && (
+          <article className="relative h-[16rem] w-[78vw] max-w-[18rem] shrink-0 snap-start overflow-hidden rounded-[1.75rem] shadow-card press hover:-translate-y-0.5 hover:shadow-float md:col-span-1 md:row-span-2 md:h-auto md:w-auto md:max-w-none">
+            <img
+              src={feedArt(0)}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              className="absolute inset-0 size-full object-cover"
+            />
+            <span
+              aria-hidden
+              className="absolute inset-x-0 bottom-0 top-1/4 bg-gradient-to-t from-brand via-brand/90 to-transparent"
+            />
+            <div className="relative flex h-full flex-col justify-end p-5 text-primary-foreground md:p-6">
+              <span className="mb-3 w-fit rounded-full bg-gold px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.14em] text-brand">
+                {lead.tag}
+              </span>
+              <h3 className="font-display text-lg font-extrabold leading-snug md:text-xl">
+                {lead.title}
+              </h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-primary-foreground/75">
+                {lead.body}
+              </p>
+              <span className="mt-3 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.16em] text-gold">
+                Read <ArrowUpRight className="size-3" />
+              </span>
+            </div>
+          </article>
+        )}
+
+        {rest.map((item, i) => (
+          <article
+            key={item.title}
+            className="card-surface relative flex h-[16rem] w-[64vw] max-w-[14.5rem] shrink-0 snap-start flex-col justify-between overflow-hidden p-4 press hover:-translate-y-0.5 hover:shadow-float md:h-auto md:w-auto md:max-w-none"
+          >
+            <div className="relative -mx-4 -mt-4 h-28 overflow-hidden md:h-32">
+              <img
+                src={feedArt(i + 1)}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                className="size-full object-cover"
+              />
+              <span
+                aria-hidden
+                className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-background to-transparent"
+              />
+            </div>
+            <div className="relative mt-2">
+              <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-brand">
+                {item.tag}
+              </p>
+              <h3 className="mt-1 font-display text-sm font-bold leading-snug md:text-base">
+                {item.title}
+              </h3>
+              <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
+                {item.body}
+              </p>
+            </div>
+            <span className="mt-3 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.16em] text-gold">
+              Read <ArrowUpRight className="size-3" />
+            </span>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
