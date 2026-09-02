@@ -75,7 +75,10 @@ function smoothPath(pts: { x: number; y: number }[]) {
 
 function CallAccountScreen() {
   const { mask, hidden, toggle } = useBalanceVisibility();
-  const line = trendPath(CALL_ACCRUAL_TREND, 300, 64);
+  const pts = trendPoints(CALL_ACCRUAL_TREND, 300, 88);
+  const line = smoothPath(pts);
+  const last = pts[pts.length - 1] ?? { x: 300, y: 44 };
+
 
   return (
     <AppShell title="Call Account" navVariant="elevated">
