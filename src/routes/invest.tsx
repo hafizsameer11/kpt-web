@@ -263,58 +263,73 @@ function InvestScreen() {
           {/* Invest tools — MOB-069 / MOB-071 / MOB-072 / MOB-075 entry points */}
           <section className="mt-7">
             <h2 className="mb-3 px-1 font-display text-base font-extrabold">Invest tools</h2>
-            <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
               {[
                 {
                   icon: Calculator,
                   label: "Calculator",
-                  note: "Model your payout before you commit",
-                  accent: "navy",
+                  note: "Model payout",
+                  theme: "navy",
                 },
                 {
                   icon: Repeat,
                   label: "Auto-invest",
-                  note: "Fund your plans on a schedule",
-                  accent: "gold",
+                  note: "Set schedule",
+                  theme: "gold",
                 },
                 {
                   icon: Gift,
                   label: "Gift invest",
-                  note: "Send a plan to someone",
-                  accent: "navy",
+                  note: "Send a plan",
+                  theme: "navy",
                 },
                 {
                   icon: RefreshCw,
                   label: "Roll over",
-                  note: "Reinvest automatically at maturity",
-                  accent: "gold",
+                  note: "Auto-reinvest",
+                  theme: "gold",
                 },
-              ].map((t, i) => (
+              ].map((t) => (
                 <button
                   key={t.label}
                   type="button"
-                  className="group relative flex w-full items-center gap-4 overflow-hidden rounded-[1.75rem] border border-border/60 bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md md:rounded-[2rem] md:p-5"
+                  className={`group relative flex aspect-[4/5] flex-col justify-between overflow-hidden rounded-[1.75rem] p-4 text-left transition-all active:scale-[0.98] md:rounded-[2rem] md:p-5 ${
+                    t.theme === "gold"
+                      ? "bg-gradient-to-br from-gold to-gold/80 text-gold-foreground shadow-md shadow-gold/20"
+                      : "bg-brand-gradient text-primary-foreground shadow-md shadow-brand/20"
+                  }`}
                 >
                   <span
                     aria-hidden
-                    className={`pointer-events-none absolute -right-10 -top-10 size-28 rounded-full ${
-                      t.accent === "gold" ? "bg-gold/10" : "bg-brand/8"
+                    className={`pointer-events-none absolute -right-8 -top-8 size-32 rounded-full blur-2xl ${
+                      t.theme === "gold" ? "bg-white/30" : "bg-gold/15"
                     }`}
                   />
                   <span
-                    className={`relative grid size-12 shrink-0 place-items-center rounded-2xl ${
-                      t.accent === "gold"
-                        ? "bg-gold-gradient text-gold-foreground shadow-sm"
-                        : "bg-brand text-brand-foreground"
+                    className={`relative grid size-11 place-items-center rounded-2xl backdrop-blur-sm ${
+                      t.theme === "gold"
+                        ? "bg-white/20 text-gold-foreground"
+                        : "bg-white/15 text-primary-foreground"
                     } transition-transform group-hover:scale-105`}
                   >
                     <t.icon className="size-5" />
                   </span>
-                  <span className="relative min-w-0 flex-1">
-                    <span className="block text-sm font-extrabold text-foreground">{t.label}</span>
-                    <span className="mt-0.5 block text-[12px] text-muted-foreground">{t.note}</span>
-                  </span>
-                  <ChevronRight className="relative size-4 shrink-0 text-muted-foreground/40 transition-all group-hover:translate-x-0.5 group-hover:text-brand" />
+                  <div className="relative">
+                    <span className="block text-sm font-extrabold">{t.label}</span>
+                    <span
+                      className={`mt-1 block text-[11px] leading-snug ${
+                        t.theme === "gold" ? "text-gold-foreground/80" : "text-primary-foreground/70"
+                      }`}
+                    >
+                      {t.note}
+                    </span>
+                  </div>
+                  <ChevronRight
+                    className={`absolute bottom-4 right-4 size-4 transition-all group-hover:translate-x-0.5 ${
+                      t.theme === "gold" ? "text-gold-foreground/50" : "text-white/40"
+                    }`}
+                    aria-hidden
+                  />
                 </button>
               ))}
             </div>
