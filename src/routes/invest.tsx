@@ -88,21 +88,6 @@ function InvestScreen() {
               </div>
             </section>
 
-            {/* Quick trust chips */}
-            <div className="mt-5 flex flex-wrap items-center gap-2">
-              {[
-                { label: `Wallet ${mask(500_000)}`, icon: Wallet },
-                { label: "Daily interest", icon: Clock },
-                { label: "SEC-licensed partner", icon: ShieldCheck },
-              ].map((chip) => (
-                <span
-                  key={chip.label}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-[10px] font-semibold text-primary-foreground/85 backdrop-blur-sm"
-                >
-                  <chip.icon className="size-3" /> {chip.label}
-                </span>
-              ))}
-            </div>
           </div>
         </section>
 
