@@ -62,7 +62,7 @@ function ForYouOptionsScreen() {
       <div className="space-y-8 pb-4 pt-4">
         <header>
           <h1 className="font-display text-2xl font-extrabold tracking-tight">
-            For you — 3 designs
+            For you — 4 designs
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Pick the one you want and I&apos;ll drop it into Home 2.
