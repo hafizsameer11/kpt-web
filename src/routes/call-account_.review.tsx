@@ -119,7 +119,7 @@ function ReviewScreen() {
         </p>
       )}
 
-      <div className="mx-auto mt-5 grid max-w-xs auto-rows-max grid-cols-3 gap-2.5">
+      <div className="mx-auto mt-5 grid w-full max-w-sm auto-rows-max grid-cols-3 gap-x-3 gap-y-2.5">
         {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((k) => (
           <Key key={k} onClick={() => press(k)}>
             {k}
@@ -281,7 +281,7 @@ function Key({
     <button
       type="button"
       onClick={onClick}
-      className="h-14 rounded-2xl border border-border bg-card font-display text-[18px] font-extrabold text-foreground press"
+      className="h-12 rounded-xl border border-border bg-card font-display text-[17px] font-extrabold text-foreground press"
       {...rest}
     >
       {children}
