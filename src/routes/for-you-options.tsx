@@ -14,13 +14,13 @@ export const Route = createFileRoute("/for-you-options")({
       {
         name: "description",
         content:
-          "Compare three For You content card designs for the Kipit home screen: cover stories, reading list and feature plus chips.",
+          "Compare four For You content card designs for the Kipit home screen: cover stories, reading list, feature plus chips and bento mosaic.",
       },
       { property: "og:title", content: "For You Design Options — Kipit" },
       {
         property: "og:description",
         content:
-          "Three side-by-side design directions for the Kipit home For You section.",
+          "Four side-by-side design directions for the Kipit home For You section.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
