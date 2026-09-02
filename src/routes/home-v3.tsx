@@ -120,7 +120,7 @@ function HomeV3Screen() {
               </div>
             </div>
 
-            <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-center">
+            <div className="mt-6 md:mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-center">
               <div>
                 <div className="flex items-center gap-2 text-xs text-primary-foreground/70">
                   Total portfolio value
@@ -229,7 +229,7 @@ function HomeV3Screen() {
             </div>
 
             {/* Quick actions inside the console */}
-            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="mt-6 md:mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {QUICK_ACTIONS.map(({ label, icon: Icon, to }) => (
                 <Link
                   key={label}
@@ -246,8 +246,8 @@ function HomeV3Screen() {
           </section>
 
           {/* Wallet + weekly earnings */}
-          <section className="mt-5 grid gap-4 md:grid-cols-2">
-            <article className="rounded-3xl border border-border bg-surface p-6 shadow-card">
+          <section className="mt-5 grid gap-3 md:gap-4 md:grid-cols-2">
+            <article className="rounded-3xl border border-border bg-surface p-5 md:p-6 shadow-card">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                 <Wallet className="size-4" /> Wallet
               </div>
@@ -275,7 +275,7 @@ function HomeV3Screen() {
               </div>
             </article>
 
-            <article className="rounded-3xl border border-border bg-surface p-6 shadow-card">
+            <article className="rounded-3xl border border-border bg-surface p-5 md:p-6 shadow-card">
               <div className="flex items-baseline justify-between">
                 <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Weekly earnings
@@ -303,8 +303,8 @@ function HomeV3Screen() {
           </section>
 
           {/* Holdings + payout timeline */}
-          <section className="mt-4 grid gap-4 lg:grid-cols-2">
-            <article className="rounded-3xl border border-border bg-surface p-6 shadow-card">
+          <section className="mt-4 grid gap-3 md:gap-4 lg:grid-cols-2">
+            <article className="rounded-3xl border border-border bg-surface p-5 md:p-6 shadow-card">
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-extrabold">Your plans</h2>
                 <Link to="/portfolio" className="text-xs font-bold text-brand">
@@ -338,7 +338,7 @@ function HomeV3Screen() {
               </ul>
             </article>
 
-            <article className="rounded-3xl border border-border bg-surface p-6 shadow-card">
+            <article className="rounded-3xl border border-border bg-surface p-5 md:p-6 shadow-card">
               <h2 className="text-base font-extrabold">Upcoming payouts</h2>
               <ul className="mt-4 space-y-4">
                 {PAYOUTS.map((p) => (
@@ -360,7 +360,7 @@ function HomeV3Screen() {
           </section>
 
           {/* Recommendation */}
-          <section className="mt-4 grid gap-4 rounded-3xl border border-gold/40 bg-accent p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+          <section className="mt-4 grid gap-3 md:gap-4 rounded-3xl border border-gold/40 bg-accent p-5 md:p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
             <div className="flex min-w-0 gap-3">
               <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold-gradient text-gold-foreground">
                 <Lightbulb className="size-5" />
@@ -383,7 +383,7 @@ function HomeV3Screen() {
           </section>
 
           {/* Content feed */}
-          <section className="mt-8">
+          <section className="mt-6 md:mt-8">
             <h2 className="text-lg font-extrabold tracking-tight">For you</h2>
             <div className="-mx-4 mt-3 flex gap-3 overflow-x-auto px-4 pb-2 no-scrollbar md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
               {FEED.map((item, i) => (

@@ -142,13 +142,13 @@ function HomeV5Screen() {
       ) : (
         <>
           {/* Hero: growth + allocation */}
-          <section className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-            <article className="relative overflow-hidden rounded-[1.75rem] bg-brand-gradient p-6 text-primary-foreground shadow-float md:p-8">
+          <section className="grid items-start gap-3 md:gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+            <article className="relative overflow-hidden rounded-3xl md:rounded-[1.75rem] bg-brand-gradient p-5 md:p-6 text-primary-foreground shadow-float md:p-8">
               <div
                 aria-hidden
                 className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-white/10 blur-3xl"
               />
-              <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+              <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 md:gap-4">
                 <div className="min-w-0">
                   <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-primary-foreground/60">
                     Total portfolio value
@@ -226,7 +226,7 @@ function HomeV5Screen() {
             </article>
 
             {/* Allocation + wallet */}
-            <article className="flex h-full flex-col rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+            <article className="flex h-full flex-col rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 md:p-6 shadow-card">
               <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                 Allocation
               </p>
@@ -300,18 +300,18 @@ function HomeV5Screen() {
           </section>
 
           {/* Quick actions */}
-          <section className="mt-4 overflow-hidden rounded-[1.75rem] border border-border bg-surface shadow-card">
-            <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4 sm:divide-y-0">
+          <section className="mt-4 overflow-hidden rounded-3xl md:rounded-[1.75rem] border border-border bg-surface shadow-card">
+            <div className="grid grid-cols-4 divide-x divide-border">
               {QUICK_ACTIONS.map(({ label, icon: Icon, to }) => (
                 <Link
                   key={label}
                   to={to}
-                  className="group relative flex items-center gap-3 px-4 py-4 text-left press hover:bg-secondary md:px-5"
+                  className="group relative flex flex-col items-center gap-2 px-1.5 py-3.5 text-center press hover:bg-secondary md:flex-row md:gap-3 md:px-5 md:py-4 md:text-left"
                 >
                   <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-secondary text-brand transition-colors group-hover:bg-brand group-hover:text-brand-foreground">
                     <Icon className="size-4.5" strokeWidth={1.8} />
                   </span>
-                  <span className="min-w-0 text-[13px] font-semibold leading-tight md:text-sm">
+                  <span className="min-w-0 text-[11px] font-semibold leading-tight md:text-sm">
                     {label}
                   </span>
                   <span
@@ -340,13 +340,13 @@ function HomeV5Screen() {
                 <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </div>
-            <div className="-mx-4 mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 no-scrollbar md:mx-0 md:grid md:grid-cols-3 md:px-0">
+            <div className="-mx-4 mt-4 flex snap-x snap-mandatory gap-3 md:gap-4 overflow-x-auto px-4 pb-3 no-scrollbar md:mx-0 md:grid md:grid-cols-3 md:px-0">
               {HOLDINGS.map((h) => {
                 const pct = Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100);
                 return (
                   <article
                     key={h.name}
-                    className="group relative w-[80%] shrink-0 snap-start overflow-hidden rounded-[1.75rem] border border-border bg-surface p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-float md:w-auto"
+                    className="group relative w-[80%] shrink-0 snap-start overflow-hidden rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-float md:w-auto"
                   >
                     <span
                       aria-hidden
@@ -387,12 +387,12 @@ function HomeV5Screen() {
           </section>
 
           {/* Maturity + weekly interest + payouts */}
-          <div className="mt-4 grid items-start gap-4 lg:grid-cols-3">
-            <section className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+          <div className="mt-4 grid items-start gap-3 md:gap-4 lg:grid-cols-3">
+            <section className="rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 md:p-6 shadow-card">
               <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                 <Target className="size-4" /> Next maturity
               </p>
-              <div className="mt-4 flex items-center gap-4">
+              <div className="mt-4 flex items-center gap-3 md:gap-4">
                 <div className="relative shrink-0">
                   <svg width="88" height="88" viewBox="0 0 128 128" role="img" aria-label="Maturity progress">
                     <circle cx="64" cy="64" r="52" fill="none" stroke="var(--secondary)" strokeWidth="14" />
@@ -427,7 +427,7 @@ function HomeV5Screen() {
               </div>
             </section>
 
-            <section className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+            <section className="rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 md:p-6 shadow-card">
               <div className="flex items-baseline justify-between">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                   Interest this week
@@ -473,7 +473,7 @@ function HomeV5Screen() {
               </div>
             </section>
 
-            <section className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+            <section className="rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 md:p-6 shadow-card">
               <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                 Upcoming payouts
               </p>
@@ -497,7 +497,7 @@ function HomeV5Screen() {
           </div>
 
           {/* Idle cash recommendation */}
-          <section className="mt-4 grid gap-4 rounded-[1.75rem] border border-border bg-accent p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+          <section className="mt-4 grid gap-3 md:gap-4 rounded-3xl md:rounded-[1.75rem] border border-border bg-accent p-5 md:p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
             <div className="flex min-w-0 gap-3">
               <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold text-gold-foreground">
                 <Lightbulb className="size-5" />
@@ -520,7 +520,7 @@ function HomeV5Screen() {
           </section>
 
           {/* For you */}
-          <section className="mt-8">
+          <section className="mt-6 md:mt-8">
             <h2 className="font-display text-lg font-bold tracking-tight">For you</h2>
             <div className="mt-3 grid gap-3 md:grid-cols-3">
               {FEED.map((item, i) => (

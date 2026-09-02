@@ -96,8 +96,8 @@ function HomeV2Screen() {
         ) : (
           <>
             {/* Position statement */}
-            <section className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card md:p-8">
-              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+            <section className="rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 md:p-6 shadow-card md:p-8">
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 md:gap-4">
                 <div className="min-w-0">
                   <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-muted-foreground">
                     Total portfolio value
@@ -128,7 +128,7 @@ function HomeV2Screen() {
                 />
                 <span className="flex-1 bg-gold-gradient" />
               </div>
-              <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <dl className="mt-4 grid grid-cols-2 gap-3 md:gap-4 sm:grid-cols-4">
                 <div>
                   <dt className="text-xs text-muted-foreground">Invested</dt>
                   <dd className="mt-1 text-lg font-extrabold">{mask(INVESTED)}</dd>
@@ -166,9 +166,9 @@ function HomeV2Screen() {
               ))}
             </section>
 
-            <div className="mt-4 grid items-start gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+            <div className="mt-4 grid items-start gap-3 md:gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
               {/* Holdings / payouts ledger */}
-              <section className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+              <section className="rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 md:p-6 shadow-card">
                 <div className="flex gap-1 rounded-full bg-secondary p-1">
                   {(["holdings", "payouts"] as const).map((t) => (
                     <button
@@ -240,7 +240,7 @@ function HomeV2Screen() {
 
               {/* Side column: wallet, weekly earnings, maturity */}
               <div className="space-y-4">
-                <section className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+                <section className="rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 md:p-6 shadow-card">
                   <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                     <Wallet className="size-4" /> Wallet
                   </div>
@@ -260,7 +260,7 @@ function HomeV2Screen() {
                   </Link>
                 </section>
 
-                <section className="rounded-[1.75rem] border border-border bg-surface p-6 shadow-card">
+                <section className="rounded-3xl md:rounded-[1.75rem] border border-border bg-surface p-5 md:p-6 shadow-card">
                   <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                     Weekly earnings
                   </p>
@@ -280,7 +280,7 @@ function HomeV2Screen() {
                   </div>
                 </section>
 
-                <section className="rounded-[1.75rem] bg-brand-gradient p-6 text-primary-foreground shadow-card">
+                <section className="rounded-3xl md:rounded-[1.75rem] bg-brand-gradient p-5 md:p-6 text-primary-foreground shadow-card">
                   <p className="text-xs font-bold uppercase tracking-widest text-primary-foreground/70">
                     Next maturity
                   </p>
@@ -299,7 +299,7 @@ function HomeV2Screen() {
             </div>
 
             {/* Recommendation */}
-            <section className="mt-4 grid gap-4 rounded-[1.75rem] border border-gold/40 bg-accent p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+            <section className="mt-4 grid gap-3 md:gap-4 rounded-3xl md:rounded-[1.75rem] border border-gold/40 bg-accent p-5 md:p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
               <div className="flex min-w-0 gap-3">
                 <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold-gradient text-gold-foreground">
                   <Lightbulb className="size-5" />
@@ -322,7 +322,7 @@ function HomeV2Screen() {
             </section>
 
             {/* Content feed */}
-            <section className="mt-8">
+            <section className="mt-6 md:mt-8">
               <h2 className="text-lg font-extrabold tracking-tight">For you</h2>
               <div className="mt-3 grid gap-3 md:grid-cols-3">
                 {FEED.map((item, i) => (
