@@ -13,7 +13,6 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import callBanner from "@/assets/call-banner.jpg";
 import { AppShell } from "@/components/kipit/AppShell";
 import {
   Dialog,
@@ -435,22 +434,63 @@ function CallAccountScreen() {
             </div>
           </section>
 
-          {/* Banner CTA */}
-          <section className="mt-4">
+          {/* Banner CTA — Architectural glass & gold */}
+          <section className="group relative mt-4 overflow-hidden rounded-[2rem] border border-white/10 bg-brand shadow-float">
+            {/* Aurora glows */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -right-20 -top-20 size-64 rounded-full bg-blue-500/10 blur-3xl"
+            />
+            <span
+              aria-hidden
+              className="pointer-events-none -bottom-20 -left-20 size-64 rounded-full bg-gold/5 blur-3xl"
+            />
+
             <button
               type="button"
-              className="relative block w-full overflow-hidden rounded-[2rem] shadow-float press"
-              aria-label="Move idle wallet cash to earn 14.5% per annum. Add money."
+              className="relative flex w-full flex-col items-start gap-5 p-5 text-left md:flex-row md:items-center md:justify-between md:p-6"
             >
-              <img
-                src={callBanner}
-                alt="Move idle wallet cash to earn 14.5% per annum"
-                className="h-auto w-full object-cover"
-                width={1024}
-                height={400}
-                loading="lazy"
-              />
+              <div className="flex items-start gap-4">
+                {/* Glass icon tile */}
+                <div className="relative shrink-0">
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 rounded-2xl bg-gold/20 blur-xl"
+                  />
+                  <span className="relative grid size-14 place-items-center rounded-2xl bg-white/5 ring-1 ring-inset ring-white/10 backdrop-blur-md">
+                    <Wallet className="size-7 text-gold" strokeWidth={1.5} />
+                  </span>
+                </div>
+
+                {/* Copy */}
+                <div className="min-w-0">
+                  <p className="font-display text-lg font-extrabold leading-tight text-primary-foreground md:text-xl">
+                    Move idle wallet cash to earn{" "}
+                    <span className="bg-gradient-to-r from-gold-foreground via-gold to-gold-foreground bg-clip-text text-transparent">
+                      {CALL_ACCOUNT.rate}
+                    </span>
+                  </p>
+                  <p className="mt-1 text-[12px] leading-relaxed text-primary-foreground/60">
+                    Put your money to work instantly. High-yield returns with the flexibility of a traditional wallet.
+                  </p>
+                </div>
+              </div>
+
+              {/* Gold CTA with shine */}
+              <span className="relative w-full overflow-hidden rounded-xl bg-gradient-to-b from-[#F3C65D] to-[#D4A017] px-6 py-3.5 text-center text-[12px] font-extrabold tracking-wide text-brand shadow-[0_10px_20px_-5px_rgba(212,160,23,0.3)] transition-all group-hover:scale-[1.02] group-active:scale-95 md:w-auto">
+                <span className="relative z-10">ADD MONEY</span>
+                <span
+                  aria-hidden
+                  className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-1000 group-hover:translate-x-full"
+                />
+              </span>
             </button>
+
+            {/* Bottom border accent */}
+            <span
+              aria-hidden
+              className="absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-transparent via-gold/30 to-transparent"
+            />
           </section>
 
           {/* Wallet + projected earnings — unified card */}
