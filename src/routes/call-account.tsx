@@ -282,7 +282,7 @@ function CallAccountScreen() {
             {/* Day detail popup */}
             <Dialog open={selectedDay !== null} onOpenChange={(open) => !open && setSelectedDay(null)}>
               {selectedDay !== null && (
-                <DialogContent className="max-w-sm overflow-hidden rounded-3xl border-0 bg-card p-0 shadow-2xl">
+                <DialogContent className="w-[calc(100%-2rem)] max-w-sm max-h-[calc(100vh-4rem)] overflow-y-auto rounded-3xl border-0 bg-card p-0 shadow-2xl">
                   <DialogTitle className="sr-only">Interest details</DialogTitle>
                   <DialogDescription className="sr-only">
                     Detailed interest information for {fullDate(selectedDay, CALL_ACCRUAL_TREND.length)}
