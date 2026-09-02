@@ -53,6 +53,12 @@ function InvestScreen() {
               Grow your wealth with Kipit&rsquo;s own plans
             </p>
 
+            {/* Available wallet balance (funding source for MOB-062 / MOB-066) */}
+            <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground/85">
+              <Wallet className="size-3.5" />
+              Wallet available {mask(WALLET)}
+            </p>
+
             {/* Call Account glass card (MOB-061 entry) */}
             <section className="mt-6 rounded-[1.75rem] border border-white/12 bg-white/8 p-5 backdrop-blur-md md:p-6">
               <div className="flex items-start justify-between gap-3">
@@ -69,24 +75,32 @@ function InvestScreen() {
                 {mask(CALL_ACCOUNT.balance)}
               </p>
               <p className="mt-2 text-[12px] text-primary-foreground/60">
-                {CALL_ACCOUNT.liquidity} &middot; earned today {mask(CALL_ACCOUNT.accruedToday)}
+                {CALL_ACCOUNT.liquidity} &middot; min {naira(CALL_ACCOUNT.minimum)} &middot; earned
+                today {mask(CALL_ACCOUNT.accruedToday)}
               </p>
 
-              <div className="mt-5 flex gap-3">
+              <div className="mt-5 flex flex-wrap gap-2.5">
                 <button
                   type="button"
-                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-gold-gradient px-5 py-3 text-xs font-extrabold text-gold-foreground press"
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-gold-gradient px-4 py-3 text-xs font-extrabold text-gold-foreground press"
                 >
                   Add money <ArrowUpRight className="size-3.5" />
                 </button>
+                <button
+                  type="button"
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-3 text-xs font-bold text-primary-foreground press"
+                >
+                  Withdraw <ArrowDownLeft className="size-3.5" />
+                </button>
                 <Link
                   to="/portfolio"
-                  className="inline-flex flex-1 items-center justify-center rounded-full border border-white/20 bg-white/10 px-5 py-3 text-xs font-bold text-primary-foreground press"
+                  className="inline-flex flex-1 items-center justify-center rounded-full border border-white/20 bg-white/10 px-4 py-3 text-xs font-bold text-primary-foreground press"
                 >
                   Activity
                 </Link>
               </div>
             </section>
+
 
           </div>
         </section>
