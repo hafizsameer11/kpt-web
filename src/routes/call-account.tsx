@@ -215,39 +215,7 @@ function CallAccountScreen() {
             </div>
 
             {/* 14-day calendar grid — today first, no scroll */}
-            <div className="mt-5 grid grid-cols-7 gap-2">
-              {[...CALL_ACCRUAL_TREND].reverse().map((v, i) => {
-                const isToday = i === 0;
-                const dayLabel = isToday ? "Today" : i === 1 ? "1d" : `${i}d`;
-                return (
-                  <div
-                    key={i}
-                    className={`flex flex-col items-center gap-1 rounded-2xl px-1 py-2.5 ${
-                      isToday
-                        ? "bg-brand text-primary-foreground shadow-sm"
-                        : "bg-muted/60 text-foreground"
-                    }`}
-                  >
-                    <span className={`text-[9px] font-semibold ${isToday ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                      {dayLabel}
-                    </span>
-                    <span className={`text-[11px] font-extrabold text-num ${isToday ? "text-gold" : ""}`}>
-                      {mask(v)}
-                    </span>
-                    <span
-                      className={`h-0.5 w-full rounded-full ${isToday ? "bg-gold" : "bg-border"}`}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-4 flex items-center justify-between border-t border-border/70 pt-3">
-              <p className="text-[11px] font-semibold text-muted-foreground">Last 14 days</p>
-              <p className="text-[12.5px] font-extrabold text-num">
-                {mask(CALL_ACCRUAL_TREND.reduce((a, b) => a + b, 0))}
-              </p>
-            </div>
+            <FourteenDayCalendar mask={mask} />
           </section>
 
 
