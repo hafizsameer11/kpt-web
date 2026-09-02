@@ -170,7 +170,8 @@ function HomeV8Screen() {
               <p className="font-display mt-1.5 text-3xl tracking-tight">{mask(WEEK_EARNINGS)}</p>
               <div className="mt-5 flex h-24 items-end gap-2">
                 {WEEK_SERIES.map((v, i) => (
-                  <div key={WEEK_LABELS[i]} className="flex flex-1 flex-col items-center gap-2">
+                  <div key={WEEK_LABELS[i]} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
+                    <div className="flex w-full flex-1 items-end">
                     <div
                       className={`w-full rounded-t-lg ${
                         i === WEEK_SERIES.length - 1 ? "bg-gold-gradient" : "bg-brand/25"
