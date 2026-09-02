@@ -54,12 +54,13 @@ function trendPoints(values: number[], w: number, h: number) {
 }
 
 function smoothPath(pts: { x: number; y: number }[]) {
-  if (pts.length < 2) return "";
-  let d = `M${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+  const first = pts[0];
+  if (!first || pts.length < 2) return "";
+  let d = `M${first.x.toFixed(1)},${first.y.toFixed(1)}`;
   for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i - 1] ?? pts[i];
-    const p1 = pts[i];
-    const p2 = pts[i + 1];
+    const p1 = pts[i]!;
+    const p2 = pts[i + 1]!;
+    const p0 = pts[i - 1] ?? p1;
     const p3 = pts[i + 2] ?? p2;
     const c1x = p1.x + (p2.x - p0.x) / 6;
     const c1y = p1.y + (p2.y - p0.y) / 6;
@@ -69,6 +70,7 @@ function smoothPath(pts: { x: number; y: number }[]) {
   }
   return d;
 }
+
 
 
 function CallAccountScreen() {
