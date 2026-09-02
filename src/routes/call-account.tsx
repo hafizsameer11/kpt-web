@@ -104,6 +104,7 @@ function CallAccountScreen() {
   const last = pts[pts.length - 1] ?? { x: 300, y: 44 };
   const streakRef = useRef<HTMLDivElement>(null);
   const todayRef = useRef<HTMLDivElement>(null);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   useEffect(() => {
     if (streakRef.current && todayRef.current) {
