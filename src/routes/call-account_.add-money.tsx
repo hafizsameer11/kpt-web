@@ -5,7 +5,7 @@ import { AppShell } from "@/components/kipit/AppShell";
 import { naira, WALLET } from "@/lib/home-data";
 import { CALL_ACCOUNT } from "@/lib/invest-data";
 
-export const Route = createFileRoute("/call-account/add-money")({
+export const Route = createFileRoute("/call-account_/add-money")({
   head: () => ({
     meta: [
       { title: "Add Money to Call Account | Kipit" },
