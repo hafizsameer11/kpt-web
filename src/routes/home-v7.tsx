@@ -258,7 +258,7 @@ function HomeV7Screen() {
                 {WEEK_SERIES.map((v, i) => (
                   <div key={WEEK_LABELS[i]} className="flex flex-1 flex-col items-center gap-1.5">
                     <div
-                      className={`w-full rounded-full ${v === maxWeek ? "bg-gold" : "bg-brand/15"}`}
+                      className={`w-2.5 rounded-full ${v === maxWeek ? "bg-gold" : "bg-brand/15"}`}
                       style={{ height: `${18 + (v / maxWeek) * 40}px` }}
                     />
                     <span className="text-[9px] font-semibold text-muted-foreground">
