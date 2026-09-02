@@ -223,6 +223,8 @@ function CallAccountScreen() {
           {/* Full-month interest calendar */}
           <MonthInterestCalendar mask={mask} />
 
+          {/* Third Interest earned today design — radial gauge */}
+          <TodayInterestGauge mask={mask} />
 
           {/* Product explanation */}
           <section className="mt-4 card-surface p-4 md:p-5">
