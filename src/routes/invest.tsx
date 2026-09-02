@@ -166,45 +166,46 @@ function InvestScreen() {
                       >
                         {featured ? "Most popular" : "Fixed tenor"}
                       </span>
-                      <h3 className="mt-2 font-display text-base font-extrabold md:mt-3 md:text-xl">
-                        {band.days}
+                      <h3 className="mt-2 font-display text-[13px] font-extrabold leading-tight md:mt-3 md:text-base">
+                        {band.name}
                       </h3>
                       <p
-                        className={`mt-0.5 text-[10px] md:text-[11px] ${
+                        className={`mt-0.5 text-[10px] font-semibold md:text-[11px] ${
+                          featured ? "text-primary-foreground/70" : "text-muted-foreground"
+                        }`}
+                      >
+                        {band.days} &middot; min {naira(band.minimum)}
+                      </p>
+                    </div>
+                    <div className="relative mt-4">
+                      <p
+                        className={`text-[9px] md:text-[10px] ${
                           featured ? "text-primary-foreground/60" : "text-muted-foreground"
                         }`}
                       >
-                        Min {naira(band.minimum)}
+                        Rate p.a.
                       </p>
-                    </div>
-                    <div className="relative mt-4 flex items-end justify-between">
-                      <div>
-                        <p
-                          className={`text-[9px] md:text-[10px] ${
-                            featured ? "text-primary-foreground/60" : "text-muted-foreground"
-                          }`}
-                        >
-                          Rate p.a.
-                        </p>
-                        <p
-                          className={`text-xl font-extrabold text-num md:text-2xl ${
-                            featured ? "text-gold" : ""
-                          }`}
-                        >
-                          {band.rate}
-                        </p>
-                      </div>
-                      <span
-                        className={`grid size-9 place-items-center rounded-full md:size-10 ${
+                      <p
+                        className={`text-xl font-extrabold text-num md:text-2xl ${
+                          featured ? "text-gold" : ""
+                        }`}
+                      >
+                        {band.rate}
+                      </p>
+                      <button
+                        type="button"
+                        className={`mt-3 inline-flex w-full items-center justify-center gap-1 rounded-full px-3 py-2 text-[11px] font-extrabold press ${
                           featured
                             ? "bg-gold-gradient text-gold-foreground"
                             : "bg-brand text-brand-foreground"
                         }`}
                       >
-                        <Plus className="size-4 md:size-5" strokeWidth={2.4} />
-                      </span>
+                        <Plus className="size-3.5" strokeWidth={2.6} />
+                        Invest
+                      </button>
                     </div>
                   </article>
+
                 );
               })}
             </div>
