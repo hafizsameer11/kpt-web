@@ -146,25 +146,33 @@ function HomeV7Screen() {
               <p className="mt-0.5 text-[10px] text-primary-foreground/60">No interest earned</p>
             </div>
           </div>
+
+          {/* Quick actions — thumb row on the canvas (Home 6 arc style) */}
+          <div className="relative mt-6 grid grid-cols-4 gap-2">
+            {QUICK_ACTIONS.map((a) => (
+              <Link
+                key={a.label}
+                to={a.to}
+                className="flex flex-col items-center gap-2 rounded-2xl py-1 text-[10px] font-semibold text-primary-foreground/85 press"
+              >
+                <span className="grid size-12 place-items-center rounded-2xl border border-white/15 bg-white/10">
+                  <a.icon className="size-5" strokeWidth={1.9} />
+                </span>
+                <span className="text-center leading-tight">{a.label}</span>
+              </Link>
+            ))}
+          </div>
         </section>
 
-        {/* ── Floating quick actions overlapping the header ─────────── */}
-        <section className="relative z-10 -mt-10 grid grid-cols-4 gap-1 rounded-3xl border border-border bg-surface px-2 py-3 shadow-float md:mt-4 md:gap-4 md:px-5 md:py-5 md:shadow-none">
-          {QUICK_ACTIONS.map((a) => (
-            <Link
-              key={a.label}
-              to={a.to}
-              className="flex flex-col items-center gap-1.5 text-[10px] font-bold text-brand press md:text-xs"
-            >
-              <span className="grid size-10 place-items-center rounded-full bg-accent text-accent-foreground md:size-12 md:rounded-2xl">
-                <a.icon className="size-[18px]" strokeWidth={2} />
-              </span>
-              <span className="text-center leading-tight">{a.label}</span>
-            </Link>
-          ))}
-        </section>
+        {/* ── Sheet that arcs over the canvas ───────────────────────── */}
+        <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
+          <span
+            aria-hidden
+            className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
+          />
 
         {/* ── Mobile segmented tabs ─────────────────────────────────── */}
+
         <div className="mt-4 flex rounded-full bg-secondary p-1 md:hidden">
           {TABS.map((t) => (
             <button
@@ -375,8 +383,9 @@ function HomeV7Screen() {
             ))}
           </div>
         </section>
-
+        </div>
       </div>
+
     </AppShell>
   );
 }
