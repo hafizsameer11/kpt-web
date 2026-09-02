@@ -193,12 +193,12 @@ function CallAccountScreen() {
 
             {/* Actions (MOB-061) — minimal text row */}
             <div className="mt-5 flex items-center gap-1">
-              <button
-                type="button"
+              <Link
+                to="/call-account/add-money"
                 className="inline-flex items-center gap-1.5 rounded-full bg-gold px-4 py-2.5 text-[12px] font-extrabold text-gold-foreground press"
               >
                 Add money <ArrowUpRight className="size-3.5" strokeWidth={2.6} />
-              </button>
+              </Link>
               <button
                 type="button"
                 className="inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[12px] font-bold text-primary-foreground/90 press hover:text-primary-foreground"
@@ -459,12 +459,12 @@ function CallAccountScreen() {
                   </p>
                 </div>
               </div>
-              <button
-                type="button"
+              <Link
+                to="/call-account/add-money"
                 className="press mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-brand px-4 py-3 text-[12.5px] font-extrabold text-brand-foreground"
               >
                 <Plus className="size-4" strokeWidth={2.6} /> Add money
-              </button>
+              </Link>
             </div>
 
             {/* Divider */}
