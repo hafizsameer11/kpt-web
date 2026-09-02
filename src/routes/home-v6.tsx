@@ -213,7 +213,7 @@ function HomeV6Screen() {
     <div className="type-h6">
       <AppShell title="Home" navVariant="orbit">
         {/* ── Midnight canvas: everything lives on one continuous dark field ── */}
-        <div className="relative -mx-4 overflow-hidden bg-brand-gradient px-4 pb-7 pt-4 text-primary-foreground md:mx-0 md:rounded-[2.25rem] md:px-8 md:pb-10 md:pt-7">
+        <div className="relative pt-4 md:pt-0">
           {/* Header */}
           <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 md:hidden">
             <div className="min-w-0">
@@ -441,7 +441,7 @@ function HomeV6Screen() {
                     <p className="mt-3 pl-1 font-display text-xl text-num md:text-2xl">
                       {mask(h.amount)}
                     </p>
-                    <div className="ml-1 mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/12">
+                    <div className="ml-1 mt-2.5 h-1.5 overflow-hidden rounded-full bg-secondary">
                       <div
                         className="h-full rounded-full bg-gold-gradient"
                         style={{ width: `${p}%` }}
@@ -467,7 +467,7 @@ function HomeV6Screen() {
                 <p className="text-sm font-extrabold">
                   {mask(WALLET)} in your wallet earns no interest
                 </p>
-                <p className="mt-1 text-xs leading-relaxed text-primary-foreground/70">
+                <p className="mt-1 text-xs leading-relaxed text-accent-foreground/80">
                   Wallet funds are available for withdrawal at any time. Move them into Kipit
                   Vault at 21.5% p.a. to earn about ₦8,958 a month.
                 </p>
