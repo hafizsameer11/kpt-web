@@ -14,6 +14,7 @@ import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as InvestRouteImport } from './routes/invest'
 import { Route as InvestV1RouteImport } from './routes/invest-v1'
 import { Route as InvestV2RouteImport } from './routes/invest-v2'
+import { Route as InvestV3RouteImport } from './routes/invest-v3'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as SettingsRouteImport } from './routes/settings'
@@ -43,6 +44,11 @@ const InvestV2Route = InvestV2RouteImport.update({
   path: '/invest-v2',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InvestV3Route = InvestV3RouteImport.update({
+  id: '/invest-v3',
+  path: '/invest-v3',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NotificationsRoute = NotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/invest': typeof InvestRoute
   '/invest-v1': typeof InvestV1Route
   '/invest-v2': typeof InvestV2Route
+  '/invest-v3': typeof InvestV3Route
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/invest': typeof InvestRoute
   '/invest-v1': typeof InvestV1Route
   '/invest-v2': typeof InvestV2Route
+  '/invest-v3': typeof InvestV3Route
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/invest': typeof InvestRoute
   '/invest-v1': typeof InvestV1Route
   '/invest-v2': typeof InvestV2Route
+  '/invest-v3': typeof InvestV3Route
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
   '/settings': typeof SettingsRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/invest'
     | '/invest-v1'
     | '/invest-v2'
+    | '/invest-v3'
     | '/notifications'
     | '/portfolio'
     | '/settings'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/invest'
     | '/invest-v1'
     | '/invest-v2'
+    | '/invest-v3'
     | '/notifications'
     | '/portfolio'
     | '/settings'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/invest'
     | '/invest-v1'
     | '/invest-v2'
+    | '/invest-v3'
     | '/notifications'
     | '/portfolio'
     | '/settings'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   InvestRoute: typeof InvestRoute
   InvestV1Route: typeof InvestV1Route
   InvestV2Route: typeof InvestV2Route
+  InvestV3Route: typeof InvestV3Route
   NotificationsRoute: typeof NotificationsRoute
   PortfolioRoute: typeof PortfolioRoute
   SettingsRoute: typeof SettingsRoute
@@ -171,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InvestV2RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/invest-v3': {
+      id: '/invest-v3'
+      path: '/invest-v3'
+      fullPath: '/invest-v3'
+      preLoaderRoute: typeof InvestV3RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/notifications': {
       id: '/notifications'
       path: '/notifications'
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   InvestRoute: InvestRoute,
   InvestV1Route: InvestV1Route,
   InvestV2Route: InvestV2Route,
+  InvestV3Route: InvestV3Route,
   NotificationsRoute: NotificationsRoute,
   PortfolioRoute: PortfolioRoute,
   SettingsRoute: SettingsRoute,
