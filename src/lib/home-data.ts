@@ -84,11 +84,6 @@ export const QUICK_ACTIONS: QuickAction[] = [
 /** Content feed — product updates, education, announcements. */
 export const FEED = [
   {
-    tag: "Product update",
-    title: "Kipit Fixed Income now settles same-day",
-    body: "Maturity payouts land in your wallet within minutes of maturity.",
-  },
-  {
     tag: "Education",
     title: "Understanding tenor and effective yield",
     body: "A 3-minute read on how rate and tenor shape your real return.",
