@@ -160,7 +160,7 @@ function InvestScreen() {
           {/* Fixed plans (MOB-065) */}
           <section className="mt-7">
 
-            <div className="mb-3 flex items-center justify-between gap-3">
+            <div className="mb-4 flex items-center justify-between gap-3">
               <h2 className="font-display text-base font-extrabold">Fixed plans</h2>
               <button
                 type="button"
@@ -170,59 +170,80 @@ function InvestScreen() {
               </button>
             </div>
 
-            {/* Tenor / rate carousel */}
-            <div className="relative -mx-4 mb-4 md:mx-0">
-              <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 md:grid md:grid-cols-4 md:overflow-visible md:px-0">
-                {TENOR_BANDS.map((b, i) => (
-                  <div
+            {/* Luxe tenor / rate carousel */}
+            <div className="relative -mx-4 md:mx-0">
+              <div
+                className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-6 md:grid md:grid-cols-4 md:overflow-visible md:px-0"
+              >
+                {TENOR_BANDS.map((b) => (
+                  <article
                     key={b.days}
-                    className="card-surface relative w-[8.5rem] shrink-0 snap-start p-4 md:w-auto"
+                    className="relative w-[17rem] shrink-0 snap-center overflow-hidden rounded-[1.5rem] bg-brand p-[1px] shadow-float md:w-auto"
                   >
-                    <span className="absolute left-0 top-0 h-full w-1 rounded-l-2xl bg-gold" />
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                      {b.days}
-                    </p>
-                    <p className="mt-1 text-2xl font-extrabold text-brand text-num">{b.rate}</p>
-                    <p className="mt-2 text-[10px] font-medium text-muted-foreground">
-                      Min {naira(b.minimum)}
-                    </p>
-                  </div>
+                    {/* gradient border layer */}
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gold via-gold/30 to-transparent opacity-70"
+                    />
+                    <div className="relative flex flex-col items-center rounded-[1.5rem] bg-brand px-6 py-8 text-center">
+                      <span className="mb-3 inline-flex rounded-full bg-gold/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-gold">
+                        Fixed tenor
+                      </span>
+                      <h3 className="text-lg font-medium text-primary-foreground/80">
+                        {b.days}
+                      </h3>
+
+                      <div className="my-5 flex flex-col items-center">
+                        <span className="font-['Fraunces'] text-[3.25rem] font-bold leading-none text-gold">
+                          {parseFloat(b.rate)}<span className="text-[1.75rem]">%</span>
+                        </span>
+                        <span className="mt-1 text-[10px] font-semibold uppercase tracking-widest text-primary-foreground/40">
+                          Per annum
+                        </span>
+                      </div>
+
+                      <div className="mb-6 h-px w-14 bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+
+                      <p className="text-[11px] font-medium text-primary-foreground/50">
+                        Minimum investment
+                      </p>
+                      <p className="mt-0.5 text-lg font-semibold text-primary-foreground">
+                        {naira(b.minimum)}
+                      </p>
+
+                      <button
+                        type="button"
+                        className="mt-6 inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-gold px-5 py-3 text-xs font-extrabold text-gold-foreground transition-colors hover:bg-gold/90 press"
+                      >
+                        Invest now <ArrowUpRight className="size-3.5" />
+                      </button>
+
+                      {/* ambient glows */}
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-gold/8 blur-[40px]"
+                      />
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute -bottom-10 -left-10 size-28 rounded-full bg-white/5 blur-[36px]"
+                      />
+                    </div>
+                  </article>
                 ))}
               </div>
-            </div>
 
-            <div className="grid gap-2.5 md:grid-cols-2 md:gap-4">
-              {FIXED_PLANS.map((p) => (
-                <article
-                  key={p.name}
-                  className="card-surface flex items-center gap-3 p-4 press md:p-5 md:transition-all md:hover:-translate-y-0.5 md:hover:shadow-float"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="flex min-w-0 items-center gap-2">
-                      <h3 className="truncate text-sm font-bold md:text-base">{p.name}</h3>
-                      {p.tag && (
-                        <span className="shrink-0 rounded-full bg-accent px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-accent-foreground">
-                          {p.tag}
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-1.5 flex items-center gap-3 text-[11px] text-muted-foreground">
-                      <span className="inline-flex items-center gap-1">
-                        <Clock className="size-3" /> {p.tenor}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Lock className="size-3" /> Min {naira(p.minimum)}
-                      </span>
-                    </p>
-                  </div>
-                  <div className="shrink-0 text-right">
-                    <p className="text-sm font-extrabold text-brand text-num">{p.rate}</p>
-                    <span className="mt-1.5 inline-flex items-center gap-0.5 text-[11px] font-bold text-gold-foreground">
-                      Invest <ArrowUpRight className="size-3" />
-                    </span>
-                  </div>
-                </article>
-              ))}
+              {/* carousel dots (mobile only) */}
+              <div className="flex justify-center gap-1.5 pb-2 md:hidden">
+                {TENOR_BANDS.map((b, i) => (
+                  <span
+                    key={b.days}
+                    aria-hidden
+                    className={`h-1.5 rounded-full transition-all ${
+                      i === 0 ? "w-5 bg-brand" : "w-1.5 bg-brand/25"
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
 
           </section>
