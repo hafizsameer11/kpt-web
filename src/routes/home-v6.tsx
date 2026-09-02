@@ -357,12 +357,14 @@ function HomeV6Screen() {
                     key={f.title}
                     className="card-surface w-[38%] shrink-0 snap-start p-3 md:w-auto md:p-3.5"
                   >
-                    <FeedThumb index={i} className="h-24" />
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-gold">
+                    <FeedThumb index={i} className="mb-2 h-16 md:mb-3 md:h-24" />
+                    <p className="truncate text-[9px] font-bold uppercase tracking-[0.14em] text-gold md:text-[10px]">
                       {f.tag}
                     </p>
-                    <h3 className="mt-1 text-sm font-bold leading-snug">{f.title}</h3>
-                    <p className="mt-1 text-xs text-muted-foreground">{f.body}</p>
+                    <h3 className="mt-1 text-[12px] font-bold leading-snug md:text-sm">{f.title}</h3>
+                    <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground md:line-clamp-none md:text-xs">
+                      {f.body}
+                    </p>
                   </article>
                 ))}
               </div>
