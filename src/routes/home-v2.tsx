@@ -294,35 +294,54 @@ function HomeV2Screen() {
                   All plans <ChevronRight className="size-3.5" />
                 </Link>
               </div>
-              <div className="grid gap-2.5 md:grid-cols-3">
-                {HOLDINGS.map((h, i) => (
-                  <article
-                    key={h.name}
-                    className="card-surface flex items-center gap-3 p-4 press md:block"
-                  >
-                    <span
-                      className={`h-11 w-1.5 shrink-0 rounded-full md:mb-3 md:h-1.5 md:w-10 ${
-                        i === 0 ? "bg-gold" : i === 1 ? "bg-brand" : "bg-teal"
-                      }`}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-bold">{h.name}</p>
-                      <p className="mt-0.5 text-[11px] text-muted-foreground">
-                        {h.rate} · {h.daysLeft} days left · {h.date}
-                      </p>
-                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary">
-                        <div
-                          className="h-full rounded-full bg-brand"
-                          style={{
-                            width: `${Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)}%`,
-                          }}
-                        />
+              <div className="grid gap-2.5 md:grid-cols-3 md:gap-4">
+                {HOLDINGS.map((h, i) => {
+                  const progress = Math.round(
+                    ((h.totalDays - h.daysLeft) / h.totalDays) * 100,
+                  );
+                  const rail = i === 0 ? "bg-gold" : i === 1 ? "bg-brand" : "bg-teal";
+                  return (
+                    <article
+                      key={h.name}
+                      className="card-surface flex items-center gap-3 p-4 press md:block md:p-5 md:transition-all md:hover:-translate-y-0.5 md:hover:shadow-float"
+                    >
+                      <span
+                        className={`h-11 w-1.5 shrink-0 rounded-full md:mb-3 md:h-1.5 md:w-12 ${rail}`}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-bold md:text-base">{h.name}</p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground md:hidden">
+                          {h.rate} · {h.daysLeft} days left · {h.date}
+                        </p>
+                        <div className="mt-1 hidden items-center gap-2 md:flex">
+                          <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-foreground">
+                            {h.rate}
+                          </span>
+                          <span className="text-[11px] text-muted-foreground">
+                            {h.daysLeft} days left
+                          </span>
+                        </div>
+                        <p className="mt-3 hidden font-display text-xl font-extrabold text-num md:block">
+                          {mask(h.amount)}
+                        </p>
+                        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary md:mt-3">
+                          <div
+                            className={`h-full rounded-full ${i === 0 ? "bg-gold-gradient" : "bg-brand"}`}
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <div className="mt-2 hidden items-center justify-between text-[11px] md:flex">
+                          <span className="text-muted-foreground">{progress}% complete</span>
+                          <span className="font-semibold">Matures {h.date}</span>
+                        </div>
                       </div>
-                    </div>
-                    <p className="shrink-0 text-sm font-extrabold text-num md:mt-3 md:block">
-                      {mask(h.amount)}
-                    </p>
-                  </article>
+                      <p className="shrink-0 text-sm font-extrabold text-num md:hidden">
+                        {mask(h.amount)}
+                      </p>
+                    </article>
+                  );
+                })}
+
                 ))}
               </div>
             </section>
