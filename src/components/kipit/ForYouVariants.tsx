@@ -187,10 +187,10 @@ export function ForYouFeature() {
  * Asymmetric magazine grid: one large lead tile plus smaller supporting tiles.
  * Mobile scrolls horizontally with mixed widths; desktop locks into a bento.
  */
-export function ForYouBento() {
+export function ForYouBento({ className = "" }: { className?: string }) {
   const [lead, ...rest] = FEED;
   return (
-    <section>
+    <section className={className}>
       <SectionHead />
       <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 no-scrollbar md:mt-4 md:grid md:grid-cols-2 md:grid-rows-2 md:overflow-visible md:gap-4">
         {lead && (

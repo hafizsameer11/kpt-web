@@ -531,47 +531,8 @@ function HomeV6Screen() {
           </section>
         </div>
 
-        {/* ── For you (Home 1 treatment, on the light page surface) ─────── */}
-        <section className="mt-6">
-          <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg md:text-xl">For you</h2>
-            <Link
-              to="/explore"
-              className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-foreground press hover:bg-secondary"
-            >
-              View all
-            </Link>
-          </div>
-          <div className="-mx-4 mt-3 flex gap-3 overflow-x-auto px-4 pb-2 no-scrollbar md:mx-0 md:mt-4 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
-            {FEED.map((item, i) => (
-              <article
-                key={item.title}
-                className={`w-[16.5rem] shrink-0 rounded-3xl border border-border p-4 shadow-card press hover:-translate-y-0.5 hover:shadow-float md:w-auto md:p-5 ${
-                  i === 0 ? "bg-brand-gradient text-primary-foreground" : "bg-surface"
-                }`}
-              >
-                <FeedThumb index={i} />
-                <span
-                  className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${
-                    i === 0
-                      ? "border border-white/20 bg-white/10 text-primary-foreground/85"
-                      : "border border-border bg-secondary text-muted-foreground"
-                  }`}
-                >
-                  {item.tag}
-                </span>
-                <h3 className="mt-3 font-display text-base leading-snug">{item.title}</h3>
-                <p
-                  className={`mt-1.5 text-xs leading-relaxed ${
-                    i === 0 ? "text-primary-foreground/75" : "text-muted-foreground"
-                  }`}
-                >
-                  {item.body}
-                </p>
-              </article>
-            ))}
-          </div>
-        </section>
+        {/* ── For you ─────────────────────────────────────────────────── */}
+        <ForYouBento className="mt-6" />
       </AppShell>
     </div>
   );

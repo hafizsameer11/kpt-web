@@ -383,35 +383,7 @@ function HomeV8Screen() {
             </section>
 
             {/* ── For you ─────────────────────────────────────── */}
-            <section className="md:col-span-12">
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="font-display text-lg tracking-tight">For you</h2>
-                <Link to="/explore" className="text-[12px] font-bold text-brand">
-                  View all
-                </Link>
-              </div>
-              <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 md:mx-0 md:grid md:grid-cols-3 md:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {FEED.map((item, i) => (
-                  <article
-                    key={item.title}
-                    className={`k-glass8 w-[78%] shrink-0 snap-start rounded-[1.75rem] p-3.5 md:w-auto ${
-                      i === 0 ? "md:col-span-1" : ""
-                    }`}
-                  >
-                    <FeedThumb index={i} />
-                    <span className="inline-flex rounded-full bg-brand/8 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-brand">
-                      {item.tag}
-                    </span>
-                    <h3 className="mt-2 text-[14px] font-bold leading-snug tracking-tight">
-                      {item.title}
-                    </h3>
-                    <p className="mt-1 text-[12px] leading-snug text-muted-foreground">
-                      {item.body}
-                    </p>
-                  </article>
-                ))}
-              </div>
-            </section>
+            <ForYouBento className="md:col-span-12" />
           </div>
         )}
       </AppShell>
