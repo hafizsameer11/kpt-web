@@ -110,10 +110,10 @@ function InvestScreen() {
         </section>
 
         {/* ── Sheet ─────────────────────────────────────────────────── */}
-        <div className="relative -mx-4 -mt-7 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
+        <div className="relative -mx-4 -mt-3 rounded-t-[2rem] bg-background px-4 pt-4 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
           <span
             aria-hidden
-            className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
+            className="mx-auto mb-2 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
 
