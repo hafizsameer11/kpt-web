@@ -94,7 +94,7 @@ export function ForYouList() {
               />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-gold-foreground/80 text-brand">
+              <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-brand">
                 {item.tag}
               </p>
               <h3 className="mt-1 font-display text-sm font-bold leading-snug md:text-base">
