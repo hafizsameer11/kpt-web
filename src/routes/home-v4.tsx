@@ -15,7 +15,7 @@ import { Logo } from "@/components/kipit/Logo";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { FeedThumb } from "@/components/kipit/FeedThumb";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
-import { GreetingText, TierStatusCard, WalletNote } from "@/components/kipit/SpecBlocks";
+import { GreetingText } from "@/components/kipit/SpecBlocks";
 import {
   FEED,
   HOLDINGS,
@@ -258,7 +258,7 @@ function HomeV4Screen() {
                     </div>
                   </dl>
                 </div>
-                <WalletNote className="mt-5" />
+                
               </section>
             </div>
 
@@ -446,7 +446,7 @@ function HomeV4Screen() {
                 <p className="mt-1 text-xs font-semibold text-muted-foreground">
                   Available to invest or withdraw
                 </p>
-                <WalletNote className="mt-3" />
+                
                 <Link
                   to="/invest"
                   className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-brand px-5 py-3 text-sm font-bold text-brand-foreground"
@@ -500,9 +500,6 @@ function HomeV4Screen() {
               </div>
             </section>
 
-            <section className="mt-8">
-              <TierStatusCard />
-            </section>
           </>
         )}
       </AppShell>
