@@ -44,7 +44,7 @@ function InvestScreen() {
     <AppShell title="Invest" navVariant="elevated">
       <div className="pb-2">
         {/* ── Header canvas ─────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-20 pt-9 text-primary-foreground md:mx-0 md:rounded-[2.5rem] md:px-8 md:pb-20 md:pt-12 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-12 pt-9 text-primary-foreground md:mx-0 md:rounded-[2.5rem] md:px-8 md:pb-14 md:pt-12 md:shadow-float">
           {/* Soft aurora glows */}
           <span
             aria-hidden
