@@ -64,25 +64,20 @@ function WeekStrip() {
   const max = Math.max(...WEEK_SERIES);
   const min = Math.min(...WEEK_SERIES);
   return (
-    <div className="flex h-24 items-end gap-1.5">
+    <div className="flex h-14 items-end justify-between gap-1">
       {WEEK_SERIES.map((v, i) => {
         const peak = v === max;
-        const pct = 22 + ((v - min) / Math.max(max - min, 1)) * 78;
+        const pct = 18 + ((v - min) / Math.max(max - min, 1)) * 82;
         return (
           <div key={WEEK_LABELS[i]} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
-            <span
-              className={`text-[9px] font-bold ${peak ? "text-brand" : "text-transparent"}`}
-            >
-              {naira(v)}
-            </span>
             <div
-              className={`w-full rounded-t-lg rounded-b-sm ${
-                peak ? "bg-gold-gradient" : "bg-brand/15"
+              className={`w-1 rounded-full ${
+                peak ? "bg-gold" : "bg-brand/20"
               }`}
               style={{ height: `${pct}%` }}
             />
             <span
-              className={`text-[9px] font-semibold ${peak ? "text-foreground" : "text-muted-foreground"}`}
+              className={`text-[9px] font-semibold ${peak ? "text-foreground" : "text-muted-foreground/70"}`}
             >
               {WEEK_LABELS[i]?.slice(0, 1)}
             </span>
