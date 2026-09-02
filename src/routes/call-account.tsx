@@ -9,6 +9,7 @@ import {
   Info,
   Plus,
   ShieldCheck,
+  Target,
   TrendingUp,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
