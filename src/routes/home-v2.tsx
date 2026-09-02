@@ -421,11 +421,11 @@ function HomeV2Screen() {
                   View all
                 </Link>
               </div>
-              <div className="mt-3 grid grid-cols-1 gap-3 md:mt-4 md:grid-cols-3 md:gap-4">
+              <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 no-scrollbar md:mt-4 md:grid md:grid-cols-3 md:overflow-visible">
                 {FEED.map((item, i) => (
                   <article
                     key={item.title}
-                    className={`rounded-3xl border border-border p-4 shadow-card press hover:-translate-y-0.5 hover:shadow-float md:p-5 ${
+                    className={`w-[78vw] max-w-[17.5rem] shrink-0 snap-start rounded-3xl border border-border p-4 shadow-card press hover:-translate-y-0.5 hover:shadow-float md:w-auto md:max-w-none md:p-5 ${
                       i === 0 ? "bg-brand-gradient text-primary-foreground" : "bg-surface"
                     }`}
                   >
