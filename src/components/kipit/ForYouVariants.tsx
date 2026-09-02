@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, Play } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { feedArt } from "@/components/kipit/art";
 import { FEED } from "@/lib/home-data";
 
