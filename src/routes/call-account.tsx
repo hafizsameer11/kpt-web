@@ -42,23 +42,43 @@ export const Route = createFileRoute("/call-account")({
   component: CallAccountScreen,
 });
 
-/** Smooth SVG path for the 14-day accrual trend. */
-function trendPath(values: number[], w: number, h: number) {
+/** Smooth (Catmull-Rom → bezier) SVG path for the 14-day accrual trend. */
+function trendPoints(values: number[], w: number, h: number) {
   const min = Math.min(...values);
   const max = Math.max(...values);
   const span = max - min || 1;
-  return values
-    .map((v, i) => {
-      const x = (i / (values.length - 1)) * w;
-      const y = h - ((v - min) / span) * (h - 6) - 3;
-      return `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
-    })
-    .join(" ");
+  return values.map((v, i) => ({
+    x: (i / (values.length - 1)) * w,
+    y: h - ((v - min) / span) * (h - 10) - 5,
+  }));
 }
+
+function smoothPath(pts: { x: number; y: number }[]) {
+  const first = pts[0];
+  if (!first || pts.length < 2) return "";
+  let d = `M${first.x.toFixed(1)},${first.y.toFixed(1)}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p1 = pts[i]!;
+    const p2 = pts[i + 1]!;
+    const p0 = pts[i - 1] ?? p1;
+    const p3 = pts[i + 2] ?? p2;
+    const c1x = p1.x + (p2.x - p0.x) / 6;
+    const c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6;
+    const c2y = p2.y - (p3.y - p1.y) / 6;
+    d += ` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+  }
+  return d;
+}
+
+
 
 function CallAccountScreen() {
   const { mask, hidden, toggle } = useBalanceVisibility();
-  const line = trendPath(CALL_ACCRUAL_TREND, 300, 64);
+  const pts = trendPoints(CALL_ACCRUAL_TREND, 300, 88);
+  const line = smoothPath(pts);
+  const last = pts[pts.length - 1] ?? { x: 300, y: 44 };
+
 
   return (
     <AppShell title="Call Account" navVariant="elevated">
@@ -166,8 +186,8 @@ function CallAccountScreen() {
           />
 
           {/* Daily accrual trend */}
-          <section className="card-surface p-4 md:p-5">
-            <div className="flex items-start justify-between gap-3">
+          <section className="card-surface overflow-hidden p-0">
+            <div className="flex items-start justify-between gap-3 px-4 pt-4 md:px-5 md:pt-5">
               <div>
                 <h2 className="font-display text-base font-extrabold">Daily interest</h2>
                 <p className="mt-0.5 text-[11.5px] text-muted-foreground">
@@ -179,35 +199,74 @@ function CallAccountScreen() {
               </span>
             </div>
 
-            <svg
-              viewBox="0 0 300 64"
-              preserveAspectRatio="none"
-              className="mt-4 h-16 w-full"
-              aria-hidden
-            >
-              <defs>
-                <linearGradient id="callFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="var(--gold)" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <path d={`${line} L300,64 L0,64 Z`} fill="url(#callFill)" />
-              <path
-                d={line}
-                fill="none"
-                stroke="var(--gold)"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                vectorEffect="non-scaling-stroke"
+            <div className="relative mt-4">
+              <svg
+                viewBox="0 0 300 88"
+                preserveAspectRatio="none"
+                className="h-24 w-full md:h-32"
+                aria-hidden
+              >
+                <defs>
+                  <linearGradient id="callFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.28" />
+                    <stop offset="100%" stopColor="var(--gold)" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient id="callStroke" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.45" />
+                    <stop offset="100%" stopColor="var(--gold)" stopOpacity="1" />
+                  </linearGradient>
+                </defs>
+                {[22, 44, 66].map((y) => (
+                  <line
+                    key={y}
+                    x1="0"
+                    x2="300"
+                    y1={y}
+                    y2={y}
+                    stroke="var(--border)"
+                    strokeWidth="1"
+                    strokeDasharray="3 6"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                ))}
+                <path d={`${line} L300,88 L0,88 Z`} fill="url(#callFill)" />
+                <path
+                  d={line}
+                  fill="none"
+                  stroke="url(#callStroke)"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+              <span
+                aria-hidden
+                className="pointer-events-none absolute size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold ring-4 ring-gold/20"
+                style={{ left: "calc(100% - 5px)", top: `${(last.y / 88) * 100}%` }}
               />
-            </svg>
+            </div>
 
-            <div className="mt-2 flex items-center justify-between text-[11px] font-semibold text-muted-foreground">
-              <span>14 days ago</span>
-              <span className="text-foreground">Today {mask(CALL_ACCOUNT.accruedToday)}</span>
+            <div className="flex items-end justify-between gap-3 border-t border-border/70 bg-muted/30 px-4 py-3 md:px-5">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  14 days ago
+                </p>
+                <p className="mt-0.5 text-[12.5px] font-bold text-muted-foreground text-num">
+                  {mask(CALL_ACCRUAL_TREND[0] ?? 0)}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  Today
+                </p>
+                <p className="mt-0.5 text-[15px] font-extrabold text-num">
+                  {mask(CALL_ACCOUNT.accruedToday)}
+                </p>
+              </div>
             </div>
           </section>
+
 
           {/* Product explanation */}
           <section className="mt-4 card-surface p-4 md:p-5">
