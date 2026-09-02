@@ -196,30 +196,25 @@ function CallAccountScreen() {
           />
 
           {/* Daily accrual trend */}
-          <section className="card-surface overflow-hidden p-4 md:p-5">
-            <div className="flex items-start justify-between gap-4">
+          <section className="card-surface p-4 md:p-5">
+            <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   Interest earned today
                 </p>
-                <div className="mt-1 flex flex-wrap items-baseline gap-2">
-                  <p className="font-display text-[32px] font-extrabold leading-none text-num">
-                    {mask(CALL_ACCOUNT.accruedToday)}
-                  </p>
-                  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-accent/15 px-2.5 py-1 text-[11px] font-bold text-brand">
-                    <TrendingUp className="size-3.5" /> {CALL_ACCOUNT.rate}
-                  </span>
-                </div>
+                <p className="mt-1 font-display text-[26px] font-extrabold leading-none text-num">
+                  {mask(CALL_ACCOUNT.accruedToday)}
+                </p>
                 <p className="mt-1.5 text-[11.5px] text-muted-foreground">
                   Accrues daily &middot; credited monthly
                 </p>
               </div>
-              <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-accent/15 text-brand">
-                <TrendingUp className="size-5" />
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-accent/15 px-2.5 py-1 text-[11px] font-bold text-brand">
+                <TrendingUp className="size-3.5" /> {CALL_ACCOUNT.rate}
               </span>
             </div>
 
-            {/* 14-day heatmap calendar — today first, no scroll */}
+            {/* 14-day calendar grid — today first, no scroll */}
             <FourteenDayCalendar mask={mask} />
           </section>
 
@@ -359,33 +354,14 @@ function build14Days(): Day14[] {
   });
 }
 
-function heatClass(value: number, min: number, max: number, isToday: boolean) {
-  if (isToday) return "bg-brand text-primary-foreground shadow-sm";
-  const t = (value - min) / (max - min || 1);
-  if (t > 0.7) return "bg-gold/20 border-gold/30 text-foreground hover:bg-gold/25";
-  if (t > 0.45) return "bg-gold/12 border-gold/20 text-foreground hover:bg-gold/16";
-  if (t > 0.2) return "bg-gold/6 border-gold/10 text-foreground hover:bg-gold/10";
-  return "bg-muted/60 border-border text-foreground hover:bg-muted";
-}
-
-/** 14-day interest heatmap calendar with per-day detail dialog. */
+/** 14-day interest calendar with per-day detail dialog. */
 function FourteenDayCalendar({ mask }: { mask: (n: number) => string }) {
   const days = useMemo(() => build14Days(), []);
   const [selected, setSelected] = useState<Day14 | null>(null);
-  const values = days.map((d) => d.interest);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
   const total = days.reduce((a, d) => a + d.interest, 0);
 
   return (
     <div className="mt-5">
-      <div className="mb-3 flex items-center justify-between">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-          Last 14 days
-        </p>
-        <p className="text-[11px] font-extrabold text-num">{mask(total)}</p>
-      </div>
-
       <div className="grid grid-cols-7 gap-2">
         {days.map((d, i) => (
           <button
@@ -393,12 +369,11 @@ function FourteenDayCalendar({ mask }: { mask: (n: number) => string }) {
             type="button"
             onClick={() => setSelected(d)}
             aria-label={`${d.label} interest`}
-            className={`flex aspect-square flex-col items-center justify-center gap-0.5 rounded-2xl border press transition ${heatClass(
-              d.interest,
-              min,
-              max,
+            className={`flex flex-col items-center gap-1 rounded-2xl px-1 py-2.5 press transition ${
               d.isToday
-            )}`}
+                ? "bg-brand text-primary-foreground shadow-sm"
+                : "bg-muted/60 text-foreground hover:bg-muted"
+            }`}
           >
             <span
               className={`text-[9px] font-semibold ${
@@ -414,11 +389,18 @@ function FourteenDayCalendar({ mask }: { mask: (n: number) => string }) {
             >
               {mask(d.interest)}
             </span>
-            {d.isToday && (
-              <span className="h-1 w-1 rounded-full bg-gold" />
-            )}
+            <span
+              className={`h-0.5 w-full rounded-full ${
+                d.isToday ? "bg-gold" : "bg-border"
+              }`}
+            />
           </button>
         ))}
+      </div>
+
+      <div className="mt-4 flex items-center justify-between border-t border-border/70 pt-3">
+        <p className="text-[11px] font-semibold text-muted-foreground">Last 14 days</p>
+        <p className="text-[12.5px] font-extrabold text-num">{mask(total)}</p>
       </div>
 
       <Dialog open={selected !== null} onOpenChange={(o) => !o && setSelected(null)}>
