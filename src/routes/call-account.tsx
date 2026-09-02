@@ -404,10 +404,8 @@ function CallAccountScreen() {
 
               {/* Intro */}
               <p className="mt-5 text-[12.5px] leading-relaxed text-primary-foreground/75">
-                Interest accrues daily on your{" "}
-                <span className="font-semibold text-primary-foreground">idle cash</span> and is
-                credited monthly.{" "}
-                <span className="font-semibold text-gold">No lock-in, no penalty.</span>
+                Daily interest on idle cash, credited monthly.{" "}
+                <span className="font-semibold text-gold">No lock-in.</span>
               </p>
 
               {/* Facts */}
@@ -481,8 +479,7 @@ function CallAccountScreen() {
                 </span>
               </div>
               <p className="mt-1 text-[11.5px] leading-snug text-muted-foreground">
-                If your current balance of {mask(CALL_ACCOUNT.balance)} stays invested.
-                Indicative only — rates may change.
+                If your balance stays invested. Rates may change.
               </p>
               <div className="mt-4 flex gap-4 border-t border-border/60 pt-4">
                 {[
