@@ -213,7 +213,7 @@ function HomeV6Screen() {
     <div className="type-h6">
       <AppShell title="Home" navVariant="orbit">
         {/* ── Midnight canvas: everything lives on one continuous dark field ── */}
-        <div className="relative -mx-4 overflow-hidden bg-brand-gradient px-4 pb-32 pt-4 text-primary-foreground md:mx-0 md:rounded-[2.25rem] md:px-8 md:pb-10 md:pt-7">
+        <div className="relative -mx-4 overflow-hidden bg-brand-gradient px-4 pb-7 pt-4 text-primary-foreground md:mx-0 md:rounded-[2.25rem] md:px-8 md:pb-10 md:pt-7">
           <div
             aria-hidden
             className="pointer-events-none absolute -left-24 top-24 size-72 rounded-full bg-gold/20 blur-3xl k-breathe"

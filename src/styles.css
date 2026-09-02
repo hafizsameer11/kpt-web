@@ -327,3 +327,32 @@
   font-weight: 700;
   letter-spacing: -0.035em;
 }
+
+
+/* Home 6 — "Midnight" type system + ambient motion */
+.type-h6 {
+  font-family: "Geist", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.012em;
+}
+.type-h6 .font-display {
+  font-family: "Fraunces", ui-serif, Georgia, serif;
+  font-weight: 600;
+  font-variation-settings: "opsz" 96;
+  letter-spacing: -0.022em;
+}
+
+@keyframes k-breathe {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+.k-breathe { animation: k-breathe 6s ease-in-out infinite; }
+
+@keyframes k-draw {
+  from { stroke-dashoffset: 320; opacity: 0; }
+  to { stroke-dashoffset: 0; opacity: 1; }
+}
+.k-draw { animation: k-draw 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .k-breathe, .k-draw { animation: none; }
+}
