@@ -338,29 +338,44 @@ function HomeV7Screen() {
         </section>
 
         {/* ── For you ───────────────────────────────────────────────── */}
-        <section className={`${show("Overview")} mt-4`}>
-          <div className="mb-2.5 flex items-center gap-2">
-            <Lightbulb className="size-4 text-gold" strokeWidth={2} />
-            <h2 className="font-display text-base font-extrabold">For you</h2>
+        <section className={`${show("Overview")} mt-6`}>
+          <div className="flex items-end justify-between">
+            <h2 className="font-display text-lg font-bold tracking-tight md:text-xl">For you</h2>
+            <Link to="/explore" className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-foreground press hover:bg-secondary">
+              View all
+            </Link>
           </div>
-          <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 no-scrollbar md:mx-0 md:grid md:grid-cols-3 md:px-0">
-            {FEED.map((f, i) => (
+          <div className="-mx-4 mt-3 flex gap-3 overflow-x-auto px-4 pb-2 no-scrollbar md:mx-0 md:mt-4 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+            {FEED.map((item, i) => (
               <article
-                key={f.title}
-                className="card-surface w-[38%] shrink-0 snap-start p-3 md:w-auto md:p-4"
+                key={item.title}
+                className={`w-[16.5rem] shrink-0 rounded-3xl border border-border p-4 shadow-card press hover:-translate-y-0.5 hover:shadow-float md:w-auto md:p-5 ${
+                  i === 0 ? "bg-brand-gradient text-primary-foreground" : "bg-surface"
+                }`}
               >
-                <FeedThumb index={i} className="mb-2 h-16 md:mb-3 md:h-24" />
-                <p className="truncate text-[9px] font-bold uppercase tracking-[0.14em] text-gold md:text-[10px]">
-                  {f.tag}
-                </p>
-                <h3 className="mt-1 text-[12px] font-bold leading-snug md:text-sm">{f.title}</h3>
-                <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground md:line-clamp-none md:text-xs">
-                  {f.body}
+                <FeedThumb index={i} />
+                <span
+                  className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${
+                    i === 0
+                      ? "border border-white/20 bg-white/10 text-primary-foreground/85"
+                      : "border border-border bg-secondary text-muted-foreground"
+                  }`}
+                >
+                  {item.tag}
+                </span>
+                <h3 className="mt-3 font-display text-base font-bold leading-snug">{item.title}</h3>
+                <p
+                  className={`mt-1.5 text-xs leading-relaxed ${
+                    i === 0 ? "text-primary-foreground/75" : "text-muted-foreground"
+                  }`}
+                >
+                  {item.body}
                 </p>
               </article>
             ))}
           </div>
         </section>
+
       </div>
     </AppShell>
   );
