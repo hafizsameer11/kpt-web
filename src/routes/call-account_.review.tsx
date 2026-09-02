@@ -192,53 +192,26 @@ function ReviewScreen() {
         </div>
       </div>
 
-      <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setPin(""); }}>
-        <DialogContent className="max-w-sm rounded-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-center text-[16px] font-extrabold">
-              Enter your PIN
-            </DialogTitle>
-          </DialogHeader>
-          <p className="-mt-1 text-center text-[12px] text-muted-foreground">
-            Authorize {naira(amount)} to your Call Account
-          </p>
-
-          <div className="mt-4 flex justify-center gap-3">
-            {Array.from({ length: PIN_LENGTH }).map((_, i) => (
-              <span
-                key={i}
-                className={`size-3.5 rounded-full ${
-                  i < pin.length ? "bg-gold" : "bg-border"
-                }`}
-              />
-            ))}
-          </div>
-
-          {error && (
-            <p className="mt-3 text-center text-[12px] font-semibold text-destructive">
-              {error}
-            </p>
-          )}
-          {busy && (
-            <p className="mt-3 text-center text-[12px] font-semibold text-muted-foreground">
-              Authorizing…
-            </p>
-          )}
-
-          <div className="mt-5 grid grid-cols-3 gap-2.5">
-            {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((k) => (
-              <Key key={k} onClick={() => press(k)}>
-                {k}
-              </Key>
-            ))}
-            <span />
-            <Key onClick={() => press("0")}>0</Key>
-            <Key onClick={() => press("del")} aria-label="Delete">
-              <Delete className="mx-auto size-5" />
-            </Key>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {isMobile ? (
+        <Drawer open={open} onOpenChange={(o) => { setOpen(o); if (!o) setPin(""); }}>
+          <DrawerContent className="rounded-t-[2rem] bg-card px-6 pb-8 pt-2">
+            <DrawerTitle className="sr-only">Enter your PIN</DrawerTitle>
+            <DrawerDescription className="sr-only">
+              Authorize {naira(amount)} to your Call Account
+            </DrawerDescription>
+            {pinPad}
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setPin(""); }}>
+          <DialogContent className="max-w-sm rounded-3xl">
+            <DialogHeader>
+              <DialogTitle className="sr-only">Enter your PIN</DialogTitle>
+            </DialogHeader>
+            {pinPad}
+          </DialogContent>
+        </Dialog>
+      )}
     </AppShell>
   );
 }
