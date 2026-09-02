@@ -263,20 +263,29 @@ function HomeV4Screen() {
             </div>
 
             {/* Quick actions */}
-            <section className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {QUICK_ACTIONS.map(({ label, icon: Icon, to }) => (
-                <Link
-                  key={label}
-                  to={to}
-                  className="group flex items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3.5 shadow-card transition-colors hover:border-gold/50 hover:bg-accent/40"
-                >
-                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-accent text-brand transition-colors group-hover:bg-gold-gradient group-hover:text-gold-foreground">
-                    <Icon className="size-4" />
-                  </span>
-                  <span className="min-w-0 truncate text-[13px] font-bold">{label}</span>
-                </Link>
-              ))}
+            <section className="mt-4 overflow-hidden rounded-3xl border border-border bg-surface shadow-card">
+              <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4 sm:divide-y-0">
+                {QUICK_ACTIONS.map(({ label, icon: Icon, to }) => (
+                  <Link
+                    key={label}
+                    to={to}
+                    className="group relative flex items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-accent/40 md:px-5"
+                  >
+                    <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold/12 text-gold transition-all group-hover:bg-gold-gradient group-hover:text-gold-foreground">
+                      <Icon className="size-4.5" />
+                    </span>
+                    <span className="min-w-0 text-[13px] font-semibold leading-tight md:text-sm">
+                      {label}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-gold-gradient transition-transform duration-300 group-hover:scale-x-100"
+                    />
+                  </Link>
+                ))}
+              </div>
             </section>
+
 
             {/* Plan rail */}
             <section className="mt-6">
