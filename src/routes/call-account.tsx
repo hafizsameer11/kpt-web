@@ -92,63 +92,70 @@ function CallAccountScreen() {
               </button>
             </div>
 
-            <div className="mt-5 flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary-foreground/70">
-                  {CALL_ACCOUNT.name}
-                </p>
-                <p className="mt-2 font-display text-[38px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[46px]">
-                  {mask(CALL_ACCOUNT.balance)}
-                </p>
-                <p className="mt-2 text-[12px] text-primary-foreground/65">
-                  {CALL_ACCOUNT.liquidity} &middot; min {naira(CALL_ACCOUNT.minimum)}
-                </p>
-              </div>
-              <span className="shrink-0 rounded-full bg-gold-gradient px-3 py-1.5 text-[12px] font-extrabold text-gold-foreground">
+            {/* Title + rate */}
+            <div className="mt-6 flex items-center justify-between gap-3">
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                {CALL_ACCOUNT.name}
+              </p>
+              <span className="shrink-0 rounded-full bg-gold-gradient px-2.5 py-1 text-[11px] font-extrabold text-gold-foreground shadow-[0_0_18px_rgba(253,184,19,0.22)]">
                 {CALL_ACCOUNT.rate}
               </span>
             </div>
 
+            {/* Balance lockup */}
+            <div className="mt-3 space-y-1">
+              <p className="font-display text-[42px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[52px]">
+                <span className="align-top text-[26px] text-gold md:text-[32px]">₦</span>
+                {mask(CALL_ACCOUNT.balance).replace("₦", "")}
+              </p>
+              <p className="flex items-center gap-1.5 text-[12px] font-medium text-primary-foreground/65">
+                <ShieldCheck className="size-3.5 text-gold" />
+                {CALL_ACCOUNT.liquidity} &middot; min {naira(CALL_ACCOUNT.minimum)}
+              </p>
+            </div>
+
             {/* Accrual summary */}
-            <div className="mt-6 grid grid-cols-2 gap-2.5">
-              <div className="rounded-2xl border border-white/12 bg-white/8 p-3.5 backdrop-blur-md">
-                <p className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/60">
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur-md">
+                <p className="text-[9.5px] font-extrabold uppercase tracking-[0.16em] text-primary-foreground/50">
                   Earned today
                 </p>
-                <p className="mt-1 text-lg font-extrabold text-gold text-num">
+                <p className="mt-1.5 text-xl font-extrabold text-gold text-num">
                   {mask(CALL_ACCOUNT.accruedToday)}
                 </p>
               </div>
-              <div className="rounded-2xl border border-white/12 bg-white/8 p-3.5 backdrop-blur-md">
-                <p className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/60">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur-md">
+                <p className="text-[9.5px] font-extrabold uppercase tracking-[0.16em] text-primary-foreground/50">
                   This month
                 </p>
-                <p className="mt-1 text-lg font-extrabold text-num">
+                <p className="mt-1.5 text-xl font-extrabold text-num">
                   {mask(CALL_ACCOUNT.accruedThisMonth)}
                 </p>
               </div>
             </div>
 
             {/* Actions (MOB-061) */}
-            <div className="mt-4 flex flex-wrap gap-2.5">
+            <div className="mt-6 flex flex-col gap-2.5">
               <button
                 type="button"
-                className="inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-gold-gradient px-3 py-3 text-[11px] font-extrabold text-gold-foreground press"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gold-gradient text-[13px] font-extrabold text-gold-foreground press shadow-[0_8px_24px_-8px_rgba(253,184,19,0.35)]"
               >
-                Add money <ArrowUpRight className="size-3.5" />
+                Add money <ArrowUpRight className="size-4" strokeWidth={2.6} />
               </button>
-              <button
-                type="button"
-                className="inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-white/20 bg-white/10 px-3 py-3 text-[11px] font-bold text-primary-foreground press"
-              >
-                Withdraw <ArrowDownLeft className="size-3.5" />
-              </button>
-              <a
-                href="#activity"
-                className="inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-full border border-white/20 bg-white/10 px-3 py-3 text-[11px] font-bold text-primary-foreground press"
-              >
-                Activity
-              </a>
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  className="inline-flex h-12 items-center justify-center gap-1.5 rounded-2xl border border-white/10 bg-white/10 text-[13px] font-bold text-primary-foreground press"
+                >
+                  Withdraw <ArrowDownLeft className="size-4" strokeWidth={2.6} />
+                </button>
+                <a
+                  href="#activity"
+                  className="inline-flex h-12 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-[13px] font-bold text-primary-foreground press"
+                >
+                  Activity
+                </a>
+              </div>
             </div>
           </div>
         </section>
