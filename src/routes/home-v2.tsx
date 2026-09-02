@@ -338,32 +338,6 @@ function HomeV2Screen() {
               </div>
             </section>
 
-            {/* Payout timeline */}
-            <section className="card-surface mt-5 p-4 md:p-6">
-              <h2 className="font-display text-base font-extrabold">Coming up</h2>
-              <ol className="mt-3.5 space-y-3.5">
-                {PAYOUTS.map((p, i) => (
-                  <li key={p.label} className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3">
-                    <span className="relative flex w-3 justify-center">
-                      <span
-                        className={`z-10 mt-1.5 size-2.5 rounded-full ring-4 ring-surface ${
-                          i === 0 ? "bg-gold" : "bg-brand/30"
-                        }`}
-                      />
-                      {i < PAYOUTS.length - 1 && (
-                        <span className="absolute top-3 h-full w-px bg-border" />
-                      )}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold">{p.label}</p>
-                      <p className="text-[11px] text-muted-foreground">{p.date}</p>
-                    </div>
-                    <p className="shrink-0 text-sm font-bold text-num">{mask(p.amount)}</p>
-                  </li>
-                ))}
-              </ol>
-            </section>
-
             {/* Idle wallet nudge */}
             <section className="relative mt-5 overflow-hidden rounded-3xl bg-brand p-5 text-brand-foreground shadow-card md:p-6">
               <span
@@ -408,6 +382,32 @@ function HomeV2Screen() {
                   </Link>
                 </div>
               </div>
+            </section>
+
+            {/* Payout timeline */}
+            <section className="card-surface mt-5 p-4 md:p-6">
+              <h2 className="font-display text-base font-extrabold">Coming up</h2>
+              <ol className="mt-3.5 space-y-3.5">
+                {PAYOUTS.map((p, i) => (
+                  <li key={p.label} className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3">
+                    <span className="relative flex w-3 justify-center">
+                      <span
+                        className={`z-10 mt-1.5 size-2.5 rounded-full ring-4 ring-surface ${
+                          i === 0 ? "bg-gold" : "bg-brand/30"
+                        }`}
+                      />
+                      {i < PAYOUTS.length - 1 && (
+                        <span className="absolute top-3 h-full w-px bg-border" />
+                      )}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">{p.label}</p>
+                      <p className="text-[11px] text-muted-foreground">{p.date}</p>
+                    </div>
+                    <p className="shrink-0 text-sm font-bold text-num">{mask(p.amount)}</p>
+                  </li>
+                ))}
+              </ol>
             </section>
 
 
