@@ -510,8 +510,8 @@ function DesktopHome() {
   return (
     <div className="hidden pb-4 md:block">
       {/* Row 1 — balance hero + quick actions */}
-      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
-        <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-7 text-primary-foreground shadow-float">
+      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+        <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-6 text-primary-foreground shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-28 size-72 rounded-full bg-gold/25 blur-3xl"
@@ -560,14 +560,14 @@ function DesktopHome() {
             </div>
 
             {/* Allocation bar */}
-            <div className="mt-7">
+            <div className="mt-6">
               <div className="flex h-2.5 overflow-hidden rounded-full bg-white/15">
                 <span
                   className="k-fill h-full rounded-full bg-gold-gradient"
                   style={{ width: `${investedPct}%` }}
                 />
               </div>
-              <dl className="mt-4 grid grid-cols-2 gap-4">
+              <dl className="mt-3 grid grid-cols-2 gap-4">
                 <div className="rounded-xl border border-white/15 bg-white/5 px-4 py-3">
                   <dt className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary-foreground/60">
                     Invested · {investedPct}%
@@ -596,7 +596,7 @@ function DesktopHome() {
         </section>
 
         {/* Quick actions + idle cash */}
-        <div className="grid gap-5">
+        <div className="grid gap-4">
           <section className="card-surface p-5">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
               Quick actions
@@ -651,7 +651,7 @@ function DesktopHome() {
       </div>
 
       {/* Row 2 — interest this week + next maturity */}
-      <div className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+      <div className="mt-3 grid items-start gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
         <section className="card-surface p-6">
           <div className="flex items-start justify-between gap-3">
             <div>
