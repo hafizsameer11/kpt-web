@@ -510,7 +510,7 @@ function DesktopHome() {
   return (
     <div className="hidden pb-4 md:block">
       {/* Row 1 — balance hero + quick actions */}
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
         <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-7 text-primary-foreground shadow-float">
           <span
             aria-hidden
@@ -651,7 +651,7 @@ function DesktopHome() {
       </div>
 
       {/* Row 2 — maturity + weekly interest */}
-      <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+      <div className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
         <Link
           to="/portfolio/$holdingId"
           params={{ holdingId: "f1" }}
