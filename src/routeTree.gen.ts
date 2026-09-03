@@ -13,20 +13,28 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CallAccountRouteImport } from './routes/call-account'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as FixedPlansRouteImport } from './routes/fixed-plans'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as GiftsRouteImport } from './routes/gifts'
 import { Route as InvestRouteImport } from './routes/invest'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SplashRouteImport } from './routes/splash'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
 import { Route as ExploreProductIdRouteImport } from './routes/explore_.$productId'
 import { Route as FixedPlansCreateRouteImport } from './routes/fixed-plans_/create'
+import { Route as ForgotPasswordNewRouteImport } from './routes/forgot-password_/new'
+import { Route as ForgotPasswordOtpRouteImport } from './routes/forgot-password_/otp'
+import { Route as ForgotPasswordSuccessRouteImport } from './routes/forgot-password_/success'
 import { Route as GiftsGiftIdRouteImport } from './routes/gifts_.$giftId'
+import { Route as LoginBiometricRouteImport } from './routes/login_/biometric'
 import { Route as PortfolioHoldingIdRouteImport } from './routes/portfolio_.$holdingId'
 import { Route as PortfolioHistoryRouteImport } from './routes/portfolio_.history'
 import { Route as PortfolioMaturitiesRouteImport } from './routes/portfolio_.maturities'
@@ -40,6 +48,14 @@ import { Route as SettingsProfileRouteImport } from './routes/settings_/profile'
 import { Route as SettingsReferralsRouteImport } from './routes/settings_/referrals'
 import { Route as SettingsSecurityRouteImport } from './routes/settings_/security'
 import { Route as SettingsStatementsRouteImport } from './routes/settings_/statements'
+import { Route as SignupBiometricsRouteImport } from './routes/signup_/biometrics'
+import { Route as SignupConfirmPinRouteImport } from './routes/signup_/confirm-pin'
+import { Route as SignupDetailsRouteImport } from './routes/signup_/details'
+import { Route as SignupOtpRouteImport } from './routes/signup_/otp'
+import { Route as SignupPasswordRouteImport } from './routes/signup_/password'
+import { Route as SignupPhoneRouteImport } from './routes/signup_/phone'
+import { Route as SignupPinRouteImport } from './routes/signup_/pin'
+import { Route as SignupSuccessRouteImport } from './routes/signup_/success'
 import { Route as WithdrawAccountsRouteImport } from './routes/withdraw_/accounts'
 import { Route as WithdrawAddAccountRouteImport } from './routes/withdraw_/add-account'
 import { Route as WithdrawAmountRouteImport } from './routes/withdraw_/amount'
@@ -90,6 +106,11 @@ const FixedPlansRoute = FixedPlansRouteImport.update({
   path: '/fixed-plans',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GiftsRoute = GiftsRouteImport.update({
   id: '/gifts',
   path: '/gifts',
@@ -98,6 +119,11 @@ const GiftsRoute = GiftsRouteImport.update({
 const InvestRoute = InvestRouteImport.update({
   id: '/invest',
   path: '/invest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NotificationsRoute = NotificationsRouteImport.update({
@@ -120,9 +146,19 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SplashRoute = SplashRouteImport.update({
   id: '/splash',
   path: '/splash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WithdrawRoute = WithdrawRouteImport.update({
@@ -155,9 +191,29 @@ const FixedPlansCreateRoute = FixedPlansCreateRouteImport.update({
   path: '/fixed-plans/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForgotPasswordNewRoute = ForgotPasswordNewRouteImport.update({
+  id: '/forgot-password_/new',
+  path: '/forgot-password/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordOtpRoute = ForgotPasswordOtpRouteImport.update({
+  id: '/forgot-password_/otp',
+  path: '/forgot-password/otp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordSuccessRoute = ForgotPasswordSuccessRouteImport.update({
+  id: '/forgot-password_/success',
+  path: '/forgot-password/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GiftsGiftIdRoute = GiftsGiftIdRouteImport.update({
   id: '/gifts_/$giftId',
   path: '/gifts/$giftId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginBiometricRoute = LoginBiometricRouteImport.update({
+  id: '/login_/biometric',
+  path: '/login/biometric',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioHoldingIdRoute = PortfolioHoldingIdRouteImport.update({
@@ -223,6 +279,46 @@ const SettingsSecurityRoute = SettingsSecurityRouteImport.update({
 const SettingsStatementsRoute = SettingsStatementsRouteImport.update({
   id: '/settings_/statements',
   path: '/settings/statements',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupBiometricsRoute = SignupBiometricsRouteImport.update({
+  id: '/signup_/biometrics',
+  path: '/signup/biometrics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupConfirmPinRoute = SignupConfirmPinRouteImport.update({
+  id: '/signup_/confirm-pin',
+  path: '/signup/confirm-pin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupDetailsRoute = SignupDetailsRouteImport.update({
+  id: '/signup_/details',
+  path: '/signup/details',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupOtpRoute = SignupOtpRouteImport.update({
+  id: '/signup_/otp',
+  path: '/signup/otp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupPasswordRoute = SignupPasswordRouteImport.update({
+  id: '/signup_/password',
+  path: '/signup/password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupPhoneRoute = SignupPhoneRouteImport.update({
+  id: '/signup_/phone',
+  path: '/signup/phone',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupPinRoute = SignupPinRouteImport.update({
+  id: '/signup_/pin',
+  path: '/signup/pin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupSuccessRoute = SignupSuccessRouteImport.update({
+  id: '/signup_/success',
+  path: '/signup/success',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WithdrawAccountsRoute = WithdrawAccountsRouteImport.update({
@@ -387,20 +483,28 @@ export interface FileRoutesByFullPath {
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/gifts': typeof GiftsRoute
   '/invest': typeof InvestRoute
+  '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
+  '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
   '/explore/$productId': typeof ExploreProductIdRoute
   '/fixed-plans/create': typeof FixedPlansCreateRouteWithChildren
+  '/forgot-password/new': typeof ForgotPasswordNewRoute
+  '/forgot-password/otp': typeof ForgotPasswordOtpRoute
+  '/forgot-password/success': typeof ForgotPasswordSuccessRoute
   '/gifts/$giftId': typeof GiftsGiftIdRoute
+  '/login/biometric': typeof LoginBiometricRoute
   '/portfolio/$holdingId': typeof PortfolioHoldingIdRoute
   '/portfolio/history': typeof PortfolioHistoryRoute
   '/portfolio/maturities': typeof PortfolioMaturitiesRoute
@@ -414,6 +518,14 @@ export interface FileRoutesByFullPath {
   '/settings/referrals': typeof SettingsReferralsRoute
   '/settings/security': typeof SettingsSecurityRoute
   '/settings/statements': typeof SettingsStatementsRoute
+  '/signup/biometrics': typeof SignupBiometricsRoute
+  '/signup/confirm-pin': typeof SignupConfirmPinRoute
+  '/signup/details': typeof SignupDetailsRoute
+  '/signup/otp': typeof SignupOtpRoute
+  '/signup/password': typeof SignupPasswordRoute
+  '/signup/phone': typeof SignupPhoneRoute
+  '/signup/pin': typeof SignupPinRoute
+  '/signup/success': typeof SignupSuccessRoute
   '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/add-account': typeof WithdrawAddAccountRoute
   '/withdraw/amount': typeof WithdrawAmountRoute
@@ -449,19 +561,27 @@ export interface FileRoutesByTo {
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/gifts': typeof GiftsRoute
   '/invest': typeof InvestRoute
+  '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
+  '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
   '/explore/$productId': typeof ExploreProductIdRoute
+  '/forgot-password/new': typeof ForgotPasswordNewRoute
+  '/forgot-password/otp': typeof ForgotPasswordOtpRoute
+  '/forgot-password/success': typeof ForgotPasswordSuccessRoute
   '/gifts/$giftId': typeof GiftsGiftIdRoute
+  '/login/biometric': typeof LoginBiometricRoute
   '/portfolio/$holdingId': typeof PortfolioHoldingIdRoute
   '/portfolio/history': typeof PortfolioHistoryRoute
   '/portfolio/maturities': typeof PortfolioMaturitiesRoute
@@ -475,6 +595,14 @@ export interface FileRoutesByTo {
   '/settings/referrals': typeof SettingsReferralsRoute
   '/settings/security': typeof SettingsSecurityRoute
   '/settings/statements': typeof SettingsStatementsRoute
+  '/signup/biometrics': typeof SignupBiometricsRoute
+  '/signup/confirm-pin': typeof SignupConfirmPinRoute
+  '/signup/details': typeof SignupDetailsRoute
+  '/signup/otp': typeof SignupOtpRoute
+  '/signup/password': typeof SignupPasswordRoute
+  '/signup/phone': typeof SignupPhoneRoute
+  '/signup/pin': typeof SignupPinRoute
+  '/signup/success': typeof SignupSuccessRoute
   '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/add-account': typeof WithdrawAddAccountRoute
   '/withdraw/amount': typeof WithdrawAmountRoute
@@ -511,20 +639,28 @@ export interface FileRoutesById {
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/gifts': typeof GiftsRoute
   '/invest': typeof InvestRoute
+  '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
+  '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
   '/call-account_/review': typeof CallAccountReviewRoute
   '/call-account_/success': typeof CallAccountSuccessRoute
   '/explore_/$productId': typeof ExploreProductIdRoute
   '/fixed-plans_/create': typeof FixedPlansCreateRouteWithChildren
+  '/forgot-password_/new': typeof ForgotPasswordNewRoute
+  '/forgot-password_/otp': typeof ForgotPasswordOtpRoute
+  '/forgot-password_/success': typeof ForgotPasswordSuccessRoute
   '/gifts_/$giftId': typeof GiftsGiftIdRoute
+  '/login_/biometric': typeof LoginBiometricRoute
   '/portfolio_/$holdingId': typeof PortfolioHoldingIdRoute
   '/portfolio_/history': typeof PortfolioHistoryRoute
   '/portfolio_/maturities': typeof PortfolioMaturitiesRoute
@@ -538,6 +674,14 @@ export interface FileRoutesById {
   '/settings_/referrals': typeof SettingsReferralsRoute
   '/settings_/security': typeof SettingsSecurityRoute
   '/settings_/statements': typeof SettingsStatementsRoute
+  '/signup_/biometrics': typeof SignupBiometricsRoute
+  '/signup_/confirm-pin': typeof SignupConfirmPinRoute
+  '/signup_/details': typeof SignupDetailsRoute
+  '/signup_/otp': typeof SignupOtpRoute
+  '/signup_/password': typeof SignupPasswordRoute
+  '/signup_/phone': typeof SignupPhoneRoute
+  '/signup_/pin': typeof SignupPinRoute
+  '/signup_/success': typeof SignupSuccessRoute
   '/withdraw_/accounts': typeof WithdrawAccountsRoute
   '/withdraw_/add-account': typeof WithdrawAddAccountRoute
   '/withdraw_/amount': typeof WithdrawAmountRoute
@@ -575,20 +719,28 @@ export interface FileRouteTypes {
     | '/call-account'
     | '/explore'
     | '/fixed-plans'
+    | '/forgot-password'
     | '/gifts'
     | '/invest'
+    | '/login'
     | '/notifications'
     | '/portfolio'
     | '/reports'
     | '/settings'
+    | '/signup'
     | '/splash'
+    | '/welcome'
     | '/withdraw'
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
     | '/explore/$productId'
     | '/fixed-plans/create'
+    | '/forgot-password/new'
+    | '/forgot-password/otp'
+    | '/forgot-password/success'
     | '/gifts/$giftId'
+    | '/login/biometric'
     | '/portfolio/$holdingId'
     | '/portfolio/history'
     | '/portfolio/maturities'
@@ -602,6 +754,14 @@ export interface FileRouteTypes {
     | '/settings/referrals'
     | '/settings/security'
     | '/settings/statements'
+    | '/signup/biometrics'
+    | '/signup/confirm-pin'
+    | '/signup/details'
+    | '/signup/otp'
+    | '/signup/password'
+    | '/signup/phone'
+    | '/signup/pin'
+    | '/signup/success'
     | '/withdraw/accounts'
     | '/withdraw/add-account'
     | '/withdraw/amount'
@@ -637,19 +797,27 @@ export interface FileRouteTypes {
     | '/call-account'
     | '/explore'
     | '/fixed-plans'
+    | '/forgot-password'
     | '/gifts'
     | '/invest'
+    | '/login'
     | '/notifications'
     | '/portfolio'
     | '/reports'
     | '/settings'
+    | '/signup'
     | '/splash'
+    | '/welcome'
     | '/withdraw'
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
     | '/explore/$productId'
+    | '/forgot-password/new'
+    | '/forgot-password/otp'
+    | '/forgot-password/success'
     | '/gifts/$giftId'
+    | '/login/biometric'
     | '/portfolio/$holdingId'
     | '/portfolio/history'
     | '/portfolio/maturities'
@@ -663,6 +831,14 @@ export interface FileRouteTypes {
     | '/settings/referrals'
     | '/settings/security'
     | '/settings/statements'
+    | '/signup/biometrics'
+    | '/signup/confirm-pin'
+    | '/signup/details'
+    | '/signup/otp'
+    | '/signup/password'
+    | '/signup/phone'
+    | '/signup/pin'
+    | '/signup/success'
     | '/withdraw/accounts'
     | '/withdraw/add-account'
     | '/withdraw/amount'
@@ -698,20 +874,28 @@ export interface FileRouteTypes {
     | '/call-account'
     | '/explore'
     | '/fixed-plans'
+    | '/forgot-password'
     | '/gifts'
     | '/invest'
+    | '/login'
     | '/notifications'
     | '/portfolio'
     | '/reports'
     | '/settings'
+    | '/signup'
     | '/splash'
+    | '/welcome'
     | '/withdraw'
     | '/call-account_/add-money'
     | '/call-account_/review'
     | '/call-account_/success'
     | '/explore_/$productId'
     | '/fixed-plans_/create'
+    | '/forgot-password_/new'
+    | '/forgot-password_/otp'
+    | '/forgot-password_/success'
     | '/gifts_/$giftId'
+    | '/login_/biometric'
     | '/portfolio_/$holdingId'
     | '/portfolio_/history'
     | '/portfolio_/maturities'
@@ -725,6 +909,14 @@ export interface FileRouteTypes {
     | '/settings_/referrals'
     | '/settings_/security'
     | '/settings_/statements'
+    | '/signup_/biometrics'
+    | '/signup_/confirm-pin'
+    | '/signup_/details'
+    | '/signup_/otp'
+    | '/signup_/password'
+    | '/signup_/phone'
+    | '/signup_/pin'
+    | '/signup_/success'
     | '/withdraw_/accounts'
     | '/withdraw_/add-account'
     | '/withdraw_/amount'
@@ -761,20 +953,28 @@ export interface RootRouteChildren {
   CallAccountRoute: typeof CallAccountRoute
   ExploreRoute: typeof ExploreRoute
   FixedPlansRoute: typeof FixedPlansRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   GiftsRoute: typeof GiftsRoute
   InvestRoute: typeof InvestRoute
+  LoginRoute: typeof LoginRoute
   NotificationsRoute: typeof NotificationsRoute
   PortfolioRoute: typeof PortfolioRoute
   ReportsRoute: typeof ReportsRoute
   SettingsRoute: typeof SettingsRoute
+  SignupRoute: typeof SignupRoute
   SplashRoute: typeof SplashRoute
+  WelcomeRoute: typeof WelcomeRoute
   WithdrawRoute: typeof WithdrawRoute
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
   CallAccountReviewRoute: typeof CallAccountReviewRoute
   CallAccountSuccessRoute: typeof CallAccountSuccessRoute
   ExploreProductIdRoute: typeof ExploreProductIdRoute
   FixedPlansCreateRoute: typeof FixedPlansCreateRouteWithChildren
+  ForgotPasswordNewRoute: typeof ForgotPasswordNewRoute
+  ForgotPasswordOtpRoute: typeof ForgotPasswordOtpRoute
+  ForgotPasswordSuccessRoute: typeof ForgotPasswordSuccessRoute
   GiftsGiftIdRoute: typeof GiftsGiftIdRoute
+  LoginBiometricRoute: typeof LoginBiometricRoute
   PortfolioHoldingIdRoute: typeof PortfolioHoldingIdRoute
   PortfolioHistoryRoute: typeof PortfolioHistoryRoute
   PortfolioMaturitiesRoute: typeof PortfolioMaturitiesRoute
@@ -788,6 +988,14 @@ export interface RootRouteChildren {
   SettingsReferralsRoute: typeof SettingsReferralsRoute
   SettingsSecurityRoute: typeof SettingsSecurityRoute
   SettingsStatementsRoute: typeof SettingsStatementsRoute
+  SignupBiometricsRoute: typeof SignupBiometricsRoute
+  SignupConfirmPinRoute: typeof SignupConfirmPinRoute
+  SignupDetailsRoute: typeof SignupDetailsRoute
+  SignupOtpRoute: typeof SignupOtpRoute
+  SignupPasswordRoute: typeof SignupPasswordRoute
+  SignupPhoneRoute: typeof SignupPhoneRoute
+  SignupPinRoute: typeof SignupPinRoute
+  SignupSuccessRoute: typeof SignupSuccessRoute
   WithdrawAccountsRoute: typeof WithdrawAccountsRoute
   WithdrawAddAccountRoute: typeof WithdrawAddAccountRoute
   WithdrawAmountRoute: typeof WithdrawAmountRoute
@@ -843,6 +1051,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FixedPlansRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gifts': {
       id: '/gifts'
       path: '/gifts'
@@ -855,6 +1070,13 @@ declare module '@tanstack/react-router' {
       path: '/invest'
       fullPath: '/invest'
       preLoaderRoute: typeof InvestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/notifications': {
@@ -885,11 +1107,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/splash': {
       id: '/splash'
       path: '/splash'
       fullPath: '/splash'
       preLoaderRoute: typeof SplashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/withdraw': {
@@ -934,11 +1170,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FixedPlansCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forgot-password_/new': {
+      id: '/forgot-password_/new'
+      path: '/forgot-password/new'
+      fullPath: '/forgot-password/new'
+      preLoaderRoute: typeof ForgotPasswordNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password_/otp': {
+      id: '/forgot-password_/otp'
+      path: '/forgot-password/otp'
+      fullPath: '/forgot-password/otp'
+      preLoaderRoute: typeof ForgotPasswordOtpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password_/success': {
+      id: '/forgot-password_/success'
+      path: '/forgot-password/success'
+      fullPath: '/forgot-password/success'
+      preLoaderRoute: typeof ForgotPasswordSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gifts_/$giftId': {
       id: '/gifts_/$giftId'
       path: '/gifts/$giftId'
       fullPath: '/gifts/$giftId'
       preLoaderRoute: typeof GiftsGiftIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login_/biometric': {
+      id: '/login_/biometric'
+      path: '/login/biometric'
+      fullPath: '/login/biometric'
+      preLoaderRoute: typeof LoginBiometricRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portfolio_/$holdingId': {
@@ -1030,6 +1294,62 @@ declare module '@tanstack/react-router' {
       path: '/settings/statements'
       fullPath: '/settings/statements'
       preLoaderRoute: typeof SettingsStatementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup_/biometrics': {
+      id: '/signup_/biometrics'
+      path: '/signup/biometrics'
+      fullPath: '/signup/biometrics'
+      preLoaderRoute: typeof SignupBiometricsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup_/confirm-pin': {
+      id: '/signup_/confirm-pin'
+      path: '/signup/confirm-pin'
+      fullPath: '/signup/confirm-pin'
+      preLoaderRoute: typeof SignupConfirmPinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup_/details': {
+      id: '/signup_/details'
+      path: '/signup/details'
+      fullPath: '/signup/details'
+      preLoaderRoute: typeof SignupDetailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup_/otp': {
+      id: '/signup_/otp'
+      path: '/signup/otp'
+      fullPath: '/signup/otp'
+      preLoaderRoute: typeof SignupOtpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup_/password': {
+      id: '/signup_/password'
+      path: '/signup/password'
+      fullPath: '/signup/password'
+      preLoaderRoute: typeof SignupPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup_/phone': {
+      id: '/signup_/phone'
+      path: '/signup/phone'
+      fullPath: '/signup/phone'
+      preLoaderRoute: typeof SignupPhoneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup_/pin': {
+      id: '/signup_/pin'
+      path: '/signup/pin'
+      fullPath: '/signup/pin'
+      preLoaderRoute: typeof SignupPinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup_/success': {
+      id: '/signup_/success'
+      path: '/signup/success'
+      fullPath: '/signup/success'
+      preLoaderRoute: typeof SignupSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/withdraw_/accounts': {
@@ -1264,20 +1584,28 @@ const rootRouteChildren: RootRouteChildren = {
   CallAccountRoute: CallAccountRoute,
   ExploreRoute: ExploreRoute,
   FixedPlansRoute: FixedPlansRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   GiftsRoute: GiftsRoute,
   InvestRoute: InvestRoute,
+  LoginRoute: LoginRoute,
   NotificationsRoute: NotificationsRoute,
   PortfolioRoute: PortfolioRoute,
   ReportsRoute: ReportsRoute,
   SettingsRoute: SettingsRoute,
+  SignupRoute: SignupRoute,
   SplashRoute: SplashRoute,
+  WelcomeRoute: WelcomeRoute,
   WithdrawRoute: WithdrawRoute,
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
   CallAccountReviewRoute: CallAccountReviewRoute,
   CallAccountSuccessRoute: CallAccountSuccessRoute,
   ExploreProductIdRoute: ExploreProductIdRoute,
   FixedPlansCreateRoute: FixedPlansCreateRouteWithChildren,
+  ForgotPasswordNewRoute: ForgotPasswordNewRoute,
+  ForgotPasswordOtpRoute: ForgotPasswordOtpRoute,
+  ForgotPasswordSuccessRoute: ForgotPasswordSuccessRoute,
   GiftsGiftIdRoute: GiftsGiftIdRoute,
+  LoginBiometricRoute: LoginBiometricRoute,
   PortfolioHoldingIdRoute: PortfolioHoldingIdRoute,
   PortfolioHistoryRoute: PortfolioHistoryRoute,
   PortfolioMaturitiesRoute: PortfolioMaturitiesRoute,
@@ -1291,6 +1619,14 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsReferralsRoute: SettingsReferralsRoute,
   SettingsSecurityRoute: SettingsSecurityRoute,
   SettingsStatementsRoute: SettingsStatementsRoute,
+  SignupBiometricsRoute: SignupBiometricsRoute,
+  SignupConfirmPinRoute: SignupConfirmPinRoute,
+  SignupDetailsRoute: SignupDetailsRoute,
+  SignupOtpRoute: SignupOtpRoute,
+  SignupPasswordRoute: SignupPasswordRoute,
+  SignupPhoneRoute: SignupPhoneRoute,
+  SignupPinRoute: SignupPinRoute,
+  SignupSuccessRoute: SignupSuccessRoute,
   WithdrawAccountsRoute: WithdrawAccountsRoute,
   WithdrawAddAccountRoute: WithdrawAddAccountRoute,
   WithdrawAmountRoute: WithdrawAmountRoute,
