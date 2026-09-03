@@ -186,70 +186,108 @@ function CreatePlanTenorScreen() {
 
           {/* Custom tenor (MOB-068) */}
           <Rise delay={TENOR_BANDS.length * 60} className="mt-3">
-            <button
-              type="button"
-              onClick={() => setSelected("custom")}
-              aria-pressed={selected === "custom"}
-              className={`flex w-full items-center gap-3.5 rounded-3xl border px-4 py-4 text-left transition-colors duration-150 press md:px-5 ${
+            <section
+              aria-label="Custom tenor"
+              className={`relative overflow-hidden rounded-3xl border transition-all duration-200 ${
                 selected === "custom"
-                  ? "border-gold/60 bg-gold/[0.06] shadow-card"
-                  : "border-border/60 bg-card shadow-card hover:bg-muted/40"
+                  ? "border-gold/50 bg-primary text-primary-foreground shadow-float"
+                  : "border-border/60 bg-card shadow-card"
               }`}
             >
-              <span
-                className={`grid size-5 shrink-0 place-items-center rounded-full border-2 transition-all duration-200 ${
-                  selected === "custom"
-                    ? "border-gold bg-gold"
-                    : "border-muted-foreground/30 bg-transparent"
-                }`}
-              >
-                {selected === "custom" && (
-                  <Check className="size-3 text-gold-foreground" strokeWidth={4} />
-                )}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="flex items-baseline gap-2">
-                  <span className="font-display text-[17px] font-extrabold tracking-[-0.01em] text-foreground">
-                    Custom tenor
+              {selected === "custom" && (
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -right-16 -top-20 size-48 rounded-full bg-gold/20 blur-[48px]"
+                />
+              )}
+              <div className="relative p-4 md:p-5">
+                <button
+                  type="button"
+                  onClick={() => setSelected("custom")}
+                  aria-pressed={selected === "custom"}
+                  className="flex w-full items-center gap-3.5 text-left press"
+                >
+                  <span
+                    className={`grid size-10 shrink-0 place-items-center rounded-2xl ${
+                      selected === "custom"
+                        ? "bg-gold text-gold-foreground"
+                        : "bg-primary/[0.06] text-foreground"
+                    }`}
+                  >
+                    <SlidersHorizontal className="size-4.5" strokeWidth={2.5} />
                   </span>
-                  <SlidersHorizontal
-                    className="size-3.5 self-center text-muted-foreground"
-                    strokeWidth={2.5}
-                  />
-                </span>
-                <span className="mt-0.5 block text-[11.5px] text-muted-foreground">
-                  Pick your own number of days
-                </span>
-              </span>
-              <ChevronRight
-                className={`size-4 shrink-0 ${
-                  selected === "custom" ? "text-gold" : "text-muted-foreground/40"
-                }`}
-                strokeWidth={2.5}
-              />
-            </button>
-          </Rise>
+                  <span className="min-w-0 flex-1">
+                    <span
+                      className={`block font-display text-[16px] font-extrabold tracking-[-0.01em] ${
+                        selected === "custom" ? "text-primary-foreground" : "text-foreground"
+                      }`}
+                    >
+                      Custom tenor
+                    </span>
+                    <span
+                      className={`block text-[11.5px] ${
+                        selected === "custom"
+                          ? "text-primary-foreground/60"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      Pick your own number of days
+                    </span>
+                  </span>
+                  {selected !== "custom" && (
+                    <ChevronRight
+                      className="size-4 shrink-0 text-muted-foreground/40"
+                      strokeWidth={2.5}
+                    />
+                  )}
+                </button>
 
-          {/* Custom days input */}
-          {selected === "custom" && (
-            <section className="card-surface mt-4 p-4 md:p-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Number of days
-              </p>
-              <input
-                inputMode="numeric"
-                autoComplete="off"
-                aria-label="Custom tenor in days"
-                placeholder="e.g. 120"
-                value={customDays}
-                onChange={(e) => setCustomDays(e.target.value)}
-                className="mt-2 w-full bg-transparent font-display text-[28px] font-extrabold leading-none text-num text-foreground outline-none placeholder:text-muted-foreground/40"
-              />
-              <p className="mt-2 text-[11.5px] text-muted-foreground">
-                Minimum 30 days. Your rate is set by the tenor band your days fall into.
-              </p>
+                {/* Inline stepper — revealed when custom is selected */}
+                {selected === "custom" && (
+                  <div className="mt-4 flex items-center gap-3">
+                    <button
+                      type="button"
+                      aria-label="Decrease days"
+                      onClick={() =>
+                        setCustomDays((v) => String(Math.max(30, (Number(v) || 30) - 10)))
+                      }
+                      className="grid size-11 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-primary-foreground press"
+                    >
+                      <Minus className="size-4" strokeWidth={3} />
+                    </button>
+                    <span className="relative flex min-w-0 flex-1 items-baseline justify-center gap-1.5 rounded-2xl bg-white/10 px-3 py-2.5">
+                      <input
+                        inputMode="numeric"
+                        autoComplete="off"
+                        aria-label="Custom tenor in days"
+                        placeholder="120"
+                        value={customDays}
+                        onChange={(e) => setCustomDays(e.target.value.replace(/[^0-9]/g, ""))}
+                        className="w-[3ch] min-w-0 bg-transparent text-center font-display text-[24px] font-extrabold leading-none text-num text-primary-foreground outline-none placeholder:text-primary-foreground/30"
+                        style={{ width: `${Math.max(2, customDays.length || 3)}ch` }}
+                      />
+                      <span className="text-[12px] font-bold text-primary-foreground/50">
+                        days
+                      </span>
+                    </span>
+                    <button
+                      type="button"
+                      aria-label="Increase days"
+                      onClick={() => setCustomDays((v) => String((Number(v) || 30) + 10))}
+                      className="grid size-11 shrink-0 place-items-center rounded-full bg-gold text-gold-foreground shadow-glow press"
+                    >
+                      <Plus className="size-4" strokeWidth={3} />
+                    </button>
+                  </div>
+                )}
+                {selected === "custom" && (
+                  <p className="mt-3 text-center text-[11px] text-primary-foreground/50">
+                    Minimum 30 days · rate set by the band your days fall into
+                  </p>
+                )}
+              </div>
             </section>
-          )}
+          </Rise>
 
           {/* Live preview: rate, interest, payout, maturity (MOB-068/069) */}
           {days > 0 && (
