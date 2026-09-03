@@ -23,9 +23,9 @@ import {
   PORTFOLIO_TOTAL,
   UPCOMING_MATURITIES,
   WALLET_TOTAL,
-  naira,
   pctOf,
 } from "@/lib/portfolio-data";
+
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
