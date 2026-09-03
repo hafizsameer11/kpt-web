@@ -336,7 +336,7 @@ function ProductDetailScreen() {
                 ))}
               </div>
               <p className="mt-4 text-center text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                Tap to preview or download
+                Tap to download PDF
               </p>
             </section>
           </Rise>
