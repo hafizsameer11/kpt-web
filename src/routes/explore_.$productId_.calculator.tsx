@@ -235,6 +235,7 @@ function ProductCalculatorScreen() {
               <Link
                 to="/explore/$productId/subscribe"
                 params={{ productId: p.id }}
+                search={{ amount: amount || undefined }}
                 className={`flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[14px] font-extrabold press ${
                   p.availability === "closed"
                     ? "pointer-events-none bg-muted text-muted-foreground"
