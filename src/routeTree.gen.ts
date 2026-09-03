@@ -22,6 +22,7 @@ import { Route as CallAccountReviewRouteImport } from './routes/call-account_.re
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
 import { Route as ExploreProductIdRouteImport } from './routes/explore_.$productId'
 import { Route as FixedPlansCreateRouteImport } from './routes/fixed-plans_/create'
+import { Route as PortfolioHoldingIdRouteImport } from './routes/portfolio_.$holdingId'
 import { Route as ExploreProductIdProcessingRouteImport } from './routes/explore_.$productId_.processing'
 import { Route as ExploreProductIdRequestRouteImport } from './routes/explore_.$productId_.request'
 import { Route as ExploreProductIdRequestSubmittedRouteImport } from './routes/explore_.$productId_.request-submitted'
@@ -99,6 +100,11 @@ const ExploreProductIdRoute = ExploreProductIdRouteImport.update({
 const FixedPlansCreateRoute = FixedPlansCreateRouteImport.update({
   id: '/fixed-plans_/create',
   path: '/fixed-plans/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioHoldingIdRoute = PortfolioHoldingIdRouteImport.update({
+  id: '/portfolio_/$holdingId',
+  path: '/portfolio/$holdingId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExploreProductIdProcessingRoute =
@@ -186,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/call-account/success': typeof CallAccountSuccessRoute
   '/explore/$productId': typeof ExploreProductIdRoute
   '/fixed-plans/create': typeof FixedPlansCreateRouteWithChildren
+  '/portfolio/$holdingId': typeof PortfolioHoldingIdRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
   '/explore/$productId/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -213,6 +220,7 @@ export interface FileRoutesByTo {
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
   '/explore/$productId': typeof ExploreProductIdRoute
+  '/portfolio/$holdingId': typeof PortfolioHoldingIdRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
   '/explore/$productId/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -242,6 +250,7 @@ export interface FileRoutesById {
   '/call-account_/success': typeof CallAccountSuccessRoute
   '/explore_/$productId': typeof ExploreProductIdRoute
   '/fixed-plans_/create': typeof FixedPlansCreateRouteWithChildren
+  '/portfolio_/$holdingId': typeof PortfolioHoldingIdRoute
   '/explore_/$productId_/processing': typeof ExploreProductIdProcessingRoute
   '/explore_/$productId_/request': typeof ExploreProductIdRequestRoute
   '/explore_/$productId_/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -272,6 +281,7 @@ export interface FileRouteTypes {
     | '/call-account/success'
     | '/explore/$productId'
     | '/fixed-plans/create'
+    | '/portfolio/$holdingId'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
     | '/explore/$productId/request-submitted'
@@ -299,6 +309,7 @@ export interface FileRouteTypes {
     | '/call-account/review'
     | '/call-account/success'
     | '/explore/$productId'
+    | '/portfolio/$holdingId'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
     | '/explore/$productId/request-submitted'
@@ -327,6 +338,7 @@ export interface FileRouteTypes {
     | '/call-account_/success'
     | '/explore_/$productId'
     | '/fixed-plans_/create'
+    | '/portfolio_/$holdingId'
     | '/explore_/$productId_/processing'
     | '/explore_/$productId_/request'
     | '/explore_/$productId_/request-submitted'
@@ -356,6 +368,7 @@ export interface RootRouteChildren {
   CallAccountSuccessRoute: typeof CallAccountSuccessRoute
   ExploreProductIdRoute: typeof ExploreProductIdRoute
   FixedPlansCreateRoute: typeof FixedPlansCreateRouteWithChildren
+  PortfolioHoldingIdRoute: typeof PortfolioHoldingIdRoute
   ExploreProductIdProcessingRoute: typeof ExploreProductIdProcessingRoute
   ExploreProductIdRequestRoute: typeof ExploreProductIdRequestRoute
   ExploreProductIdRequestSubmittedRoute: typeof ExploreProductIdRequestSubmittedRoute
@@ -456,6 +469,13 @@ declare module '@tanstack/react-router' {
       path: '/fixed-plans/create'
       fullPath: '/fixed-plans/create'
       preLoaderRoute: typeof FixedPlansCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio_/$holdingId': {
+      id: '/portfolio_/$holdingId'
+      path: '/portfolio/$holdingId'
+      fullPath: '/portfolio/$holdingId'
+      preLoaderRoute: typeof PortfolioHoldingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/explore_/$productId_/processing': {
@@ -587,6 +607,7 @@ const rootRouteChildren: RootRouteChildren = {
   CallAccountSuccessRoute: CallAccountSuccessRoute,
   ExploreProductIdRoute: ExploreProductIdRoute,
   FixedPlansCreateRoute: FixedPlansCreateRouteWithChildren,
+  PortfolioHoldingIdRoute: PortfolioHoldingIdRoute,
   ExploreProductIdProcessingRoute: ExploreProductIdProcessingRoute,
   ExploreProductIdRequestRoute: ExploreProductIdRequestRoute,
   ExploreProductIdRequestSubmittedRoute: ExploreProductIdRequestSubmittedRoute,
