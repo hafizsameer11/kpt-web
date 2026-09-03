@@ -37,8 +37,8 @@ export const Route = createFileRoute("/explore_/$productId_/subscribe")({
   }),
   validateSearch: (search: Record<string, unknown>) => ({
     amount:
-      search.amount !== undefined && search.amount !== null
-        ? Number(search.amount) || undefined
+      search['amount'] !== undefined && search['amount'] !== null
+        ? Number(search['amount']) || undefined
         : undefined,
   }),
   loader: ({ params }) => {
