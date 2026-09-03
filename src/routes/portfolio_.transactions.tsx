@@ -3,13 +3,29 @@ import {
   ArrowDownLeft,
   ArrowLeft,
   ArrowUpRight,
+  Check,
   ChevronRight,
   Filter,
+  SlidersHorizontal,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  DrawerDescription,
+} from "@/components/ui/drawer";
 import {
   TRANSACTIONS,
   TXN_TYPES,
@@ -59,9 +75,11 @@ const NOW = parse("03 Sep 2026");
 
 function TransactionHistoryScreen() {
   const { mask, hidden } = useBalanceVisibility();
+  const isMobile = useIsMobile();
   const [type, setType] = useState<TxnType | "All">("All");
   const [status, setStatus] = useState<TxnStatus | "All">("All");
   const [period, setPeriod] = useState<(typeof PERIODS)[number]>("All time");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const list = TRANSACTIONS.filter((t) => {
     if (type !== "All" && t.type !== type) return false;
@@ -115,8 +133,44 @@ function TransactionHistoryScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
+          {/* Quick filter bar */}
+          <div className="flex items-center gap-2">
+            <div className="flex flex-1 items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2 text-[12px] font-bold text-foreground press"
+              >
+                <span className="text-[10px] font-extrabold uppercase tracking-wide text-muted-foreground">
+                  Period
+                </span>
+                <span className="truncate">{period}</span>
+                <ChevronRight className="size-3.5 shrink-0 -rotate-90 text-muted-foreground" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2 text-[12px] font-bold text-foreground press"
+              >
+                <span className="text-[10px] font-extrabold uppercase tracking-wide text-muted-foreground">
+                  Status
+                </span>
+                <span className="truncate">{status}</span>
+                <ChevronRight className="size-3.5 shrink-0 -rotate-90 text-muted-foreground" />
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(true)}
+              aria-label="Open filters"
+              className="grid size-10 shrink-0 place-items-center rounded-full border border-border bg-card text-foreground press"
+            >
+              <SlidersHorizontal className="size-4" />
+            </button>
+          </div>
+
           {/* Type filter — segmented track */}
-          <div className="-mx-4 overflow-x-auto px-4 pb-1 no-scrollbar">
+          <div className="-mx-4 mt-3 overflow-x-auto px-4 pb-1 no-scrollbar">
             <div className="inline-flex min-w-full gap-1 rounded-xl bg-secondary p-1">
               {(["All", ...TXN_TYPES] as const).map((t) => (
                 <button
@@ -135,42 +189,6 @@ function TransactionHistoryScreen() {
               ))}
             </div>
           </div>
-
-          {/* Date + status filter */}
-          <div className="mt-2.5 grid grid-cols-2 gap-2">
-            <label className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
-              <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                Period
-              </span>
-              <select
-                aria-label="Filter by period"
-                value={period}
-                onChange={(e) => setPeriod(e.target.value as (typeof PERIODS)[number])}
-                className="min-w-0 flex-1 bg-transparent text-right text-[12px] font-bold text-foreground outline-none"
-              >
-                {PERIODS.map((p) => (
-                  <option key={p}>{p}</option>
-                ))}
-              </select>
-            </label>
-            <label className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
-              <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                Status
-              </span>
-              <select
-                aria-label="Filter by status"
-                value={status}
-                onChange={(e) => setStatus(e.target.value as TxnStatus | "All")}
-                className="min-w-0 flex-1 bg-transparent text-right text-[12px] font-bold text-foreground outline-none"
-              >
-                <option value="All">All</option>
-                {STATUSES.map((s) => (
-                  <option key={s}>{s}</option>
-                ))}
-              </select>
-            </label>
-          </div>
-
 
           {/* List */}
           <ul className="mt-4 card-surface divide-y divide-border/60 overflow-hidden">
@@ -228,6 +246,187 @@ function TransactionHistoryScreen() {
           )}
         </div>
       </div>
+
+      <FilterPanel
+        open={filtersOpen}
+        onOpenChange={setFiltersOpen}
+        isMobile={isMobile}
+        type={type}
+        setType={setType}
+        status={status}
+        setStatus={setStatus}
+        period={period}
+        setPeriod={setPeriod}
+        results={list.length}
+      />
     </AppShell>
+  );
+}
+
+function FilterPanel({
+  open,
+  onOpenChange,
+  isMobile,
+  type,
+  setType,
+  status,
+  setStatus,
+  period,
+  setPeriod,
+  results,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  isMobile: boolean;
+  type: TxnType | "All";
+  setType: (t: TxnType | "All") => void;
+  status: TxnStatus | "All";
+  setStatus: (s: TxnStatus | "All") => void;
+  period: (typeof PERIODS)[number];
+  setPeriod: (p: (typeof PERIODS)[number]) => void;
+  results: number;
+}) {
+  const reset = () => {
+    setType("All");
+    setStatus("All");
+    setPeriod("All time");
+  };
+
+  const content = (
+    <div className="flex h-full flex-col">
+      <div className="flex items-center justify-between border-b border-border px-6 py-4">
+        <h2 className="font-display text-lg font-bold">Filters</h2>
+        <button
+          type="button"
+          onClick={() => onOpenChange(false)}
+          className="grid size-8 place-items-center rounded-full bg-secondary text-foreground"
+          aria-label="Close filters"
+        >
+          <X className="size-4" />
+        </button>
+      </div>
+
+      <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
+        {/* Type */}
+        <div>
+          <p className="mb-2.5 text-[11px] font-extrabold uppercase tracking-wide text-muted-foreground">
+            Transaction type
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {(["All", ...TXN_TYPES] as const).map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setType(t)}
+                aria-pressed={type === t}
+                className={`rounded-full px-3.5 py-2 text-[12px] font-bold transition-all press ${
+                  type === t
+                    ? "bg-brand text-brand-foreground shadow-sm"
+                    : "border border-border bg-card text-foreground hover:border-brand/30 hover:text-brand"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Period */}
+        <div>
+          <p className="mb-2.5 text-[11px] font-extrabold uppercase tracking-wide text-muted-foreground">
+            Period
+          </p>
+          <div className="grid grid-cols-1 gap-2">
+            {PERIODS.map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setPeriod(p)}
+                aria-pressed={period === p}
+                className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left text-[13px] font-bold transition-all press ${
+                  period === p
+                    ? "border-brand bg-brand/5 text-brand"
+                    : "border-border bg-card text-foreground hover:border-brand/30"
+                }`}
+              >
+                {p}
+                {period === p && (
+                  <span className="grid size-5 place-items-center rounded-full bg-brand text-primary-foreground">
+                    <Check className="size-3.5" strokeWidth={2.6} />
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Status */}
+        <div>
+          <p className="mb-2.5 text-[11px] font-extrabold uppercase tracking-wide text-muted-foreground">
+            Status
+          </p>
+          <div className="grid grid-cols-1 gap-2">
+            {(["All", ...STATUSES] as const).map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setStatus(s)}
+                aria-pressed={status === s}
+                className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left text-[13px] font-bold transition-all press ${
+                  status === s
+                    ? "border-brand bg-brand/5 text-brand"
+                    : "border-border bg-card text-foreground hover:border-brand/30"
+                }`}
+              >
+                {s}
+                {status === s && (
+                  <span className="grid size-5 place-items-center rounded-full bg-brand text-primary-foreground">
+                    <Check className="size-3.5" strokeWidth={2.6} />
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 border-t border-border px-6 py-4">
+        <button
+          type="button"
+          onClick={reset}
+          className="rounded-xl border border-border px-4 py-3 text-[13px] font-bold text-foreground press"
+        >
+          Reset
+        </button>
+        <button
+          type="button"
+          onClick={() => onOpenChange(false)}
+          className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 py-3 text-[13px] font-extrabold text-primary-foreground shadow-float press"
+        >
+          Show {results} result{results === 1 ? "" : "s"}
+        </button>
+      </div>
+    </div>
+  );
+
+  return isMobile ? (
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="max-h-[92svh] rounded-t-[2rem] bg-card px-0 pb-0 pt-2">
+        <DrawerTitle className="sr-only">Filters</DrawerTitle>
+        <DrawerDescription className="sr-only">
+          Filter transactions by type, period and status.
+        </DrawerDescription>
+        {content}
+      </DrawerContent>
+    </Drawer>
+  ) : (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[80vh] max-w-md overflow-hidden rounded-2xl p-0">
+        <DialogHeader className="sr-only">
+          <DialogTitle>Filters</DialogTitle>
+        </DialogHeader>
+        {content}
+      </DialogContent>
+    </Dialog>
   );
 }
