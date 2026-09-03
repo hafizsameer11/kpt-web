@@ -152,59 +152,60 @@ function TransactionHistoryScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          {/* Quick filter bar */}
-          <div className="flex items-stretch gap-2 rounded-xl border border-border bg-card p-1.5 shadow-sm">
-            {(
-              [
-                { label: "Period", value: period },
-                { label: "Status", value: status },
-              ] as const
-            ).map((f) => (
+          {/* Filter bar with search */}
+          <div className="rounded-xl border border-border bg-card p-2 shadow-sm">
+            <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-secondary/40 px-3 py-2">
+              <Search className="size-4 shrink-0 text-muted-foreground" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search transactions..."
+                className="min-w-0 flex-1 bg-transparent text-[13px] font-bold placeholder:text-muted-foreground/70 focus:outline-none"
+              />
+              {query ? (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  aria-label="Clear search"
+                  className="grid size-6 shrink-0 place-items-center rounded-full bg-background text-muted-foreground"
+                >
+                  <X className="size-3" />
+                </button>
+              ) : null}
+            </div>
+
+            <div className="mt-2 flex items-stretch gap-2">
+              {(
+                [
+                  { label: "Period", value: period },
+                  { label: "Status", value: status },
+                ] as const
+              ).map((f) => (
+                <button
+                  key={f.label}
+                  type="button"
+                  onClick={() => setFiltersOpen(true)}
+                  className="min-w-0 flex-1 rounded-lg border border-border/60 bg-secondary/30 px-3 py-1.5 text-left transition-colors hover:bg-secondary/60 press"
+                >
+                  <span className="block text-[9.5px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
+                    {f.label}
+                  </span>
+                  <span className="mt-0.5 flex items-center gap-1">
+                    <span className="truncate text-[12.5px] font-bold">{f.value}</span>
+                    <ChevronRight className="size-3 shrink-0 rotate-90 text-muted-foreground" />
+                  </span>
+                </button>
+              ))}
               <button
-                key={f.label}
                 type="button"
                 onClick={() => setFiltersOpen(true)}
-                className="min-w-0 flex-1 rounded-lg px-3 py-1.5 text-left transition-colors hover:bg-secondary/60 press"
+                aria-label="Open filters"
+                className="grid w-11 shrink-0 place-items-center rounded-lg bg-brand text-brand-foreground press"
               >
-                <span className="block text-[9.5px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
-                  {f.label}
-                </span>
-                <span className="mt-0.5 flex items-center gap-1">
-                  <span className="truncate text-[12.5px] font-bold">{f.value}</span>
-                  <ChevronRight className="size-3 shrink-0 rotate-90 text-muted-foreground" />
-                </span>
+                <SlidersHorizontal className="size-4" />
               </button>
-            ))}
-            <button
-              type="button"
-              onClick={() => setFiltersOpen(true)}
-              aria-label="Open filters"
-              className="grid w-11 shrink-0 place-items-center rounded-lg bg-brand text-brand-foreground press"
-            >
-              <SlidersHorizontal className="size-4" />
-            </button>
-          </div>
-
-          {/* Search */}
-          <div className="mt-3 flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 shadow-sm">
-            <Search className="size-4 shrink-0 text-muted-foreground" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search label, reference, source..."
-              className="min-w-0 flex-1 bg-transparent text-[13px] font-bold placeholder:text-muted-foreground/70 focus:outline-none"
-            />
-            {query && (
-              <button
-                type="button"
-                onClick={() => setQuery("")}
-                aria-label="Clear search"
-                className="grid size-6 shrink-0 place-items-center rounded-full bg-secondary text-muted-foreground"
-              >
-                <X className="size-3" />
-              </button>
-            )}
+            </div>
           </div>
 
           {/* List */}
