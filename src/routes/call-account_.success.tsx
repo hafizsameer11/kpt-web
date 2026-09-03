@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Check, Info, TrendingUp } from "lucide-react";
+import { ArrowRight, Info, TrendingUp } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
 import { CALL_ACCOUNT } from "@/lib/invest-data";
