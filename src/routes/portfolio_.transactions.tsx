@@ -115,48 +115,62 @@ function TransactionHistoryScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          {/* Type filter */}
-          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 no-scrollbar">
-            {(["All", ...TXN_TYPES] as const).map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setType(t)}
-                className={`shrink-0 rounded-full border px-3.5 py-2 text-[12px] font-bold transition-colors press ${
-                  type === t
-                    ? "border-brand bg-brand text-brand-foreground"
-                    : "border-border bg-card text-muted-foreground"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
+          {/* Type filter — segmented track */}
+          <div className="-mx-4 overflow-x-auto px-4 pb-1 no-scrollbar">
+            <div className="inline-flex min-w-full gap-1 rounded-xl bg-secondary p-1">
+              {(["All", ...TXN_TYPES] as const).map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setType(t)}
+                  aria-pressed={type === t}
+                  className={`shrink-0 rounded-lg px-3.5 py-2 text-[12px] font-bold transition-all press ${
+                    type === t
+                      ? "bg-brand text-brand-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-brand"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Date + status filter */}
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <select
-              aria-label="Filter by period"
-              value={period}
-              onChange={(e) => setPeriod(e.target.value as (typeof PERIODS)[number])}
-              className="rounded-lg border border-border bg-card px-3 py-2.5 text-[12px] font-bold text-foreground outline-none"
-            >
-              {PERIODS.map((p) => (
-                <option key={p}>{p}</option>
-              ))}
-            </select>
-            <select
-              aria-label="Filter by status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value as TxnStatus | "All")}
-              className="rounded-lg border border-border bg-card px-3 py-2.5 text-[12px] font-bold text-foreground outline-none"
-            >
-              <option value="All">All statuses</option>
-              {STATUSES.map((s) => (
-                <option key={s}>{s}</option>
-              ))}
-            </select>
+          <div className="mt-2.5 grid grid-cols-2 gap-2">
+            <label className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
+              <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                Period
+              </span>
+              <select
+                aria-label="Filter by period"
+                value={period}
+                onChange={(e) => setPeriod(e.target.value as (typeof PERIODS)[number])}
+                className="min-w-0 flex-1 bg-transparent text-right text-[12px] font-bold text-foreground outline-none"
+              >
+                {PERIODS.map((p) => (
+                  <option key={p}>{p}</option>
+                ))}
+              </select>
+            </label>
+            <label className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
+              <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                Status
+              </span>
+              <select
+                aria-label="Filter by status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value as TxnStatus | "All")}
+                className="min-w-0 flex-1 bg-transparent text-right text-[12px] font-bold text-foreground outline-none"
+              >
+                <option value="All">All</option>
+                {STATUSES.map((s) => (
+                  <option key={s}>{s}</option>
+                ))}
+              </select>
+            </label>
           </div>
+
 
           {/* List */}
           <ul className="mt-4 card-surface divide-y divide-border/60 overflow-hidden">
