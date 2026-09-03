@@ -292,6 +292,7 @@ function HoldingDetailScreen() {
                 <li key={d.label} style={{ ["--d" as string]: `${i * 60}ms` }} className="k-rise">
                   <button
                     type="button"
+                    onClick={() => toast.success(`${d.label} downloaded`)}
                     className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-secondary/60"
                   >
                     <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-gold/12 text-gold">
