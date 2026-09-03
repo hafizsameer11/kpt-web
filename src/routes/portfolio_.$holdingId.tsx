@@ -564,6 +564,5 @@ function MobileHolding() {
           <DisclosureStrip variant={h.kind === "Fixed plan" ? "fixed" : "marketplace"} />
         </div>
       </div>
-    </AppShell>
   );
 }
