@@ -5,6 +5,7 @@ import {
   Building2,
   Check,
   CreditCard,
+  Info,
   Plus,
   ShieldCheck,
   Wallet,
