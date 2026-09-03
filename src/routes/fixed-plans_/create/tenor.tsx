@@ -116,7 +116,7 @@ function CreatePlanTenorScreen() {
                     onClick={() => setSelected(b.days)}
                     className={`relative w-full rounded-3xl border p-4 text-left transition-all duration-200 press ${
                       active
-                        ? "border-gold bg-navy text-primary-foreground shadow-float"
+                        ? "border-gold bg-primary text-primary-foreground shadow-float"
                         : "card-surface"
                     }`}
                   >
@@ -163,7 +163,7 @@ function CreatePlanTenorScreen() {
                 onClick={() => setSelected("custom")}
                 className={`flex h-full w-full items-center gap-3 rounded-3xl border p-4 text-left transition-all duration-200 press ${
                   selected === "custom"
-                    ? "border-gold bg-navy text-primary-foreground shadow-float"
+                    ? "border-gold bg-primary text-primary-foreground shadow-float"
                     : "card-surface"
                 }`}
               >
@@ -218,7 +218,7 @@ function CreatePlanTenorScreen() {
           {/* Live preview: rate, interest, payout, maturity (MOB-068/069) */}
           {days > 0 && (
             <section className="card-surface mt-4 overflow-hidden p-0">
-              <div className="flex items-center justify-between bg-navy px-4 py-3.5 text-primary-foreground md:px-5">
+              <div className="flex items-center justify-between bg-primary px-4 py-3.5 text-primary-foreground md:px-5">
                 <span className="flex items-center gap-2 text-[12px] font-bold">
                   <CalendarClock className="size-4 text-gold" />
                   {days} days at {rate}% p.a.
