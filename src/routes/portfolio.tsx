@@ -445,54 +445,81 @@ function PortfolioScreen() {
 
 
           {/* Records (MOB-123 / MOB-124) */}
-          <section className="mt-7 grid gap-3 md:grid-cols-2">
-            <Link
-              to="/portfolio/history"
-              className="card-surface flex items-center gap-3 px-4 py-3.5 press"
-            >
-              <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-brand">
-                <History className="size-4.5" strokeWidth={2.2} />
+          <section className="mt-7">
+            <div className="mb-3 flex items-center justify-between px-1">
+              <h2 className="font-display text-base font-extrabold">Records</h2>
+              <span className="text-[11px] font-semibold text-muted-foreground">
+                Statements &amp; activity
               </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-bold">Investment history</p>
-                <p className="text-[11px] text-muted-foreground">Active, matured and closed</p>
-              </div>
-              <ChevronRight className="size-4 text-muted-foreground" />
-            </Link>
-            <Link
-              to="/portfolio/transactions"
-              className="card-surface flex items-center gap-3 px-4 py-3.5 press"
-            >
-              <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-brand">
-                <Receipt className="size-4.5" strokeWidth={2.2} />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-bold">Transaction history</p>
-                <p className="text-[11px] text-muted-foreground">Deposits, interest, withdrawals</p>
-              </div>
-              <ChevronRight className="size-4 text-muted-foreground" />
-            </Link>
-            <Link to="/gifts" className="card-surface flex items-center gap-3 px-4 py-3.5 press">
-              <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-brand">
-                <Gift className="size-4.5" strokeWidth={2.2} />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-bold">Gift investments</p>
-                <p className="text-[11px] text-muted-foreground">Sent, pending and claimed</p>
-              </div>
-              <ChevronRight className="size-4 text-muted-foreground" />
-            </Link>
-            <Link to="/reports" className="card-surface flex items-center gap-3 px-4 py-3.5 press">
-              <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-brand">
-                <FileBarChart className="size-4.5" strokeWidth={2.2} />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-bold">Kipit reports</p>
-                <p className="text-[11px] text-muted-foreground">Monthly, quarterly and annual</p>
-              </div>
-              <ChevronRight className="size-4 text-muted-foreground" />
-            </Link>
+            </div>
+
+            <ul className="card-surface divide-y divide-border/60 overflow-hidden md:grid md:grid-cols-2 md:divide-y-0 md:gap-px md:bg-border/60">
+              {(
+                [
+                  {
+                    to: "/portfolio/history",
+                    icon: History,
+                    title: "Investment history",
+                    sub: "Active, matured and closed",
+                    meta: "12 records",
+                  },
+                  {
+                    to: "/portfolio/transactions",
+                    icon: Receipt,
+                    title: "Transaction history",
+                    sub: "Deposits, interest, withdrawals",
+                    meta: "38 records",
+                  },
+                  {
+                    to: "/gifts",
+                    icon: Gift,
+                    title: "Gift investments",
+                    sub: "Sent, pending and claimed",
+                    meta: "3 gifts",
+                  },
+                  {
+                    to: "/reports",
+                    icon: FileBarChart,
+                    title: "Kipit reports",
+                    sub: "Monthly, quarterly and annual",
+                    meta: "PDF",
+                  },
+                ] as const
+              ).map((item, i) => (
+                <li
+                  key={item.to}
+                  style={{ ["--d" as string]: `${i * 60}ms` }}
+                  className="k-rise md:bg-card"
+                >
+                  <Link
+                    to={item.to}
+                    className="group relative flex items-center gap-3.5 px-4 py-4 press transition-colors hover:bg-secondary/50"
+                  >
+                    <span
+                      className="absolute inset-y-0 left-0 w-[3px] origin-center scale-y-0 bg-gold transition-transform duration-300 group-hover:scale-y-100"
+                      aria-hidden
+                    />
+                    <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand text-gold shadow-sm ring-1 ring-inset ring-gold/25 transition-transform duration-300 group-hover:scale-105">
+                      <item.icon className="size-5" strokeWidth={2} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13.5px] font-bold tracking-tight">
+                        {item.title}
+                      </p>
+                      <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                        {item.sub}
+                      </p>
+                    </div>
+                    <span className="hidden shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-brand sm:inline-flex">
+                      {item.meta}
+                    </span>
+                    <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-brand" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </section>
+
 
           <DisclosureStrip variant="marketplace" />
         </div>
