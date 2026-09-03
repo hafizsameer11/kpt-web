@@ -56,7 +56,7 @@ function ProcessingScreen() {
   return (
     <AppShell title="Processing" navVariant="elevated">
       <div className="pb-2">
-        <section className="relative -mx-4 flex min-h-[70svh] flex-col items-center justify-center overflow-hidden bg-brand-gradient px-6 py-16 text-center text-primary-foreground md:mx-0 md:min-h-[60vh] md:rounded-2xl md:shadow-float">
+        <section className="relative -mx-4 flex min-h-[70svh] flex-col items-center justify-center overflow-hidden bg-brand-gradient px-6 py-16 text-center text-primary-foreground md:mx-0 md:min-h-[60vh] md:rounded-xl md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-gold/20 blur-[64px]"
@@ -92,7 +92,7 @@ function ProcessingScreen() {
               {STEPS.map((s, i) => (
                 <li
                   key={s}
-                  className="k-rise flex items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.06] px-3.5 py-2.5"
+                  className="k-rise flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.06] px-3.5 py-2.5"
                   style={{ "--d": `${i * 700}ms` } as React.CSSProperties}
                 >
                   <span className="size-1.5 shrink-0 rounded-full bg-gold" />

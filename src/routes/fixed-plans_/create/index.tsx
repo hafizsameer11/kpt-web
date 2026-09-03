@@ -48,7 +48,7 @@ function CreatePlanAmountScreen() {
     <AppShell title="Create Plan" navVariant="elevated">
       <div className="pb-2">
         {/* ── Hero: amount entry (MOB-066) ───────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
@@ -136,7 +136,7 @@ function CreatePlanAmountScreen() {
                 Funding source
               </p>
               <div className="mt-3 flex items-center gap-3">
-                <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-gold/15 text-gold">
+                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-gold/15 text-gold">
                   <Wallet className="size-5" strokeWidth={2.2} />
                 </span>
                 <div className="min-w-0">
@@ -148,7 +148,7 @@ function CreatePlanAmountScreen() {
               </div>
 
               {overWallet ? (
-                <div className="k-shake mt-3 rounded-2xl bg-destructive/10 p-3">
+                <div className="k-shake mt-3 rounded-xl bg-destructive/10 p-3">
                   <p className="text-[12px] font-semibold text-destructive">
                     Insufficient funds — you need {naira(amount)} but have{" "}
                     {naira(WALLET)}. Shortfall {naira(shortfall)}.
@@ -171,7 +171,7 @@ function CreatePlanAmountScreen() {
                 </div>
               ) : (
                 belowMin && (
-                  <p className="k-shake mt-3 rounded-2xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
+                  <p className="k-shake mt-3 rounded-xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
                     Minimum for a fixed plan is {naira(MINIMUM)}.
                   </p>
                 )
@@ -202,7 +202,7 @@ function CreatePlanAmountScreen() {
               to="/fixed-plans/create/tenor"
               search={{ amount }}
               aria-disabled={!valid}
-              className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
+              className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
                 valid ? "" : "pointer-events-none opacity-40 shadow-none"
               }`}
             >
