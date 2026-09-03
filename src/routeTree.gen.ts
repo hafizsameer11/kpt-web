@@ -22,6 +22,7 @@ import { Route as CallAccountReviewRouteImport } from './routes/call-account_.re
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
 import { Route as FixedPlansCreateRouteImport } from './routes/fixed-plans_/create'
 import { Route as FixedPlansCreateIndexRouteImport } from './routes/fixed-plans_/create/index'
+import { Route as FixedPlansCreateOptionsRouteImport } from './routes/fixed-plans_/create/options'
 import { Route as FixedPlansCreateTenorRouteImport } from './routes/fixed-plans_/create/tenor'
 
 const IndexRoute = IndexRouteImport.update({
@@ -89,6 +90,11 @@ const FixedPlansCreateIndexRoute = FixedPlansCreateIndexRouteImport.update({
   path: '/',
   getParentRoute: () => FixedPlansCreateRoute,
 } as any)
+const FixedPlansCreateOptionsRoute = FixedPlansCreateOptionsRouteImport.update({
+  id: '/options',
+  path: '/options',
+  getParentRoute: () => FixedPlansCreateRoute,
+} as any)
 const FixedPlansCreateTenorRoute = FixedPlansCreateTenorRouteImport.update({
   id: '/tenor',
   path: '/tenor',
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
   '/fixed-plans/create': typeof FixedPlansCreateRouteWithChildren
+  '/fixed-plans/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
   '/fixed-plans/create/': typeof FixedPlansCreateIndexRoute
 }
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
+  '/fixed-plans/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
   '/fixed-plans/create': typeof FixedPlansCreateIndexRoute
 }
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/call-account_/review': typeof CallAccountReviewRoute
   '/call-account_/success': typeof CallAccountSuccessRoute
   '/fixed-plans_/create': typeof FixedPlansCreateRouteWithChildren
+  '/fixed-plans_/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans_/create/tenor': typeof FixedPlansCreateTenorRoute
   '/fixed-plans_/create/': typeof FixedPlansCreateIndexRoute
 }
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/call-account/review'
     | '/call-account/success'
     | '/fixed-plans/create'
+    | '/fixed-plans/create/options'
     | '/fixed-plans/create/tenor'
     | '/fixed-plans/create/'
   fileRoutesByTo: FileRoutesByTo
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
+    | '/fixed-plans/create/options'
     | '/fixed-plans/create/tenor'
     | '/fixed-plans/create'
   id:
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/call-account_/review'
     | '/call-account_/success'
     | '/fixed-plans_/create'
+    | '/fixed-plans_/create/options'
     | '/fixed-plans_/create/tenor'
     | '/fixed-plans_/create/'
   fileRoutesById: FileRoutesById
@@ -301,6 +313,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FixedPlansCreateIndexRouteImport
       parentRoute: typeof FixedPlansCreateRoute
     }
+    '/fixed-plans_/create/options': {
+      id: '/fixed-plans_/create/options'
+      path: '/options'
+      fullPath: '/fixed-plans/create/options'
+      preLoaderRoute: typeof FixedPlansCreateOptionsRouteImport
+      parentRoute: typeof FixedPlansCreateRoute
+    }
     '/fixed-plans_/create/tenor': {
       id: '/fixed-plans_/create/tenor'
       path: '/tenor'
@@ -312,11 +331,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface FixedPlansCreateRouteChildren {
+  FixedPlansCreateOptionsRoute: typeof FixedPlansCreateOptionsRoute
   FixedPlansCreateTenorRoute: typeof FixedPlansCreateTenorRoute
   FixedPlansCreateIndexRoute: typeof FixedPlansCreateIndexRoute
 }
 
 const FixedPlansCreateRouteChildren: FixedPlansCreateRouteChildren = {
+  FixedPlansCreateOptionsRoute: FixedPlansCreateOptionsRoute,
   FixedPlansCreateTenorRoute: FixedPlansCreateTenorRoute,
   FixedPlansCreateIndexRoute: FixedPlansCreateIndexRoute,
 }
