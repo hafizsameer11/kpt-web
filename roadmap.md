@@ -13,9 +13,7 @@
 - Onboarding & auth: splash, welcome, email sign-up, OTP, PIN, biometrics, login, password reset (MOB-001–017)
 - Just-in-time KYC gates: Tier 1 on funding/investing, Tier 2 on withdrawals & payout accounts (Product Paper §7.2)
 
+- Custom tenor (MOB-068), Investment calculator (MOB-069), Explore category (MOB-081), Product calculator (MOB-083)
+
 ## Left to build
-### 1. Gaps in built flows — 4 screens
-- MOB-068 Custom tenor
-- MOB-069 Investment calculator
-- MOB-081 Explore category
-- MOB-083 Product calculator
+- Nothing outstanding from the PRD screen list.
