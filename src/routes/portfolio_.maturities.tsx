@@ -90,7 +90,11 @@ function MaturityCalendarScreen() {
                 <ul className="card-surface divide-y divide-border/60 overflow-hidden">
                   {group.items.map((m) => (
                     <li key={`${m.name}-${m.date}`}>
-                      <div className="flex items-center gap-3 px-4 py-3.5">
+                      <Link
+                        to="/portfolio/$holdingId"
+                        params={{ holdingId: m.holdingId }}
+                        className="flex items-center gap-3 px-4 py-3.5 press"
+                      >
                         <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-extrabold text-brand text-num">
                           {m.date.split(" ")[0]}
                         </span>
@@ -103,7 +107,8 @@ function MaturityCalendarScreen() {
                         <p className="shrink-0 text-[13px] font-extrabold text-num">
                           {mask(m.amount)}
                         </p>
-                      </div>
+                        <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -234,10 +239,12 @@ function DesktopMaturities() {
                 </div>
                 <ul>
                   {group.items.map((m) => (
-                    <li
-                      key={`${m.name}-${m.date}`}
-                      className="flex items-center gap-4 border-b border-border/60 px-6 py-3.5 last:border-0 transition-colors hover:bg-secondary/50"
-                    >
+                    <li key={`${m.name}-${m.date}`} className="border-b border-border/60 last:border-0">
+                      <Link
+                        to="/portfolio/$holdingId"
+                        params={{ holdingId: m.holdingId }}
+                        className="flex items-center gap-4 px-6 py-3.5 transition-colors hover:bg-secondary/50 focus-visible:bg-secondary/50 focus-visible:outline-none"
+                      >
                       <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-secondary text-[12px] font-extrabold text-brand text-num">
                         {m.date.split(" ")[0]}
                       </span>
@@ -250,9 +257,11 @@ function DesktopMaturities() {
                       <span className="shrink-0 rounded-full bg-secondary px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] text-brand">
                         {m.kind}
                       </span>
-                      <p className="w-[130px] shrink-0 text-right text-[14px] font-extrabold text-num">
-                        {mask(m.amount)}
-                      </p>
+                        <p className="w-[130px] shrink-0 text-right text-[14px] font-extrabold text-num">
+                          {mask(m.amount)}
+                        </p>
+                        <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                      </Link>
                     </li>
                   ))}
                 </ul>

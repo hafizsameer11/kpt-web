@@ -106,15 +106,18 @@ export type Maturity = {
   date: string;
   daysLeft: number;
   kind: "Fixed plan" | "Explore product";
+  /** Holding detail route id (/portfolio/$holdingId). */
+  holdingId: string;
 };
 
 export const UPCOMING_MATURITIES: Maturity[] = [
-  ...HOLDINGS.map((h) => ({
+  ...HOLDINGS.map((h, i) => ({
     name: h.name,
     amount: h.expectedPayout,
     date: h.date,
     daysLeft: h.daysLeft,
     kind: "Fixed plan" as const,
+    holdingId: `f${i + 1}`,
   })),
   ...EXPLORE_HOLDINGS.map((h) => ({
     name: h.name,
@@ -122,6 +125,7 @@ export const UPCOMING_MATURITIES: Maturity[] = [
     date: h.date,
     daysLeft: h.daysLeft,
     kind: "Explore product" as const,
+    holdingId: `e-${h.id}`,
   })),
 ].sort((a, b) => a.daysLeft - b.daysLeft);
 

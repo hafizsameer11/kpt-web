@@ -435,18 +435,25 @@ function MobilePortfolio() {
                 <li
                   key={`${m.name}-${m.date}`}
                   style={{ ["--d" as string]: `${i * 60}ms` }}
-                  className="k-rise flex items-center gap-3 px-4 py-3.5"
+                  className="k-rise"
                 >
-                  <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-extrabold text-brand text-num">
-                    {m.daysLeft}d
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-bold">{m.name}</p>
-                    <p className="text-[11px] text-muted-foreground">
-                      {m.kind} · {m.date}
-                    </p>
-                  </div>
-                  <p className="shrink-0 text-[13px] font-extrabold text-num">{mask(m.amount)}</p>
+                  <Link
+                    to="/portfolio/$holdingId"
+                    params={{ holdingId: m.holdingId }}
+                    className="flex items-center gap-3 px-4 py-3.5 press"
+                  >
+                    <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-extrabold text-brand text-num">
+                      {m.daysLeft}d
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13px] font-bold">{m.name}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {m.kind} · {m.date}
+                      </p>
+                    </div>
+                    <p className="shrink-0 text-[13px] font-extrabold text-num">{mask(m.amount)}</p>
+                    <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -872,17 +879,24 @@ function DesktopPortfolio() {
             )}
             <ul className="mt-3 divide-y divide-border/60">
               {UPCOMING_MATURITIES.slice(1, 5).map((m) => (
-                <li key={`${m.name}-${m.date}`} className="flex items-center gap-3 py-3">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-extrabold text-brand text-num">
-                    {m.daysLeft}d
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[12.5px] font-bold">{m.name}</p>
-                    <p className="text-[11px] text-muted-foreground">
-                      {m.kind} · {m.date}
-                    </p>
-                  </div>
-                  <p className="shrink-0 text-[12.5px] font-extrabold text-num">{mask(m.amount)}</p>
+                <li key={`${m.name}-${m.date}`}>
+                  <Link
+                    to="/portfolio/$holdingId"
+                    params={{ holdingId: m.holdingId }}
+                    className="-mx-2 flex items-center gap-3 rounded-lg px-2 py-3 transition-colors hover:bg-secondary/50"
+                  >
+                    <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-extrabold text-brand text-num">
+                      {m.daysLeft}d
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[12.5px] font-bold">{m.name}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {m.kind} · {m.date}
+                      </p>
+                    </div>
+                    <p className="shrink-0 text-[12.5px] font-extrabold text-num">{mask(m.amount)}</p>
+                    <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                  </Link>
                 </li>
               ))}
             </ul>
