@@ -352,8 +352,10 @@ function HomeV2Screen() {
               </div>
             </section>
 
-            {/* Idle wallet nudge */}
-            <section className="relative mt-5 overflow-hidden rounded-xl bg-brand p-5 text-brand-foreground shadow-card md:p-6">
+            {/* Idle wallet nudge + payout timeline */}
+            <div className="mt-5 grid gap-3 md:gap-4 lg:grid-cols-3 lg:items-start">
+            <section className="relative overflow-hidden rounded-xl bg-brand p-5 text-brand-foreground shadow-card md:p-6 lg:col-span-2">
+
               <span
                 aria-hidden
                 className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-gold-gradient opacity-20 blur-2xl"
