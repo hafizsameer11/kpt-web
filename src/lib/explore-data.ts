@@ -11,9 +11,9 @@ export type ExploreCategory = {
 };
 
 export const EXPLORE_CATEGORIES: ExploreCategory[] = [
-  { id: "tbills", name: "Treasury Bills", short: "T-Bills", count: 6 },
-  { id: "cp", name: "Commercial Papers", short: "Commercial", count: 4 },
-  { id: "notes", name: "Private & Structured Notes", short: "Notes", count: 3 },
+  { id: "tbills", name: "Treasury Bills", short: "T-Bills", count: 4 },
+  { id: "cp", name: "Commercial Papers", short: "Commercial", count: 3 },
+  { id: "notes", name: "Private & Structured Notes", short: "Notes", count: 2 },
   { id: "portfolios", name: "Managed Portfolios", short: "Portfolios", count: 2 },
 ];
 
@@ -140,6 +140,47 @@ export const EXPLORE_PRODUCTS: ExploreProduct[] = [
     availability: "open",
     closes: "Closes 09 Sep 2026",
     blurb: "The shortest sovereign tenor on the marketplace.",
+  },
+  {
+    id: "p9",
+    name: "Zenith Bank CP Series 45",
+    issuer: "Zenith Bank Plc",
+    categoryId: "cp",
+    category: "Commercial Papers",
+    rate: "23.0% p.a.",
+    tenor: "90 days",
+    minimum: 1_000_000,
+    availability: "closed",
+    closes: "Fully subscribed",
+    blurb: "Bank-issued short-term paper that closed after strong demand.",
+  },
+  {
+    id: "p10",
+    name: "Real Estate Bridge Note",
+    issuer: "Kipit Structured Partners",
+    categoryId: "notes",
+    category: "Private & Structured Notes",
+    rate: "27.5% p.a.",
+    tenor: "720 days",
+    minimum: 10_000_000,
+    availability: "open",
+    closes: "Closes 30 Sep 2026",
+    featured: true,
+    blurb: "Senior-secured bridge facility on a mixed-use development.",
+  },
+  {
+    id: "p11",
+    name: "282-Day Treasury Bill",
+    issuer: "Federal Government of Nigeria",
+    categoryId: "tbills",
+    category: "Treasury Bills",
+    rate: "21.5% p.a.",
+    tenor: "282 days",
+    minimum: 100_000,
+    availability: "closing",
+    closes: "Closes in 2 days",
+    featured: true,
+    blurb: "Mid-tenor sovereign bill with a near-term auction close.",
   },
 ];
 
