@@ -303,7 +303,7 @@ function SubscriptionReviewScreen() {
                 </div>
                 <p className="mt-3 flex items-start gap-1.5 text-[11px] text-muted-foreground">
                   <Building2 className="mt-0.5 size-3.5 shrink-0" />
-                  Indicative until allotted. Payout {product.payout.toLowerCase()}.
+                  Indicative until allotted. Paid at maturity to your wallet.
                 </p>
               </section>
             </Rise>
