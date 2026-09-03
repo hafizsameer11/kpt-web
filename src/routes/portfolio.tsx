@@ -429,10 +429,6 @@ function PortfolioScreen() {
           </section>
 
 
-          <p className="mt-5 px-1 text-[11px] text-muted-foreground">
-            Total portfolio value {naira(PORTFOLIO_TOTAL)} across wallet, call account, fixed plans
-            and marketplace holdings.
-          </p>
 
           <DisclosureStrip variant="marketplace" />
         </div>
