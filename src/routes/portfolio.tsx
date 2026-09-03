@@ -5,6 +5,8 @@ import {
   ChevronRight,
   Eye,
   EyeOff,
+  FileBarChart,
+  Gift,
   History,
   PieChart,
   Receipt,
