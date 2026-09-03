@@ -74,9 +74,11 @@ const NOW = parse("03 Sep 2026");
 
 function TransactionHistoryScreen() {
   const { mask, hidden } = useBalanceVisibility();
+  const isMobile = useIsMobile();
   const [type, setType] = useState<TxnType | "All">("All");
   const [status, setStatus] = useState<TxnStatus | "All">("All");
   const [period, setPeriod] = useState<(typeof PERIODS)[number]>("All time");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const list = TRANSACTIONS.filter((t) => {
     if (type !== "All" && t.type !== type) return false;
