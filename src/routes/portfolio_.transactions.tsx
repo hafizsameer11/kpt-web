@@ -114,9 +114,199 @@ function TransactionHistoryScreen() {
     .filter((t) => t.direction === "in" && t.status !== "Failed")
     .reduce((s, t) => s + t.amount, 0);
 
+  const outflow = list
+    .filter((t) => t.direction === "out" && t.status !== "Failed")
+    .reduce((s, t) => s + t.amount, 0);
+
   return (
     <AppShell title="Transactions" navVariant="elevated">
-      <div className="pb-2">
+      {/* ── Desktop (md+) ───────────────────────────────────────── */}
+      <div className="hidden md:block">
+        <div className="mx-auto w-full max-w-[1180px] space-y-6 pb-10">
+          {/* Hero */}
+          <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-8 text-primary-foreground shadow-float">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -right-24 -top-32 size-80 rounded-full bg-gold/15 blur-[70px]"
+            />
+            <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-end gap-8">
+              <div className="min-w-0">
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                  Money in · filtered view
+                </p>
+                <p className="mt-3 font-display text-[48px] font-extrabold leading-none tracking-[-0.035em] text-num">
+                  <AmountCounter value={inflow} hidden={hidden} mask={mask} />
+                </p>
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11.5px] font-bold">
+                    <Filter className="size-3.5 text-gold" />
+                    {list.length} transactions
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11.5px] font-bold">
+                    {period} · {status === "All" ? "All statuses" : status}
+                  </span>
+                </div>
+                <div className="mt-6 flex flex-wrap items-center gap-2.5">
+                  <Link
+                    to="/portfolio"
+                    className="press inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-[12.5px] font-bold hover:bg-white/15"
+                  >
+                    <ArrowLeft className="size-4" /> Portfolio
+                  </Link>
+                  <Link
+                    to="/settings/statements"
+                    className="press inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[12.5px] font-bold text-primary-foreground/85 hover:text-primary-foreground"
+                  >
+                    Statements <ChevronRight className="size-4" />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="w-[300px] shrink-0 rounded-xl border border-white/12 bg-white/10 p-4 backdrop-blur">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/55">
+                      Money out
+                    </p>
+                    <p className="mt-1 text-[18px] font-extrabold leading-none text-num">
+                      {mask(outflow)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/55">
+                      Net
+                    </p>
+                    <p className="mt-1 text-[18px] font-extrabold leading-none text-gold text-num">
+                      {mask(inflow - outflow)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Filter bar */}
+          <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-3">
+            <div className="flex min-w-[240px] flex-1 items-center gap-2 rounded-lg border border-border/70 bg-secondary/30 px-3 py-2">
+              <Search className="size-4 shrink-0 text-muted-foreground" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search label, reference, source..."
+                className="min-w-0 flex-1 bg-transparent text-[13px] font-bold placeholder:text-muted-foreground/70 focus:outline-none"
+              />
+              {query ? (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  aria-label="Clear search"
+                  className="grid size-6 shrink-0 place-items-center rounded-full bg-background text-muted-foreground"
+                >
+                  <X className="size-3" />
+                </button>
+              ) : null}
+            </div>
+
+            <div className="flex items-center gap-1 rounded-lg bg-secondary/50 p-1">
+              {(["All", ...TXN_TYPES] as const).map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setType(t)}
+                  aria-pressed={type === t}
+                  className={`rounded-md px-3 py-1.5 text-[12px] font-bold transition-colors ${
+                    type === t
+                      ? "bg-brand text-brand-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(true)}
+              className="press inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3.5 py-2 text-[12.5px] font-bold hover:bg-secondary/50"
+            >
+              <SlidersHorizontal className="size-4" /> More filters
+            </button>
+          </div>
+
+          {/* Table */}
+          <section className="overflow-hidden rounded-2xl border border-border bg-card">
+            <div className="grid grid-cols-[110px_minmax(0,1fr)_130px_120px_150px_28px] items-center gap-4 border-b border-border bg-muted/30 px-6 py-3 text-[10px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
+              <span>Date</span>
+              <span>Description</span>
+              <span>Type</span>
+              <span>Status</span>
+              <span className="text-right">Amount</span>
+              <span />
+            </div>
+
+            {list.map((t) => (
+              <Link
+                key={t.id}
+                to="/portfolio/transactions/$txnId"
+                params={{ txnId: t.id }}
+                className="grid grid-cols-[110px_minmax(0,1fr)_130px_120px_150px_28px] items-center gap-4 border-b border-border/60 px-6 py-3.5 transition-colors last:border-0 hover:bg-secondary/50 focus-visible:bg-secondary/50 focus-visible:outline-none"
+              >
+                <span className="text-[12px] font-semibold text-muted-foreground text-num">
+                  {t.date}
+                </span>
+                <span className="flex min-w-0 items-center gap-3">
+                  <span
+                    className={`grid size-9 shrink-0 place-items-center rounded-lg ${
+                      t.direction === "in" ? "bg-gold/15 text-gold" : "bg-secondary text-brand"
+                    }`}
+                  >
+                    {t.direction === "in" ? (
+                      <ArrowDownLeft className="size-4" strokeWidth={2.4} />
+                    ) : (
+                      <ArrowUpRight className="size-4" strokeWidth={2.4} />
+                    )}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-[13.5px] font-bold">{t.label}</span>
+                    <span className="block truncate text-[11px] text-muted-foreground">
+                      {t.reference}
+                    </span>
+                  </span>
+                </span>
+                <span className="truncate text-[11.5px] font-semibold text-muted-foreground">
+                  {t.type}
+                </span>
+                <span>
+                  <span
+                    className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-extrabold ${statusTone[t.status]}`}
+                  >
+                    {t.status}
+                  </span>
+                </span>
+                <span
+                  className={`text-right text-[14px] font-extrabold text-num ${
+                    t.direction === "in" ? "text-gold" : "text-foreground"
+                  }`}
+                >
+                  {t.direction === "in" ? "+" : "−"}
+                  {mask(t.amount)}
+                </span>
+                <ChevronRight className="size-4 text-muted-foreground" />
+              </Link>
+            ))}
+
+            {list.length === 0 && (
+              <p className="px-6 py-12 text-center text-[13px] text-muted-foreground">
+                No transactions match these filters.
+              </p>
+            )}
+          </section>
+        </div>
+      </div>
+
+      <div className="pb-2 md:hidden">
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pt-8 md:shadow-float">
           <span
             aria-hidden
