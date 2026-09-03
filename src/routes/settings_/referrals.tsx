@@ -84,7 +84,7 @@ function ReferralsScreen() {
         <div className="grid grid-cols-3 divide-x divide-border/70">
           {stats.map((s) => (
             <div key={s.label} className="min-w-0 px-3 py-4 text-center">
-              <p className="text-[9.5px] font-bold uppercase tracking-[0.1em] text-muted-foreground/80">
+              <p className="mx-auto max-w-[70px] text-[9.5px] font-bold uppercase leading-tight tracking-[0.1em] text-muted-foreground/80">
                 {s.label}
               </p>
               <p className="mt-1.5 truncate font-display text-[18px] font-extrabold tracking-[-0.03em] text-foreground text-num">
