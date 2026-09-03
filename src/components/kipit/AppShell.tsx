@@ -32,10 +32,6 @@ export function AppShell({
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isActive = (to: string) =>
     to === "/" ? pathname === "/" || pathname.startsWith("/home-v") : pathname === to;
-  const activeIndex = Math.max(
-    0,
-    TABS.findIndex((t) => isActive(t.to)),
-  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -50,17 +46,11 @@ export function AppShell({
         </main>
       </div>
 
-      {/* Mobile bottom tab bar: light frosted bar with gold active pill */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/85 backdrop-blur-xl pb-[max(0.35rem,env(safe-area-inset-bottom))] md:hidden">
-        <div className="relative">
-          {/* sliding active pill */}
-          <span
-            className="pointer-events-none absolute left-0 top-1 h-[3.1rem] w-[20%] px-2 transition-transform duration-300 ease-out"
-            style={{ transform: `translateX(${activeIndex * 100}%)` }}
-          >
-            <span className="block size-full rounded-2xl bg-primary/[0.07]" />
-          </span>
-          <ul className="relative grid grid-cols-5">
+      {/* Mobile bottom tab bar */}
+      {navVariant === "orbit" ? (
+        /* Orbit dock: deep navy glass bar, active tab orbits into a gold squircle */
+        <nav className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden">
+          <ul className="grid grid-cols-5 items-end gap-0.5 rounded-xl bg-brand-gradient px-2 pb-2.5 pt-3 shadow-float ring-1 ring-white/10">
             {TABS.map((tab) => {
               const active = isActive(tab.to);
               const Icon = tab.icon;
@@ -69,35 +59,173 @@ export function AppShell({
                   <Link
                     to={tab.to}
                     aria-label={tab.label}
-                    aria-current={active ? "page" : undefined}
-                    className="flex flex-col items-center gap-1 pb-1.5 pt-2 press"
+                    className="flex flex-col items-center gap-1.5 press"
                   >
-                    <Icon
-                      className={`size-[21px] transition-colors ${
-                        active ? "text-primary" : "text-muted-foreground"
-                      }`}
-                      strokeWidth={active ? 2.2 : 1.7}
-                    />
                     <span
-                      className={`text-[10px] tracking-tight transition-colors ${
-                        active ? "font-semibold text-primary" : "font-medium text-muted-foreground"
+                      className={`grid size-10 place-items-center rounded-lg transition-all duration-300 ${
+                        active
+                          ? "-translate-y-2.5 bg-gold-gradient text-gold-foreground shadow-float"
+                          : "text-primary-foreground/55"
+                      }`}
+                    >
+                      <Icon className="size-[19px]" strokeWidth={active ? 2.4 : 1.8} />
+                    </span>
+                    <span
+                      className={`text-[10px] font-bold tracking-tight transition-colors ${
+                        active
+                          ? "-mt-2 text-primary-foreground"
+                          : "text-primary-foreground/45"
                       }`}
                     >
                       {tab.label}
                     </span>
-                    <span
-                      className={`h-[3px] w-6 rounded-full transition-all duration-300 ${
-                        active ? "bg-gold opacity-100" : "opacity-0"
-                      }`}
-                    />
                   </Link>
                 </li>
               );
             })}
           </ul>
-        </div>
-      </nav>
+        </nav>
+      ) : navVariant === "elevated" ? (
 
+        /* Elevated dock: white card, active tab lifts into a navy squircle */
+        <nav className="fixed inset-x-4 bottom-4 z-40 md:hidden">
+          <ul className="grid grid-cols-5 items-end rounded-xl border border-border bg-surface/95 px-2 py-2 shadow-float backdrop-blur">
+            {TABS.map((tab) => {
+              const active = isActive(tab.to);
+              const Icon = tab.icon;
+              return (
+                <li key={tab.to}>
+                  <Link
+                    to={tab.to}
+                    className="flex flex-col items-center gap-1 text-[11px] font-bold text-muted-foreground"
+                  >
+                    <span
+                      className={`grid size-10 place-items-center rounded-xl transition-all duration-300 ${
+                        active
+                          ? "-translate-y-2 bg-brand-gradient text-primary-foreground shadow-float"
+                          : ""
+                      }`}
+                    >
+                      <Icon className="size-5" strokeWidth={active ? 2.4 : 1.8} />
+                    </span>
+                    <span className={active ? "-mt-1 text-brand" : ""}>{tab.label}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : navVariant === "aurora" ? (
+        /* Aurora dock: dark glass bar, gold indicator rail above the active tab */
+        <nav className="fixed inset-x-3 bottom-3 z-40 md:hidden">
+          <ul className="grid grid-cols-5 gap-1 rounded-xl bg-brand-gradient p-2 shadow-float">
+            {TABS.map((tab) => {
+              const active = isActive(tab.to);
+              const Icon = tab.icon;
+              return (
+                <li key={tab.to}>
+                  <Link
+                    to={tab.to}
+                    className="flex flex-col items-center gap-1 rounded-xl py-2 text-[11px] font-semibold text-primary-foreground/60"
+                  >
+                    <span
+                      className={`h-0.5 w-6 rounded-full transition-colors ${
+                        active ? "bg-gold" : "bg-transparent"
+                      }`}
+                    />
+                    <Icon
+                      className={`size-5 ${active ? "text-gold" : ""}`}
+                      strokeWidth={active ? 2.4 : 1.8}
+                    />
+                    <span className={active ? "text-primary-foreground" : ""}>
+                      {tab.label}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : navVariant === "morph" ? (
+        /* Morphing bar: the active tab expands into a navy pill with its label */
+        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur md:hidden">
+          <ul className="flex items-center justify-between gap-1">
+            {TABS.map((tab) => {
+              const active = isActive(tab.to);
+              const Icon = tab.icon;
+              return (
+                <li key={tab.to} className={active ? "flex-1" : ""}>
+                  <Link
+                    to={tab.to}
+                    aria-label={tab.label}
+                    className={`flex items-center justify-center gap-2 rounded-full py-2.5 text-xs font-semibold transition-all duration-300 ${
+                      active
+                        ? "bg-brand-gradient px-4 text-primary-foreground shadow-float"
+                        : "px-3 text-muted-foreground"
+                    }`}
+                  >
+                    <Icon className="size-5" strokeWidth={active ? 2.4 : 1.8} />
+                    {active && <span className="truncate">{tab.label}</span>}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : navVariant === "floating" ? (
+        /* Floating pill dock with gold active pill */
+        <nav className="fixed inset-x-4 bottom-4 z-40 md:hidden">
+          <ul className="grid grid-cols-5 rounded-full border border-border bg-surface/95 p-1.5 shadow-float backdrop-blur">
+            {TABS.map((tab) => {
+              const active = isActive(tab.to);
+              const Icon = tab.icon;
+              return (
+                <li key={tab.to}>
+                  <Link
+                    to={tab.to}
+                    className={`flex flex-col items-center gap-0.5 rounded-full py-2 text-[10px] font-bold transition-colors ${
+                      active
+                        ? "bg-gold-gradient text-gold-foreground"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    <Icon className="size-4.5" strokeWidth={active ? 2.4 : 1.8} />
+                    {tab.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : (
+        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden">
+          <ul className="grid grid-cols-5">
+            {TABS.map((tab) => {
+              const active = isActive(tab.to);
+              const Icon = tab.icon;
+              return (
+                <li key={tab.to}>
+                  <Link
+                    to={tab.to}
+                    className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold press ${
+                      active ? "text-foreground" : "text-muted-foreground"
+                    }`}
+                  >
+                    <span
+                      className={`relative grid size-9 place-items-center rounded-xl transition-colors ${
+                        active ? "bg-brand text-brand-foreground" : ""
+                      }`}
+                    >
+                      <Icon className="size-[19px]" strokeWidth={active ? 2.2 : 1.8} />
+                    </span>
+                    {tab.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      )}
     </div>
   );
 }
