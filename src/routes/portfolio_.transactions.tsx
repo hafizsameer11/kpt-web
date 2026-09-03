@@ -5,11 +5,26 @@ import {
   ArrowUpRight,
   ChevronRight,
   Filter,
+  SlidersHorizontal,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  DrawerDescription,
+} from "@/components/ui/drawer";
 import {
   TRANSACTIONS,
   TXN_TYPES,
