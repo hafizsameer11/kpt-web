@@ -36,6 +36,7 @@ import { Route as WithdrawAmountRouteImport } from './routes/withdraw_/amount'
 import { Route as WithdrawProcessingRouteImport } from './routes/withdraw_/processing'
 import { Route as WithdrawRestrictedRouteImport } from './routes/withdraw_/restricted'
 import { Route as WithdrawReviewRouteImport } from './routes/withdraw_/review'
+import { Route as WithdrawTrackerRouteImport } from './routes/withdraw_/tracker'
 import { Route as ExploreProductIdProcessingRouteImport } from './routes/explore_.$productId_.processing'
 import { Route as ExploreProductIdRequestRouteImport } from './routes/explore_.$productId_.request'
 import { Route as ExploreProductIdRequestSubmittedRouteImport } from './routes/explore_.$productId_.request-submitted'
@@ -187,6 +188,11 @@ const WithdrawReviewRoute = WithdrawReviewRouteImport.update({
   path: '/withdraw/review',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WithdrawTrackerRoute = WithdrawTrackerRouteImport.update({
+  id: '/withdraw_/tracker',
+  path: '/withdraw/tracker',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExploreProductIdProcessingRoute =
   ExploreProductIdProcessingRouteImport.update({
     id: '/explore_/$productId_/processing',
@@ -298,6 +304,7 @@ export interface FileRoutesByFullPath {
   '/withdraw/processing': typeof WithdrawProcessingRoute
   '/withdraw/restricted': typeof WithdrawRestrictedRoute
   '/withdraw/review': typeof WithdrawReviewRoute
+  '/withdraw/tracker': typeof WithdrawTrackerRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
   '/explore/$productId/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -341,6 +348,7 @@ export interface FileRoutesByTo {
   '/withdraw/processing': typeof WithdrawProcessingRoute
   '/withdraw/restricted': typeof WithdrawRestrictedRoute
   '/withdraw/review': typeof WithdrawReviewRoute
+  '/withdraw/tracker': typeof WithdrawTrackerRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
   '/explore/$productId/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -386,6 +394,7 @@ export interface FileRoutesById {
   '/withdraw_/processing': typeof WithdrawProcessingRoute
   '/withdraw_/restricted': typeof WithdrawRestrictedRoute
   '/withdraw_/review': typeof WithdrawReviewRoute
+  '/withdraw_/tracker': typeof WithdrawTrackerRoute
   '/explore_/$productId_/processing': typeof ExploreProductIdProcessingRoute
   '/explore_/$productId_/request': typeof ExploreProductIdRequestRoute
   '/explore_/$productId_/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -432,6 +441,7 @@ export interface FileRouteTypes {
     | '/withdraw/processing'
     | '/withdraw/restricted'
     | '/withdraw/review'
+    | '/withdraw/tracker'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
     | '/explore/$productId/request-submitted'
@@ -475,6 +485,7 @@ export interface FileRouteTypes {
     | '/withdraw/processing'
     | '/withdraw/restricted'
     | '/withdraw/review'
+    | '/withdraw/tracker'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
     | '/explore/$productId/request-submitted'
@@ -519,6 +530,7 @@ export interface FileRouteTypes {
     | '/withdraw_/processing'
     | '/withdraw_/restricted'
     | '/withdraw_/review'
+    | '/withdraw_/tracker'
     | '/explore_/$productId_/processing'
     | '/explore_/$productId_/request'
     | '/explore_/$productId_/request-submitted'
@@ -564,6 +576,7 @@ export interface RootRouteChildren {
   WithdrawProcessingRoute: typeof WithdrawProcessingRoute
   WithdrawRestrictedRoute: typeof WithdrawRestrictedRoute
   WithdrawReviewRoute: typeof WithdrawReviewRoute
+  WithdrawTrackerRoute: typeof WithdrawTrackerRoute
   ExploreProductIdProcessingRoute: typeof ExploreProductIdProcessingRoute
   ExploreProductIdRequestRoute: typeof ExploreProductIdRequestRoute
   ExploreProductIdRequestSubmittedRoute: typeof ExploreProductIdRequestSubmittedRoute
@@ -766,6 +779,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WithdrawReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/withdraw_/tracker': {
+      id: '/withdraw_/tracker'
+      path: '/withdraw/tracker'
+      fullPath: '/withdraw/tracker'
+      preLoaderRoute: typeof WithdrawTrackerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore_/$productId_/processing': {
       id: '/explore_/$productId_/processing'
       path: '/explore/$productId/processing'
@@ -923,6 +943,7 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawProcessingRoute: WithdrawProcessingRoute,
   WithdrawRestrictedRoute: WithdrawRestrictedRoute,
   WithdrawReviewRoute: WithdrawReviewRoute,
+  WithdrawTrackerRoute: WithdrawTrackerRoute,
   ExploreProductIdProcessingRoute: ExploreProductIdProcessingRoute,
   ExploreProductIdRequestRoute: ExploreProductIdRequestRoute,
   ExploreProductIdRequestSubmittedRoute: ExploreProductIdRequestSubmittedRoute,
