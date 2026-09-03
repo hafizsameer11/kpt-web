@@ -243,82 +243,63 @@ function ExploreScreen() {
             </section>
           </Rise>
 
-          {/* Coming soon */}
+          {/* Coming soon — roadmap rail (deliberately not a card grid) */}
           <Rise delay={180}>
-            <section className="mt-6">
-              <div className="flex items-center gap-4">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  Coming soon
-                </p>
-                <div className="h-px flex-1 bg-border" />
+            <section className="mt-8">
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                    On the roadmap
+                  </p>
+                  <h2 className="mt-1 font-display text-lg font-extrabold text-foreground">
+                    Coming soon
+                  </h2>
+                </div>
+                <span className="rounded-full border border-border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                  {EXPLORE_COMING_SOON.length} in build
+                </span>
               </div>
 
-              <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
-                {EXPLORE_COMING_SOON.map((c, i) => {
-                  const navy = i % 2 === 0;
-                  return (
-                    <article
-                      key={c.name}
-                      style={{ ["--d" as string]: `${i * 80}ms` }}
-                      className={`k-rise relative w-[78%] min-w-[78%] shrink-0 snap-center overflow-hidden rounded-[1.75rem] p-5 shadow-card md:w-auto md:min-w-0 md:rounded-[2rem] md:p-6 ${
-                        navy
-                          ? "bg-brand-gradient text-primary-foreground"
-                          : "border border-border bg-card text-card-foreground"
-                      }`}
+              <ol className="relative mt-4 pl-6">
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute left-[7px] top-2 bottom-6 w-px bg-gradient-to-b from-gold/70 via-border to-transparent"
+                />
+                {EXPLORE_COMING_SOON.map((c, i) => (
+                  <li
+                    key={c.name}
+                    style={{ ["--d" as string]: `${i * 90}ms` }}
+                    className="k-rise relative py-4 first:pt-1"
+                  >
+                    <span
+                      aria-hidden
+                      className="absolute -left-6 top-[1.35rem] inline-flex size-3.5 items-center justify-center rounded-full border-2 border-gold bg-background first:top-[0.9rem]"
                     >
-                      {navy && (
-                        <span
-                          aria-hidden
-                          className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-gold/15 blur-3xl"
-                        />
+                      {i === 0 && (
+                        <span className="size-1.5 rounded-full bg-gold animate-pulse" />
                       )}
+                    </span>
 
-                      <div className="relative">
-                        {navy ? (
-                          <div className="flex items-center gap-2">
-                            <span className="inline-flex size-5 items-center justify-center rounded-full border border-gold">
-                              <span className="size-1 rounded-full bg-gold animate-pulse" />
-                            </span>
-                            <span className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-gold">
-                              Soon
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-[9px] font-extrabold uppercase tracking-[0.12em] text-secondary-foreground/70">
-                            Coming Q4
-                          </span>
-                        )}
-
-                        <h3 className="mt-5 font-display text-[17px] font-extrabold leading-tight md:text-lg">
-                          {c.name}
-                        </h3>
-                        <p
-                          className={`mt-1.5 text-[12px] leading-relaxed ${
-                            navy ? "text-primary-foreground/65" : "text-muted-foreground"
-                          }`}
-                        >
-                          {c.note}
-                        </p>
-
-                        <div className="mt-5 flex items-center gap-2">
-                          <span
-                            className={`h-0.5 w-10 rounded-full ${
-                              navy ? "bg-gradient-to-r from-gold to-gold/60" : "bg-border"
-                            }`}
-                          />
-                          <span
-                            className={`h-0.5 w-2 rounded-full ${
-                              navy ? "bg-gold/30" : "bg-muted"
-                            }`}
-                          />
-                        </div>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
+                    <div className="flex items-baseline justify-between gap-3">
+                      <h3 className="font-display text-[15px] font-extrabold leading-tight text-foreground md:text-base">
+                        {c.name}
+                      </h3>
+                      <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.12em] text-gold">
+                        {["Next up", "Q4", "Q1 2027"][i] ?? "Soon"}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+                      {c.note}
+                    </p>
+                    {i < EXPLORE_COMING_SOON.length - 1 && (
+                      <span aria-hidden className="mt-4 block h-px w-full bg-border/70" />
+                    )}
+                  </li>
+                ))}
+              </ol>
             </section>
           </Rise>
+
 
           <DisclosureStrip variant="marketplace" />
         </div>
