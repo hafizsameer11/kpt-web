@@ -36,6 +36,7 @@ const FILTERS: InvestmentStatus[] = ["Active", "Matured", "Closed"];
 
 function InvestmentHistoryScreen() {
   const { mask, hidden } = useBalanceVisibility();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<InvestmentStatus>("Active");
   const records = INVESTMENT_HISTORY.filter((r) => r.status === filter);
   const interestTotal = INVESTMENT_HISTORY.reduce((s, r) => s + r.interest, 0);
