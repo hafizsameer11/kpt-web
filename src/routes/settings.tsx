@@ -161,12 +161,12 @@ function SettingsHome() {
             ))}
           </div>
 
-          <button
-            type="button"
+          <Link
+            to="/login"
             className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-destructive/30 bg-card px-5 py-3.5 text-[13.5px] font-extrabold text-destructive press md:w-auto md:px-10"
           >
             <LogOut className="size-4" strokeWidth={2.6} /> Log out
-          </button>
+          </Link>
 
           <p className="mt-4 px-1 text-[11px] text-muted-foreground">
             Kipit v1.0.0 (prototype) · Investments carry risk. Returns are not guaranteed.

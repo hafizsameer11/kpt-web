@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
+  Bell,
   Building2,
   Check,
   ChevronRight,
@@ -55,6 +56,12 @@ const CATEGORY_ICON = {
 function ExploreScreen() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
+  const [notified, setNotified] = useState<string[]>([]);
+  const toggleNotify = (name: string) =>
+    setNotified((prev) =>
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
+    );
+
 
   const featured = EXPLORE_PRODUCTS.filter((p) => p.featured);
 
@@ -303,7 +310,12 @@ function ExploreScreen() {
                         </span>
 
                         {/* Card */}
-                        <div className="card-surface p-4 transition-all duration-300 group-hover:border-gold/40 group-hover:shadow-float">
+                        <button
+                          type="button"
+                          onClick={() => toggleNotify(c.name)}
+                          aria-pressed={notified.includes(c.name)}
+                          className="card-surface w-full p-4 text-left transition-all duration-300 press group-hover:border-gold/40 group-hover:shadow-float"
+                        >
                           <div className="flex items-baseline justify-between gap-3">
                             <h3 className="font-display text-[15px] font-extrabold leading-tight text-foreground md:text-base">
                               {c.name}
@@ -315,7 +327,24 @@ function ExploreScreen() {
                           <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
                             {c.note}
                           </p>
-                        </div>
+                          <span
+                            className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10.5px] font-bold ${
+                              notified.includes(c.name)
+                                ? "bg-brand text-primary-foreground"
+                                : "border border-border text-foreground"
+                            }`}
+                          >
+                            {notified.includes(c.name) ? (
+                              <>
+                                <Check className="size-3" /> We'll notify you
+                              </>
+                            ) : (
+                              <>
+                                <Bell className="size-3" /> Notify me
+                              </>
+                            )}
+                          </span>
+                        </button>
                       </div>
                     );
                   })}
@@ -325,11 +354,21 @@ function ExploreScreen() {
               <div className="mt-6 text-center">
                 <button
                   type="button"
+                  onClick={() =>
+                    setNotified(
+                      notified.length === EXPLORE_COMING_SOON.length
+                        ? []
+                        : EXPLORE_COMING_SOON.map((c) => c.name),
+                    )
+                  }
                   className="text-[11px] font-bold uppercase tracking-[0.12em] text-gold transition-colors hover:text-gold/80 press"
                 >
-                  Notify me of updates
+                  {notified.length === EXPLORE_COMING_SOON.length
+                    ? "Turn off all updates"
+                    : "Notify me of all updates"}
                 </button>
               </div>
+
             </section>
           </Rise>
 

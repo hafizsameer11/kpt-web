@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { ChevronRight, Download, Scale } from "lucide-react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
 import { LEGAL_DOCS } from "@/lib/settings-data";
@@ -33,6 +34,9 @@ function LegalScreen() {
           <li key={d.title} style={{ ["--d" as string]: `${i * 50}ms` }} className="k-rise md:bg-card">
             <button
               type="button"
+              onClick={() =>
+                toast.info(`${d.title} ${d.version}`, { description: d.desc })
+              }
               className="group relative flex w-full items-center gap-3.5 px-4 py-4 text-left press transition-colors hover:bg-secondary/50"
             >
               <span
@@ -60,6 +64,11 @@ function LegalScreen() {
 
       <button
         type="button"
+        onClick={() =>
+          toast.success("Documents downloaded", {
+            description: "All legal documents saved as a single PDF.",
+          })
+        }
         className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press md:w-auto md:px-10"
       >
         <Download className="size-4" strokeWidth={2.4} /> Download all documents

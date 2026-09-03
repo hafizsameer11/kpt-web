@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { ArrowLeft, ArrowUpRight, Download, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
@@ -184,6 +185,11 @@ function ReportsScreen() {
 
           <button
             type="button"
+            onClick={() =>
+              toast.success(`${period} report downloaded`, {
+                description: "Saved as PDF to your device.",
+              })
+            }
             className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3.5 text-[13px] font-bold text-brand-foreground press"
           >
             <Download className="size-4" /> Download {period.toLowerCase()} report (PDF)

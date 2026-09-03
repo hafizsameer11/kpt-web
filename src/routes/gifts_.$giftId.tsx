@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   CalendarDays,
@@ -208,6 +209,11 @@ function GiftDetailScreen() {
           {!claimed && !expired && (
             <button
               type="button"
+              onClick={() =>
+                toast.success("Claim link resent", {
+                  description: `We sent the link to ${gift.recipient} again.`,
+                })
+              }
               className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3.5 text-[13px] font-bold text-brand-foreground press"
             >
               <Share2 className="size-4" /> Resend claim link

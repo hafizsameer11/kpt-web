@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { MapPin } from "lucide-react";
 import { Field, FieldCard, SettingsPage } from "@/components/kipit/SettingsPage";
 import { ADDRESS } from "@/lib/settings-data";
@@ -55,6 +56,11 @@ function AddressScreen() {
 
           <button
             type="button"
+            onClick={() =>
+              toast.success("Address submitted", {
+                description: "We'll review your new address within 1 business day.",
+              })
+            }
             className="inline-flex w-full items-center justify-center rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
           >
             Save changes
