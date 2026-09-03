@@ -440,7 +440,19 @@ function DesktopInvest() {
                     Math.max(6, Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)),
                   );
                   return (
-                    <tr key={h.name} className="border-t border-border/60">
+                    <tr
+                      key={h.id}
+                      onClick={() => navigate({ to: "/portfolio/$holdingId", params: { holdingId: h.id } })}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          navigate({ to: "/portfolio/$holdingId", params: { holdingId: h.id } });
+                        }
+                      }}
+                      className="cursor-pointer border-t border-border/60 transition-colors hover:bg-muted/40 focus:bg-muted/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                    >
                       <td className="py-3.5 pr-4">
                         <p className="text-sm font-bold">{h.name}</p>
                         <p className="mt-0.5 text-[11px] text-muted-foreground">
