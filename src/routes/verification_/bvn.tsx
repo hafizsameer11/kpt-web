@@ -1,8 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Info, Lock, Phone } from "lucide-react";
+import { ArrowRight, Lock } from "lucide-react";
 import { useState } from "react";
 import { KycStep, kycCta, kycField, kycLabel } from "@/components/kipit/KycStep";
-import { DEMO_BVN } from "@/lib/kyc-data";
 
 export const Route = createFileRoute("/verification_/bvn")({
   head: () => ({
