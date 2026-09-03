@@ -50,8 +50,7 @@ export function AppShell({
         </main>
       </div>
 
-      {/* Mobile bottom tab bar */}
-        /* Default dock: floating navy glass bar with a sliding gold indicator */
+      {/* Mobile bottom tab bar: floating navy glass dock with sliding gold indicator */}
         <nav className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.7rem,env(safe-area-inset-bottom))] md:hidden">
           <div className="relative overflow-hidden rounded-[1.6rem] bg-brand-gradient px-1.5 pb-2 pt-2.5 shadow-float ring-1 ring-white/12">
             <span className="pointer-events-none absolute inset-x-8 -top-px h-px bg-gold/40" />
@@ -94,7 +93,6 @@ export function AppShell({
             </ul>
           </div>
         </nav>
-      )}
     </div>
   );
 }
