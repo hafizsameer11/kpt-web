@@ -153,21 +153,39 @@ function ProductDetailScreen() {
 
           {/* Key terms */}
           <Rise>
-            <section className="grid grid-cols-2 gap-3">
-              {detail.highlights.map((h) => (
-                <div key={h.label} className="card-surface p-3.5">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    {h.label}
-                  </p>
-                  <p
-                    className={`mt-1 text-[14px] font-extrabold leading-tight ${
-                      h.label === "Rate" ? "text-gold" : "text-foreground"
-                    }`}
-                  >
-                    {h.value}
-                  </p>
-                </div>
-              ))}
+            <section className="card-surface overflow-hidden p-0">
+              <div className="grid grid-cols-2 divide-x divide-y divide-border/70">
+                {detail.highlights.map((h) => {
+                  const isRate = h.label === "Rate";
+                  const [head, ...rest] = h.value.split(" ");
+                  const unit = rest.join(" ");
+                  return (
+                    <div key={h.label} className="flex flex-col justify-center p-5">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground/80">
+                        {h.label}
+                      </span>
+                      <div className="mt-1.5 flex items-baseline gap-1">
+                        <span
+                          className={`font-display font-extrabold tracking-[-0.02em] text-num ${
+                            isRate ? "text-[24px] text-gold" : "text-[20px] text-foreground"
+                          }`}
+                        >
+                          {head}
+                        </span>
+                        {unit ? (
+                          <span
+                            className={`text-[11px] font-bold uppercase ${
+                              isRate ? "text-gold/80" : "text-muted-foreground/70"
+                            }`}
+                          >
+                            {unit}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </section>
           </Rise>
 
@@ -348,7 +366,7 @@ function ProductDetailScreen() {
           <DisclosureStrip variant="marketplace" />
 
           {/* Sticky CTA */}
-          <div className="sticky bottom-[5.5rem] z-30 mt-5 md:static md:bottom-auto">
+          <div className="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom)+0.75rem)] z-30 mt-5 md:static md:bottom-auto">
             <Link
               to="/fixed-plans/create"
               aria-disabled={closed || belowMin || overWallet}
