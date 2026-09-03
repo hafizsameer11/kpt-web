@@ -6,7 +6,7 @@ import { useCountUp } from "@/components/kipit/motion";
 import { naira, WALLET } from "@/lib/home-data";
 import { TENOR_BANDS } from "@/lib/invest-data";
 
-export const Route = createFileRoute("/fixed-plans_/create")({
+export const Route = createFileRoute("/fixed-plans_/create/")({
   head: () => ({
     meta: [
       { title: "Create a Fixed Plan | Kipit" },
