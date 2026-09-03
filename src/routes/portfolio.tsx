@@ -5,7 +5,9 @@ import {
   ChevronRight,
   Eye,
   EyeOff,
+  History,
   PieChart,
+  Receipt,
   Wallet,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
@@ -407,9 +409,13 @@ function PortfolioScreen() {
           <section className="mt-7">
             <div className="mb-3 flex items-center justify-between px-1">
               <h2 className="font-display text-base font-extrabold">Upcoming maturities</h2>
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground">
-                <CalendarClock className="size-3.5" /> next {UPCOMING_MATURITIES.length}
-              </span>
+              <Link
+                to="/portfolio/maturities"
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand"
+              >
+                <CalendarClock className="size-3.5" /> Calendar
+                <ChevronRight className="size-3.5" />
+              </Link>
             </div>
 
             <ul className="card-surface divide-y divide-border/60 overflow-hidden">
@@ -435,6 +441,36 @@ function PortfolioScreen() {
           </section>
 
 
+
+          {/* Records (MOB-123 / MOB-124) */}
+          <section className="mt-7 grid gap-3 md:grid-cols-2">
+            <Link
+              to="/portfolio/history"
+              className="card-surface flex items-center gap-3 px-4 py-3.5 press"
+            >
+              <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-brand">
+                <History className="size-4.5" strokeWidth={2.2} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[13px] font-bold">Investment history</p>
+                <p className="text-[11px] text-muted-foreground">Active, matured and closed</p>
+              </div>
+              <ChevronRight className="size-4 text-muted-foreground" />
+            </Link>
+            <Link
+              to="/portfolio/transactions"
+              className="card-surface flex items-center gap-3 px-4 py-3.5 press"
+            >
+              <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-brand">
+                <Receipt className="size-4.5" strokeWidth={2.2} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[13px] font-bold">Transaction history</p>
+                <p className="text-[11px] text-muted-foreground">Deposits, interest, withdrawals</p>
+              </div>
+              <ChevronRight className="size-4 text-muted-foreground" />
+            </Link>
+          </section>
 
           <DisclosureStrip variant="marketplace" />
         </div>
