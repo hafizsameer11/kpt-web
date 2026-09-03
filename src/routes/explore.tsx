@@ -54,6 +54,15 @@ const CATEGORY_ICON = {
 } as const;
 
 function ExploreScreen() {
+  return (
+    <AppShell title="Explore" navVariant="elevated">
+      <DesktopExplore />
+      <MobileExplore />
+    </AppShell>
+  );
+}
+
+function MobileExplore() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
   const [notified, setNotified] = useState<string[]>([]);
@@ -81,8 +90,9 @@ function ExploreScreen() {
   const activeCategory = EXPLORE_CATEGORIES.find((c) => c.id === category);
 
   return (
-    <AppShell title="Explore" navVariant="elevated">
+    <div className="md:hidden">
       <div className="pb-2">
+
         {/* ── Hero ─────────────────────────────────────────────── */}
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
           <span
@@ -376,7 +386,8 @@ function ExploreScreen() {
           <DisclosureStrip variant="marketplace" />
         </div>
       </div>
-    </AppShell>
+    </div>
+
   );
 }
 
@@ -581,6 +592,334 @@ function Stat({
       >
         {value}
       </p>
+    </div>
+  );
+}
+
+/* ── Desktop ─────────────────────────────────────────────────── */
+
+function DesktopExplore() {
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState<string | null>(null);
+  const [notified, setNotified] = useState<string[]>([]);
+  const toggleNotify = (name: string) =>
+    setNotified((prev) =>
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
+    );
+
+  const featured = EXPLORE_PRODUCTS.filter((p) => p.featured);
+
+  const results = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return EXPLORE_PRODUCTS.filter((p) => {
+      const inCategory = !category || p.categoryId === category;
+      const inQuery =
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        p.issuer.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q);
+      return inCategory && inQuery;
+    });
+  }, [query, category]);
+
+  const activeCategory = EXPLORE_CATEGORIES.find((c) => c.id === category);
+
+  return (
+    <div className="hidden pb-4 md:block">
+      {/* Hero */}
+      <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-7 text-primary-foreground shadow-float">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-20 -top-28 size-72 rounded-full bg-gold/25 blur-3xl"
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -left-24 bottom-[-6rem] size-72 rounded-full bg-white/10 blur-3xl"
+        />
+        <div className="relative flex flex-wrap items-end justify-between gap-6">
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary-foreground/60">
+              Marketplace
+            </p>
+            <h1 className="mt-3 font-display text-[38px] font-extrabold leading-none tracking-[-0.04em]">
+              Explore
+            </h1>
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-primary-foreground/70">
+              Partner opportunities beyond Kipit&rsquo;s own plans — rate, tenor
+              and minimum shown up front.
+            </p>
+          </div>
+
+          <div className="flex w-full max-w-sm items-center gap-2.5 rounded-xl border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-md">
+            <Search className="size-4 shrink-0 text-primary-foreground/70" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search products or issuers"
+              aria-label="Search marketplace products"
+              className="min-w-0 flex-1 bg-transparent text-[13.5px] font-semibold text-primary-foreground outline-none placeholder:font-medium placeholder:text-primary-foreground/50"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+                className="rounded-full bg-white/15 p-1 press"
+              >
+                <X className="size-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Categories */}
+      <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {EXPLORE_CATEGORIES.map((c) => {
+          const Icon = CATEGORY_ICON[c.id as keyof typeof CATEGORY_ICON];
+          const active = category === c.id;
+          return (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => setCategory(active ? null : c.id)}
+              aria-pressed={active}
+              className={`relative flex items-center gap-3.5 overflow-hidden rounded-xl px-5 py-4 text-left transition-transform press hover:-translate-y-0.5 ${
+                active
+                  ? "bg-brand-gradient text-primary-foreground shadow-float"
+                  : "border border-border bg-card"
+              }`}
+            >
+              <span
+                className={`grid size-11 shrink-0 place-items-center rounded-xl ${
+                  active ? "bg-gold text-gold-foreground" : "bg-secondary text-foreground"
+                }`}
+              >
+                <Icon className="size-5" />
+              </span>
+              <span className="min-w-0">
+                <span className="block font-display text-[14.5px] font-extrabold leading-tight">
+                  {c.name}
+                </span>
+                <span
+                  className={`mt-0.5 block text-[10.5px] font-semibold uppercase tracking-[0.12em] ${
+                    active ? "text-gold" : "text-muted-foreground"
+                  }`}
+                >
+                  {c.count} products
+                </span>
+              </span>
+              {active && (
+                <span className="ml-auto grid size-5 shrink-0 place-items-center rounded-full bg-gold text-gold-foreground">
+                  <Check className="size-3" strokeWidth={3} />
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-4 grid items-start gap-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+        {/* Left column */}
+        <div className="grid min-w-0 grid-cols-1 gap-4">
+          {activeCategory && (
+            <Link
+              to="/explore/category/$categoryId"
+              params={{ categoryId: activeCategory.id }}
+              className="flex items-center justify-between rounded-xl border border-border bg-card px-5 py-3.5 press hover:border-gold/40"
+            >
+              <span className="text-[13px] font-bold">
+                View all {activeCategory.name}
+              </span>
+              <ChevronRight className="size-4 text-muted-foreground" />
+            </Link>
+          )}
+
+          <section className="card-surface p-6">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-display text-base font-extrabold">
+                {activeCategory ? activeCategory.name : "All products"}
+              </h2>
+              <div className="flex items-center gap-3">
+                <span className="text-[11px] font-semibold text-muted-foreground">
+                  {results.length} listed
+                </span>
+                {(category || query) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCategory(null);
+                      setQuery("");
+                    }}
+                    className="text-[11.5px] font-bold text-foreground underline-offset-4 hover:underline"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {results.length === 0 ? (
+              <div className="mt-4 rounded-xl border border-dashed border-border p-10 text-center">
+                <p className="text-[13px] font-bold">No matching products</p>
+                <p className="mt-1 text-[12px] text-muted-foreground">
+                  Try a different search or category.
+                </p>
+              </div>
+            ) : (
+              <div className="mt-4 grid gap-3 xl:grid-cols-2">
+                {results.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+
+        {/* Right column */}
+        <div className="grid min-w-0 grid-cols-1 gap-4">
+          {!category && !query && featured.length > 0 && (
+            <section className="card-surface p-6">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="font-display text-base font-extrabold">
+                  Featured this week
+                </h2>
+                <span className="rounded-full bg-gold-gradient px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-gold-foreground">
+                  Top {Math.min(2, featured.length)}
+                </span>
+              </div>
+              <div className="mt-4 space-y-3">
+                {featured.slice(0, 2).map((p) => (
+                  <Link
+                    key={p.id}
+                    to="/explore/$productId"
+                    params={{ productId: p.id }}
+                    className="relative block overflow-hidden rounded-xl bg-brand-gradient p-5 text-primary-foreground transition-transform press hover:-translate-y-0.5"
+                  >
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute -right-10 -top-16 size-40 rounded-full bg-gold/25 blur-3xl"
+                    />
+                    <div className="relative">
+                      <span className="rounded-full bg-white/12 px-2.5 py-1 text-[9.5px] font-extrabold uppercase tracking-[0.14em] text-primary-foreground/80">
+                        {p.category}
+                      </span>
+                      <h3 className="mt-3 font-display text-[17px] font-extrabold leading-tight tracking-[-0.02em]">
+                        {p.name}
+                      </h3>
+                      <p className="mt-1 text-[11.5px] text-primary-foreground/65">
+                        {p.issuer}
+                      </p>
+                      <div className="mt-4 flex items-end justify-between gap-3">
+                        <div>
+                          <p className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/55">
+                            Rate p.a.
+                          </p>
+                          <p className="font-display text-[26px] font-extrabold leading-none tracking-[-0.03em] text-gold text-num">
+                            {p.rate.replace(" p.a.", "")}
+                          </p>
+                        </div>
+                        <div className="text-right text-[11px] text-primary-foreground/70">
+                          <p>{p.tenor}</p>
+                          <p className="mt-0.5">Min {naira(p.minimum)}</p>
+                        </div>
+                      </div>
+                      <p className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-semibold text-gold">
+                        <Clock3 className="size-3.5" /> {p.closes}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <section className="card-surface p-6">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-display text-base font-extrabold">Coming soon</h2>
+              <span className="rounded-full border border-border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                {EXPLORE_COMING_SOON.length} in build
+              </span>
+            </div>
+
+            <div className="relative mt-4 pl-7">
+              <span
+                aria-hidden
+                className="pointer-events-none absolute left-[9px] bottom-6 top-3 w-px border-l border-dashed border-gold/50"
+              />
+              <div className="space-y-3">
+                {EXPLORE_COMING_SOON.map((c, i) => {
+                  const timing = ["Next up", "Q4", "Q1 2027"][i] ?? "Soon";
+                  const on = notified.includes(c.name);
+                  return (
+                    <div key={c.name} className="relative">
+                      <span
+                        aria-hidden
+                        className="absolute -left-7 top-4 grid size-[18px] place-items-center rounded-full bg-card"
+                      >
+                        <span
+                          className={`size-2 rounded-full bg-gold ${i === 0 ? "k-glow" : ""}`}
+                        />
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => toggleNotify(c.name)}
+                        aria-pressed={on}
+                        className="w-full rounded-xl border border-border bg-card p-4 text-left transition-all press hover:border-gold/40"
+                      >
+                        <div className="flex items-baseline justify-between gap-3">
+                          <h3 className="font-display text-[13.5px] font-extrabold leading-tight">
+                            {c.name}
+                          </h3>
+                          <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.12em] text-gold">
+                            {timing}
+                          </span>
+                        </div>
+                        <p className="mt-1.5 text-[11.5px] leading-relaxed text-muted-foreground">
+                          {c.note}
+                        </p>
+                        <span
+                          className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10.5px] font-bold ${
+                            on
+                              ? "bg-brand text-primary-foreground"
+                              : "border border-border text-foreground"
+                          }`}
+                        >
+                          {on ? (
+                            <>
+                              <Check className="size-3" /> We&rsquo;ll notify you
+                            </>
+                          ) : (
+                            <>
+                              <Bell className="size-3" /> Notify me
+                            </>
+                          )}
+                        </span>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() =>
+                setNotified(
+                  notified.length === EXPLORE_COMING_SOON.length
+                    ? []
+                    : EXPLORE_COMING_SOON.map((c) => c.name),
+                )
+              }
+              className="mt-5 w-full text-center text-[11px] font-bold uppercase tracking-[0.12em] text-gold transition-colors hover:text-gold/80 press"
+            >
+              {notified.length === EXPLORE_COMING_SOON.length
+                ? "Turn off all updates"
+                : "Notify me of all updates"}
+            </button>
+          </section>
+        </div>
+      </div>
     </div>
   );
 }
