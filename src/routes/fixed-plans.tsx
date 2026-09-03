@@ -119,7 +119,7 @@ function FixedPlansScreen() {
               </div>
 
               <Link
-                to="/invest"
+                to="/fixed-plans/create"
                 className="k-glow mt-5 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-gold-gradient px-4 py-3 text-[12px] font-extrabold text-gold-foreground press"
               >
                 <Plus className="size-4" strokeWidth={2.6} />
