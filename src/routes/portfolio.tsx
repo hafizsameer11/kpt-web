@@ -179,7 +179,7 @@ function PortfolioScreen() {
           </section>
 
           {/* Upcoming maturities — desktop beside total */}
-          <section className="hidden lg:block">
+          <section className="hidden h-full flex-col lg:flex">
             <div className="mb-3 flex items-center justify-between px-1">
               <h2 className="font-display text-base font-extrabold">Upcoming maturities</h2>
               <Link
@@ -191,12 +191,12 @@ function PortfolioScreen() {
               </Link>
             </div>
 
-            <ul className="card-surface divide-y divide-border/60 overflow-hidden">
-              {UPCOMING_MATURITIES.map((m, i) => (
+            <ul className="card-surface flex flex-1 flex-col divide-y divide-border/60 overflow-hidden">
+              {UPCOMING_MATURITIES.slice(0, 4).map((m, i) => (
                 <li
                   key={`top-${m.name}-${m.date}`}
                   style={{ ["--d" as string]: `${i * 60}ms` }}
-                  className="k-rise flex items-center gap-3 px-4 py-3.5"
+                  className="k-rise flex flex-1 items-center gap-3 px-4 py-3.5"
                 >
                   <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-extrabold text-brand text-num">
                     {m.daysLeft}d
