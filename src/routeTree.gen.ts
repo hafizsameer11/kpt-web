@@ -23,6 +23,7 @@ import { Route as CallAccountReviewRouteImport } from './routes/call-account_.re
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
 import { Route as ExploreProductIdRouteImport } from './routes/explore_.$productId'
 import { Route as FixedPlansCreateRouteImport } from './routes/fixed-plans_/create'
+import { Route as GiftsGiftIdRouteImport } from './routes/gifts_.$giftId'
 import { Route as PortfolioHoldingIdRouteImport } from './routes/portfolio_.$holdingId'
 import { Route as PortfolioHistoryRouteImport } from './routes/portfolio_.history'
 import { Route as PortfolioMaturitiesRouteImport } from './routes/portfolio_.maturities'
@@ -111,6 +112,11 @@ const ExploreProductIdRoute = ExploreProductIdRouteImport.update({
 const FixedPlansCreateRoute = FixedPlansCreateRouteImport.update({
   id: '/fixed-plans_/create',
   path: '/fixed-plans/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GiftsGiftIdRoute = GiftsGiftIdRouteImport.update({
+  id: '/gifts_/$giftId',
+  path: '/gifts/$giftId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioHoldingIdRoute = PortfolioHoldingIdRouteImport.update({
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/call-account/success': typeof CallAccountSuccessRoute
   '/explore/$productId': typeof ExploreProductIdRoute
   '/fixed-plans/create': typeof FixedPlansCreateRouteWithChildren
+  '/gifts/$giftId': typeof GiftsGiftIdRoute
   '/portfolio/$holdingId': typeof PortfolioHoldingIdRoute
   '/portfolio/history': typeof PortfolioHistoryRoute
   '/portfolio/maturities': typeof PortfolioMaturitiesRoute
@@ -265,6 +272,7 @@ export interface FileRoutesByTo {
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
   '/explore/$productId': typeof ExploreProductIdRoute
+  '/gifts/$giftId': typeof GiftsGiftIdRoute
   '/portfolio/$holdingId': typeof PortfolioHoldingIdRoute
   '/portfolio/history': typeof PortfolioHistoryRoute
   '/portfolio/maturities': typeof PortfolioMaturitiesRoute
@@ -301,6 +309,7 @@ export interface FileRoutesById {
   '/call-account_/success': typeof CallAccountSuccessRoute
   '/explore_/$productId': typeof ExploreProductIdRoute
   '/fixed-plans_/create': typeof FixedPlansCreateRouteWithChildren
+  '/gifts_/$giftId': typeof GiftsGiftIdRoute
   '/portfolio_/$holdingId': typeof PortfolioHoldingIdRoute
   '/portfolio_/history': typeof PortfolioHistoryRoute
   '/portfolio_/maturities': typeof PortfolioMaturitiesRoute
@@ -338,6 +347,7 @@ export interface FileRouteTypes {
     | '/call-account/success'
     | '/explore/$productId'
     | '/fixed-plans/create'
+    | '/gifts/$giftId'
     | '/portfolio/$holdingId'
     | '/portfolio/history'
     | '/portfolio/maturities'
@@ -372,6 +382,7 @@ export interface FileRouteTypes {
     | '/call-account/review'
     | '/call-account/success'
     | '/explore/$productId'
+    | '/gifts/$giftId'
     | '/portfolio/$holdingId'
     | '/portfolio/history'
     | '/portfolio/maturities'
@@ -407,6 +418,7 @@ export interface FileRouteTypes {
     | '/call-account_/success'
     | '/explore_/$productId'
     | '/fixed-plans_/create'
+    | '/gifts_/$giftId'
     | '/portfolio_/$holdingId'
     | '/portfolio_/history'
     | '/portfolio_/maturities'
@@ -443,6 +455,7 @@ export interface RootRouteChildren {
   CallAccountSuccessRoute: typeof CallAccountSuccessRoute
   ExploreProductIdRoute: typeof ExploreProductIdRoute
   FixedPlansCreateRoute: typeof FixedPlansCreateRouteWithChildren
+  GiftsGiftIdRoute: typeof GiftsGiftIdRoute
   PortfolioHoldingIdRoute: typeof PortfolioHoldingIdRoute
   PortfolioHistoryRoute: typeof PortfolioHistoryRoute
   PortfolioMaturitiesRoute: typeof PortfolioMaturitiesRoute
@@ -556,6 +569,13 @@ declare module '@tanstack/react-router' {
       path: '/fixed-plans/create'
       fullPath: '/fixed-plans/create'
       preLoaderRoute: typeof FixedPlansCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gifts_/$giftId': {
+      id: '/gifts_/$giftId'
+      path: '/gifts/$giftId'
+      fullPath: '/gifts/$giftId'
+      preLoaderRoute: typeof GiftsGiftIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portfolio_/$holdingId': {
@@ -730,6 +750,7 @@ const rootRouteChildren: RootRouteChildren = {
   CallAccountSuccessRoute: CallAccountSuccessRoute,
   ExploreProductIdRoute: ExploreProductIdRoute,
   FixedPlansCreateRoute: FixedPlansCreateRouteWithChildren,
+  GiftsGiftIdRoute: GiftsGiftIdRoute,
   PortfolioHoldingIdRoute: PortfolioHoldingIdRoute,
   PortfolioHistoryRoute: PortfolioHistoryRoute,
   PortfolioMaturitiesRoute: PortfolioMaturitiesRoute,
