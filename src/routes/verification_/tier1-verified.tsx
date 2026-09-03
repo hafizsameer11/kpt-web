@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Lock } from "lucide-react";
+import { useEffect } from "react";
+import { setKycTier } from "@/lib/kyc-state";
 import { AppShell } from "@/components/kipit/AppShell";
 import { TIERS } from "@/lib/kyc-data";
 
@@ -24,6 +26,8 @@ export const Route = createFileRoute("/verification_/tier1-verified")({
 const tier1 = TIERS[0]!;
 
 function Tier1Verified() {
+  useEffect(() => setKycTier(1), []);
+
   return (
     <AppShell title="Tier 1 Verified" navVariant="elevated">
       <div className="pb-2">

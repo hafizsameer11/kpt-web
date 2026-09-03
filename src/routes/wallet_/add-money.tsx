@@ -1,3 +1,4 @@
+import { KycGuard } from "@/components/kipit/KycGate";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -38,7 +39,11 @@ export const Route = createFileRoute("/wallet_/add-money")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: WalletAddMoney,
+  component: () => (
+    <KycGuard required={1}>
+      <WalletAddMoney />
+    </KycGuard>
+  ),
 });
 
 function WalletAddMoney() {

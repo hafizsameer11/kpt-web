@@ -6,9 +6,9 @@ import { DEMO_OTP, signupDraft } from "@/lib/auth-data";
 export const Route = createFileRoute("/signup_/otp")({
   head: () => ({
     meta: [
-      { title: "Verify your phone — Kipit" },
-      { name: "description", content: "Enter the six-digit code we sent to your phone to verify your Kipit sign-up." },
-      { property: "og:title", content: "Verify your phone — Kipit" },
+      { title: "Verify your email — Kipit" },
+      { name: "description", content: "Enter the six-digit code we sent to your email to verify your Kipit sign-up." },
+      { property: "og:title", content: "Verify your email — Kipit" },
       { property: "og:description", content: "Enter your six-digit verification code." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -45,13 +45,11 @@ function SignupOtp() {
     if (value.length === 6) verifyCode(value);
   };
 
-  const masked = signupDraft.phone
-    ? `${signupDraft.dial} ${signupDraft.phone.replace(/^(\d{3})\d+(\d{2})$/, "$1••••$2")}`
-    : "your phone";
+  const masked = signupDraft.email || "your email";
 
   return (
     <AuthShell
-      back="/signup/phone"
+      back="/signup/email"
       step={3}
       steps={7}
       title="Enter your code"
@@ -87,8 +85,8 @@ function SignupOtp() {
               Resend code
             </button>
           )}
-          <Link to="/signup/phone" className="font-semibold text-brand-foreground/80">
-            Change number
+          <Link to="/signup/email" className="font-semibold text-brand-foreground/80">
+            Change email
           </Link>
         </div>
       </div>

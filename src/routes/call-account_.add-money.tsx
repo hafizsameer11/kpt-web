@@ -1,3 +1,4 @@
+import { KycGuard } from "@/components/kipit/KycGate";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Info, ShieldCheck, Wallet } from "lucide-react";
 import { useState } from "react";
@@ -25,7 +26,11 @@ export const Route = createFileRoute("/call-account_/add-money")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: AddMoneyScreen,
+  component: () => (
+    <KycGuard required={1}>
+      <AddMoneyScreen />
+    </KycGuard>
+  ),
 });
 
 const QUICK = [100_000, 250_000, 500_000];

@@ -52,9 +52,9 @@ import { Route as SettingsStatementsRouteImport } from './routes/settings_/state
 import { Route as SignupBiometricsRouteImport } from './routes/signup_/biometrics'
 import { Route as SignupConfirmPinRouteImport } from './routes/signup_/confirm-pin'
 import { Route as SignupDetailsRouteImport } from './routes/signup_/details'
+import { Route as SignupEmailRouteImport } from './routes/signup_/email'
 import { Route as SignupOtpRouteImport } from './routes/signup_/otp'
 import { Route as SignupPasswordRouteImport } from './routes/signup_/password'
-import { Route as SignupPhoneRouteImport } from './routes/signup_/phone'
 import { Route as SignupPinRouteImport } from './routes/signup_/pin'
 import { Route as SignupSuccessRouteImport } from './routes/signup_/success'
 import { Route as VerificationAddressRouteImport } from './routes/verification_/address'
@@ -325,6 +325,11 @@ const SignupDetailsRoute = SignupDetailsRouteImport.update({
   path: '/signup/details',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignupEmailRoute = SignupEmailRouteImport.update({
+  id: '/signup_/email',
+  path: '/signup/email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupOtpRoute = SignupOtpRouteImport.update({
   id: '/signup_/otp',
   path: '/signup/otp',
@@ -333,11 +338,6 @@ const SignupOtpRoute = SignupOtpRouteImport.update({
 const SignupPasswordRoute = SignupPasswordRouteImport.update({
   id: '/signup_/password',
   path: '/signup/password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupPhoneRoute = SignupPhoneRouteImport.update({
-  id: '/signup_/phone',
-  path: '/signup/phone',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupPinRoute = SignupPinRouteImport.update({
@@ -669,9 +669,9 @@ export interface FileRoutesByFullPath {
   '/signup/biometrics': typeof SignupBiometricsRoute
   '/signup/confirm-pin': typeof SignupConfirmPinRoute
   '/signup/details': typeof SignupDetailsRoute
+  '/signup/email': typeof SignupEmailRoute
   '/signup/otp': typeof SignupOtpRoute
   '/signup/password': typeof SignupPasswordRoute
-  '/signup/phone': typeof SignupPhoneRoute
   '/signup/pin': typeof SignupPinRoute
   '/signup/success': typeof SignupSuccessRoute
   '/verification/address': typeof VerificationAddressRoute
@@ -770,9 +770,9 @@ export interface FileRoutesByTo {
   '/signup/biometrics': typeof SignupBiometricsRoute
   '/signup/confirm-pin': typeof SignupConfirmPinRoute
   '/signup/details': typeof SignupDetailsRoute
+  '/signup/email': typeof SignupEmailRoute
   '/signup/otp': typeof SignupOtpRoute
   '/signup/password': typeof SignupPasswordRoute
-  '/signup/phone': typeof SignupPhoneRoute
   '/signup/pin': typeof SignupPinRoute
   '/signup/success': typeof SignupSuccessRoute
   '/verification/address': typeof VerificationAddressRoute
@@ -873,9 +873,9 @@ export interface FileRoutesById {
   '/signup_/biometrics': typeof SignupBiometricsRoute
   '/signup_/confirm-pin': typeof SignupConfirmPinRoute
   '/signup_/details': typeof SignupDetailsRoute
+  '/signup_/email': typeof SignupEmailRoute
   '/signup_/otp': typeof SignupOtpRoute
   '/signup_/password': typeof SignupPasswordRoute
-  '/signup_/phone': typeof SignupPhoneRoute
   '/signup_/pin': typeof SignupPinRoute
   '/signup_/success': typeof SignupSuccessRoute
   '/verification_/address': typeof VerificationAddressRoute
@@ -977,9 +977,9 @@ export interface FileRouteTypes {
     | '/signup/biometrics'
     | '/signup/confirm-pin'
     | '/signup/details'
+    | '/signup/email'
     | '/signup/otp'
     | '/signup/password'
-    | '/signup/phone'
     | '/signup/pin'
     | '/signup/success'
     | '/verification/address'
@@ -1078,9 +1078,9 @@ export interface FileRouteTypes {
     | '/signup/biometrics'
     | '/signup/confirm-pin'
     | '/signup/details'
+    | '/signup/email'
     | '/signup/otp'
     | '/signup/password'
-    | '/signup/phone'
     | '/signup/pin'
     | '/signup/success'
     | '/verification/address'
@@ -1180,9 +1180,9 @@ export interface FileRouteTypes {
     | '/signup_/biometrics'
     | '/signup_/confirm-pin'
     | '/signup_/details'
+    | '/signup_/email'
     | '/signup_/otp'
     | '/signup_/password'
-    | '/signup_/phone'
     | '/signup_/pin'
     | '/signup_/success'
     | '/verification_/address'
@@ -1283,9 +1283,9 @@ export interface RootRouteChildren {
   SignupBiometricsRoute: typeof SignupBiometricsRoute
   SignupConfirmPinRoute: typeof SignupConfirmPinRoute
   SignupDetailsRoute: typeof SignupDetailsRoute
+  SignupEmailRoute: typeof SignupEmailRoute
   SignupOtpRoute: typeof SignupOtpRoute
   SignupPasswordRoute: typeof SignupPasswordRoute
-  SignupPhoneRoute: typeof SignupPhoneRoute
   SignupPinRoute: typeof SignupPinRoute
   SignupSuccessRoute: typeof SignupSuccessRoute
   VerificationAddressRoute: typeof VerificationAddressRoute
@@ -1639,6 +1639,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupDetailsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signup_/email': {
+      id: '/signup_/email'
+      path: '/signup/email'
+      fullPath: '/signup/email'
+      preLoaderRoute: typeof SignupEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup_/otp': {
       id: '/signup_/otp'
       path: '/signup/otp'
@@ -1651,13 +1658,6 @@ declare module '@tanstack/react-router' {
       path: '/signup/password'
       fullPath: '/signup/password'
       preLoaderRoute: typeof SignupPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signup_/phone': {
-      id: '/signup_/phone'
-      path: '/signup/phone'
-      fullPath: '/signup/phone'
-      preLoaderRoute: typeof SignupPhoneRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup_/pin': {
@@ -2106,9 +2106,9 @@ const rootRouteChildren: RootRouteChildren = {
   SignupBiometricsRoute: SignupBiometricsRoute,
   SignupConfirmPinRoute: SignupConfirmPinRoute,
   SignupDetailsRoute: SignupDetailsRoute,
+  SignupEmailRoute: SignupEmailRoute,
   SignupOtpRoute: SignupOtpRoute,
   SignupPasswordRoute: SignupPasswordRoute,
-  SignupPhoneRoute: SignupPhoneRoute,
   SignupPinRoute: SignupPinRoute,
   SignupSuccessRoute: SignupSuccessRoute,
   VerificationAddressRoute: VerificationAddressRoute,

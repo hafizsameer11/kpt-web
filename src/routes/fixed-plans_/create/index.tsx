@@ -1,3 +1,4 @@
+import { KycGuard } from "@/components/kipit/KycGate";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Info, ShieldCheck, Wallet } from "lucide-react";
 import { useState } from "react";
@@ -27,7 +28,11 @@ export const Route = createFileRoute("/fixed-plans_/create/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: CreatePlanAmountScreen,
+  component: () => (
+    <KycGuard required={1}>
+      <CreatePlanAmountScreen />
+    </KycGuard>
+  ),
 });
 
 /** Suggestions always start at (or above) the selected plan's minimum. */
