@@ -57,9 +57,158 @@ function WalletAddMoney() {
   const valid = amount > 0 && !belowMin && !overCardLimit;
   const fee = method === "card" ? cardFee(amount) : 0;
 
+  const summaryRows = (
+    <dl className="divide-y divide-border text-[13px]">
+      <Row label="Amount">{naira(amount)}</Row>
+      <Row label="Fee">{fee === 0 ? "₦0" : naira(fee)}</Row>
+      <Row label="Wallet after">{naira(WALLET + amount)}</Row>
+    </dl>
+  );
+
+  const errorNote = (belowMin || overCardLimit) && (
+    <p className="k-shake mt-3 rounded-xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
+      {overCardLimit
+        ? `Card payments are capped at ${naira(MAX_CARD_DEPOSIT)}. Use bank transfer instead.`
+        : `Minimum deposit is ${naira(MIN_DEPOSIT)}.`}
+    </p>
+  );
+
+  const proceed = () =>
+    void navigate({
+      to: method === "card" ? "/wallet/card" : "/wallet/transfer",
+      search: { amount },
+    });
+
   return (
     <AppShell title="Add Money" navVariant="elevated">
-      <div className="pb-2">
+      {/* ── Desktop (md+) ───────────────────────────────────────── */}
+      <div className="hidden md:block">
+        <div className="mx-auto w-full max-w-[1080px] space-y-6 pb-10">
+          <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-8 text-primary-foreground shadow-float">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -right-24 -top-32 size-80 rounded-full bg-gold/15 blur-[70px]"
+            />
+            <div className="relative flex flex-wrap items-end justify-between gap-8">
+              <div>
+                <Link
+                  to="/"
+                  className="press inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[12px] font-bold hover:bg-white/15"
+                >
+                  <ArrowLeft className="size-4" /> Home
+                </Link>
+                <p className="mt-6 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                  Amount to add
+                </p>
+                <div className="mt-2 flex items-baseline gap-2">
+                  <span className="font-display text-[56px] font-extrabold leading-none text-primary-foreground/60">
+                    ₦
+                  </span>
+                  <input
+                    inputMode="numeric"
+                    autoComplete="off"
+                    aria-label="Amount to add"
+                    placeholder="0"
+                    value={amount ? amount.toLocaleString("en-NG") : ""}
+                    onChange={(e) => setRaw(e.target.value)}
+                    className="w-full max-w-[420px] bg-transparent font-display text-[56px] font-extrabold leading-none tracking-[-0.035em] text-num text-primary-foreground outline-none placeholder:text-primary-foreground/25"
+                  />
+                </div>
+                <p className="mt-3 flex items-center gap-1.5 text-[12.5px] font-medium text-primary-foreground/60">
+                  <ShieldCheck className="size-4 text-primary-foreground/70" />
+                  Minimum {naira(MIN_DEPOSIT)} · funds land in your wallet
+                </p>
+              </div>
+              <div className="w-[300px]">
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-primary-foreground/60">
+                  Quick amounts
+                </p>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {QUICK_DEPOSITS.map((q) => (
+                    <button
+                      key={q}
+                      type="button"
+                      onClick={() => setRaw(String(q))}
+                      className={`press rounded-xl border py-3 text-[13px] font-bold transition-colors ${
+                        amount === q
+                          ? "border-gold bg-gold text-gold-foreground"
+                          : "border-white/15 bg-white/10 text-primary-foreground/90 hover:bg-white/15"
+                      }`}
+                    >
+                      {naira(q)}
+                    </button>
+                  ))}
+                </div>
+                <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-3 py-1.5 text-[11.5px] font-extrabold text-gold">
+                  <Wallet className="size-3.5" /> Wallet {naira(WALLET)}
+                </span>
+              </div>
+            </div>
+          </section>
+
+          <div className="grid grid-cols-[minmax(0,1fr)_360px] items-start gap-6">
+            <div>
+              <h2 className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-muted-foreground">
+                How do you want to pay?
+              </h2>
+              <ul className="mt-3 grid grid-cols-2 gap-3">
+                <MethodOption
+                  active={method === "transfer"}
+                  onClick={() => setMethod("transfer")}
+                  icon={<Building2 className="size-5" strokeWidth={2.2} />}
+                  title="Bank transfer"
+                  desc="Send to your dedicated Kipit account · ₦0 fee"
+                  badge="Free"
+                />
+                <MethodOption
+                  active={method === "card"}
+                  onClick={() => setMethod("card")}
+                  icon={<CreditCard className="size-5" strokeWidth={2.2} />}
+                  title="Debit card"
+                  desc={`1.5% processing fee · up to ${naira(MAX_CARD_DEPOSIT)} per payment`}
+                />
+              </ul>
+              <div className="mt-4 flex items-start gap-3 rounded-2xl border border-border bg-card p-5">
+                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <Wallet className="size-5" strokeWidth={2.2} />
+                </span>
+                <div>
+                  <p className="text-[14px] font-extrabold">Put idle cash to work</p>
+                  <p className="mt-1 text-[12.5px] leading-relaxed text-muted-foreground">
+                    Money in your wallet earns nothing. Move it into your Call Account or a
+                    fixed plan to start earning daily interest.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="sticky top-6 space-y-4">
+              <section className="rounded-2xl border border-border bg-card p-5">
+                <h2 className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-muted-foreground">
+                  Summary
+                </h2>
+                <div className="mt-3">{summaryRows}</div>
+                {errorNote}
+                <button
+                  type="button"
+                  disabled={!valid}
+                  onClick={proceed}
+                  className="press mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float disabled:opacity-40 disabled:shadow-none"
+                >
+                  Continue <ArrowRight className="size-4" strokeWidth={2.6} />
+                </button>
+              </section>
+              <div className="flex items-start gap-2.5 rounded-xl border border-border bg-card px-4 py-3 text-[11.5px] leading-relaxed text-muted-foreground">
+                <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
+                Deposits are held by a regulated partner bank. Prototype flow — no real
+                money moves.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="pb-2 md:hidden">
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pt-8 md:shadow-float">
           <span
             aria-hidden
