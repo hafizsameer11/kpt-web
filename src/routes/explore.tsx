@@ -283,22 +283,33 @@ function ExploreScreen() {
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Coming soon
               </p>
-              <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
-                {EXPLORE_COMING_SOON.map((c) => (
+              <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+                {EXPLORE_COMING_SOON.map((c, i) => (
                   <article
                     key={c.name}
-                    className="min-w-[13rem] shrink-0 snap-start rounded-2xl border border-dashed border-border bg-card p-4 md:min-w-0"
+                    style={{ ["--d" as string]: `${i * 80}ms` }}
+                    className="k-rise relative w-[72%] min-w-[72%] shrink-0 snap-center overflow-hidden rounded-[1.5rem] border border-border bg-card p-4 md:w-auto md:min-w-0 md:rounded-[1.75rem] md:p-5"
                   >
-                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.12em] text-muted-foreground">
-                      Soon
-                    </span>
-                    <p className="mt-2.5 text-[13px] font-extrabold">{c.name}</p>
-                    <p className="mt-1 text-[11.5px] leading-relaxed text-muted-foreground">
-                      {c.note}
-                    </p>
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute -right-8 -top-10 size-24 rounded-full bg-accent/60"
+                    />
+                    <div className="relative">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-widest text-muted-foreground">
+                        <Clock3 className="size-3" /> Soon
+                      </span>
+                      <h3 className="mt-3 font-display text-[14px] font-extrabold leading-tight">
+                        {c.name}
+                      </h3>
+                      <p className="mt-1 text-[11.5px] leading-relaxed text-muted-foreground">
+                        {c.note}
+                      </p>
+                      <span className="mt-4 block h-1 w-10 rounded-full bg-gold/60" />
+                    </div>
                   </article>
                 ))}
               </div>
+
             </section>
           </Rise>
 
