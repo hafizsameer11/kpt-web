@@ -243,60 +243,80 @@ function ExploreScreen() {
             </section>
           </Rise>
 
-          {/* Coming soon — roadmap rail (deliberately not a card grid) */}
+          {/* Coming soon — elegant gold timeline */}
           <Rise delay={180}>
             <section className="mt-8">
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                    On the roadmap
-                  </p>
-                  <h2 className="mt-1 font-display text-lg font-extrabold text-foreground">
+              <div className="mb-6">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  On the roadmap
+                </p>
+                <div className="mt-1 flex items-center gap-3">
+                  <h2 className="font-display text-lg font-extrabold text-foreground">
                     Coming soon
                   </h2>
+                  <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
+                  <span className="rounded-full border border-border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                    {EXPLORE_COMING_SOON.length} in build
+                  </span>
                 </div>
-                <span className="rounded-full border border-border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                  {EXPLORE_COMING_SOON.length} in build
-                </span>
               </div>
 
-              <ol className="relative mt-4 pl-6">
+              <div className="relative pl-8">
+                {/* Vertical dotted gold line */}
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute left-[7px] top-2 bottom-6 w-px bg-gradient-to-b from-gold/70 via-border to-transparent"
+                  className="pointer-events-none absolute left-[13px] top-2 bottom-24 w-px border-l border-dashed border-gold/50"
                 />
-                {EXPLORE_COMING_SOON.map((c, i) => (
-                  <li
-                    key={c.name}
-                    style={{ ["--d" as string]: `${i * 90}ms` }}
-                    className="k-rise relative py-4 first:pt-1"
-                  >
-                    <span
-                      aria-hidden
-                      className="absolute -left-6 top-[1.35rem] inline-flex size-3.5 items-center justify-center rounded-full border-2 border-gold bg-background first:top-[0.9rem]"
-                    >
-                      {i === 0 && (
-                        <span className="size-1.5 rounded-full bg-gold animate-pulse" />
-                      )}
-                    </span>
 
-                    <div className="flex items-baseline justify-between gap-3">
-                      <h3 className="font-display text-[15px] font-extrabold leading-tight text-foreground md:text-base">
-                        {c.name}
-                      </h3>
-                      <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.12em] text-gold">
-                        {["Next up", "Q4", "Q1 2027"][i] ?? "Soon"}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
-                      {c.note}
-                    </p>
-                    {i < EXPLORE_COMING_SOON.length - 1 && (
-                      <span aria-hidden className="mt-4 block h-px w-full bg-border/70" />
-                    )}
-                  </li>
-                ))}
-              </ol>
+                <div className="space-y-5">
+                  {EXPLORE_COMING_SOON.map((c, i) => {
+                    const timing = ["Next up", "Q4", "Q1 2027"][i] ?? "Soon";
+                    return (
+                      <div
+                        key={c.name}
+                        style={{ ["--d" as string]: `${i * 90}ms` }}
+                        className="k-rise relative group"
+                      >
+                        {/* Timeline node */}
+                        <span
+                          aria-hidden
+                          className="absolute -left-8 top-[1.15rem] flex size-[22px] items-center justify-center rounded-full bg-background"
+                        >
+                          <span
+                            className={`size-2 rounded-full bg-gold ${
+                              i === 0 ? "k-glow" : ""
+                            }`}
+                          />
+                        </span>
+
+                        {/* Card */}
+                        <div className="card-surface p-4 transition-all duration-300 group-hover:border-gold/40 group-hover:shadow-float">
+                          <div className="flex items-baseline justify-between gap-3">
+                            <h3 className="font-display text-[15px] font-extrabold leading-tight text-foreground md:text-base">
+                              {c.name}
+                            </h3>
+                            <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.12em] text-gold">
+                              {timing}
+                            </span>
+                          </div>
+                          <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+                            {c.note}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="mt-6 text-center">
+                <button
+                  type="button"
+                  className="text-[11px] font-bold uppercase tracking-[0.12em] text-gold transition-colors hover:text-gold/80 press"
+                >
+                  Notify me of updates
+                </button>
+              </div>
             </section>
           </Rise>
 
