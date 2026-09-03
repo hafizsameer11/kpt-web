@@ -957,28 +957,26 @@ function DesktopProductRow({ product: p }: { product: ExploreProduct }) {
     <Link
       to="/explore/$productId"
       params={{ productId: p.id }}
-      className="group flex items-center gap-5 bg-card px-5 py-4 transition-colors hover:bg-accent/40"
+      className="group flex items-center gap-4 bg-card px-5 py-4 transition-colors hover:bg-accent/40"
     >
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <h3 className="truncate text-[14px] font-extrabold leading-tight">
-            {p.name}
-          </h3>
-          <span
-            className={`shrink-0 rounded-full px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-[0.1em] ${tone}`}
-          >
-            {AVAILABILITY_LABEL[p.availability]}
-          </span>
-        </div>
+        <h3 className="text-[14px] font-extrabold leading-tight">{p.name}</h3>
         <p className="mt-1 truncate text-[11.5px] text-muted-foreground">
           {p.issuer} &middot; {p.category}
         </p>
-        <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10.5px] font-semibold text-muted-foreground">
-          <Clock3 className="size-3" /> {p.closes}
-        </p>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <span
+            className={`rounded-full px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-[0.1em] ${tone}`}
+          >
+            {AVAILABILITY_LABEL[p.availability]}
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-[10.5px] font-semibold text-muted-foreground">
+            <Clock3 className="size-3" /> {p.closes}
+          </span>
+        </div>
       </div>
 
-      <div className="hidden w-28 shrink-0 text-right lg:block">
+      <div className="hidden w-24 shrink-0 text-right xl:block">
         <p className="text-[9.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
           Tenor
         </p>
