@@ -39,6 +39,7 @@ export const Route = createFileRoute("/settings")({
 
 type Item = {
   to:
+    | "/verification"
     | "/settings/profile"
     | "/settings/address"
     | "/settings/statements"
@@ -59,6 +60,7 @@ const GROUPS: { label: string; items: Item[] }[] = [
   {
     label: "Account",
     items: [
+      { to: "/verification", icon: ShieldCheck, title: "Verification", sub: "Tiers, BVN, NIN and address checks", meta: PROFILE.tier },
       { to: "/settings/profile", icon: User, title: "Profile", sub: "Name, date of birth, contact", meta: PROFILE.tier },
       { to: "/settings/address", icon: Landmark, title: "Address & personal details", sub: "Residence, occupation, source of funds" },
       { to: "/settings/statements", icon: FileText, title: "Statements", sub: "Account, transaction and portfolio" },
