@@ -41,7 +41,7 @@ function Login() {
     setTimeout(() => {
       setBusy(false);
       if (password === DEMO_PASSWORD || password.length >= 8) {
-        navigate({ to: "/login/biometric" });
+        navigate({ to: "/" });
         return;
       }
       const next = attempts + 1;
