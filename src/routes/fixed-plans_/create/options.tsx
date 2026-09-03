@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
-import { Rise } from "@/components/kipit/motion";
+import { AmountCounter, Rise } from "@/components/kipit/motion";
 import { naira, WALLET } from "@/lib/home-data";
 import { TENOR_BANDS } from "@/lib/invest-data";
 
