@@ -224,7 +224,8 @@ function CallAccountScreen() {
 
   return (
     <AppShell title="Call Account" navVariant="elevated">
-      <div className="pb-2">
+      <DesktopCallAccount />
+      <div className="pb-2 md:hidden">
         {/* ── Hero ───────────────────────────────────────────────── */}
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
           <span
