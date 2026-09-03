@@ -3,7 +3,7 @@
  * Reconciles wallet, call account, fixed plans and marketplace holdings.
  */
 import { WALLET, HOLDINGS, naira } from "./home-data";
-import { CALL_ACCOUNT } from "./invest-data";
+import { CALL_ACCOUNT, CALL_ACTIVITY } from "./invest-data";
 
 export type ExploreHolding = {
   id: string;
@@ -479,5 +479,78 @@ export const TXN_TYPES: TxnType[] = [
   "Adjustment",
 ];
 
-export const getTransaction = (id: string) =>
-  TRANSACTIONS.find((t) => t.id === id);
+export const getTransaction = (id: string): Transaction | undefined =>
+  ALL_TRANSACTIONS.find((t) => t.id === id);
+
+/* ── Derived transactions so every listed entry is tappable ─────── */
+
+const refFor = (seed: string) => {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789";
+  let out = "";
+  let n = h;
+  for (let i = 0; i < 8; i++) {
+    out += chars[n % chars.length];
+    n = Math.floor(n / chars.length) + 7 * (i + 1);
+  }
+  return `KPT-${out}`;
+};
+
+const callStatus: Record<string, TxnStatus> = {
+  successful: "Successful",
+  processing: "Processing",
+  pending: "Pending",
+  failed: "Failed",
+};
+
+/** Call Account activity rows (MOB-061) as full transactions. */
+export const CALL_ACTIVITY_TXNS: Transaction[] = CALL_ACTIVITY.map((a) => {
+  const credit = a.kind !== "withdrawal";
+  const type: TxnType =
+    a.kind === "interest" ? "Interest" : a.kind === "deposit" ? "Deposit" : "Withdrawal";
+  return {
+    id: `ca-${a.id}`,
+    reference: refFor(`ca-${a.id}`),
+    type,
+    status: callStatus[a.status] ?? "Successful",
+    label: `${a.label} · Call Account`,
+    date: a.date,
+    time: "09:00",
+    amount: a.amount,
+    direction: credit ? "in" : "out",
+    source: credit ? (a.kind === "interest" ? "Kipit Call Account" : "Kipit Wallet") : "Kipit Call Account",
+    destination: credit ? "Kipit Call Account" : "Kipit Wallet",
+  };
+});
+
+/** Per-holding transaction rows (MOB-121) as full transactions. */
+export const HOLDING_TXNS: Transaction[] = HOLDING_DETAILS.flatMap((h) =>
+  h.transactions.map((t, i) => ({
+    id: `h-${h.id}-${i}`,
+    reference: refFor(`h-${h.id}-${i}`),
+    type: (t.label.toLowerCase().includes("interest") ? "Interest" : "Investment") as TxnType,
+    status: "Successful" as TxnStatus,
+    label: `${t.label} · ${h.name}`,
+    date: t.date,
+    time: "10:00",
+    amount: t.amount,
+    direction: t.direction,
+    source: t.direction === "out" ? "Kipit Wallet" : h.name,
+    destination: t.direction === "out" ? h.name : "Kipit Wallet",
+    related: { name: h.name, holdingId: h.id },
+  })),
+);
+
+/** Every transaction the prototype can open a detail/receipt for. */
+export const ALL_TRANSACTIONS: Transaction[] = [
+  ...TRANSACTIONS,
+  ...CALL_ACTIVITY_TXNS,
+  ...HOLDING_TXNS,
+];
+
+/** Transaction id for a Call Account activity row. */
+export const callActivityTxnId = (activityId: string) => `ca-${activityId}`;
+/** Transaction id for a holding transaction row. */
+export const holdingTxnId = (holdingId: string, index: number) =>
+  `h-${holdingId}-${index}`;

@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   ArrowUpRight,
   CalendarClock,
+  ChevronRight,
   Download,
   FileText,
   RefreshCw,
@@ -13,7 +14,12 @@ import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
-import { accruedInterest, getHolding, naira } from "@/lib/portfolio-data";
+import {
+  accruedInterest,
+  getHolding,
+  holdingTxnId,
+  naira,
+} from "@/lib/portfolio-data";
 
 export const Route = createFileRoute("/portfolio_/$holdingId")({
   loader: ({ params }) => {
@@ -230,8 +236,13 @@ function HoldingDetailScreen() {
                 <li
                   key={`${t.label}-${i}`}
                   style={{ ["--d" as string]: `${i * 60}ms` }}
-                  className="k-rise flex items-center gap-3 px-4 py-3.5"
+                  className="k-rise"
                 >
+                  <Link
+                    to="/portfolio/transactions/$txnId"
+                    params={{ txnId: holdingTxnId(h.id, i) }}
+                    className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-secondary/60 active:bg-secondary"
+                  >
                   <span
                     className={`grid size-9 shrink-0 place-items-center rounded-lg ${
                       t.direction === "in"
@@ -250,6 +261,8 @@ function HoldingDetailScreen() {
                     <p className="text-[11px] text-muted-foreground">{t.date}</p>
                   </div>
                   <p className="shrink-0 text-[13px] font-extrabold text-num">{mask(t.amount)}</p>
+                    <ChevronRight className="size-4 shrink-0 text-muted-foreground/70" />
+                  </Link>
                 </li>
               ))}
             </ul>
