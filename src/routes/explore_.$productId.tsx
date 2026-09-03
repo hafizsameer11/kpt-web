@@ -77,6 +77,7 @@ function ProductNotFound() {
 function ProductDetailScreen() {
   const { product: p, detail } = Route.useLoaderData();
   const [amount, setAmount] = useState(p.minimum);
+  const [inputValue, setInputValue] = useState(String(p.minimum));
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const closed = p.availability === "closed";
@@ -85,6 +86,27 @@ function ProductDetailScreen() {
   const estimate = Math.round((amount * (ratePct / 100) * days) / 365);
   const belowMin = amount < p.minimum;
   const overWallet = amount > WALLET;
+
+  const formatInput = (value: number) => value.toLocaleString("en-NG");
+
+  const handleAmountChange = (raw: string) => {
+    const digits = raw.replace(/[^0-9]/g, "");
+    const numeric = digits ? Number(digits) : 0;
+    setAmount(numeric);
+    setInputValue(digits ? numeric.toLocaleString("en-NG") : "");
+  };
+
+  const handleAmountBlur = () => {
+    const next = Math.max(amount, p.minimum);
+    setAmount(next);
+    setInputValue(formatInput(next));
+  };
+
+  const adjustAmount = (delta: number) => {
+    const next = Math.max(p.minimum, amount + delta);
+    setAmount(next);
+    setInputValue(formatInput(next));
+  };
 
   const tone =
     p.availability === "open"
