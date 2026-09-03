@@ -990,7 +990,7 @@ function DesktopProductRow({ product: p }: { product: ExploreProduct }) {
           {naira(p.minimum)}
         </p>
       </div>
-      <div className="w-24 shrink-0 text-right">
+      <div className="w-28 shrink-0 text-right">
         <p className="text-[9.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
           Rate p.a.
         </p>
