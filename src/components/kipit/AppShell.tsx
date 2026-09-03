@@ -32,6 +32,10 @@ export function AppShell({
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isActive = (to: string) =>
     to === "/" ? pathname === "/" || pathname.startsWith("/home-v") : pathname === to;
+  const activeIndex = Math.max(
+    0,
+    TABS.findIndex((t) => isActive(t.to)),
+  );
 
   return (
     <div className="min-h-screen bg-background">
