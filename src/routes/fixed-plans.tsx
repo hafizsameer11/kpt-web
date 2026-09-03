@@ -6,7 +6,6 @@ import {
   ChevronRight,
   Plus,
   RefreshCw,
-  ShieldCheck,
   TrendingUp,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
