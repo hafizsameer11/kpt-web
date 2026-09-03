@@ -785,7 +785,7 @@ function DesktopExplore() {
                   Featured this week
                 </h2>
                 <span className="rounded-full bg-gold-gradient px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-gold-foreground">
-                  {featured.length}
+                  Top {Math.min(2, featured.length)}
                 </span>
               </div>
               <div className="mt-4 space-y-3">
