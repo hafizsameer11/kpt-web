@@ -17,6 +17,7 @@ import { Route as GiftsRouteImport } from './routes/gifts'
 import { Route as InvestRouteImport } from './routes/invest'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
@@ -82,6 +83,11 @@ const NotificationsRoute = NotificationsRouteImport.update({
 const PortfolioRoute = PortfolioRouteImport.update({
   id: '/portfolio',
   path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
+  '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
@@ -267,6 +274,7 @@ export interface FileRoutesByTo {
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
+  '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
@@ -303,6 +311,7 @@ export interface FileRoutesById {
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
+  '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
   '/call-account_/review': typeof CallAccountReviewRoute
@@ -341,6 +350,7 @@ export interface FileRouteTypes {
     | '/invest'
     | '/notifications'
     | '/portfolio'
+    | '/reports'
     | '/settings'
     | '/call-account/add-money'
     | '/call-account/review'
@@ -377,6 +387,7 @@ export interface FileRouteTypes {
     | '/invest'
     | '/notifications'
     | '/portfolio'
+    | '/reports'
     | '/settings'
     | '/call-account/add-money'
     | '/call-account/review'
@@ -412,6 +423,7 @@ export interface FileRouteTypes {
     | '/invest'
     | '/notifications'
     | '/portfolio'
+    | '/reports'
     | '/settings'
     | '/call-account_/add-money'
     | '/call-account_/review'
@@ -449,6 +461,7 @@ export interface RootRouteChildren {
   InvestRoute: typeof InvestRoute
   NotificationsRoute: typeof NotificationsRoute
   PortfolioRoute: typeof PortfolioRoute
+  ReportsRoute: typeof ReportsRoute
   SettingsRoute: typeof SettingsRoute
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
   CallAccountReviewRoute: typeof CallAccountReviewRoute
@@ -527,6 +540,13 @@ declare module '@tanstack/react-router' {
       path: '/portfolio'
       fullPath: '/portfolio'
       preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -744,6 +764,7 @@ const rootRouteChildren: RootRouteChildren = {
   InvestRoute: InvestRoute,
   NotificationsRoute: NotificationsRoute,
   PortfolioRoute: PortfolioRoute,
+  ReportsRoute: ReportsRoute,
   SettingsRoute: SettingsRoute,
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
   CallAccountReviewRoute: CallAccountReviewRoute,
