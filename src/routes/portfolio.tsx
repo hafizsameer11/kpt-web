@@ -428,26 +428,6 @@ function PortfolioScreen() {
             </ul>
           </section>
 
-          {/* Idle cash prompt */}
-          <section className="k-rise card-surface mt-4 flex items-center gap-3 p-4">
-            <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-gold/15 text-gold-foreground">
-              <Wallet className="size-5" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-[13px] font-bold">
-                {mask(WALLET_TOTAL)} sitting in your wallet
-              </p>
-              <p className="text-[11px] text-muted-foreground">
-                Move it to the Call Account and start earning {CALL_ACCOUNT.rate}.
-              </p>
-            </div>
-            <Link
-              to="/call-account/add-money"
-              className="shrink-0 rounded-full bg-brand px-3.5 py-2 text-[11px] font-extrabold text-primary-foreground press"
-            >
-              Invest
-            </Link>
-          </section>
 
           <p className="mt-5 px-1 text-[11px] text-muted-foreground">
             Total portfolio value {naira(PORTFOLIO_TOTAL)} across wallet, call account, fixed plans
