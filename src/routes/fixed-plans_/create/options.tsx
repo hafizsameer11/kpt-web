@@ -267,20 +267,20 @@ function PlanOptionsScreen() {
                       type="button"
                       onClick={() => setForWhom(o.id)}
                       aria-pressed={forWhom === o.id}
-                      className={`flex items-center gap-2.5 rounded-2xl border px-3.5 py-3 text-left transition-colors press ${
+                      className={`flex min-w-0 items-center gap-2 rounded-2xl border px-3 py-3 text-left transition-colors press ${
                         forWhom === o.id
                           ? "border-gold/60 bg-gold/10"
                           : "border-border/70 bg-background hover:bg-muted/40"
                       }`}
                     >
                       <span
-                        className={`grid size-9 shrink-0 place-items-center rounded-xl ${
+                        className={`grid size-8 shrink-0 place-items-center rounded-xl ${
                           forWhom === o.id ? "bg-gold text-gold-foreground" : "bg-primary/[0.06] text-foreground"
                         }`}
                       >
                         <o.icon className="size-4" strokeWidth={2.4} />
                       </span>
-                      <span className="text-[12.5px] font-bold text-foreground">{o.name}</span>
+                      <span className="truncate text-[12px] font-bold text-foreground">{o.name}</span>
                     </button>
                   ))}
                 </div>
