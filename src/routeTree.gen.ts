@@ -21,7 +21,7 @@ import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
 import { Route as FixedPlansCreateRouteImport } from './routes/fixed-plans_.create'
-import { Route as FixedPlansCreateTenorRouteImport } from './routes/fixed-plans_.create.tenor'
+import { Route as FixedPlansCreateTenorRouteImport } from './routes/fixed-plans_/create/tenor'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
