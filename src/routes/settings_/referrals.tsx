@@ -3,7 +3,12 @@ import { Check, Copy, Share2, Users } from "lucide-react";
 import { useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
 import { naira } from "@/lib/home-data";
-import { REFERRALS } from "@/lib/settings-data";
+import {
+  REFERRAL_LIST,
+  REFERRAL_STATUS_META,
+  REFERRALS,
+  type ReferralStatus,
+} from "@/lib/settings-data";
 
 export const Route = createFileRoute("/settings_/referrals")({
   head: () => ({
@@ -31,6 +36,9 @@ function ReferralsScreen() {
     setCopied(kind);
     setTimeout(() => setCopied(null), 1600);
   }
+
+  const [tab, setTab] = useState<"all" | ReferralStatus>("all");
+  const list = REFERRAL_LIST.filter((r) => tab === "all" || r.status === tab);
 
   const stats = [
     { label: "Total referrals", value: String(REFERRALS.total) },
@@ -95,6 +103,73 @@ function ReferralsScreen() {
         </div>
       </section>
 
+
+      <section className="card-surface mt-4 overflow-hidden p-0">
+        <div className="flex items-center justify-between gap-3 px-4 pt-4">
+          <p className="text-[13px] font-extrabold tracking-[-0.01em] text-foreground">
+            People you referred
+          </p>
+          <span className="text-[11px] font-bold text-muted-foreground">{list.length} shown</span>
+        </div>
+
+        <div className="mt-3 flex gap-1.5 overflow-x-auto px-4 pb-3 no-scrollbar">
+          {(
+            [
+              ["all", "All"],
+              ["rewarded", "Reward earned"],
+              ["pending", "Pending"],
+              ["expired", "Expired"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setTab(id)}
+              className={`shrink-0 rounded-full px-3 py-1.5 text-[11.5px] font-extrabold press ${
+                tab === id
+                  ? "bg-brand text-primary-foreground"
+                  : "bg-secondary text-muted-foreground"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <ul className="divide-y divide-border/70 border-t border-border/70">
+          {list.map((r) => {
+            const meta = REFERRAL_STATUS_META[r.status];
+            return (
+              <li key={r.id} className="flex items-center gap-3 px-4 py-3.5">
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-secondary font-display text-[13px] font-extrabold text-brand">
+                  {r.name.charAt(0)}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13px] font-extrabold text-foreground">{r.name}</p>
+                  <p className="truncate text-[11.5px] text-muted-foreground">
+                    {r.note} · {r.joined}
+                  </p>
+                </div>
+                <div className="shrink-0 text-right">
+                  <span
+                    className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-extrabold ring-1 ring-inset ${meta.className}`}
+                  >
+                    {meta.label}
+                  </span>
+                  <p className="mt-1 text-[11.5px] font-extrabold text-foreground text-num">
+                    {r.status === "rewarded" ? naira(r.reward) : "—"}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+          {list.length === 0 ? (
+            <li className="px-4 py-8 text-center text-[12px] text-muted-foreground">
+              No referrals in this status yet.
+            </li>
+          ) : null}
+        </ul>
+      </section>
 
       <section className="card-surface mt-4 flex items-start gap-3 p-4">
         <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25">
