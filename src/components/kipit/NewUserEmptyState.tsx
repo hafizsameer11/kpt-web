@@ -24,12 +24,12 @@ export function NewUserEmptyState() {
         Fund your Kipit wallet, then choose a plan that matches your goal and tenor.
       </p>
       <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
-        <button
-          type="button"
+        <Link
+          to="/wallet/add-money"
           className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-bold text-brand-foreground"
         >
           <ArrowDownToLine className="size-4" /> Add Money
-        </button>
+        </Link>
         <Link
           to="/explore"
           className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-surface px-6 py-3 text-sm font-bold text-foreground"

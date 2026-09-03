@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { CreditCard, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
@@ -68,6 +69,11 @@ function CardsScreen() {
 
         <button
           type="button"
+          onClick={() =>
+            toast.info("Add a card", {
+              description: "You'll be redirected to our secure card partner to tokenise the card.",
+            })
+          }
           className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
         >
           <Plus className="size-4" strokeWidth={2.6} /> Add card

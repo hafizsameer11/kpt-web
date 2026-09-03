@@ -59,8 +59,8 @@ function SecurityScreen() {
           </p>
           <ul className="divide-y divide-border/60">
             <li>
-              <button
-                type="button"
+              <Link
+                to="/forgot-password"
                 className="group flex w-full items-center gap-3.5 px-4 py-3.5 text-left press transition-colors hover:bg-secondary/50"
               >
                 <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25">
@@ -71,7 +71,7 @@ function SecurityScreen() {
                   <p className="mt-0.5 text-[11px] text-muted-foreground">Last changed 4 months ago</p>
                 </div>
                 <ChevronRight className="size-4 text-muted-foreground" />
-              </button>
+              </Link>
             </li>
             {links.map((l) => (
               <li key={l.to}>

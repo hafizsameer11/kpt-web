@@ -176,12 +176,12 @@ function CreatePlanAmountScreen() {
                     {naira(WALLET)}. Shortfall {naira(shortfall)}.
                   </p>
                   <div className="mt-2.5 flex gap-2">
-                    <button
-                      type="button"
-                      className="flex-1 rounded-full bg-brand-gradient py-2 text-[12px] font-extrabold text-primary-foreground press"
+                    <Link
+                      to="/wallet/add-money"
+                      className="flex-1 rounded-full bg-brand-gradient py-2 text-center text-[12px] font-extrabold text-primary-foreground press"
                     >
                       Add money
-                    </button>
+                    </Link>
                     <button
                       type="button"
                       onClick={() => setRaw(String(WALLET))}
