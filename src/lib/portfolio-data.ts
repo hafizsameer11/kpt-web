@@ -129,3 +129,110 @@ export const pctOf = (value: number) =>
   Math.round((value / PORTFOLIO_TOTAL) * 1000) / 10;
 
 export { naira };
+
+/* ── MOB-121 — Holding detail ───────────────────────────────────── */
+
+export type HoldingDoc = { label: string; kind: string; size: string };
+export type HoldingTxn = {
+  label: string;
+  date: string;
+  amount: number;
+  direction: "in" | "out";
+};
+
+export type HoldingDetail = {
+  id: string;
+  kind: "Fixed plan" | "Explore product";
+  name: string;
+  issuer: string;
+  rate: string;
+  principal: number;
+  startDate: string;
+  maturityDate: string;
+  totalDays: number;
+  daysLeft: number;
+  expectedPayout: number;
+  /** Whether the user may change what happens at maturity. */
+  canManageMaturity: boolean;
+  maturityInstruction: string;
+  documents: HoldingDoc[];
+  transactions: HoldingTxn[];
+};
+
+const MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
+const fmtDate = (d: Date) =>
+  `${String(d.getDate()).padStart(2, "0")} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+
+/** Back-computes the start date from the maturity date and tenor. */
+const startFrom = (maturity: string, totalDays: number) => {
+  const [day, mon, year] = maturity.split(" ");
+  const d = new Date(Number(year), MONTHS.indexOf(mon), Number(day));
+  d.setDate(d.getDate() - totalDays);
+  return fmtDate(d);
+};
+
+const fixedHoldings: HoldingDetail[] = HOLDINGS.map((h, i) => ({
+  id: `f${i + 1}`,
+  kind: "Fixed plan" as const,
+  name: h.name,
+  issuer: "Kipit · SEC-licensed partner",
+  rate: h.rate,
+  principal: h.amount,
+  startDate: startFrom(h.date, h.totalDays),
+  maturityDate: h.date,
+  totalDays: h.totalDays,
+  daysLeft: h.daysLeft,
+  expectedPayout: h.expectedPayout,
+  canManageMaturity: true,
+  maturityInstruction: h.autoRenew
+    ? "Roll over principal + interest"
+    : "Pay out to Kipit Wallet",
+  documents: [
+    { label: "Plan certificate", kind: "PDF", size: "184 KB" },
+    { label: "Terms & conditions", kind: "PDF", size: "96 KB" },
+  ],
+  transactions: [
+    { label: "Plan funded from Wallet", date: startFrom(h.date, h.totalDays), amount: h.amount, direction: "out" as const },
+    { label: "Interest accrued to date", date: "Ongoing", amount: Math.round(((h.expectedPayout - h.amount) * (h.totalDays - h.daysLeft)) / h.totalDays), amount2: 0, direction: "in" as const } as HoldingTxn,
+  ],
+}));
+
+const exploreHoldings: HoldingDetail[] = EXPLORE_HOLDINGS.map((h) => ({
+  id: `e-${h.id}`,
+  kind: "Explore product" as const,
+  name: h.name,
+  issuer: h.issuer,
+  rate: h.rate,
+  principal: h.amount,
+  startDate: startFrom(h.date, h.totalDays),
+  maturityDate: h.date,
+  totalDays: h.totalDays,
+  daysLeft: h.daysLeft,
+  expectedPayout: h.expectedPayout,
+  canManageMaturity: false,
+  maturityInstruction: "Payout to Kipit Wallet at maturity",
+  documents: [
+    { label: "Offer summary", kind: "PDF", size: "212 KB" },
+    { label: "Issuer information", kind: "PDF", size: "148 KB" },
+    { label: "Risk disclosure", kind: "PDF", size: "88 KB" },
+  ],
+  transactions: [
+    { label: "Subscription funded", date: startFrom(h.date, h.totalDays), amount: h.amount, direction: "out" as const },
+    { label: "Allotment confirmed", date: startFrom(h.date, h.totalDays), amount: h.amount, direction: "in" as const },
+  ],
+}));
+
+export const HOLDING_DETAILS: HoldingDetail[] = [...fixedHoldings, ...exploreHoldings];
+
+export const getHolding = (id: string) =>
+  HOLDING_DETAILS.find((h) => h.id === id);
+
+/** Interest accrued so far, pro-rated across the tenor. */
+export const accruedInterest = (h: HoldingDetail) =>
+  Math.round(
+    ((h.expectedPayout - h.principal) * (h.totalDays - h.daysLeft)) / h.totalDays,
+  );
