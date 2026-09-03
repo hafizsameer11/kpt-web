@@ -54,6 +54,15 @@ const CATEGORY_ICON = {
 } as const;
 
 function ExploreScreen() {
+  return (
+    <AppShell title="Explore" navVariant="elevated">
+      <DesktopExplore />
+      <MobileExplore />
+    </AppShell>
+  );
+}
+
+function MobileExplore() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
   const [notified, setNotified] = useState<string[]>([]);
@@ -81,8 +90,9 @@ function ExploreScreen() {
   const activeCategory = EXPLORE_CATEGORIES.find((c) => c.id === category);
 
   return (
-    <AppShell title="Explore" navVariant="elevated">
+    <div className="md:hidden">
       <div className="pb-2">
+
         {/* ── Hero ─────────────────────────────────────────────── */}
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
           <span
