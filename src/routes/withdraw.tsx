@@ -1,3 +1,4 @@
+import { KycGuard } from "@/components/kipit/KycGate";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -38,7 +39,11 @@ export const Route = createFileRoute("/withdraw")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: WithdrawEntry,
+  component: () => (
+    <KycGuard required={2}>
+      <WithdrawEntry />
+    </KycGuard>
+  ),
 });
 
 function WithdrawEntry() {
