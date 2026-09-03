@@ -31,6 +31,7 @@ import { Route as PortfolioHistoryRouteImport } from './routes/portfolio_.histor
 import { Route as PortfolioMaturitiesRouteImport } from './routes/portfolio_.maturities'
 import { Route as PortfolioTransactionsRouteImport } from './routes/portfolio_.transactions'
 import { Route as SettingsAddressRouteImport } from './routes/settings_/address'
+import { Route as SettingsCardsRouteImport } from './routes/settings_/cards'
 import { Route as SettingsProfileRouteImport } from './routes/settings_/profile'
 import { Route as SettingsSecurityRouteImport } from './routes/settings_/security'
 import { Route as WithdrawAccountsRouteImport } from './routes/withdraw_/accounts'
@@ -169,6 +170,11 @@ const PortfolioTransactionsRoute = PortfolioTransactionsRouteImport.update({
 const SettingsAddressRoute = SettingsAddressRouteImport.update({
   id: '/settings_/address',
   path: '/settings/address',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsCardsRoute = SettingsCardsRouteImport.update({
+  id: '/settings_/cards',
+  path: '/settings/cards',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsProfileRoute = SettingsProfileRouteImport.update({
@@ -350,6 +356,7 @@ export interface FileRoutesByFullPath {
   '/portfolio/maturities': typeof PortfolioMaturitiesRoute
   '/portfolio/transactions': typeof PortfolioTransactionsRoute
   '/settings/address': typeof SettingsAddressRoute
+  '/settings/cards': typeof SettingsCardsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/security': typeof SettingsSecurityRoute
   '/withdraw/accounts': typeof WithdrawAccountsRoute
@@ -402,6 +409,7 @@ export interface FileRoutesByTo {
   '/portfolio/maturities': typeof PortfolioMaturitiesRoute
   '/portfolio/transactions': typeof PortfolioTransactionsRoute
   '/settings/address': typeof SettingsAddressRoute
+  '/settings/cards': typeof SettingsCardsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/security': typeof SettingsSecurityRoute
   '/withdraw/accounts': typeof WithdrawAccountsRoute
@@ -456,6 +464,7 @@ export interface FileRoutesById {
   '/portfolio_/maturities': typeof PortfolioMaturitiesRoute
   '/portfolio_/transactions': typeof PortfolioTransactionsRoute
   '/settings_/address': typeof SettingsAddressRoute
+  '/settings_/cards': typeof SettingsCardsRoute
   '/settings_/profile': typeof SettingsProfileRoute
   '/settings_/security': typeof SettingsSecurityRoute
   '/withdraw_/accounts': typeof WithdrawAccountsRoute
@@ -511,6 +520,7 @@ export interface FileRouteTypes {
     | '/portfolio/maturities'
     | '/portfolio/transactions'
     | '/settings/address'
+    | '/settings/cards'
     | '/settings/profile'
     | '/settings/security'
     | '/withdraw/accounts'
@@ -563,6 +573,7 @@ export interface FileRouteTypes {
     | '/portfolio/maturities'
     | '/portfolio/transactions'
     | '/settings/address'
+    | '/settings/cards'
     | '/settings/profile'
     | '/settings/security'
     | '/withdraw/accounts'
@@ -616,6 +627,7 @@ export interface FileRouteTypes {
     | '/portfolio_/maturities'
     | '/portfolio_/transactions'
     | '/settings_/address'
+    | '/settings_/cards'
     | '/settings_/profile'
     | '/settings_/security'
     | '/withdraw_/accounts'
@@ -670,6 +682,7 @@ export interface RootRouteChildren {
   PortfolioMaturitiesRoute: typeof PortfolioMaturitiesRoute
   PortfolioTransactionsRoute: typeof PortfolioTransactionsRoute
   SettingsAddressRoute: typeof SettingsAddressRoute
+  SettingsCardsRoute: typeof SettingsCardsRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
   SettingsSecurityRoute: typeof SettingsSecurityRoute
   WithdrawAccountsRoute: typeof WithdrawAccountsRoute
@@ -849,6 +862,13 @@ declare module '@tanstack/react-router' {
       path: '/settings/address'
       fullPath: '/settings/address'
       preLoaderRoute: typeof SettingsAddressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/cards': {
+      id: '/settings_/cards'
+      path: '/settings/cards'
+      fullPath: '/settings/cards'
+      preLoaderRoute: typeof SettingsCardsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings_/profile': {
@@ -1101,6 +1121,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioMaturitiesRoute: PortfolioMaturitiesRoute,
   PortfolioTransactionsRoute: PortfolioTransactionsRoute,
   SettingsAddressRoute: SettingsAddressRoute,
+  SettingsCardsRoute: SettingsCardsRoute,
   SettingsProfileRoute: SettingsProfileRoute,
   SettingsSecurityRoute: SettingsSecurityRoute,
   WithdrawAccountsRoute: WithdrawAccountsRoute,
