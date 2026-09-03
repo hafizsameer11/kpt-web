@@ -10,7 +10,11 @@ const COPY: Record<Variant, string> = {
 
 export function DisclosureStrip({ variant = "fixed" }: { variant?: Variant }) {
   return (
-    <div className="mt-5 flex items-start gap-3 rounded-2xl border border-border/60 bg-card/60 px-3.5 py-3 backdrop-blur-sm">
+    <div className="relative mt-5 flex items-start gap-3 overflow-hidden rounded-2xl border border-border/60 bg-card/60 px-3.5 py-3 backdrop-blur-sm">
+      <span
+        aria-hidden
+        className="absolute left-0 top-0 h-full w-1 bg-gold-gradient"
+      />
       <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand">
         <ShieldCheck className="size-4" />
       </span>
