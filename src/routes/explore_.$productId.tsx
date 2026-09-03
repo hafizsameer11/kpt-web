@@ -305,25 +305,32 @@ function ProductDetailScreen() {
 
           {/* Documents */}
           <Rise delay={180}>
-            <section className="mt-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Documents
-              </p>
-              <div className="mt-2.5 space-y-2">
+            <section className="mt-5">
+              <div className="flex items-center gap-2 px-1">
+                <span className="h-px w-4 bg-gold" />
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gold">
+                  Documents
+                </p>
+              </div>
+              <div className="mt-3 space-y-2.5">
                 {detail.documents.map((d) => (
                   <button
                     key={d.name}
                     type="button"
-                    className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card px-3.5 py-3 text-left press"
+                    className="group flex w-full items-center gap-3.5 rounded-xl border border-border bg-card p-3.5 text-left shadow-sm transition-all duration-300 press hover:border-gold"
                   >
-                    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-muted text-foreground">
-                      <FileText className="size-4" />
+                    <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/5 text-gold transition-colors group-hover:bg-gold group-hover:text-primary-foreground">
+                      <FileText className="size-5" strokeWidth={1.5} />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[13px] font-bold">{d.name}</span>
-                      <span className="block text-[11px] text-muted-foreground">{d.meta}</span>
+                      <span className="block truncate font-display text-[15px] font-semibold leading-tight">
+                        {d.name}
+                      </span>
+                      <span className="mt-0.5 block text-[11px] font-medium text-muted-foreground">
+                        {d.meta}
+                      </span>
                     </span>
-                    <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
+                    <ChevronRight className="size-5 shrink-0 text-gold transition-transform duration-300 group-hover:translate-x-1" />
                   </button>
                 ))}
               </div>
