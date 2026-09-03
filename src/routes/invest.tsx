@@ -515,7 +515,7 @@ function DesktopInvest() {
               <thead>
                 <tr className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
                   <th className="w-[38%] pb-2 font-bold">Plan</th>
-                  <th className="w-[14%] pb-2 font-bold">Rate</th>
+                  <th className="w-[16%] pb-2 font-bold">Rate</th>
                   <th className="pb-2 font-bold">Progress</th>
                   <th className="pb-2 text-right font-bold">Value</th>
                 </tr>
@@ -535,11 +535,11 @@ function DesktopInvest() {
                         </p>
                       </td>
                       <td className="py-3.5 pr-4">
-                        <span className="inline-flex rounded-full bg-accent/15 px-2.5 py-1 text-[11px] font-bold text-brand">
+                        <span className="inline-flex whitespace-nowrap rounded-full bg-accent/15 px-2 py-1 text-[11px] font-bold text-brand">
                           {h.rate}
                         </span>
                       </td>
-                      <td className="w-[34%] py-3.5 pr-4">
+                      <td className="w-[32%] py-3.5 pr-4">
                         <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
                           <div
                             className="k-fill h-full rounded-full bg-brand"
@@ -547,8 +547,8 @@ function DesktopInvest() {
                           />
                         </div>
                         <div className="mt-1.5 flex items-center justify-between text-[10px] font-semibold text-muted-foreground">
-                          <span>{progress}% of tenor</span>
-                          <span>{h.daysLeft} days left</span>
+                          <span className="whitespace-nowrap">{progress}%</span>
+                          <span className="whitespace-nowrap">{h.daysLeft} days left</span>
                         </div>
                       </td>
                       <td className="py-3.5 text-right text-sm font-extrabold text-num">
