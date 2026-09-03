@@ -77,6 +77,7 @@ function ProductNotFound() {
 function ProductDetailScreen() {
   const { product: p, detail } = Route.useLoaderData();
   const [amount, setAmount] = useState(p.minimum);
+  const [inputValue, setInputValue] = useState(String(p.minimum));
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const closed = p.availability === "closed";
@@ -85,6 +86,27 @@ function ProductDetailScreen() {
   const estimate = Math.round((amount * (ratePct / 100) * days) / 365);
   const belowMin = amount < p.minimum;
   const overWallet = amount > WALLET;
+
+  const formatInput = (value: number) => value.toLocaleString("en-NG");
+
+  const handleAmountChange = (raw: string) => {
+    const digits = raw.replace(/[^0-9]/g, "");
+    const numeric = digits ? Number(digits) : 0;
+    setAmount(numeric);
+    setInputValue(digits ? numeric.toLocaleString("en-NG") : "");
+  };
+
+  const handleAmountBlur = () => {
+    const next = Math.max(amount, p.minimum);
+    setAmount(next);
+    setInputValue(formatInput(next));
+  };
+
+  const adjustAmount = (delta: number) => {
+    const next = Math.max(p.minimum, amount + delta);
+    setAmount(next);
+    setInputValue(formatInput(next));
+  };
 
   const tone =
     p.availability === "open"
@@ -200,23 +222,31 @@ function ProductDetailScreen() {
                 <button
                   type="button"
                   aria-label="Decrease amount"
-                  onClick={() => setAmount((a) => Math.max(p.minimum, a - step))}
+                  onClick={() => adjustAmount(-step)}
                   className="grid size-10 shrink-0 place-items-center rounded-xl border border-border bg-card press"
                 >
                   <Minus className="size-4" />
                 </button>
                 <div className="min-w-0 flex-1 text-center">
-                  <p className="font-display text-[24px] font-extrabold leading-none tracking-[-0.02em] text-num">
-                    {naira(amount)}
-                  </p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    aria-label="Investment amount"
+                    aria-describedby="amount-min"
+                    value={inputValue}
+                    onChange={(e) => handleAmountChange(e.target.value)}
+                    onBlur={handleAmountBlur}
+                    onFocus={(e) => e.target.select()}
+                    className="w-full bg-transparent text-center font-display text-[24px] font-extrabold leading-none tracking-[-0.02em] text-num outline-none placeholder:text-muted-foreground/40"
+                  />
+                  <p id="amount-min" className="mt-1 text-[11px] text-muted-foreground">
                     Minimum {naira(p.minimum)}
                   </p>
                 </div>
                 <button
                   type="button"
                   aria-label="Increase amount"
-                  onClick={() => setAmount((a) => a + step)}
+                  onClick={() => adjustAmount(step)}
                   className="grid size-10 shrink-0 place-items-center rounded-xl border border-border bg-card press"
                 >
                   <Plus className="size-4" />
