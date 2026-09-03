@@ -132,8 +132,44 @@ function TransactionHistoryScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
+          {/* Quick filter bar */}
+          <div className="flex items-center gap-2">
+            <div className="flex flex-1 items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2 text-[12px] font-bold text-foreground press"
+              >
+                <span className="text-[10px] font-extrabold uppercase tracking-wide text-muted-foreground">
+                  Period
+                </span>
+                <span className="truncate">{period}</span>
+                <ChevronRight className="size-3.5 shrink-0 -rotate-90 text-muted-foreground" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2 text-[12px] font-bold text-foreground press"
+              >
+                <span className="text-[10px] font-extrabold uppercase tracking-wide text-muted-foreground">
+                  Status
+                </span>
+                <span className="truncate">{status}</span>
+                <ChevronRight className="size-3.5 shrink-0 -rotate-90 text-muted-foreground" />
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(true)}
+              aria-label="Open filters"
+              className="grid size-10 shrink-0 place-items-center rounded-full border border-border bg-card text-foreground press"
+            >
+              <SlidersHorizontal className="size-4" />
+            </button>
+          </div>
+
           {/* Type filter — segmented track */}
-          <div className="-mx-4 overflow-x-auto px-4 pb-1 no-scrollbar">
+          <div className="-mx-4 mt-3 overflow-x-auto px-4 pb-1 no-scrollbar">
             <div className="inline-flex min-w-full gap-1 rounded-xl bg-secondary p-1">
               {(["All", ...TXN_TYPES] as const).map((t) => (
                 <button
@@ -153,40 +189,18 @@ function TransactionHistoryScreen() {
             </div>
           </div>
 
-          {/* Date + status filter */}
-          <div className="mt-2.5 grid grid-cols-2 gap-2">
-            <label className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
-              <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                Period
-              </span>
-              <select
-                aria-label="Filter by period"
-                value={period}
-                onChange={(e) => setPeriod(e.target.value as (typeof PERIODS)[number])}
-                className="min-w-0 flex-1 bg-transparent text-right text-[12px] font-bold text-foreground outline-none"
-              >
-                {PERIODS.map((p) => (
-                  <option key={p}>{p}</option>
-                ))}
-              </select>
-            </label>
-            <label className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
-              <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                Status
-              </span>
-              <select
-                aria-label="Filter by status"
-                value={status}
-                onChange={(e) => setStatus(e.target.value as TxnStatus | "All")}
-                className="min-w-0 flex-1 bg-transparent text-right text-[12px] font-bold text-foreground outline-none"
-              >
-                <option value="All">All</option>
-                {STATUSES.map((s) => (
-                  <option key={s}>{s}</option>
-                ))}
-              </select>
-            </label>
-          </div>
+          <FilterPanel
+            open={filtersOpen}
+            onOpenChange={setFiltersOpen}
+            isMobile={isMobile}
+            type={type}
+            setType={setType}
+            status={status}
+            setStatus={setStatus}
+            period={period}
+            setPeriod={setPeriod}
+            results={list.length}
+          />
 
 
           {/* List */}
