@@ -27,6 +27,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
+import { AmountCounter } from "@/components/kipit/motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { naira, WALLET } from "@/lib/home-data";
 import {
@@ -264,7 +265,7 @@ function CallAccountScreen() {
             {/* Balance lockup */}
             <div className="mt-2 space-y-1">
               <p className="font-display text-[40px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[48px]">
-                {mask(CALL_ACCOUNT.balance)}
+                <AmountCounter value={CALL_ACCOUNT.balance} hidden={hidden} mask={mask} />
               </p>
               <p className="flex items-center gap-1.5 text-[12px] font-medium text-primary-foreground/60">
                 <ShieldCheck className="size-3.5 text-primary-foreground/70" />
@@ -279,7 +280,7 @@ function CallAccountScreen() {
                   Earned today
                 </p>
                 <p className="mt-0.5 text-lg font-extrabold text-gold text-num">
-                  {mask(CALL_ACCOUNT.accruedToday)}
+                  <AmountCounter value={CALL_ACCOUNT.accruedToday} hidden={hidden} mask={mask} />
                 </p>
               </div>
               <div className="w-px bg-white/15" />
@@ -288,7 +289,7 @@ function CallAccountScreen() {
                   This month
                 </p>
                 <p className="mt-0.5 text-lg font-extrabold text-num">
-                  {mask(CALL_ACCOUNT.accruedThisMonth)}
+                  <AmountCounter value={CALL_ACCOUNT.accruedThisMonth} hidden={hidden} mask={mask} />
                 </p>
               </div>
             </div>
@@ -359,12 +360,13 @@ function CallAccountScreen() {
                       type="button"
                       ref={isToday ? todayRef : undefined}
                       onClick={() => setSelectedDay(i)}
-                      className={`flex shrink-0 flex-col items-center gap-2 rounded-2xl px-2.5 py-3 text-left transition-transform duration-150 active:scale-95 ${
+                      style={{ ["--d" as string]: `${i * 35}ms`, minWidth: isToday ? 76 : 52 }}
+                      className={`k-rise flex shrink-0 flex-col items-center gap-2 rounded-2xl px-2.5 py-3 text-left transition-transform duration-150 active:scale-95 ${
                         isToday
                           ? "bg-brand text-primary-foreground shadow-sm"
                           : "bg-muted/60 text-foreground hover:bg-muted"
                       }`}
-                      style={{ minWidth: isToday ? 76 : 52 }}
+
                     >
                       <span className={`text-[10px] font-semibold ${isToday ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
                         {label}
@@ -482,7 +484,7 @@ function CallAccountScreen() {
                     </span>
                   </div>
                   <p className="mt-1 font-display text-xl font-extrabold leading-none">
-                    {mask(WALLET)}
+                    <AmountCounter value={WALLET} hidden={hidden} mask={mask} />
                   </p>
                   <p className="mt-1.5 text-[11.5px] leading-snug text-muted-foreground">
                     Idle cash — move it here to start earning daily.
@@ -524,7 +526,7 @@ function CallAccountScreen() {
                       {p.label}
                     </p>
                     <p className="mt-1 font-display text-[22px] font-extrabold leading-none text-brand text-num">
-                      {mask(Math.round(p.value))}
+                      <AmountCounter value={Math.round(p.value)} hidden={hidden} mask={mask} />
                     </p>
                   </div>
                 ))}
@@ -559,7 +561,8 @@ function CallAccountScreen() {
                 return (
                   <li
                     key={item.id}
-                    className={`flex items-center gap-3.5 px-4 py-3.5 ${
+                    style={{ ["--d" as string]: `${i * 70}ms` }}
+                    className={`k-rise flex items-center gap-3.5 px-4 py-3.5 ${
                       i > 0 ? "border-t border-border/50" : ""
                     }`}
                   >

@@ -97,15 +97,18 @@ function ReviewScreen() {
         Authorize {naira(amount)} to your Call Account
       </p>
 
-      <div className="mt-4 flex justify-center gap-3">
-        {Array.from({ length: PIN_LENGTH }).map((_, i) => (
-          <span
-            key={i}
-            className={`size-3.5 rounded-full ${
-              i < pin.length ? "bg-gold" : "bg-border"
-            }`}
-          />
-        ))}
+      <div className={`mt-4 flex justify-center gap-3 ${error ? "k-shake" : ""}`}>
+        {Array.from({ length: PIN_LENGTH }).map((_, i) => {
+          const filled = i < pin.length;
+          return (
+            <span
+              key={i}
+              className={`size-3.5 rounded-full ${
+                filled ? "k-pop bg-gold" : "bg-border"
+              }`}
+            />
+          );
+        })}
       </div>
 
       {error && (

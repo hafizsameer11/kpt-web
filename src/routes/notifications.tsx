@@ -145,10 +145,14 @@ function NotificationsScreen() {
           </div>
 
           <ul className="mt-4 space-y-2 md:mt-0">
-            {ITEMS.map((item) => {
+            {ITEMS.map((item, i) => {
               const Icon = item.icon;
               return (
-                <li key={item.title + item.time}>
+                <li
+                key={item.title + item.time}
+                className="k-rise"
+                style={{ ["--d" as string]: `${i * 60}ms` }}
+              >
                   <Link
                     to={item.to}
                     className={`flex items-start gap-4 rounded-2xl border p-4 shadow-card transition-colors hover:border-gold/50 ${
@@ -164,7 +168,7 @@ function NotificationsScreen() {
                       <span className="flex items-center gap-2">
                         <span className="truncate text-sm font-bold">{item.title}</span>
                         {item.unread && (
-                          <span className="size-2 shrink-0 rounded-full bg-gold" />
+                          <span className="k-glow size-2 shrink-0 rounded-full bg-gold" />
                         )}
                       </span>
                       <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
