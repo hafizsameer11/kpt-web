@@ -656,7 +656,10 @@ function DesktopExplore() {
             <Search className="size-4 shrink-0 text-primary-foreground/70" />
             <input
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setVisible(6);
+              }}
               placeholder="Search products or issuers"
               aria-label="Search marketplace products"
               className="min-w-0 flex-1 bg-transparent text-[13.5px] font-semibold text-primary-foreground outline-none placeholder:font-medium placeholder:text-primary-foreground/50"
@@ -684,11 +687,14 @@ function DesktopExplore() {
             <button
               key={c.id}
               type="button"
-              onClick={() => setCategory(active ? null : c.id)}
+              onClick={() => {
+                setCategory(active ? null : c.id);
+                setVisible(6);
+              }}
               aria-pressed={active}
               className={`relative flex items-center gap-3.5 overflow-hidden rounded-xl px-5 py-4 text-left transition-transform press hover:-translate-y-0.5 ${
                 active
-                  ? "bg-brand-gradient text-primary-foreground shadow-float"
+                  ? "bg-brand-gradient text-primary-foreground shadow-float ring-2 ring-gold/70"
                   : "border border-border bg-card"
               }`}
             >
@@ -752,6 +758,7 @@ function DesktopExplore() {
                     onClick={() => {
                       setCategory(null);
                       setQuery("");
+                      setVisible(6);
                     }}
                     className="text-[11.5px] font-bold text-foreground underline-offset-4 hover:underline"
                   >
