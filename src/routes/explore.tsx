@@ -55,6 +55,12 @@ const CATEGORY_ICON = {
 function ExploreScreen() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
+  const [notified, setNotified] = useState<string[]>([]);
+  const toggleNotify = (name: string) =>
+    setNotified((prev) =>
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
+    );
+
 
   const featured = EXPLORE_PRODUCTS.filter((p) => p.featured);
 
