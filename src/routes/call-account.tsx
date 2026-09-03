@@ -166,7 +166,7 @@ function DayDetail({ day, onClose }: { day: number; onClose: () => void }) {
         <button
           type="button"
           onClick={onClose}
-          className="mt-5 w-full rounded-2xl bg-brand py-3 text-[12px] font-extrabold text-brand-foreground press"
+          className="mt-5 w-full rounded-xl bg-brand py-3 text-[12px] font-extrabold text-brand-foreground press"
         >
           Done
         </button>
@@ -190,7 +190,7 @@ function DayDetail({ day, onClose }: { day: number; onClose: () => void }) {
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-sm overflow-hidden rounded-2xl border-0 bg-card p-0 shadow-2xl">
+      <DialogContent className="max-w-sm overflow-hidden rounded-xl border-0 bg-card p-0 shadow-2xl">
         <DialogTitle className="sr-only">Interest details</DialogTitle>
         <DialogDescription className="sr-only">
           Detailed interest information for {fullDate(day, CALL_ACCRUAL_TREND.length)}
@@ -224,7 +224,7 @@ function CallAccountScreen() {
     <AppShell title="Call Account" navVariant="elevated">
       <div className="pb-2">
         {/* ── Hero ───────────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
@@ -361,7 +361,7 @@ function CallAccountScreen() {
                       ref={isToday ? todayRef : undefined}
                       onClick={() => setSelectedDay(i)}
                       style={{ ["--d" as string]: `${i * 35}ms`, minWidth: isToday ? 76 : 52 }}
-                      className={`k-rise flex shrink-0 flex-col items-center gap-2 rounded-2xl px-2.5 py-3 text-left transition-transform duration-150 active:scale-95 ${
+                      className={`k-rise flex shrink-0 flex-col items-center gap-2 rounded-xl px-2.5 py-3 text-left transition-transform duration-150 active:scale-95 ${
                         isToday
                           ? "bg-brand text-primary-foreground shadow-sm"
                           : "bg-muted/60 text-foreground hover:bg-muted"
@@ -399,11 +399,11 @@ function CallAccountScreen() {
 
 
           {/* Product explanation */}
-          <section className="group relative mt-4 overflow-hidden rounded-2xl border border-gold/20 bg-brand p-5 shadow-float md:p-6">
+          <section className="group relative mt-4 overflow-hidden rounded-xl border border-gold/20 bg-brand p-5 shadow-float md:p-6">
             {/* Outer glow */}
             <span
               aria-hidden
-              className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-gold/20 to-gold-foreground/20 opacity-50 blur-xl transition duration-1000 group-hover:opacity-75"
+              className="pointer-events-none absolute -inset-1 rounded-xl bg-gradient-to-r from-gold/20 to-gold-foreground/20 opacity-50 blur-xl transition duration-1000 group-hover:opacity-75"
             />
             {/* Background accents */}
             <span
@@ -423,7 +423,7 @@ function CallAccountScreen() {
             <div className="relative">
               {/* Header */}
               <div className="flex items-center gap-3.5">
-                <div className="grid size-12 place-items-center rounded-2xl bg-gold-gradient shadow-[0_4px_14px_rgba(212,175,55,0.28)]">
+                <div className="grid size-12 place-items-center rounded-xl bg-gold-gradient shadow-[0_4px_14px_rgba(212,175,55,0.28)]">
                   <Info className="size-6 text-brand" strokeWidth={2.5} />
                 </div>
                 <div>
@@ -467,11 +467,11 @@ function CallAccountScreen() {
           </section>
 
           {/* Wallet + projected earnings — unified card */}
-          <section className="mt-4 overflow-hidden rounded-2xl border border-border bg-card">
+          <section className="mt-4 overflow-hidden rounded-xl border border-border bg-card">
             {/* Top: wallet available */}
             <div className="p-4 md:p-5">
               <div className="flex items-start gap-3">
-                <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-gold/15 text-brand">
+                <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-gold/15 text-brand">
                   <Wallet className="size-5" strokeWidth={2.2} />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -542,7 +542,7 @@ function CallAccountScreen() {
                 View all
               </Link>
             </div>
-            <ul className="overflow-hidden rounded-2xl border border-border/60 bg-card">
+            <ul className="overflow-hidden rounded-xl border border-border/60 bg-card">
               {CALL_ACTIVITY.map((item, i) => {
                 const credit = item.kind !== "withdrawal";
                 const failed = item.status === "failed";
@@ -567,7 +567,7 @@ function CallAccountScreen() {
                     }`}
                   >
                     <span
-                      className={`grid size-10 shrink-0 place-items-center rounded-2xl ${
+                      className={`grid size-10 shrink-0 place-items-center rounded-xl ${
                         failed
                           ? "bg-destructive/10 text-destructive"
                           : credit

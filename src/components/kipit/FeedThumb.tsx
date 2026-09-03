@@ -17,7 +17,7 @@ export function FeedThumb({
       loading="lazy"
       width={1024}
       height={640}
-      className={cn("mb-3 h-28 w-full rounded-2xl object-cover", className)}
+      className={cn("mb-3 h-28 w-full rounded-xl object-cover", className)}
     />
   );
 }

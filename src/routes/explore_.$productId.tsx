@@ -99,7 +99,7 @@ function ProductDetailScreen() {
     <AppShell title="Product" navVariant="elevated">
       <div className="pb-2">
         {/* ── Hero ─────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-28 size-72 rounded-full bg-gold/20 blur-[64px]"
@@ -201,7 +201,7 @@ function ProductDetailScreen() {
                   type="button"
                   aria-label="Decrease amount"
                   onClick={() => setAmount((a) => Math.max(p.minimum, a - step))}
-                  className="grid size-10 shrink-0 place-items-center rounded-2xl border border-border bg-card press"
+                  className="grid size-10 shrink-0 place-items-center rounded-xl border border-border bg-card press"
                 >
                   <Minus className="size-4" />
                 </button>
@@ -217,13 +217,13 @@ function ProductDetailScreen() {
                   type="button"
                   aria-label="Increase amount"
                   onClick={() => setAmount((a) => a + step)}
-                  className="grid size-10 shrink-0 place-items-center rounded-2xl border border-border bg-card press"
+                  className="grid size-10 shrink-0 place-items-center rounded-xl border border-border bg-card press"
                 >
                   <Plus className="size-4" />
                 </button>
               </div>
 
-              <div className="mt-4 rounded-2xl bg-muted/60 p-3.5">
+              <div className="mt-4 rounded-xl bg-muted/60 p-3.5">
                 <p className="text-[11px] text-muted-foreground">
                   Estimated interest over {p.tenor === "Open-ended" ? "12 months" : p.tenor}
                 </p>
@@ -235,8 +235,8 @@ function ProductDetailScreen() {
                 </p>
               </div>
 
-              <div className="mt-3 flex items-center gap-2.5 rounded-2xl border border-border/60 px-3 py-2.5">
-                <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-gold/15 text-gold">
+              <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-border/60 px-3 py-2.5">
+                <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-gold/15 text-gold">
                   <Wallet className="size-4" />
                 </span>
                 <p className="text-[11.5px] text-muted-foreground">
@@ -245,12 +245,12 @@ function ProductDetailScreen() {
               </div>
 
               {overWallet && (
-                <p className="mt-2.5 rounded-2xl bg-destructive/10 px-3 py-2.5 text-[11.5px] font-semibold text-destructive">
+                <p className="mt-2.5 rounded-xl bg-destructive/10 px-3 py-2.5 text-[11.5px] font-semibold text-destructive">
                   Insufficient wallet balance — add {naira(amount - WALLET)} to continue.
                 </p>
               )}
               {belowMin && (
-                <p className="mt-2.5 rounded-2xl bg-destructive/10 px-3 py-2.5 text-[11.5px] font-semibold text-destructive">
+                <p className="mt-2.5 rounded-xl bg-destructive/10 px-3 py-2.5 text-[11.5px] font-semibold text-destructive">
                   Minimum investment is {naira(p.minimum)}.
                 </p>
               )}
@@ -284,9 +284,9 @@ function ProductDetailScreen() {
 
           {/* Risks */}
           <Rise delay={140}>
-            <section className="mt-4 overflow-hidden rounded-2xl bg-brand-gradient p-4 text-primary-foreground shadow-float">
+            <section className="mt-4 overflow-hidden rounded-xl bg-brand-gradient p-4 text-primary-foreground shadow-float">
               <div className="flex items-center gap-2.5">
-                <span className="grid size-9 place-items-center rounded-2xl bg-gold/15 text-gold">
+                <span className="grid size-9 place-items-center rounded-xl bg-gold/15 text-gold">
                   <ShieldCheck className="size-4.5" />
                 </span>
                 <h2 className="font-display text-[15px] font-extrabold">Risks to know</h2>
@@ -313,7 +313,7 @@ function ProductDetailScreen() {
                   {detail.documents.length} Files
                 </span>
               </div>
-              <div className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-card shadow-[0_4px_20px_-4px_rgba(0,29,61,0.08)]">
+              <div className="mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border bg-card shadow-[0_4px_20px_-4px_rgba(0,29,61,0.08)]">
                 {detail.documents.map((d) => (
                   <button
                     key={d.name}
@@ -347,7 +347,7 @@ function ProductDetailScreen() {
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Questions
               </p>
-              <div className="mt-2.5 divide-y divide-border rounded-2xl border border-border bg-card">
+              <div className="mt-2.5 divide-y divide-border rounded-xl border border-border bg-card">
                 {detail.faqs.map((f, i) => (
                   <div key={f.q}>
                     <button
@@ -386,7 +386,7 @@ function ProductDetailScreen() {
             <Link
               to="/fixed-plans/create"
               aria-disabled={closed || belowMin || overWallet}
-              className={`flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
+              className={`flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
                 closed || belowMin || overWallet
                   ? "pointer-events-none opacity-40 shadow-none"
                   : ""
