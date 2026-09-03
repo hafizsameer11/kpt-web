@@ -110,72 +110,110 @@ function PortfolioScreen() {
   return (
     <AppShell title="Portfolio" navVariant="elevated">
       <div className="pb-2">
-        {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-auto md:max-w-[1200px] md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
-          />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -bottom-28 -left-24 size-64 rounded-full bg-white/10 blur-[56px]"
-          />
+        {/* ── Hero + upcoming maturities (desktop side-by-side) ── */}
+        <div className="md:mx-auto md:max-w-[1200px] lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start lg:gap-6">
+          <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
+            />
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -bottom-28 -left-24 size-64 rounded-full bg-white/10 blur-[56px]"
+            />
 
-          <div className="relative md:max-w-3xl">
-            <div className="k-rise flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary-foreground/60">
-                  Portfolio total
-                </p>
-                <h1 className="mt-1 font-display text-[34px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[44px]">
-                  <AmountCounter value={PORTFOLIO_TOTAL} hidden={hidden} mask={mask} />
-                </h1>
+            <div className="relative">
+              <div className="k-rise flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary-foreground/60">
+                    Portfolio total
+                  </p>
+                  <h1 className="mt-1 font-display text-[34px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[44px]">
+                    <AmountCounter value={PORTFOLIO_TOTAL} hidden={hidden} mask={mask} />
+                  </h1>
+                </div>
+                <button
+                  type="button"
+                  onClick={toggle}
+                  aria-label={hidden ? "Show balances" : "Hide balances"}
+                  className="grid size-9 shrink-0 place-items-center rounded-full border border-white/15 bg-white/10 press"
+                >
+                  {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={toggle}
-                aria-label={hidden ? "Show balances" : "Hide balances"}
-                className="grid size-9 shrink-0 place-items-center rounded-full border border-white/15 bg-white/10 press"
+
+              <div
+                className="k-rise mt-3 flex flex-wrap items-center gap-2"
+                style={{ ["--d" as string]: "60ms" }}
               >
-                {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-              </button>
-            </div>
-
-            <div
-              className="k-rise mt-3 flex flex-wrap items-center gap-2"
-              style={{ ["--d" as string]: "60ms" }}
-            >
-              <span className="inline-flex items-center gap-1 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
-                <ArrowUpRight className="size-3.5" strokeWidth={2.6} />
-                {mask(PORTFOLIO_MONTH_CHANGE)} · {PORTFOLIO_MONTH_CHANGE_PCT}%
-              </span>
-              <span className="text-[11px] text-primary-foreground/60">past 30 days</span>
-            </div>
-
-            <div
-              className="k-rise mt-6 flex items-stretch gap-4 rounded-xl border border-white/12 bg-white/8 p-4 backdrop-blur-md"
-              style={{ ["--d" as string]: "120ms" }}
-            >
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] uppercase tracking-[0.08em] text-primary-foreground/55">
-                  Interest earned
-                </p>
-                <p className="mt-1 text-[17px] font-extrabold text-num text-gold">
-                  <AmountCounter value={INTEREST_EARNED_YTD} hidden={hidden} mask={mask} />
-                </p>
+                <span className="inline-flex items-center gap-1 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
+                  <ArrowUpRight className="size-3.5" strokeWidth={2.6} />
+                  {mask(PORTFOLIO_MONTH_CHANGE)} · {PORTFOLIO_MONTH_CHANGE_PCT}%
+                </span>
+                <span className="text-[11px] text-primary-foreground/60">past 30 days</span>
               </div>
-              <span aria-hidden className="w-px bg-white/12" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] uppercase tracking-[0.08em] text-primary-foreground/55">
-                  Next maturity
-                </p>
-                <p className="mt-1 truncate text-[17px] font-extrabold">
-                  {next ? `${next.daysLeft} days` : "—"}
-                </p>
+
+              <div
+                className="k-rise mt-6 flex items-stretch gap-4 rounded-xl border border-white/12 bg-white/8 p-4 backdrop-blur-md"
+                style={{ ["--d" as string]: "120ms" }}
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] uppercase tracking-[0.08em] text-primary-foreground/55">
+                    Interest earned
+                  </p>
+                  <p className="mt-1 text-[17px] font-extrabold text-num text-gold">
+                    <AmountCounter value={INTEREST_EARNED_YTD} hidden={hidden} mask={mask} />
+                  </p>
+                </div>
+                <span aria-hidden className="w-px bg-white/12" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] uppercase tracking-[0.08em] text-primary-foreground/55">
+                    Next maturity
+                  </p>
+                  <p className="mt-1 truncate text-[17px] font-extrabold">
+                    {next ? `${next.daysLeft} days` : "—"}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+
+          {/* Upcoming maturities — desktop beside total */}
+          <section className="hidden lg:block">
+            <div className="mb-3 flex items-center justify-between px-1">
+              <h2 className="font-display text-base font-extrabold">Upcoming maturities</h2>
+              <Link
+                to="/portfolio/maturities"
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand"
+              >
+                <CalendarClock className="size-3.5" /> Calendar
+                <ChevronRight className="size-3.5" />
+              </Link>
+            </div>
+
+            <ul className="card-surface divide-y divide-border/60 overflow-hidden">
+              {UPCOMING_MATURITIES.map((m, i) => (
+                <li
+                  key={`top-${m.name}-${m.date}`}
+                  style={{ ["--d" as string]: `${i * 60}ms` }}
+                  className="k-rise flex items-center gap-3 px-4 py-3.5"
+                >
+                  <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-extrabold text-brand text-num">
+                    {m.daysLeft}d
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[13px] font-bold">{m.name}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {m.kind} · {m.date}
+                    </p>
+                  </div>
+                  <p className="shrink-0 text-[13px] font-extrabold text-num">{mask(m.amount)}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+
 
         {/* ── Sheet ────────────────────────────────────────────── */}
         <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-auto md:mt-6 md:max-w-[1200px] md:rounded-none md:bg-transparent md:px-0 md:pt-0">
@@ -413,7 +451,7 @@ function PortfolioScreen() {
 
           <aside className="min-w-0 lg:sticky lg:top-6">
           {/* Upcoming maturities */}
-          <section className="mt-7 lg:mt-0">
+          <section className="mt-7 lg:mt-0 lg:hidden">
 
             <div className="mb-3 flex items-center justify-between px-1">
               <h2 className="font-display text-base font-extrabold">Upcoming maturities</h2>
