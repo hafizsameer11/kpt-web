@@ -331,7 +331,7 @@ function ProductDetailScreen() {
                         {d.meta}
                       </span>
                     </span>
-                    <ChevronRight className="size-5 shrink-0 text-gold transition-transform duration-300 group-hover:translate-x-1" />
+                    <Download className="size-5 shrink-0 text-gold transition-transform duration-300 group-hover:translate-y-0.5" />
                   </button>
                 ))}
               </div>
