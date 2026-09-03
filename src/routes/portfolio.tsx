@@ -5,6 +5,8 @@ import {
   ChevronRight,
   Eye,
   EyeOff,
+  FileBarChart,
+  Gift,
   History,
   PieChart,
   Receipt,
@@ -467,6 +469,26 @@ function PortfolioScreen() {
               <div className="min-w-0 flex-1">
                 <p className="text-[13px] font-bold">Transaction history</p>
                 <p className="text-[11px] text-muted-foreground">Deposits, interest, withdrawals</p>
+              </div>
+              <ChevronRight className="size-4 text-muted-foreground" />
+            </Link>
+            <Link to="/gifts" className="card-surface flex items-center gap-3 px-4 py-3.5 press">
+              <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-brand">
+                <Gift className="size-4.5" strokeWidth={2.2} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[13px] font-bold">Gift investments</p>
+                <p className="text-[11px] text-muted-foreground">Sent, pending and claimed</p>
+              </div>
+              <ChevronRight className="size-4 text-muted-foreground" />
+            </Link>
+            <Link to="/reports" className="card-surface flex items-center gap-3 px-4 py-3.5 press">
+              <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-brand">
+                <FileBarChart className="size-4.5" strokeWidth={2.2} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[13px] font-bold">Kipit reports</p>
+                <p className="text-[11px] text-muted-foreground">Monthly, quarterly and annual</p>
               </div>
               <ChevronRight className="size-4 text-muted-foreground" />
             </Link>
