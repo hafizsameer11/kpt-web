@@ -33,6 +33,7 @@ import { Route as PortfolioTransactionsRouteImport } from './routes/portfolio_.t
 import { Route as SettingsAddressRouteImport } from './routes/settings_/address'
 import { Route as SettingsCardsRouteImport } from './routes/settings_/cards'
 import { Route as SettingsHelpRouteImport } from './routes/settings_/help'
+import { Route as SettingsLegalRouteImport } from './routes/settings_/legal'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings_/notifications'
 import { Route as SettingsProfileRouteImport } from './routes/settings_/profile'
 import { Route as SettingsReferralsRouteImport } from './routes/settings_/referrals'
@@ -186,6 +187,11 @@ const SettingsCardsRoute = SettingsCardsRouteImport.update({
 const SettingsHelpRoute = SettingsHelpRouteImport.update({
   id: '/settings_/help',
   path: '/settings/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsLegalRoute = SettingsLegalRouteImport.update({
+  id: '/settings_/legal',
+  path: '/settings/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
@@ -395,6 +401,7 @@ export interface FileRoutesByFullPath {
   '/settings/address': typeof SettingsAddressRoute
   '/settings/cards': typeof SettingsCardsRoute
   '/settings/help': typeof SettingsHelpRoute
+  '/settings/legal': typeof SettingsLegalRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/referrals': typeof SettingsReferralsRoute
@@ -454,6 +461,7 @@ export interface FileRoutesByTo {
   '/settings/address': typeof SettingsAddressRoute
   '/settings/cards': typeof SettingsCardsRoute
   '/settings/help': typeof SettingsHelpRoute
+  '/settings/legal': typeof SettingsLegalRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/referrals': typeof SettingsReferralsRoute
@@ -515,6 +523,7 @@ export interface FileRoutesById {
   '/settings_/address': typeof SettingsAddressRoute
   '/settings_/cards': typeof SettingsCardsRoute
   '/settings_/help': typeof SettingsHelpRoute
+  '/settings_/legal': typeof SettingsLegalRoute
   '/settings_/notifications': typeof SettingsNotificationsRoute
   '/settings_/profile': typeof SettingsProfileRoute
   '/settings_/referrals': typeof SettingsReferralsRoute
@@ -577,6 +586,7 @@ export interface FileRouteTypes {
     | '/settings/address'
     | '/settings/cards'
     | '/settings/help'
+    | '/settings/legal'
     | '/settings/notifications'
     | '/settings/profile'
     | '/settings/referrals'
@@ -636,6 +646,7 @@ export interface FileRouteTypes {
     | '/settings/address'
     | '/settings/cards'
     | '/settings/help'
+    | '/settings/legal'
     | '/settings/notifications'
     | '/settings/profile'
     | '/settings/referrals'
@@ -696,6 +707,7 @@ export interface FileRouteTypes {
     | '/settings_/address'
     | '/settings_/cards'
     | '/settings_/help'
+    | '/settings_/legal'
     | '/settings_/notifications'
     | '/settings_/profile'
     | '/settings_/referrals'
@@ -757,6 +769,7 @@ export interface RootRouteChildren {
   SettingsAddressRoute: typeof SettingsAddressRoute
   SettingsCardsRoute: typeof SettingsCardsRoute
   SettingsHelpRoute: typeof SettingsHelpRoute
+  SettingsLegalRoute: typeof SettingsLegalRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
   SettingsReferralsRoute: typeof SettingsReferralsRoute
@@ -955,6 +968,13 @@ declare module '@tanstack/react-router' {
       path: '/settings/help'
       fullPath: '/settings/help'
       preLoaderRoute: typeof SettingsHelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/legal': {
+      id: '/settings_/legal'
+      path: '/settings/legal'
+      fullPath: '/settings/legal'
+      preLoaderRoute: typeof SettingsLegalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings_/notifications': {
@@ -1244,6 +1264,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsAddressRoute: SettingsAddressRoute,
   SettingsCardsRoute: SettingsCardsRoute,
   SettingsHelpRoute: SettingsHelpRoute,
+  SettingsLegalRoute: SettingsLegalRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
   SettingsProfileRoute: SettingsProfileRoute,
   SettingsReferralsRoute: SettingsReferralsRoute,
