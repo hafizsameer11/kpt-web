@@ -292,6 +292,8 @@ function FilterPanel({
   setStatus,
   period,
   setPeriod,
+  query,
+  setQuery,
   results,
 }: {
   open: boolean;
@@ -303,12 +305,15 @@ function FilterPanel({
   setStatus: (s: TxnStatus | "All") => void;
   period: (typeof PERIODS)[number];
   setPeriod: (p: (typeof PERIODS)[number]) => void;
+  query: string;
+  setQuery: (q: string) => void;
   results: number;
 }) {
   const reset = () => {
     setType("All");
     setStatus("All");
     setPeriod("All time");
+    setQuery("");
   };
 
   const content = (
