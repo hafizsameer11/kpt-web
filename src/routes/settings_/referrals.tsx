@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { Check, Copy, Share2, Users } from "lucide-react";
 import { useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
@@ -183,6 +184,10 @@ function ReferralsScreen() {
 
       <button
         type="button"
+        onClick={() => {
+          void navigator.clipboard?.writeText(REFERRAL.link);
+          toast.success("Invite link copied", { description: REFERRAL.link });
+        }}
         className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
       >
         <Share2 className="size-4" strokeWidth={2.6} /> Share invite

@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { Lock, Mail, Phone, ShieldCheck } from "lucide-react";
 import { Field, FieldCard, SettingsPage } from "@/components/kipit/SettingsPage";
 import { PROFILE } from "@/lib/settings-data";
@@ -56,12 +57,22 @@ function ProfileScreen() {
           <div className="flex flex-col gap-2.5 sm:flex-row">
             <button
               type="button"
+              onClick={() =>
+                toast.info("Verification code sent", {
+                  description: "Enter the code we sent to your current email to change it.",
+                })
+              }
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press sm:w-auto sm:px-8"
             >
               <Mail className="size-4" strokeWidth={2.6} /> Change email
             </button>
             <button
               type="button"
+              onClick={() =>
+                toast.info("Verification code sent", {
+                  description: "Enter the code we sent by SMS to change your phone number.",
+                })
+              }
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press sm:w-auto sm:px-8"
             >
               <Phone className="size-4" strokeWidth={2.4} /> Change phone
