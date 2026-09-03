@@ -313,14 +313,14 @@ function ProductDetailScreen() {
                   {detail.documents.length} Files
                 </span>
               </div>
-              <div className="mt-3 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-[0_4px_20px_-4px_rgba(0,29,61,0.08)]">
+              <div className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-card shadow-[0_4px_20px_-4px_rgba(0,29,61,0.08)]">
                 {detail.documents.map((d) => (
                   <button
                     key={d.name}
                     type="button"
                     className="group flex w-full items-center gap-4 p-4 text-left transition-colors duration-300 press hover:bg-secondary/60"
                   >
-                    <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-gold/10 text-gold">
+                    <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-gold/10 text-gold">
                       <FileText className="size-6" strokeWidth={1.5} />
                     </span>
                     <span className="min-w-0 flex-1">
