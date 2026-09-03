@@ -222,34 +222,36 @@ function SubscribeScreen() {
 
             {/* Expected value */}
             <Rise delay={80}>
-              <section className="card-surface p-4 md:p-5">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  Expected at maturity
-                </p>
-                <p className="mt-2 font-display text-[28px] font-extrabold leading-none text-num">
-                  {naira(expected)}
-                </p>
-                <div className="mt-3 flex divide-x divide-border">
-                  <div className="flex-1 pr-4">
-                    <p className="text-[11px] font-semibold text-muted-foreground">
-                      Expected return
-                    </p>
-                    <p className="mt-0.5 font-display text-[17px] font-extrabold leading-none text-gold text-num">
-                      {naira(earn)}
-                    </p>
-                  </div>
-                  <div className="flex-1 pl-4">
-                    <p className="text-[11px] font-semibold text-muted-foreground">
-                      Tenor
-                    </p>
-                    <p className="mt-0.5 text-[15px] font-bold text-foreground">
-                      {product.tenor}
-                    </p>
+              <section className="card-surface overflow-hidden p-0">
+                <div className="p-4 pb-3.5 md:p-5 md:pb-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                    Expected at maturity
+                  </p>
+                  <p className="mt-1.5 font-display text-[28px] font-extrabold leading-none text-num">
+                    {naira(expected)}
+                  </p>
+                  <div className="mt-3.5 flex divide-x divide-border rounded-lg border border-border/60">
+                    <div className="flex-1 px-3.5 py-2.5">
+                      <p className="text-[10.5px] font-semibold text-muted-foreground">
+                        Expected return
+                      </p>
+                      <p className="mt-0.5 font-display text-[16px] font-extrabold leading-none text-gold text-num">
+                        {naira(earn)}
+                      </p>
+                    </div>
+                    <div className="flex-1 px-3.5 py-2.5">
+                      <p className="text-[10.5px] font-semibold text-muted-foreground">
+                        Rate &middot; tenor
+                      </p>
+                      <p className="mt-0.5 whitespace-nowrap text-[13.5px] font-bold text-foreground text-num">
+                        {product.rate} &middot; {product.tenor}
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <p className="mt-3 flex items-start gap-1.5 text-[11px] text-muted-foreground">
+                <p className="flex items-start gap-1.5 border-t border-border/60 bg-muted/40 px-4 py-2.5 text-[11px] text-muted-foreground md:px-5">
                   <Building2 className="mt-0.5 size-3.5 shrink-0" />
-                  {product.issuer} &middot; indicative at {product.rate} until allotted.
+                  {product.issuer} &middot; indicative until allotted. Paid at maturity to your wallet.
                 </p>
               </section>
             </Rise>
