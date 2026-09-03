@@ -402,7 +402,15 @@ function HomeV2Screen() {
 
             {/* Payout timeline */}
             <section className="card-surface mt-5 p-4 md:p-6">
-              <h2 className="font-display text-base font-extrabold">Coming up</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="font-display text-base font-extrabold">Coming up</h2>
+                <Link
+                  to="/portfolio/maturities"
+                  className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
+                >
+                  Calendar <ChevronRight className="size-3.5" />
+                </Link>
+              </div>
               <ol className="mt-3.5 space-y-3.5">
                 {PAYOUTS.map((p, i) => (
                   <li
