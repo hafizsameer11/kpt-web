@@ -380,12 +380,15 @@ function NewRuleForm({
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[92svh] overflow-y-auto rounded-t-[2rem] bg-card px-0 pb-0 pt-4">
+        <DrawerContent className="max-h-[92svh] rounded-t-[2rem] bg-card px-0 pb-0 pt-2">
           <DrawerTitle className="sr-only">New auto-invest</DrawerTitle>
           <DrawerDescription className="sr-only">
             Set a recurring investment from your Kipit wallet.
           </DrawerDescription>
-          {body}
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-[env(safe-area-inset-bottom)]">
+            {body}
+          </div>
+
         </DrawerContent>
       </Drawer>
     );
