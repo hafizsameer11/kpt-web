@@ -80,17 +80,35 @@ function TransactionHistoryScreen() {
   const [type, setType] = useState<TxnType | "All">("All");
   const [status, setStatus] = useState<TxnStatus | "All">("All");
   const [period, setPeriod] = useState<(typeof PERIODS)[number]>("All time");
+  const [query, setQuery] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const list = TRANSACTIONS.filter((t) => {
-    if (type !== "All" && t.type !== type) return false;
-    if (status !== "All" && t.status !== status) return false;
-    if (period !== "All time") {
-      const days = period === "Last 30 days" ? 30 : 90;
-      if (NOW - parse(t.date) > days * 864e5) return false;
-    }
-    return true;
-  });
+  const list = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return TRANSACTIONS.filter((t) => {
+      if (type !== "All" && t.type !== type) return false;
+      if (status !== "All" && t.status !== status) return false;
+      if (period !== "All time") {
+        const days = period === "Last 30 days" ? 30 : 90;
+        if (NOW - parse(t.date) > days * 864e5) return false;
+      }
+      if (q) {
+        const haystack = [
+          t.label,
+          t.reference,
+          t.source,
+          t.destination,
+          t.related?.name,
+          t.note,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [type, status, period, query]);
 
   const inflow = list
     .filter((t) => t.direction === "in" && t.status !== "Failed")
