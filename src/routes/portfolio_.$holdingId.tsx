@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { toast } from "sonner";
 import {
   ArrowDownLeft,
   ArrowLeft,
@@ -209,12 +210,22 @@ function HoldingDetailScreen() {
               <div className="mt-4 grid grid-cols-2 gap-2.5">
                 <button
                   type="button"
+                  onClick={() =>
+                    toast.success("Maturity instruction updated", {
+                      description: "This plan will roll over at the prevailing rate.",
+                    })
+                  }
                   className="inline-flex items-center justify-center gap-1.5 rounded-full bg-brand-gradient px-4 py-3 text-[12px] font-extrabold text-primary-foreground press"
                 >
                   <RefreshCw className="size-3.5" /> Roll over
                 </button>
                 <button
                   type="button"
+                  onClick={() =>
+                    toast.success("Maturity instruction updated", {
+                      description: "Principal and interest will be paid to your wallet.",
+                    })
+                  }
                   className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border bg-card px-4 py-3 text-[12px] font-extrabold press"
                 >
                   <Wallet className="size-3.5" /> Pay to wallet
