@@ -116,13 +116,19 @@ function PlanOptionsScreen() {
             >
               <ArrowLeft className="size-3.5" /> Tenor
             </Link>
-            <p className="mt-6 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+            <p className="k-rise mt-6 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
               Almost there
             </p>
-            <p className="mt-1 font-display text-[34px] font-extrabold leading-none tracking-[-0.03em] text-num md:text-[40px]">
-              {naira(amount)}
+            <p
+              className="k-rise mt-1 font-display text-[34px] font-extrabold leading-none tracking-[-0.03em] text-num md:text-[40px]"
+              style={{ "--d": "80ms" } as React.CSSProperties}
+            >
+              <AmountCounter value={amount} hidden={false} mask={(v) => naira(v)} />
             </p>
-            <p className="mt-3 text-[12px] font-medium text-primary-foreground/60">
+            <p
+              className="k-rise mt-3 text-[12px] font-medium text-primary-foreground/60"
+              style={{ "--d": "160ms" } as React.CSSProperties}
+            >
               {days} days at {rate} p.a.
               {maturityDate ? ` · matures ${maturityDate}` : ""}
             </p>
