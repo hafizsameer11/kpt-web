@@ -20,6 +20,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
+import { Route as ExploreProductIdRouteImport } from './routes/explore_.$productId'
 import { Route as FixedPlansCreateRouteImport } from './routes/fixed-plans_/create'
 import { Route as FixedPlansCreateIndexRouteImport } from './routes/fixed-plans_/create/index'
 import { Route as FixedPlansCreateOptionsRouteImport } from './routes/fixed-plans_/create/options'
@@ -83,6 +84,11 @@ const CallAccountSuccessRoute = CallAccountSuccessRouteImport.update({
   path: '/call-account/success',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExploreProductIdRoute = ExploreProductIdRouteImport.update({
+  id: '/explore_/$productId',
+  path: '/explore/$productId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FixedPlansCreateRoute = FixedPlansCreateRouteImport.update({
   id: '/fixed-plans_/create',
   path: '/fixed-plans/create',
@@ -132,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
+  '/explore/$productId': typeof ExploreProductIdRoute
   '/fixed-plans/create': typeof FixedPlansCreateRouteWithChildren
   '/fixed-plans/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans/create/processing': typeof FixedPlansCreateProcessingRoute
@@ -152,6 +159,7 @@ export interface FileRoutesByTo {
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
+  '/explore/$productId': typeof ExploreProductIdRoute
   '/fixed-plans/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans/create/processing': typeof FixedPlansCreateProcessingRoute
   '/fixed-plans/create/review': typeof FixedPlansCreateReviewRoute
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
   '/call-account_/review': typeof CallAccountReviewRoute
   '/call-account_/success': typeof CallAccountSuccessRoute
+  '/explore_/$productId': typeof ExploreProductIdRoute
   '/fixed-plans_/create': typeof FixedPlansCreateRouteWithChildren
   '/fixed-plans_/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans_/create/processing': typeof FixedPlansCreateProcessingRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
+    | '/explore/$productId'
     | '/fixed-plans/create'
     | '/fixed-plans/create/options'
     | '/fixed-plans/create/processing'
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
+    | '/explore/$productId'
     | '/fixed-plans/create/options'
     | '/fixed-plans/create/processing'
     | '/fixed-plans/create/review'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/call-account_/add-money'
     | '/call-account_/review'
     | '/call-account_/success'
+    | '/explore_/$productId'
     | '/fixed-plans_/create'
     | '/fixed-plans_/create/options'
     | '/fixed-plans_/create/processing'
@@ -254,6 +266,7 @@ export interface RootRouteChildren {
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
   CallAccountReviewRoute: typeof CallAccountReviewRoute
   CallAccountSuccessRoute: typeof CallAccountSuccessRoute
+  ExploreProductIdRoute: typeof ExploreProductIdRoute
   FixedPlansCreateRoute: typeof FixedPlansCreateRouteWithChildren
 }
 
@@ -334,6 +347,13 @@ declare module '@tanstack/react-router' {
       path: '/call-account/success'
       fullPath: '/call-account/success'
       preLoaderRoute: typeof CallAccountSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore_/$productId': {
+      id: '/explore_/$productId'
+      path: '/explore/$productId'
+      fullPath: '/explore/$productId'
+      preLoaderRoute: typeof ExploreProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fixed-plans_/create': {
@@ -421,6 +441,7 @@ const rootRouteChildren: RootRouteChildren = {
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
   CallAccountReviewRoute: CallAccountReviewRoute,
   CallAccountSuccessRoute: CallAccountSuccessRoute,
+  ExploreProductIdRoute: ExploreProductIdRoute,
   FixedPlansCreateRoute: FixedPlansCreateRouteWithChildren,
 }
 export const routeTree = rootRouteImport

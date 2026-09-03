@@ -158,3 +158,83 @@ export const AVAILABILITY_LABEL: Record<
   closing: "Closing soon",
   closed: "Fully subscribed",
 };
+
+/**
+ * MOB-081 — Product detail content.
+ * Every product resolves to a detail payload; generic copy is derived from the
+ * category when a product has no bespoke entry.
+ */
+export type ProductDetail = {
+  highlights: { label: string; value: string }[];
+  about: string;
+  how: string[];
+  risks: string[];
+  documents: { name: string; meta: string }[];
+  faqs: { q: string; a: string }[];
+};
+
+const CATEGORY_ABOUT: Record<string, string> = {
+  tbills:
+    "Treasury bills are short-term debt instruments issued by the Federal Government of Nigeria and sold at a discount to face value. You receive the full face value at maturity.",
+  cp: "Commercial paper is unsecured short-term debt issued by large corporates to fund working capital. Returns are fixed at purchase and paid at maturity.",
+  notes:
+    "Private and structured notes are arranged instruments secured on underlying assets or cash flows, offering higher yields for a longer lock-up.",
+  portfolios:
+    "Managed portfolios are professionally run mixes of fixed-income instruments. Returns are targets, not guarantees, and your balance moves with the portfolio.",
+};
+
+export function getExploreProduct(id: string) {
+  return EXPLORE_PRODUCTS.find((p) => p.id === id);
+}
+
+export function getProductDetail(p: ExploreProduct): ProductDetail {
+  const fixed = p.tenor !== "Open-ended";
+  return {
+    highlights: [
+      { label: "Rate", value: p.rate },
+      { label: fixed ? "Tenor" : "Liquidity", value: fixed ? p.tenor : "Withdraw anytime" },
+      { label: "Minimum", value: `₦${p.minimum.toLocaleString("en-NG")}` },
+      { label: "Payout", value: fixed ? "At maturity" : "Accrues daily" },
+    ],
+    about: CATEGORY_ABOUT[p.categoryId] ?? p.blurb,
+    how: [
+      "Fund the investment from your Kipit wallet.",
+      fixed
+        ? "Your rate is locked in for the full tenor at the point of purchase."
+        : "Your balance earns the prevailing rate, accrued daily.",
+      fixed
+        ? "Principal and interest are paid to your wallet on the maturity date."
+        : "Withdraw all or part of your balance to your wallet at any time.",
+    ],
+    risks: [
+      p.categoryId === "tbills"
+        ? "Sovereign-backed, but early exit may be at a discount to par."
+        : "Issuer credit risk applies — returns depend on the issuer meeting its obligations.",
+      fixed
+        ? "Funds are locked for the tenor. Early liquidation may attract a penalty."
+        : "Target returns are indicative and can move with market rates.",
+      "Rates are indicative until your order is confirmed and allotted.",
+    ],
+    documents: [
+      { name: "Offer summary", meta: "PDF · 240 KB" },
+      { name: "Issuer information", meta: "PDF · 1.1 MB" },
+      { name: "Risk disclosure", meta: "PDF · 180 KB" },
+    ],
+    faqs: [
+      {
+        q: "When do I get my money back?",
+        a: fixed
+          ? `Principal and interest land in your Kipit wallet at the end of the ${p.tenor} tenor.`
+          : "You can withdraw to your wallet at any time; withdrawals typically settle same day.",
+      },
+      {
+        q: "Is my investment guaranteed?",
+        a: "No investment is guaranteed. Returns depend on the issuer and prevailing market conditions.",
+      },
+      {
+        q: "Who holds my funds?",
+        a: "Funds are administered by Kipit's SEC-licensed partner. Kipit does not hold client assets directly.",
+      },
+    ],
+  };
+}
