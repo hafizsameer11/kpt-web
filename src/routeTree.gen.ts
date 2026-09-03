@@ -32,6 +32,7 @@ import { Route as PortfolioMaturitiesRouteImport } from './routes/portfolio_.mat
 import { Route as PortfolioTransactionsRouteImport } from './routes/portfolio_.transactions'
 import { Route as SettingsAddressRouteImport } from './routes/settings_/address'
 import { Route as SettingsCardsRouteImport } from './routes/settings_/cards'
+import { Route as SettingsHelpRouteImport } from './routes/settings_/help'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings_/notifications'
 import { Route as SettingsProfileRouteImport } from './routes/settings_/profile'
 import { Route as SettingsReferralsRouteImport } from './routes/settings_/referrals'
@@ -179,6 +180,11 @@ const SettingsAddressRoute = SettingsAddressRouteImport.update({
 const SettingsCardsRoute = SettingsCardsRouteImport.update({
   id: '/settings_/cards',
   path: '/settings/cards',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsHelpRoute = SettingsHelpRouteImport.update({
+  id: '/settings_/help',
+  path: '/settings/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
@@ -382,6 +388,7 @@ export interface FileRoutesByFullPath {
   '/portfolio/transactions': typeof PortfolioTransactionsRoute
   '/settings/address': typeof SettingsAddressRoute
   '/settings/cards': typeof SettingsCardsRoute
+  '/settings/help': typeof SettingsHelpRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/referrals': typeof SettingsReferralsRoute
@@ -439,6 +446,7 @@ export interface FileRoutesByTo {
   '/portfolio/transactions': typeof PortfolioTransactionsRoute
   '/settings/address': typeof SettingsAddressRoute
   '/settings/cards': typeof SettingsCardsRoute
+  '/settings/help': typeof SettingsHelpRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/referrals': typeof SettingsReferralsRoute
@@ -498,6 +506,7 @@ export interface FileRoutesById {
   '/portfolio_/transactions': typeof PortfolioTransactionsRoute
   '/settings_/address': typeof SettingsAddressRoute
   '/settings_/cards': typeof SettingsCardsRoute
+  '/settings_/help': typeof SettingsHelpRoute
   '/settings_/notifications': typeof SettingsNotificationsRoute
   '/settings_/profile': typeof SettingsProfileRoute
   '/settings_/referrals': typeof SettingsReferralsRoute
@@ -558,6 +567,7 @@ export interface FileRouteTypes {
     | '/portfolio/transactions'
     | '/settings/address'
     | '/settings/cards'
+    | '/settings/help'
     | '/settings/notifications'
     | '/settings/profile'
     | '/settings/referrals'
@@ -615,6 +625,7 @@ export interface FileRouteTypes {
     | '/portfolio/transactions'
     | '/settings/address'
     | '/settings/cards'
+    | '/settings/help'
     | '/settings/notifications'
     | '/settings/profile'
     | '/settings/referrals'
@@ -673,6 +684,7 @@ export interface FileRouteTypes {
     | '/portfolio_/transactions'
     | '/settings_/address'
     | '/settings_/cards'
+    | '/settings_/help'
     | '/settings_/notifications'
     | '/settings_/profile'
     | '/settings_/referrals'
@@ -732,6 +744,7 @@ export interface RootRouteChildren {
   PortfolioTransactionsRoute: typeof PortfolioTransactionsRoute
   SettingsAddressRoute: typeof SettingsAddressRoute
   SettingsCardsRoute: typeof SettingsCardsRoute
+  SettingsHelpRoute: typeof SettingsHelpRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
   SettingsReferralsRoute: typeof SettingsReferralsRoute
@@ -922,6 +935,13 @@ declare module '@tanstack/react-router' {
       path: '/settings/cards'
       fullPath: '/settings/cards'
       preLoaderRoute: typeof SettingsCardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/help': {
+      id: '/settings_/help'
+      path: '/settings/help'
+      fullPath: '/settings/help'
+      preLoaderRoute: typeof SettingsHelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings_/notifications': {
@@ -1203,6 +1223,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioTransactionsRoute: PortfolioTransactionsRoute,
   SettingsAddressRoute: SettingsAddressRoute,
   SettingsCardsRoute: SettingsCardsRoute,
+  SettingsHelpRoute: SettingsHelpRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
   SettingsProfileRoute: SettingsProfileRoute,
   SettingsReferralsRoute: SettingsReferralsRoute,
