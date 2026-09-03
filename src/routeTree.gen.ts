@@ -40,6 +40,7 @@ import { Route as FixedPlansCreateReviewRouteImport } from './routes/fixed-plans
 import { Route as FixedPlansCreateSuccessRouteImport } from './routes/fixed-plans_/create/success'
 import { Route as FixedPlansCreateTenorRouteImport } from './routes/fixed-plans_/create/tenor'
 import { Route as PortfolioTransactionsTxnIdRouteImport } from './routes/portfolio_.transactions_.$txnId'
+import { Route as PortfolioTransactionsTxnIdReceiptRouteImport } from './routes/portfolio_.transactions_.$txnId_.receipt'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -202,6 +203,12 @@ const PortfolioTransactionsTxnIdRoute =
     path: '/portfolio/transactions/$txnId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const PortfolioTransactionsTxnIdReceiptRoute =
+  PortfolioTransactionsTxnIdReceiptRouteImport.update({
+    id: '/portfolio_/transactions_/$txnId_/receipt',
+    path: '/portfolio/transactions/$txnId/receipt',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -235,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
   '/portfolio/transactions/$txnId': typeof PortfolioTransactionsTxnIdRoute
   '/fixed-plans/create/': typeof FixedPlansCreateIndexRoute
+  '/portfolio/transactions/$txnId/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -267,6 +275,7 @@ export interface FileRoutesByTo {
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
   '/portfolio/transactions/$txnId': typeof PortfolioTransactionsTxnIdRoute
   '/fixed-plans/create': typeof FixedPlansCreateIndexRoute
+  '/portfolio/transactions/$txnId/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -301,6 +310,7 @@ export interface FileRoutesById {
   '/fixed-plans_/create/tenor': typeof FixedPlansCreateTenorRoute
   '/portfolio_/transactions_/$txnId': typeof PortfolioTransactionsTxnIdRoute
   '/fixed-plans_/create/': typeof FixedPlansCreateIndexRoute
+  '/portfolio_/transactions_/$txnId_/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -336,6 +346,7 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/tenor'
     | '/portfolio/transactions/$txnId'
     | '/fixed-plans/create/'
+    | '/portfolio/transactions/$txnId/receipt'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -368,6 +379,7 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/tenor'
     | '/portfolio/transactions/$txnId'
     | '/fixed-plans/create'
+    | '/portfolio/transactions/$txnId/receipt'
   id:
     | '__root__'
     | '/'
@@ -401,6 +413,7 @@ export interface FileRouteTypes {
     | '/fixed-plans_/create/tenor'
     | '/portfolio_/transactions_/$txnId'
     | '/fixed-plans_/create/'
+    | '/portfolio_/transactions_/$txnId_/receipt'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -429,6 +442,7 @@ export interface RootRouteChildren {
   ExploreProductIdSuccessRoute: typeof ExploreProductIdSuccessRoute
   ExploreProductIdUnavailableRoute: typeof ExploreProductIdUnavailableRoute
   PortfolioTransactionsTxnIdRoute: typeof PortfolioTransactionsTxnIdRoute
+  PortfolioTransactionsTxnIdReceiptRoute: typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -650,6 +664,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioTransactionsTxnIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio_/transactions_/$txnId_/receipt': {
+      id: '/portfolio_/transactions_/$txnId_/receipt'
+      path: '/portfolio/transactions/$txnId/receipt'
+      fullPath: '/portfolio/transactions/$txnId/receipt'
+      preLoaderRoute: typeof PortfolioTransactionsTxnIdReceiptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -700,6 +721,8 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreProductIdSuccessRoute: ExploreProductIdSuccessRoute,
   ExploreProductIdUnavailableRoute: ExploreProductIdUnavailableRoute,
   PortfolioTransactionsTxnIdRoute: PortfolioTransactionsTxnIdRoute,
+  PortfolioTransactionsTxnIdReceiptRoute:
+    PortfolioTransactionsTxnIdReceiptRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
