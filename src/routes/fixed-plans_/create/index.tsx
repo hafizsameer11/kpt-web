@@ -30,7 +30,11 @@ export const Route = createFileRoute("/fixed-plans_/create/")({
   component: CreatePlanAmountScreen,
 });
 
-const QUICK = [100_000, 250_000, 500_000];
+/** Suggestions always start at (or above) the selected plan's minimum. */
+const quickAmounts = (minimum: number) => {
+  const base = [minimum, minimum * 2, minimum * 5];
+  return Array.from(new Set(base.filter((v) => v <= WALLET))).slice(0, 3);
+};
 const LOWEST_MIN = Math.min(...TENOR_BANDS.map((b) => b.minimum));
 const TOP_RATE = Math.max(
   ...TENOR_BANDS.map((b) => Number(b.rate.replace("%", ""))),
@@ -110,7 +114,7 @@ function CreatePlanAmountScreen() {
 
             {/* Quick amounts */}
             <div className="mt-5 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-              {QUICK.map((q) => (
+              {quickAmounts(MINIMUM).map((q) => (
                 <button
                   key={q}
                   type="button"
