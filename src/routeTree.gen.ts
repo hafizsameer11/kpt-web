@@ -57,12 +57,16 @@ import { Route as SignupPasswordRouteImport } from './routes/signup_/password'
 import { Route as SignupPhoneRouteImport } from './routes/signup_/phone'
 import { Route as SignupPinRouteImport } from './routes/signup_/pin'
 import { Route as SignupSuccessRouteImport } from './routes/signup_/success'
+import { Route as VerificationAddressRouteImport } from './routes/verification_/address'
+import { Route as VerificationAddressUploadRouteImport } from './routes/verification_/address-upload'
 import { Route as VerificationBvnRouteImport } from './routes/verification_/bvn'
 import { Route as VerificationBvnFailedRouteImport } from './routes/verification_/bvn-failed'
 import { Route as VerificationBvnMatchRouteImport } from './routes/verification_/bvn-match'
 import { Route as VerificationBvnProcessingRouteImport } from './routes/verification_/bvn-processing'
 import { Route as VerificationLivenessRouteImport } from './routes/verification_/liveness'
 import { Route as VerificationNinRouteImport } from './routes/verification_/nin'
+import { Route as VerificationOccupationRouteImport } from './routes/verification_/occupation'
+import { Route as VerificationReviewRouteImport } from './routes/verification_/review'
 import { Route as VerificationSelfieRouteImport } from './routes/verification_/selfie'
 import { Route as VerificationTier1RouteImport } from './routes/verification_/tier1'
 import { Route as VerificationTier1VerifiedRouteImport } from './routes/verification_/tier1-verified'
@@ -343,6 +347,17 @@ const SignupSuccessRoute = SignupSuccessRouteImport.update({
   path: '/signup/success',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VerificationAddressRoute = VerificationAddressRouteImport.update({
+  id: '/verification_/address',
+  path: '/verification/address',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationAddressUploadRoute =
+  VerificationAddressUploadRouteImport.update({
+    id: '/verification_/address-upload',
+    path: '/verification/address-upload',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const VerificationBvnRoute = VerificationBvnRouteImport.update({
   id: '/verification_/bvn',
   path: '/verification/bvn',
@@ -372,6 +387,16 @@ const VerificationLivenessRoute = VerificationLivenessRouteImport.update({
 const VerificationNinRoute = VerificationNinRouteImport.update({
   id: '/verification_/nin',
   path: '/verification/nin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationOccupationRoute = VerificationOccupationRouteImport.update({
+  id: '/verification_/occupation',
+  path: '/verification/occupation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationReviewRoute = VerificationReviewRouteImport.update({
+  id: '/verification_/review',
+  path: '/verification/review',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerificationSelfieRoute = VerificationSelfieRouteImport.update({
@@ -631,12 +656,16 @@ export interface FileRoutesByFullPath {
   '/signup/phone': typeof SignupPhoneRoute
   '/signup/pin': typeof SignupPinRoute
   '/signup/success': typeof SignupSuccessRoute
+  '/verification/address': typeof VerificationAddressRoute
+  '/verification/address-upload': typeof VerificationAddressUploadRoute
   '/verification/bvn': typeof VerificationBvnRoute
   '/verification/bvn-failed': typeof VerificationBvnFailedRoute
   '/verification/bvn-match': typeof VerificationBvnMatchRoute
   '/verification/bvn-processing': typeof VerificationBvnProcessingRoute
   '/verification/liveness': typeof VerificationLivenessRoute
   '/verification/nin': typeof VerificationNinRoute
+  '/verification/occupation': typeof VerificationOccupationRoute
+  '/verification/review': typeof VerificationReviewRoute
   '/verification/selfie': typeof VerificationSelfieRoute
   '/verification/tier1': typeof VerificationTier1Route
   '/verification/tier1-verified': typeof VerificationTier1VerifiedRoute
@@ -725,12 +754,16 @@ export interface FileRoutesByTo {
   '/signup/phone': typeof SignupPhoneRoute
   '/signup/pin': typeof SignupPinRoute
   '/signup/success': typeof SignupSuccessRoute
+  '/verification/address': typeof VerificationAddressRoute
+  '/verification/address-upload': typeof VerificationAddressUploadRoute
   '/verification/bvn': typeof VerificationBvnRoute
   '/verification/bvn-failed': typeof VerificationBvnFailedRoute
   '/verification/bvn-match': typeof VerificationBvnMatchRoute
   '/verification/bvn-processing': typeof VerificationBvnProcessingRoute
   '/verification/liveness': typeof VerificationLivenessRoute
   '/verification/nin': typeof VerificationNinRoute
+  '/verification/occupation': typeof VerificationOccupationRoute
+  '/verification/review': typeof VerificationReviewRoute
   '/verification/selfie': typeof VerificationSelfieRoute
   '/verification/tier1': typeof VerificationTier1Route
   '/verification/tier1-verified': typeof VerificationTier1VerifiedRoute
@@ -821,12 +854,16 @@ export interface FileRoutesById {
   '/signup_/phone': typeof SignupPhoneRoute
   '/signup_/pin': typeof SignupPinRoute
   '/signup_/success': typeof SignupSuccessRoute
+  '/verification_/address': typeof VerificationAddressRoute
+  '/verification_/address-upload': typeof VerificationAddressUploadRoute
   '/verification_/bvn': typeof VerificationBvnRoute
   '/verification_/bvn-failed': typeof VerificationBvnFailedRoute
   '/verification_/bvn-match': typeof VerificationBvnMatchRoute
   '/verification_/bvn-processing': typeof VerificationBvnProcessingRoute
   '/verification_/liveness': typeof VerificationLivenessRoute
   '/verification_/nin': typeof VerificationNinRoute
+  '/verification_/occupation': typeof VerificationOccupationRoute
+  '/verification_/review': typeof VerificationReviewRoute
   '/verification_/selfie': typeof VerificationSelfieRoute
   '/verification_/tier1': typeof VerificationTier1Route
   '/verification_/tier1-verified': typeof VerificationTier1VerifiedRoute
@@ -918,12 +955,16 @@ export interface FileRouteTypes {
     | '/signup/phone'
     | '/signup/pin'
     | '/signup/success'
+    | '/verification/address'
+    | '/verification/address-upload'
     | '/verification/bvn'
     | '/verification/bvn-failed'
     | '/verification/bvn-match'
     | '/verification/bvn-processing'
     | '/verification/liveness'
     | '/verification/nin'
+    | '/verification/occupation'
+    | '/verification/review'
     | '/verification/selfie'
     | '/verification/tier1'
     | '/verification/tier1-verified'
@@ -1012,12 +1053,16 @@ export interface FileRouteTypes {
     | '/signup/phone'
     | '/signup/pin'
     | '/signup/success'
+    | '/verification/address'
+    | '/verification/address-upload'
     | '/verification/bvn'
     | '/verification/bvn-failed'
     | '/verification/bvn-match'
     | '/verification/bvn-processing'
     | '/verification/liveness'
     | '/verification/nin'
+    | '/verification/occupation'
+    | '/verification/review'
     | '/verification/selfie'
     | '/verification/tier1'
     | '/verification/tier1-verified'
@@ -1107,12 +1152,16 @@ export interface FileRouteTypes {
     | '/signup_/phone'
     | '/signup_/pin'
     | '/signup_/success'
+    | '/verification_/address'
+    | '/verification_/address-upload'
     | '/verification_/bvn'
     | '/verification_/bvn-failed'
     | '/verification_/bvn-match'
     | '/verification_/bvn-processing'
     | '/verification_/liveness'
     | '/verification_/nin'
+    | '/verification_/occupation'
+    | '/verification_/review'
     | '/verification_/selfie'
     | '/verification_/tier1'
     | '/verification_/tier1-verified'
@@ -1203,12 +1252,16 @@ export interface RootRouteChildren {
   SignupPhoneRoute: typeof SignupPhoneRoute
   SignupPinRoute: typeof SignupPinRoute
   SignupSuccessRoute: typeof SignupSuccessRoute
+  VerificationAddressRoute: typeof VerificationAddressRoute
+  VerificationAddressUploadRoute: typeof VerificationAddressUploadRoute
   VerificationBvnRoute: typeof VerificationBvnRoute
   VerificationBvnFailedRoute: typeof VerificationBvnFailedRoute
   VerificationBvnMatchRoute: typeof VerificationBvnMatchRoute
   VerificationBvnProcessingRoute: typeof VerificationBvnProcessingRoute
   VerificationLivenessRoute: typeof VerificationLivenessRoute
   VerificationNinRoute: typeof VerificationNinRoute
+  VerificationOccupationRoute: typeof VerificationOccupationRoute
+  VerificationReviewRoute: typeof VerificationReviewRoute
   VerificationSelfieRoute: typeof VerificationSelfieRoute
   VerificationTier1Route: typeof VerificationTier1Route
   VerificationTier1VerifiedRoute: typeof VerificationTier1VerifiedRoute
@@ -1582,6 +1635,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/verification_/address': {
+      id: '/verification_/address'
+      path: '/verification/address'
+      fullPath: '/verification/address'
+      preLoaderRoute: typeof VerificationAddressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification_/address-upload': {
+      id: '/verification_/address-upload'
+      path: '/verification/address-upload'
+      fullPath: '/verification/address-upload'
+      preLoaderRoute: typeof VerificationAddressUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/verification_/bvn': {
       id: '/verification_/bvn'
       path: '/verification/bvn'
@@ -1622,6 +1689,20 @@ declare module '@tanstack/react-router' {
       path: '/verification/nin'
       fullPath: '/verification/nin'
       preLoaderRoute: typeof VerificationNinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification_/occupation': {
+      id: '/verification_/occupation'
+      path: '/verification/occupation'
+      fullPath: '/verification/occupation'
+      preLoaderRoute: typeof VerificationOccupationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification_/review': {
+      id: '/verification_/review'
+      path: '/verification/review'
+      fullPath: '/verification/review'
+      preLoaderRoute: typeof VerificationReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verification_/selfie': {
@@ -1970,12 +2051,16 @@ const rootRouteChildren: RootRouteChildren = {
   SignupPhoneRoute: SignupPhoneRoute,
   SignupPinRoute: SignupPinRoute,
   SignupSuccessRoute: SignupSuccessRoute,
+  VerificationAddressRoute: VerificationAddressRoute,
+  VerificationAddressUploadRoute: VerificationAddressUploadRoute,
   VerificationBvnRoute: VerificationBvnRoute,
   VerificationBvnFailedRoute: VerificationBvnFailedRoute,
   VerificationBvnMatchRoute: VerificationBvnMatchRoute,
   VerificationBvnProcessingRoute: VerificationBvnProcessingRoute,
   VerificationLivenessRoute: VerificationLivenessRoute,
   VerificationNinRoute: VerificationNinRoute,
+  VerificationOccupationRoute: VerificationOccupationRoute,
+  VerificationReviewRoute: VerificationReviewRoute,
   VerificationSelfieRoute: VerificationSelfieRoute,
   VerificationTier1Route: VerificationTier1Route,
   VerificationTier1VerifiedRoute: VerificationTier1VerifiedRoute,
