@@ -271,6 +271,22 @@
   }
 }
 
+/* Hide scrollbars app-wide while keeping scrolling behaviour */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+* {
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+
+
 
 /* v13 — the definitive Kipit home: one tight grotesque, heavy display weights */
 .type-v13 {
