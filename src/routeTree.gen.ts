@@ -97,6 +97,7 @@ import { Route as ExploreProductIdReviewRouteImport } from './routes/explore_.$p
 import { Route as ExploreProductIdSubscribeRouteImport } from './routes/explore_.$productId_.subscribe'
 import { Route as ExploreProductIdSuccessRouteImport } from './routes/explore_.$productId_.success'
 import { Route as ExploreProductIdUnavailableRouteImport } from './routes/explore_.$productId_.unavailable'
+import { Route as ExploreCategoryCategoryIdRouteImport } from './routes/explore_.category.$categoryId'
 import { Route as FixedPlansCreateIndexRouteImport } from './routes/fixed-plans_/create/index'
 import { Route as FixedPlansCreateOptionsRouteImport } from './routes/fixed-plans_/create/options'
 import { Route as FixedPlansCreateProcessingRouteImport } from './routes/fixed-plans_/create/processing'
@@ -558,6 +559,12 @@ const ExploreProductIdUnavailableRoute =
     path: '/explore/$productId/unavailable',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ExploreCategoryCategoryIdRoute =
+  ExploreCategoryCategoryIdRouteImport.update({
+    id: '/explore_/category/$categoryId',
+    path: '/explore/category/$categoryId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const FixedPlansCreateIndexRoute = FixedPlansCreateIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -720,6 +727,7 @@ export interface FileRoutesByFullPath {
   '/explore/$productId/subscribe': typeof ExploreProductIdSubscribeRoute
   '/explore/$productId/success': typeof ExploreProductIdSuccessRoute
   '/explore/$productId/unavailable': typeof ExploreProductIdUnavailableRoute
+  '/explore/category/$categoryId': typeof ExploreCategoryCategoryIdRoute
   '/fixed-plans/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans/create/processing': typeof FixedPlansCreateProcessingRoute
   '/fixed-plans/create/review': typeof FixedPlansCreateReviewRoute
@@ -822,6 +830,7 @@ export interface FileRoutesByTo {
   '/explore/$productId/subscribe': typeof ExploreProductIdSubscribeRoute
   '/explore/$productId/success': typeof ExploreProductIdSuccessRoute
   '/explore/$productId/unavailable': typeof ExploreProductIdUnavailableRoute
+  '/explore/category/$categoryId': typeof ExploreCategoryCategoryIdRoute
   '/fixed-plans/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans/create/processing': typeof FixedPlansCreateProcessingRoute
   '/fixed-plans/create/review': typeof FixedPlansCreateReviewRoute
@@ -926,6 +935,7 @@ export interface FileRoutesById {
   '/explore_/$productId_/subscribe': typeof ExploreProductIdSubscribeRoute
   '/explore_/$productId_/success': typeof ExploreProductIdSuccessRoute
   '/explore_/$productId_/unavailable': typeof ExploreProductIdUnavailableRoute
+  '/explore_/category/$categoryId': typeof ExploreCategoryCategoryIdRoute
   '/fixed-plans_/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans_/create/processing': typeof FixedPlansCreateProcessingRoute
   '/fixed-plans_/create/review': typeof FixedPlansCreateReviewRoute
@@ -1031,6 +1041,7 @@ export interface FileRouteTypes {
     | '/explore/$productId/subscribe'
     | '/explore/$productId/success'
     | '/explore/$productId/unavailable'
+    | '/explore/category/$categoryId'
     | '/fixed-plans/create/options'
     | '/fixed-plans/create/processing'
     | '/fixed-plans/create/review'
@@ -1133,6 +1144,7 @@ export interface FileRouteTypes {
     | '/explore/$productId/subscribe'
     | '/explore/$productId/success'
     | '/explore/$productId/unavailable'
+    | '/explore/category/$categoryId'
     | '/fixed-plans/create/options'
     | '/fixed-plans/create/processing'
     | '/fixed-plans/create/review'
@@ -1236,6 +1248,7 @@ export interface FileRouteTypes {
     | '/explore_/$productId_/subscribe'
     | '/explore_/$productId_/success'
     | '/explore_/$productId_/unavailable'
+    | '/explore_/category/$categoryId'
     | '/fixed-plans_/create/options'
     | '/fixed-plans_/create/processing'
     | '/fixed-plans_/create/review'
@@ -1340,6 +1353,7 @@ export interface RootRouteChildren {
   ExploreProductIdSubscribeRoute: typeof ExploreProductIdSubscribeRoute
   ExploreProductIdSuccessRoute: typeof ExploreProductIdSuccessRoute
   ExploreProductIdUnavailableRoute: typeof ExploreProductIdUnavailableRoute
+  ExploreCategoryCategoryIdRoute: typeof ExploreCategoryCategoryIdRoute
   PortfolioTransactionsTxnIdRoute: typeof PortfolioTransactionsTxnIdRoute
   SettingsHelpTicketRoute: typeof SettingsHelpTicketRoute
   SettingsSecurityChangePinRoute: typeof SettingsSecurityChangePinRoute
@@ -1967,6 +1981,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExploreProductIdUnavailableRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/explore_/category/$categoryId': {
+      id: '/explore_/category/$categoryId'
+      path: '/explore/category/$categoryId'
+      fullPath: '/explore/category/$categoryId'
+      preLoaderRoute: typeof ExploreCategoryCategoryIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/fixed-plans_/create/': {
       id: '/fixed-plans_/create/'
       path: '/'
@@ -2171,6 +2192,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreProductIdSubscribeRoute: ExploreProductIdSubscribeRoute,
   ExploreProductIdSuccessRoute: ExploreProductIdSuccessRoute,
   ExploreProductIdUnavailableRoute: ExploreProductIdUnavailableRoute,
+  ExploreCategoryCategoryIdRoute: ExploreCategoryCategoryIdRoute,
   PortfolioTransactionsTxnIdRoute: PortfolioTransactionsTxnIdRoute,
   SettingsHelpTicketRoute: SettingsHelpTicketRoute,
   SettingsSecurityChangePinRoute: SettingsSecurityChangePinRoute,
