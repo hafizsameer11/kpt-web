@@ -1,5 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Clock, Delete, Fingerprint, Landmark, Lock } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Clock,
+  Delete,
+  Fingerprint,
+  Landmark,
+  Lock,
+  ShieldCheck,
+} from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
@@ -152,126 +161,310 @@ function ReviewWithdrawal() {
     </>
   );
 
+  const authSheet = isMobile ? (
+    <Drawer
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) setPin("");
+      }}
+    >
+      <DrawerContent className="max-h-[92svh] rounded-t-[2rem] bg-card px-6 pb-8 pt-2">
+        <DrawerTitle className="sr-only">Enter your PIN</DrawerTitle>
+        <DrawerDescription className="sr-only">
+          Authorize {naira(amount)} withdrawal
+        </DrawerDescription>
+        {pinPad}
+      </DrawerContent>
+    </Drawer>
+  ) : (
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) setPin("");
+      }}
+    >
+      <DialogContent className="max-w-sm rounded-xl">
+        <DialogHeader>
+          <DialogTitle className="sr-only">Enter your PIN</DialogTitle>
+        </DialogHeader>
+        {pinPad}
+      </DialogContent>
+    </Dialog>
+  );
+
   return (
     <AppShell title="Review Withdrawal" navVariant="elevated">
-      <div className="pb-2">
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pt-8 md:shadow-float">
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
-          />
-          <div className="relative md:max-w-3xl">
+      <div className="md:hidden">
+        <MobileReview
+          account={account}
+          amount={amount}
+          valid={valid}
+          open={open}
+          setOpen={setOpen}
+          pinPad={pinPad}
+        />
+      </div>
+      <div className="hidden md:block">
+        <DesktopReview
+          account={account}
+          amount={amount}
+          valid={valid}
+          open={open}
+          setOpen={setOpen}
+          pinPad={pinPad}
+        />
+      </div>
+      {authSheet}
+    </AppShell>
+  );
+}
+
+interface ReviewAccount {
+  id: string;
+  accountName: string;
+  bank: string;
+  accountNumber: string;
+}
+
+function MobileReview({
+  account,
+  amount,
+  valid,
+  setOpen,
+}: {
+  account: ReviewAccount;
+  amount: number;
+  valid: boolean;
+  open: boolean;
+  setOpen: (v: boolean) => void;
+  pinPad: React.ReactNode;
+}) {
+  return (
+    <div className="pb-2">
+      <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
+        />
+        <div className="relative">
+          <Link
+            to="/withdraw/amount"
+            search={{ acct: account.id }}
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground press"
+          >
+            <ArrowLeft className="size-3.5" /> Edit amount
+          </Link>
+          <p className="mt-6 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+            You're withdrawing
+          </p>
+          <p className="mt-2 font-display text-[40px] font-extrabold leading-none tracking-[-0.035em] text-num">
+            {naira(amount)}
+          </p>
+          <p className="mt-3 flex items-center gap-1.5 text-[12px] font-medium text-primary-foreground/60">
+            <Clock className="size-3.5 text-primary-foreground/70" /> {payoutEta}
+          </p>
+        </div>
+      </section>
+
+      <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5">
+        <span
+          aria-hidden
+          className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border"
+        />
+
+        <div className="space-y-4">
+          <section className="card-surface p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Destination
+            </p>
+            <div className="mt-3 flex items-center gap-3">
+              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                <Landmark className="size-5" strokeWidth={2.2} />
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-[13.5px] font-bold text-foreground">
+                  {account.accountName}
+                </p>
+                <p className="truncate text-[12px] text-muted-foreground">
+                  {account.bank} · {maskAccount(account.accountNumber)}
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="card-surface p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Transaction summary
+            </p>
+            <dl className="mt-3 divide-y divide-border text-[13px]">
+              <Row label="Amount">{naira(amount)}</Row>
+              <Row label="Transfer fee">
+                {WITHDRAWAL_FEE === 0 ? "₦0" : naira(WITHDRAWAL_FEE)}
+              </Row>
+              <Row label="You receive">{naira(Math.max(amount - WITHDRAWAL_FEE, 0))}</Row>
+              <Row label="From">Kipit Wallet</Row>
+              <Row label="Wallet after">{naira(Math.max(WALLET - amount, 0))}</Row>
+            </dl>
+          </section>
+        </div>
+
+        <div className="mt-5">
+          <button
+            type="button"
+            disabled={!valid}
+            onClick={() => setOpen(true)}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40 disabled:shadow-none"
+          >
+            {valid ? "Confirm withdrawal" : "Amount not valid"}
+            <ArrowRight className="size-4" strokeWidth={2.6} />
+          </button>
+          <p className="mt-2.5 flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
+            <Lock className="size-3.5" /> Authorize with your PIN or biometrics.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DesktopReview({
+  account,
+  amount,
+  valid,
+  setOpen,
+}: {
+  account: ReviewAccount;
+  amount: number;
+  valid: boolean;
+  open: boolean;
+  setOpen: (v: boolean) => void;
+  pinPad: React.ReactNode;
+}) {
+  return (
+    <div className="mx-auto w-full max-w-[1100px] space-y-6 pb-10">
+      <section className="relative overflow-hidden rounded-3xl bg-brand-gradient px-10 py-10 text-primary-foreground shadow-float">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-24 -top-36 size-96 rounded-full bg-gold/15 blur-[80px]"
+        />
+        <div className="relative">
+          <div className="flex items-center justify-between gap-4">
             <Link
               to="/withdraw/amount"
               search={{ acct: account.id }}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground press"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 text-[11px] font-bold text-primary-foreground press"
             >
               <ArrowLeft className="size-3.5" /> Edit amount
             </Link>
-            <p className="mt-6 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
-              You're withdrawing
-            </p>
-            <p className="mt-2 font-display text-[40px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[48px]">
-              {naira(amount)}
-            </p>
-            <p className="mt-3 flex items-center gap-1.5 text-[12px] font-medium text-primary-foreground/60">
-              <Clock className="size-3.5 text-primary-foreground/70" /> {payoutEta}
-            </p>
+            <span className="shrink-0 rounded-full bg-gold/15 px-3 py-1 text-[11px] font-extrabold text-gold">
+              Withdraw · Step 3 of 3 · ₦0 fee
+            </span>
           </div>
-        </section>
 
-        <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
-          <span
-            aria-hidden
-            className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
-          />
+          <p className="mt-8 text-[11px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+            You're withdrawing
+          </p>
+          <p className="mt-2 font-display text-[52px] font-extrabold leading-none tracking-[-0.035em] text-num">
+            {naira(amount)}
+          </p>
+          <p className="mt-3 flex items-center gap-1.5 text-[13px] font-medium text-primary-foreground/60">
+            <Clock className="size-4 text-primary-foreground/70" /> {payoutEta}
+          </p>
+        </div>
+      </section>
 
-          <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
-            <section className="card-surface p-4 md:p-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Destination
-              </p>
-              <div className="mt-3 flex items-center gap-3">
-                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                  <Landmark className="size-5" strokeWidth={2.2} />
-                </span>
-                <div className="min-w-0">
-                  <p className="truncate text-[13.5px] font-bold text-foreground">
-                    {account.accountName}
-                  </p>
-                  <p className="truncate text-[12px] text-muted-foreground">
-                    {account.bank} · {maskAccount(account.accountNumber)}
-                  </p>
-                </div>
+      <div className="grid grid-cols-[minmax(0,1fr)_360px] items-start gap-6">
+        <div className="min-w-0 space-y-4">
+          <section className="card-surface p-6">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Destination
+            </p>
+            <div className="mt-4 flex items-center gap-4">
+              <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                <Landmark className="size-5" strokeWidth={2.2} />
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-[15px] font-bold text-foreground">
+                  {account.accountName}
+                </p>
+                <p className="truncate text-[12.5px] text-muted-foreground">
+                  {account.bank} · {maskAccount(account.accountNumber)}
+                </p>
               </div>
-            </section>
+              <span className="ml-auto flex items-center gap-1.5 text-[12px] text-muted-foreground">
+                <Clock className="size-3.5 shrink-0" /> {payoutEta}
+              </span>
+            </div>
 
-            <section className="card-surface p-4 md:p-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Transaction summary
+            <div className="mt-5 rounded-2xl border border-border bg-muted/40 p-4">
+              <p className="flex items-center gap-2 text-[12px] font-bold text-foreground">
+                <ShieldCheck className="size-4 text-primary" /> Verified account
               </p>
-              <dl className="mt-3 divide-y divide-border text-[13px]">
-                <Row label="Amount">{naira(amount)}</Row>
-                <Row label="Transfer fee">
-                  {WITHDRAWAL_FEE === 0 ? "₦0" : naira(WITHDRAWAL_FEE)}
-                </Row>
-                <Row label="You receive">{naira(Math.max(amount - WITHDRAWAL_FEE, 0))}</Row>
-                <Row label="From">Kipit Wallet</Row>
-                <Row label="Wallet after">{naira(Math.max(WALLET - amount, 0))}</Row>
-              </dl>
-            </section>
-          </div>
+              <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+                This payout account was verified against your Kipit name when it was added.
+              </p>
+            </div>
+          </section>
 
-          <div className="mt-5">
+          <section className="card-surface p-6">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Transaction summary
+            </p>
+            <dl className="mt-4 divide-y divide-border text-[13.5px]">
+              <Row label="Amount">{naira(amount)}</Row>
+              <Row label="Transfer fee">
+                {WITHDRAWAL_FEE === 0 ? "₦0" : naira(WITHDRAWAL_FEE)}
+              </Row>
+              <Row label="You receive">
+                <span className="text-gold">
+                  {naira(Math.max(amount - WITHDRAWAL_FEE, 0))}
+                </span>
+              </Row>
+              <Row label="From">Kipit Wallet</Row>
+              <Row label="Wallet after">{naira(Math.max(WALLET - amount, 0))}</Row>
+            </dl>
+          </section>
+        </div>
+
+        <aside className="sticky top-6 min-w-0">
+          <section className="card-surface p-6">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Authorize
+            </p>
+            <p className="mt-4 font-display text-[32px] font-extrabold leading-none tracking-[-0.03em] text-foreground">
+              {naira(Math.max(amount - WITHDRAWAL_FEE, 0))}
+            </p>
+            <p className="mt-2 flex items-center gap-1.5 text-[12px] text-muted-foreground">
+              <Clock className="size-3.5 shrink-0" /> {payoutEta}
+            </p>
+
+            <div className="mt-5 rounded-2xl border border-border bg-muted/40 p-4">
+              <p className="flex items-center gap-2 text-[12px] font-bold text-foreground">
+                <Lock className="size-4 text-primary" /> PIN or biometrics
+              </p>
+              <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+                Confirm with your 4-digit PIN, or tap the fingerprint button in the PIN screen.
+              </p>
+            </div>
+
             <button
               type="button"
               disabled={!valid}
               onClick={() => setOpen(true)}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40 disabled:shadow-none md:w-auto md:px-10"
+              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40 disabled:shadow-none"
             >
               {valid ? "Confirm withdrawal" : "Amount not valid"}
               <ArrowRight className="size-4" strokeWidth={2.6} />
             </button>
-            <p className="mt-2.5 flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
-              <Lock className="size-3.5" /> Authorize with your PIN or biometrics.
+            <p className="mt-3 flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
+              <ShieldCheck className="size-3.5" /> Secured by Kipit encryption.
             </p>
-          </div>
-        </div>
+          </section>
+        </aside>
       </div>
-
-      {isMobile ? (
-        <Drawer
-          open={open}
-          onOpenChange={(o) => {
-            setOpen(o);
-            if (!o) setPin("");
-          }}
-        >
-          <DrawerContent className="max-h-[92svh] rounded-t-[2rem] bg-card px-6 pb-8 pt-2">
-            <DrawerTitle className="sr-only">Enter your PIN</DrawerTitle>
-            <DrawerDescription className="sr-only">
-              Authorize {naira(amount)} withdrawal
-            </DrawerDescription>
-            {pinPad}
-          </DrawerContent>
-        </Drawer>
-      ) : (
-        <Dialog
-          open={open}
-          onOpenChange={(o) => {
-            setOpen(o);
-            if (!o) setPin("");
-          }}
-        >
-          <DialogContent className="max-w-sm rounded-xl">
-            <DialogHeader>
-              <DialogTitle className="sr-only">Enter your PIN</DialogTitle>
-            </DialogHeader>
-            {pinPad}
-          </DialogContent>
-        </Dialog>
-      )}
-    </AppShell>
+    </div>
   );
 }
 
