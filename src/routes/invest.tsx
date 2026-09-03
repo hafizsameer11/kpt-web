@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
+import { AmountCounter } from "@/components/kipit/motion";
 import { naira, HOLDINGS } from "@/lib/home-data";
 import { CALL_ACCOUNT, TENOR_BANDS } from "@/lib/invest-data";
 
@@ -38,7 +39,7 @@ export const Route = createFileRoute("/invest")({
 });
 
 function InvestScreen() {
-  const { mask } = useBalanceVisibility();
+  const { hidden, mask } = useBalanceVisibility();
 
   return (
     <AppShell title="Invest" navVariant="elevated">
@@ -79,7 +80,7 @@ function InvestScreen() {
 
               <p className="mt-4 text-[13px] text-primary-foreground/70">Balance</p>
               <p className="mt-0.5 font-display text-[34px] font-extrabold leading-none tracking-[-0.03em] text-num md:text-[40px]">
-                {mask(CALL_ACCOUNT.balance)}
+                <AmountCounter value={CALL_ACCOUNT.balance} hidden={hidden} mask={mask} />
               </p>
               <p className="mt-2 text-[12px] text-primary-foreground/60">
                 {CALL_ACCOUNT.liquidity} &middot; min {naira(CALL_ACCOUNT.minimum)} &middot; earned
@@ -140,7 +141,8 @@ function InvestScreen() {
                 return (
                   <article
                     key={band.days}
-                    className={`relative flex flex-col justify-between overflow-hidden rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-5 ${
+                    style={{ ["--d" as string]: `${i * 90}ms` }}
+                    className={`k-rise relative flex flex-col justify-between overflow-hidden rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-5 ${
                       featured
                         ? "bg-brand-gradient text-primary-foreground shadow-float"
                         : "border border-border bg-card"
@@ -192,7 +194,7 @@ function InvestScreen() {
                         type="button"
                         className={`mt-3 inline-flex w-full items-center justify-center gap-1 rounded-full px-3 py-2 text-[11px] font-extrabold press ${
                           featured
-                            ? "bg-gold-gradient text-gold-foreground"
+                            ? "bg-gold-gradient text-gold-foreground k-glow"
                             : "bg-brand text-brand-foreground"
                         }`}
                       >
@@ -220,7 +222,7 @@ function InvestScreen() {
               </Link>
             </div>
             <ul className="space-y-3">
-              {HOLDINGS.map((h) => {
+              {HOLDINGS.map((h, i) => {
                 const progress = Math.min(
                   100,
                   Math.max(6, Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)),
@@ -228,7 +230,8 @@ function InvestScreen() {
                 return (
                   <li
                     key={h.name}
-                    className="card-surface relative overflow-hidden p-4 transition-shadow hover:shadow-md"
+                    style={{ ["--d" as string]: `${i * 90}ms` }}
+                    className="k-rise card-surface relative overflow-hidden p-4 transition-shadow hover:shadow-md"
                   >
                     <span className="absolute inset-y-0 left-0 w-1 bg-accent" aria-hidden />
                     <div className="flex items-start justify-between gap-3 pl-2">
@@ -248,8 +251,8 @@ function InvestScreen() {
                     <div className="mt-3 pl-2">
                       <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
                         <div
-                          className="h-full rounded-full bg-brand"
-                          style={{ width: `${progress}%` }}
+                          className="k-fill h-full rounded-full bg-brand"
+                          style={{ width: `${progress}%`, ["--d" as string]: `${150 + i * 90}ms` }}
                         />
                       </div>
                       <div className="mt-1.5 flex items-center justify-between text-[10px] font-semibold text-muted-foreground">
@@ -276,7 +279,8 @@ function InvestScreen() {
                 <button
                   key={t.label}
                   type="button"
-                  className={`group flex w-full items-center gap-3.5 px-4 py-4 text-left transition-colors hover:bg-muted/50 ${
+                  style={{ ["--d" as string]: `${i * 70}ms` }}
+                  className={`k-rise group flex w-full items-center gap-3.5 px-4 py-4 text-left transition-colors hover:bg-muted/50 ${
                     i > 0 ? "border-t border-border/50 md:border-t-0" : ""
                   } ${i >= 2 ? "md:border-t md:border-border/50" : ""} ${
                     i % 2 === 1 ? "md:border-l md:border-border/50" : ""
