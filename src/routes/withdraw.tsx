@@ -251,7 +251,7 @@ function DesktopWithdraw() {
                   Saved payout accounts
                 </p>
                 <Link
-                  to="/settings/payout-account"
+                  to="/withdraw/accounts"
                   className="text-[12px] font-bold text-primary press"
                 >
                   Manage
