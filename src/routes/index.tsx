@@ -651,7 +651,7 @@ function DesktopHome() {
       </div>
 
       {/* Row 2 — interest this week + next maturity */}
-      <div className="mt-3 grid items-start gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+      <div className="mt-2 grid items-start gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
         <section className="card-surface p-6">
           <div className="flex items-start justify-between gap-3">
             <div>
