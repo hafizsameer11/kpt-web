@@ -464,7 +464,6 @@ function MobileHome() {
 
           </div>
         </div>
-      )}
-    </AppShell>
+    </div>
   );
 }
