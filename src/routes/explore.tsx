@@ -128,7 +128,7 @@ function ExploreScreen() {
           {/* Categories */}
           <Rise>
             <section>
-              <p class name="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Categories
               </p>
               <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
