@@ -39,10 +39,19 @@ export const Route = createFileRoute("/invest")({
 });
 
 function InvestScreen() {
+  return (
+    <AppShell title="Invest" navVariant="elevated">
+      <DesktopInvest />
+      <MobileInvest />
+    </AppShell>
+  );
+}
+
+function MobileInvest() {
   const { hidden, mask } = useBalanceVisibility();
 
   return (
-    <AppShell title="Invest" navVariant="elevated">
+    <div className="md:hidden">
       <div className="pb-2">
         {/* ── Header canvas ─────────────────────────────────────────── */}
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
@@ -312,6 +321,6 @@ function InvestScreen() {
           <DisclosureStrip variant="fixed" />
         </div>
       </div>
-    </AppShell>
+    </div>
   );
 }
