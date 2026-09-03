@@ -111,8 +111,8 @@ function PortfolioScreen() {
     <AppShell title="Portfolio" navVariant="elevated">
       <div className="pb-2">
         {/* ── Hero + upcoming maturities (desktop side-by-side) ── */}
-        <div className="md:mx-auto md:max-w-[1200px] lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start lg:gap-6">
-          <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
+        <div className="md:mx-auto md:max-w-[1200px] lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-stretch lg:gap-6">
+          <section className="relative -mx-4 flex h-full flex-col overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
             <span
               aria-hidden
               className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
@@ -179,7 +179,7 @@ function PortfolioScreen() {
           </section>
 
           {/* Upcoming maturities — desktop beside total */}
-          <section className="hidden lg:block">
+          <section className="hidden h-full flex-col lg:flex">
             <div className="mb-3 flex items-center justify-between px-1">
               <h2 className="font-display text-base font-extrabold">Upcoming maturities</h2>
               <Link
@@ -191,12 +191,12 @@ function PortfolioScreen() {
               </Link>
             </div>
 
-            <ul className="card-surface divide-y divide-border/60 overflow-hidden">
-              {UPCOMING_MATURITIES.map((m, i) => (
+            <ul className="card-surface flex flex-1 flex-col divide-y divide-border/60 overflow-hidden">
+              {UPCOMING_MATURITIES.slice(0, 4).map((m, i) => (
                 <li
                   key={`top-${m.name}-${m.date}`}
                   style={{ ["--d" as string]: `${i * 60}ms` }}
-                  className="k-rise flex items-center gap-3 px-4 py-3.5"
+                  className="k-rise flex flex-1 items-center gap-3 px-4 py-3.5"
                 >
                   <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-extrabold text-brand text-num">
                     {m.daysLeft}d
