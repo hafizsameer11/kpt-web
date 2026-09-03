@@ -336,7 +336,7 @@ function DesktopInvest() {
     <div className="hidden pb-4 md:block">
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
         {/* Left column */}
-        <div className="grid min-w-0 gap-4">
+        <div className="grid min-w-0 grid-cols-1 gap-4">
           {/* Call Account hero */}
           <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 pb-6 pt-6 text-primary-foreground shadow-float">
             <span
@@ -563,7 +563,7 @@ function DesktopInvest() {
         </div>
 
         {/* Right column */}
-        <div className="grid min-w-0 gap-4">
+        <div className="grid min-w-0 grid-cols-1 gap-4">
           <section className="card-surface p-6">
             <h2 className="font-display text-base font-extrabold">Invest tools</h2>
             <div className="mt-4 grid gap-2">
