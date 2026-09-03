@@ -720,7 +720,7 @@ function DesktopHome() {
       </div>
 
       {/* Row 3 — plans table + payout timeline */}
-      <div className="mt-3 grid gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+      <div className="mt-2 grid gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
         <section className="card-surface overflow-hidden">
           <div className="flex items-center justify-between border-b border-border px-6 py-4">
             <h2 className="font-display text-base font-extrabold">Your plans</h2>
