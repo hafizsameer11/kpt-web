@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Apple, Phone, X } from "lucide-react";
+import { Phone, X } from "lucide-react";
 import { useState } from "react";
 import { AuthShell, GhostButton } from "@/components/kipit/AuthShell";
 import {
@@ -96,7 +96,7 @@ function SignupMethod() {
 
           <GhostButton onClick={() => navigate({ to: "/signup/details" })}>
             <span className="flex items-center justify-center gap-3">
-              <Apple className="size-4" />
+              <AppleMark />
               Continue with Apple
             </span>
           </GhostButton>
@@ -162,6 +162,17 @@ function GoogleMark() {
       <path
         fill="#EA4335"
         d="M12 10.2v3.9h5.5c-.24 1.4-1.7 4.1-5.5 4.1a6.2 6.2 0 1 1 0-12.4c1.9 0 3.2.8 3.9 1.5l2.7-2.6C16.9 3 14.7 2 12 2a10 10 0 1 0 0 20c5.8 0 9.6-4 9.6-9.7 0-.7-.1-1.2-.2-1.7H12z"
+      />
+    </svg>
+  );
+}
+
+function AppleMark() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.06 1.87-2.54 6.98.22 8.13-.57 1.5-1.31 2.99-2.27 4.08zm-5.85-15.1c.07-2.04 1.76-3.79 3.74-4.04.29 2.32-1.97 4.48-3.74 4.04z"
       />
     </svg>
   );
