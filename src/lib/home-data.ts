@@ -87,7 +87,7 @@ export type QuickAction = {
 /** MOB-020 quick actions and their prototype destinations. */
 export const QUICK_ACTIONS: QuickAction[] = [
   { label: "Add Money", icon: ArrowDownLeft, to: "/call-account/add-money" },
-  { label: "Withdraw", icon: ArrowUpRight, to: "/call-account" },
+  { label: "Withdraw", icon: ArrowUpRight, to: "/withdraw" },
   { label: "New Plan", icon: PlusCircle, to: "/fixed-plans/create" },
   { label: "Statements", icon: FileText, to: "/portfolio/transactions" },
 ];
