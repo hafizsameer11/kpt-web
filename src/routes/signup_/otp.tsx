@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AuthShell, OtpInput, PrimaryButton } from "@/components/kipit/AuthShell";
 import { DEMO_OTP, signupDraft } from "@/lib/auth-data";
 
@@ -22,6 +22,11 @@ function SignupOtp() {
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<"idle" | "validating" | "invalid" | "expired">("idle");
   const [seconds, setSeconds] = useState(45);
+  const secondsRef = useRef(seconds);
+
+  useEffect(() => {
+    secondsRef.current = seconds;
+  }, [seconds]);
 
   useEffect(() => {
     if (seconds <= 0) return;
@@ -29,16 +34,21 @@ function SignupOtp() {
     return () => clearTimeout(t);
   }, [seconds]);
 
-  useEffect(() => {
-    if (code.length !== 6) return;
+  const verifyCode = useCallback((value: string) => {
+    if (value.length !== 6) return;
     setStatus("validating");
     const t = setTimeout(() => {
-      if (code === DEMO_OTP) navigate({ to: "/signup/details" });
-      else if (seconds <= 0) setStatus("expired");
+      if (value === DEMO_OTP) navigate({ to: "/signup/details" });
+      else if (secondsRef.current <= 0) setStatus("expired");
       else setStatus("invalid");
     }, 700);
     return () => clearTimeout(t);
-  }, [code, navigate, seconds]);
+  }, [navigate]);
+
+  useEffect(() => {
+    if (code.length !== 6) return;
+    return verifyCode(code);
+  }, [code, verifyCode]);
 
   const masked = signupDraft.phone
     ? `${signupDraft.dial} ${signupDraft.phone.replace(/^(\d{3})\d+(\d{2})$/, "$1••••$2")}`
@@ -67,7 +77,7 @@ function SignupOtp() {
       </p>
 
       <div className="mt-7 space-y-4">
-        <PrimaryButton disabled={code.length !== 6 || status === "validating"} onClick={() => setCode(code)}>
+        <PrimaryButton disabled={code.length !== 6 || status === "validating"} onClick={() => verifyCode(code)}>
           Verify
         </PrimaryButton>
         <div className="flex items-center justify-between text-xs">
