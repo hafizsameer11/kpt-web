@@ -414,11 +414,13 @@ function HomeV2Screen() {
                 </Link>
               </div>
               <ol className="mt-3.5 space-y-3.5">
-                {PAYOUTS.slice(0, 3).map((p, i) => (
+                {PAYOUTS.map((p, i) => (
                   <li
                     key={p.label}
                     style={{ ["--d" as string]: `${i * 90}ms` }}
-                    className="k-rise relative grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3"
+                    className={`k-rise relative grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3 ${
+                      i === 3 ? "lg:hidden" : ""
+                    }`}
                   >
                     <span className="relative flex w-3 justify-center">
                       <span
