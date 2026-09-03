@@ -96,7 +96,7 @@ function SignupMethod() {
 
           <GhostButton onClick={() => navigate({ to: "/signup/details" })}>
             <span className="flex items-center justify-center gap-3">
-              <Apple className="size-4" />
+              <AppleMark />
               Continue with Apple
             </span>
           </GhostButton>
