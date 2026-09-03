@@ -1,8 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Info, Lock, Phone } from "lucide-react";
+import { ArrowRight, Lock } from "lucide-react";
 import { useState } from "react";
 import { KycStep, kycCta, kycField, kycLabel } from "@/components/kipit/KycStep";
-import { DEMO_BVN } from "@/lib/kyc-data";
 
 export const Route = createFileRoute("/verification_/bvn")({
   head: () => ({
@@ -87,16 +86,7 @@ function BvnEntry() {
         </button>
       </section>
 
-      <p className="mt-4 flex items-start gap-2 rounded-xl bg-secondary px-3.5 py-3 text-[11.5px] text-muted-foreground md:max-w-lg">
-        <Info className="mt-0.5 size-4 shrink-0" />
-        Prototype tip: use <span className="font-bold text-foreground">{DEMO_BVN}</span> for a
-        successful match — any other 11 digits will fail.
-      </p>
 
-      <p className="mt-3 flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
-        <Phone className="size-3.5" /> The phone number on your BVN must match the one on your
-        Kipit account.
-      </p>
     </KycStep>
   );
 }
