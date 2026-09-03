@@ -258,21 +258,26 @@ function ProductDetailScreen() {
 
           {/* About */}
           <Rise delay={100}>
-            <section className="mt-4 card-surface p-4">
-              <h2 className="font-display text-[15px] font-extrabold">About this product</h2>
-              <p className="mt-2 text-[12.5px] leading-relaxed text-muted-foreground">
-                {detail.about}
-              </p>
-              <ul className="mt-3.5 space-y-2.5">
-                {detail.how.map((h) => (
-                  <li key={h} className="flex gap-2.5">
-                    <span className="mt-[7px] size-1.5 shrink-0 rounded-full bg-gold" />
-                    <span className="text-[12.5px] leading-relaxed text-muted-foreground">
-                      {h}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+            <section className="mt-4 card-surface overflow-hidden p-0">
+              <div className="h-1 w-full bg-gold" />
+              <div className="p-5 md:p-6">
+                <h2 className="font-display text-[17px] font-extrabold tracking-tight">
+                  About this product
+                </h2>
+                <p className="mt-2.5 text-[13px] leading-relaxed text-muted-foreground">
+                  {detail.about}
+                </p>
+                <ul className="mt-5 space-y-4">
+                  {detail.how.map((h) => (
+                    <li key={h} className="flex items-start gap-3.5">
+                      <span className="mt-[5px] size-2 shrink-0 rotate-45 bg-gold" />
+                      <span className="text-[13px] font-medium leading-snug text-foreground">
+                        {h}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </section>
           </Rise>
 
