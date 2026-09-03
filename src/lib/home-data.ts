@@ -5,6 +5,8 @@ import {
   PlusCircle,
   type LucideIcon,
 } from "lucide-react";
+import { LEARN_ARTICLES } from "@/lib/learn-data";
+
 
 /**
  * Single source of truth for the Home Dashboard (MOB-020 / WEB-002).
