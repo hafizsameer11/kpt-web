@@ -45,10 +45,14 @@ function ArticleScreen() {
   return (
     <AppShell title="Learn" navVariant="elevated">
       <div className="pb-2">
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-12 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-28 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-36 md:pt-8 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -bottom-28 -left-20 size-64 rounded-full bg-white/10 blur-[56px]"
           />
           <div className="relative md:max-w-3xl">
             <Link
@@ -75,13 +79,41 @@ function ArticleScreen() {
         </section>
 
         <Rise>
-          <img
-            src={feedArt(Math.max(index, 0))}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            className="-mt-6 h-40 w-full rounded-xl object-cover shadow-card md:h-56"
-          />
+          <div className="relative -mt-20 overflow-hidden rounded-3xl bg-[#0B1A30] shadow-float md:-mt-28 md:h-80 h-52">
+            <img
+              src={feedArt(Math.max(index, 0))}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              className="absolute inset-0 size-full object-cover opacity-40"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0B1A30] via-[#0B1A30]/60 to-transparent" />
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 400 160"
+              preserveAspectRatio="none"
+              className="absolute inset-x-0 bottom-0 h-full w-full"
+            >
+              <defs>
+                <linearGradient id="goldArea" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="oklch(0.82 0.15 88)" stopOpacity="0.45" />
+                  <stop offset="100%" stopColor="oklch(0.82 0.15 88)" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M0,140 L40,132 L80,118 L120,124 L160,98 L200,86 L240,64 L280,72 L320,42 L360,28 L400,18 L400,160 L0,160 Z"
+                fill="url(#goldArea)"
+              />
+              <path
+                d="M0,140 L40,132 L80,118 L120,124 L160,98 L200,86 L240,64 L280,72 L320,42 L360,28 L400,18"
+                fill="none"
+                stroke="oklch(0.82 0.15 88)"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
         </Rise>
 
         <Rise delay={80}>
