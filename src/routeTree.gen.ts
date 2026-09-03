@@ -17,6 +17,7 @@ import { Route as FixedPlansRouteImport } from './routes/fixed-plans'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as GiftsRouteImport } from './routes/gifts'
 import { Route as InvestRouteImport } from './routes/invest'
+import { Route as LearnRouteImport } from './routes/learn'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
@@ -36,6 +37,7 @@ import { Route as ForgotPasswordNewRouteImport } from './routes/forgot-password_
 import { Route as ForgotPasswordOtpRouteImport } from './routes/forgot-password_/otp'
 import { Route as ForgotPasswordSuccessRouteImport } from './routes/forgot-password_/success'
 import { Route as GiftsGiftIdRouteImport } from './routes/gifts_.$giftId'
+import { Route as LearnArticleIdRouteImport } from './routes/learn_.$articleId'
 import { Route as LoginBiometricRouteImport } from './routes/login_/biometric'
 import { Route as PortfolioHoldingIdRouteImport } from './routes/portfolio_.$holdingId'
 import { Route as PortfolioHistoryRouteImport } from './routes/portfolio_.history'
@@ -153,6 +155,11 @@ const InvestRoute = InvestRouteImport.update({
   path: '/invest',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LearnRoute = LearnRouteImport.update({
+  id: '/learn',
+  path: '/learn',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -246,6 +253,11 @@ const ForgotPasswordSuccessRoute = ForgotPasswordSuccessRouteImport.update({
 const GiftsGiftIdRoute = GiftsGiftIdRouteImport.update({
   id: '/gifts_/$giftId',
   path: '/gifts/$giftId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LearnArticleIdRoute = LearnArticleIdRouteImport.update({
+  id: '/learn_/$articleId',
+  path: '/learn/$articleId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginBiometricRoute = LoginBiometricRouteImport.update({
@@ -654,6 +666,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/gifts': typeof GiftsRoute
   '/invest': typeof InvestRoute
+  '/learn': typeof LearnRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
@@ -673,6 +686,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password/otp': typeof ForgotPasswordOtpRoute
   '/forgot-password/success': typeof ForgotPasswordSuccessRoute
   '/gifts/$giftId': typeof GiftsGiftIdRoute
+  '/learn/$articleId': typeof LearnArticleIdRoute
   '/login/biometric': typeof LoginBiometricRoute
   '/portfolio/$holdingId': typeof PortfolioHoldingIdRoute
   '/portfolio/history': typeof PortfolioHistoryRoute
@@ -759,6 +773,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/gifts': typeof GiftsRoute
   '/invest': typeof InvestRoute
+  '/learn': typeof LearnRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
@@ -777,6 +792,7 @@ export interface FileRoutesByTo {
   '/forgot-password/otp': typeof ForgotPasswordOtpRoute
   '/forgot-password/success': typeof ForgotPasswordSuccessRoute
   '/gifts/$giftId': typeof GiftsGiftIdRoute
+  '/learn/$articleId': typeof LearnArticleIdRoute
   '/login/biometric': typeof LoginBiometricRoute
   '/portfolio/$holdingId': typeof PortfolioHoldingIdRoute
   '/portfolio/history': typeof PortfolioHistoryRoute
@@ -864,6 +880,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/gifts': typeof GiftsRoute
   '/invest': typeof InvestRoute
+  '/learn': typeof LearnRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
@@ -883,6 +900,7 @@ export interface FileRoutesById {
   '/forgot-password_/otp': typeof ForgotPasswordOtpRoute
   '/forgot-password_/success': typeof ForgotPasswordSuccessRoute
   '/gifts_/$giftId': typeof GiftsGiftIdRoute
+  '/learn_/$articleId': typeof LearnArticleIdRoute
   '/login_/biometric': typeof LoginBiometricRoute
   '/portfolio_/$holdingId': typeof PortfolioHoldingIdRoute
   '/portfolio_/history': typeof PortfolioHistoryRoute
@@ -971,6 +989,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/gifts'
     | '/invest'
+    | '/learn'
     | '/login'
     | '/notifications'
     | '/portfolio'
@@ -990,6 +1009,7 @@ export interface FileRouteTypes {
     | '/forgot-password/otp'
     | '/forgot-password/success'
     | '/gifts/$giftId'
+    | '/learn/$articleId'
     | '/login/biometric'
     | '/portfolio/$holdingId'
     | '/portfolio/history'
@@ -1076,6 +1096,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/gifts'
     | '/invest'
+    | '/learn'
     | '/login'
     | '/notifications'
     | '/portfolio'
@@ -1094,6 +1115,7 @@ export interface FileRouteTypes {
     | '/forgot-password/otp'
     | '/forgot-password/success'
     | '/gifts/$giftId'
+    | '/learn/$articleId'
     | '/login/biometric'
     | '/portfolio/$holdingId'
     | '/portfolio/history'
@@ -1180,6 +1202,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/gifts'
     | '/invest'
+    | '/learn'
     | '/login'
     | '/notifications'
     | '/portfolio'
@@ -1199,6 +1222,7 @@ export interface FileRouteTypes {
     | '/forgot-password_/otp'
     | '/forgot-password_/success'
     | '/gifts_/$giftId'
+    | '/learn_/$articleId'
     | '/login_/biometric'
     | '/portfolio_/$holdingId'
     | '/portfolio_/history'
@@ -1286,6 +1310,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   GiftsRoute: typeof GiftsRoute
   InvestRoute: typeof InvestRoute
+  LearnRoute: typeof LearnRoute
   LoginRoute: typeof LoginRoute
   NotificationsRoute: typeof NotificationsRoute
   PortfolioRoute: typeof PortfolioRoute
@@ -1305,6 +1330,7 @@ export interface RootRouteChildren {
   ForgotPasswordOtpRoute: typeof ForgotPasswordOtpRoute
   ForgotPasswordSuccessRoute: typeof ForgotPasswordSuccessRoute
   GiftsGiftIdRoute: typeof GiftsGiftIdRoute
+  LearnArticleIdRoute: typeof LearnArticleIdRoute
   LoginBiometricRoute: typeof LoginBiometricRoute
   PortfolioHoldingIdRoute: typeof PortfolioHoldingIdRoute
   PortfolioHistoryRoute: typeof PortfolioHistoryRoute
@@ -1433,6 +1459,13 @@ declare module '@tanstack/react-router' {
       path: '/invest'
       fullPath: '/invest'
       preLoaderRoute: typeof InvestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learn': {
+      id: '/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof LearnRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -1566,6 +1599,13 @@ declare module '@tanstack/react-router' {
       path: '/gifts/$giftId'
       fullPath: '/gifts/$giftId'
       preLoaderRoute: typeof GiftsGiftIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learn_/$articleId': {
+      id: '/learn_/$articleId'
+      path: '/learn/$articleId'
+      fullPath: '/learn/$articleId'
+      preLoaderRoute: typeof LearnArticleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login_/biometric': {
@@ -2133,6 +2173,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   GiftsRoute: GiftsRoute,
   InvestRoute: InvestRoute,
+  LearnRoute: LearnRoute,
   LoginRoute: LoginRoute,
   NotificationsRoute: NotificationsRoute,
   PortfolioRoute: PortfolioRoute,
@@ -2152,6 +2193,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordOtpRoute: ForgotPasswordOtpRoute,
   ForgotPasswordSuccessRoute: ForgotPasswordSuccessRoute,
   GiftsGiftIdRoute: GiftsGiftIdRoute,
+  LearnArticleIdRoute: LearnArticleIdRoute,
   LoginBiometricRoute: LoginBiometricRoute,
   PortfolioHoldingIdRoute: PortfolioHoldingIdRoute,
   PortfolioHistoryRoute: PortfolioHistoryRoute,
