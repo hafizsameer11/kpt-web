@@ -53,7 +53,169 @@ function GiftDetailScreen() {
 
   return (
     <AppShell title="Gift detail" navVariant="elevated">
-      <div className="pb-2">
+      {/* ── Desktop (md+) ───────────────────────────────────────── */}
+      <div className="hidden md:block">
+        <div className="mx-auto w-full max-w-[1080px] space-y-6 pb-10">
+          <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-8 text-primary-foreground shadow-float">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -right-24 -top-32 size-80 rounded-full bg-gold/15 blur-[70px]"
+            />
+            <div className="relative flex flex-wrap items-end justify-between gap-8">
+              <div>
+                <Link
+                  to="/gifts"
+                  className="press inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[12px] font-bold hover:bg-white/15"
+                >
+                  <ArrowLeft className="size-4" /> Gifts
+                </Link>
+                <div className="mt-6 flex items-center gap-3">
+                  <span className="grid size-12 place-items-center rounded-xl bg-white/10">
+                    <User className="size-5" strokeWidth={2} />
+                  </span>
+                  <div>
+                    <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                      Gift to
+                    </p>
+                    <p className="text-[15px] font-bold">{gift.recipient} · {gift.phone}</p>
+                  </div>
+                </div>
+                <p className="mt-4 font-display text-[46px] font-extrabold leading-none tracking-[-0.035em] text-num">
+                  <AmountCounter value={gift.amount} hidden={hidden} mask={mask} />
+                </p>
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11.5px] font-bold">
+                    <GiftIcon className="size-3.5 text-gold" /> {gift.product}
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11.5px] font-extrabold ${
+                      claimed
+                        ? "bg-gold-gradient text-brand"
+                        : expired
+                          ? "bg-white/10 text-primary-foreground/70"
+                          : "bg-white/15 text-gold"
+                    }`}
+                  >
+                    {claimed ? <CheckCircle2 className="size-3.5" /> : <Clock className="size-3.5" />}
+                    {gift.status}
+                  </span>
+                </div>
+              </div>
+
+              {!claimed && !expired && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    toast.success("Claim link resent", {
+                      description: `We sent the link to ${gift.recipient} again.`,
+                    })
+                  }
+                  className="press inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-[13px] font-extrabold text-brand shadow-float"
+                >
+                  <Share2 className="size-4" strokeWidth={2.4} /> Resend claim link
+                </button>
+              )}
+              {expired && (
+                <Link
+                  to="/fixed-plans/create"
+                  className="press inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-[13px] font-extrabold text-brand shadow-float"
+                >
+                  <CalendarDays className="size-4" strokeWidth={2.4} /> Send again
+                </Link>
+              )}
+            </div>
+          </section>
+
+          <div className="grid grid-cols-[minmax(0,1fr)_340px] items-start gap-6">
+            <div className="space-y-6">
+              <section className="overflow-hidden rounded-2xl border border-border bg-card">
+                <div className="border-b border-border px-6 py-4">
+                  <h2 className="font-display text-[17px] font-extrabold">Investment details</h2>
+                </div>
+                <dl className="grid grid-cols-2 gap-x-8 gap-y-5 px-6 py-5">
+                  {[
+                    { label: "Product", value: gift.product },
+                    { label: "Rate", value: gift.rate, gold: true },
+                    { label: "Tenor", value: gift.tenor },
+                    { label: "Matures", value: gift.maturityDate },
+                    { label: "Value at maturity", value: mask(gift.expectedPayout), gold: true },
+                    { label: "Sent", value: gift.sentDate },
+                  ].map((row) => (
+                    <div key={row.label}>
+                      <dt className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
+                        {row.label}
+                      </dt>
+                      <dd
+                        className={`mt-1 text-[13.5px] font-bold ${
+                          row.gold ? "text-gold" : ""
+                        }`}
+                      >
+                        {row.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+
+              <section className="relative overflow-hidden rounded-2xl border border-border bg-card p-6">
+                <span aria-hidden className="absolute left-0 top-0 h-full w-1 bg-gold-gradient" />
+                <h2 className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-muted-foreground">
+                  Your message
+                </h2>
+                <div className="mt-3 flex gap-3">
+                  <Quote className="size-4 shrink-0 text-gold" />
+                  <p className="text-[14px] leading-[1.7]">{gift.message}</p>
+                </div>
+              </section>
+            </div>
+
+            <section className="rounded-2xl border border-border bg-card p-6">
+              <h2 className="font-display text-[15px] font-extrabold">Claim status</h2>
+              <ol className="mt-4 space-y-5">
+                <li className="grid grid-cols-[auto_minmax(0,1fr)] gap-3">
+                  <span className="mt-1 size-2.5 rounded-full bg-brand" />
+                  <div>
+                    <p className="text-[13px] font-bold">Gift sent</p>
+                    <p className="text-[11px] text-muted-foreground">{gift.sentDate}</p>
+                  </div>
+                </li>
+                <li className="grid grid-cols-[auto_minmax(0,1fr)] gap-3">
+                  <span
+                    className={`mt-1 size-2.5 rounded-full ${
+                      claimed ? "bg-gold k-glow" : expired ? "bg-muted-foreground/40" : "bg-gold/40"
+                    }`}
+                  />
+                  <div>
+                    <p className="text-[13px] font-bold">
+                      {claimed
+                        ? "Claimed by recipient"
+                        : expired
+                          ? "Claim window expired"
+                          : "Awaiting claim"}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {claimed
+                        ? gift.claimedDate
+                        : expired
+                          ? `Expired ${gift.expiresDate}`
+                          : `Expires ${gift.expiresDate}`}
+                    </p>
+                  </div>
+                </li>
+                <li className="grid grid-cols-[auto_minmax(0,1fr)] gap-3">
+                  <span className="mt-1 size-2.5 rounded-full bg-border" />
+                  <div>
+                    <p className="text-[13px] font-bold">Matures for recipient</p>
+                    <p className="text-[11px] text-muted-foreground">{gift.maturityDate}</p>
+                  </div>
+                </li>
+              </ol>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <div className="pb-2 md:hidden">
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pt-8 md:shadow-float">
           <span
             aria-hidden
