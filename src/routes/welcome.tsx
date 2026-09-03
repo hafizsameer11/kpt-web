@@ -72,7 +72,7 @@ function Welcome() {
         </span>
 
         <h1
-          className="animate-rise mt-5 text-[2.6rem] font-semibold leading-[1.05] tracking-tight"
+          className="animate-rise mt-5 text-[2.1rem] font-semibold leading-[1.1] tracking-tight sm:text-[2.35rem] md:text-[2.6rem]"
           style={{ animationDelay: "240ms" }}
         >
           Your money,
@@ -82,11 +82,10 @@ function Welcome() {
           </span>
         </h1>
         <p
-          className="animate-rise mt-4 max-w-sm text-sm leading-relaxed text-brand-foreground/70"
+          className="animate-rise mt-4 line-clamp-2 max-w-[19rem] text-sm leading-snug text-brand-foreground/70 sm:max-w-sm sm:leading-relaxed"
           style={{ animationDelay: "320ms" }}
         >
-          Kipit brings your savings, fixed-return plans and curated investment products into one
-          simple account.
+          Save, invest in fixed-return plans, and track everything in one simple account.
         </p>
 
         <ul className="mt-9 space-y-2.5">
