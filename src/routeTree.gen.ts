@@ -56,6 +56,7 @@ import { Route as FixedPlansCreateReviewRouteImport } from './routes/fixed-plans
 import { Route as FixedPlansCreateSuccessRouteImport } from './routes/fixed-plans_/create/success'
 import { Route as FixedPlansCreateTenorRouteImport } from './routes/fixed-plans_/create/tenor'
 import { Route as PortfolioTransactionsTxnIdRouteImport } from './routes/portfolio_.transactions_.$txnId'
+import { Route as SettingsSecurityChangePinRouteImport } from './routes/settings_/security_/change-pin'
 import { Route as PortfolioTransactionsTxnIdReceiptRouteImport } from './routes/portfolio_.transactions_.$txnId_.receipt'
 
 const IndexRoute = IndexRouteImport.update({
@@ -299,6 +300,12 @@ const PortfolioTransactionsTxnIdRoute =
     path: '/portfolio/transactions/$txnId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const SettingsSecurityChangePinRoute =
+  SettingsSecurityChangePinRouteImport.update({
+    id: '/settings_/security_/change-pin',
+    path: '/settings/security/change-pin',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const PortfolioTransactionsTxnIdReceiptRoute =
   PortfolioTransactionsTxnIdReceiptRouteImport.update({
     id: '/portfolio_/transactions_/$txnId_/receipt',
@@ -353,6 +360,7 @@ export interface FileRoutesByFullPath {
   '/fixed-plans/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
   '/portfolio/transactions/$txnId': typeof PortfolioTransactionsTxnIdRoute
+  '/settings/security/change-pin': typeof SettingsSecurityChangePinRoute
   '/fixed-plans/create/': typeof FixedPlansCreateIndexRoute
   '/portfolio/transactions/$txnId/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
 }
@@ -402,6 +410,7 @@ export interface FileRoutesByTo {
   '/fixed-plans/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
   '/portfolio/transactions/$txnId': typeof PortfolioTransactionsTxnIdRoute
+  '/settings/security/change-pin': typeof SettingsSecurityChangePinRoute
   '/fixed-plans/create': typeof FixedPlansCreateIndexRoute
   '/portfolio/transactions/$txnId/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
 }
@@ -453,6 +462,7 @@ export interface FileRoutesById {
   '/fixed-plans_/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans_/create/tenor': typeof FixedPlansCreateTenorRoute
   '/portfolio_/transactions_/$txnId': typeof PortfolioTransactionsTxnIdRoute
+  '/settings_/security_/change-pin': typeof SettingsSecurityChangePinRoute
   '/fixed-plans_/create/': typeof FixedPlansCreateIndexRoute
   '/portfolio_/transactions_/$txnId_/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
 }
@@ -505,6 +515,7 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/success'
     | '/fixed-plans/create/tenor'
     | '/portfolio/transactions/$txnId'
+    | '/settings/security/change-pin'
     | '/fixed-plans/create/'
     | '/portfolio/transactions/$txnId/receipt'
   fileRoutesByTo: FileRoutesByTo
@@ -554,6 +565,7 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/success'
     | '/fixed-plans/create/tenor'
     | '/portfolio/transactions/$txnId'
+    | '/settings/security/change-pin'
     | '/fixed-plans/create'
     | '/portfolio/transactions/$txnId/receipt'
   id:
@@ -604,6 +616,7 @@ export interface FileRouteTypes {
     | '/fixed-plans_/create/success'
     | '/fixed-plans_/create/tenor'
     | '/portfolio_/transactions_/$txnId'
+    | '/settings_/security_/change-pin'
     | '/fixed-plans_/create/'
     | '/portfolio_/transactions_/$txnId_/receipt'
   fileRoutesById: FileRoutesById
@@ -650,6 +663,7 @@ export interface RootRouteChildren {
   ExploreProductIdSuccessRoute: typeof ExploreProductIdSuccessRoute
   ExploreProductIdUnavailableRoute: typeof ExploreProductIdUnavailableRoute
   PortfolioTransactionsTxnIdRoute: typeof PortfolioTransactionsTxnIdRoute
+  SettingsSecurityChangePinRoute: typeof SettingsSecurityChangePinRoute
   PortfolioTransactionsTxnIdReceiptRoute: typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 
@@ -984,6 +998,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioTransactionsTxnIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings_/security_/change-pin': {
+      id: '/settings_/security_/change-pin'
+      path: '/settings/security/change-pin'
+      fullPath: '/settings/security/change-pin'
+      preLoaderRoute: typeof SettingsSecurityChangePinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio_/transactions_/$txnId_/receipt': {
       id: '/portfolio_/transactions_/$txnId_/receipt'
       path: '/portfolio/transactions/$txnId/receipt'
@@ -1057,6 +1078,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreProductIdSuccessRoute: ExploreProductIdSuccessRoute,
   ExploreProductIdUnavailableRoute: ExploreProductIdUnavailableRoute,
   PortfolioTransactionsTxnIdRoute: PortfolioTransactionsTxnIdRoute,
+  SettingsSecurityChangePinRoute: SettingsSecurityChangePinRoute,
   PortfolioTransactionsTxnIdReceiptRoute:
     PortfolioTransactionsTxnIdReceiptRoute,
 }
