@@ -194,7 +194,7 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
 
       {/* Desktop: four image cards */}
       <div className="mt-4 hidden gap-4 md:grid md:grid-cols-4">
-        {FEED.slice(0, 4).map((item, i) => (
+        {LEARN_ARTICLES.slice(0, 4).map((item, i) => (
           <Link
             key={item.id}
             to="/learn/$articleId"
