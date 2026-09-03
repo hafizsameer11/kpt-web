@@ -386,7 +386,8 @@ function MobileExplore() {
           <DisclosureStrip variant="marketplace" />
         </div>
       </div>
-    </AppShell>
+    </div>
+
   );
 }
 
