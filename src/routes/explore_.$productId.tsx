@@ -222,23 +222,31 @@ function ProductDetailScreen() {
                 <button
                   type="button"
                   aria-label="Decrease amount"
-                  onClick={() => setAmount((a) => Math.max(p.minimum, a - step))}
+                  onClick={() => adjustAmount(-step)}
                   className="grid size-10 shrink-0 place-items-center rounded-xl border border-border bg-card press"
                 >
                   <Minus className="size-4" />
                 </button>
                 <div className="min-w-0 flex-1 text-center">
-                  <p className="font-display text-[24px] font-extrabold leading-none tracking-[-0.02em] text-num">
-                    {naira(amount)}
-                  </p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    aria-label="Investment amount"
+                    aria-describedby="amount-min"
+                    value={inputValue}
+                    onChange={(e) => handleAmountChange(e.target.value)}
+                    onBlur={handleAmountBlur}
+                    onFocus={(e) => e.target.select()}
+                    className="w-full bg-transparent text-center font-display text-[24px] font-extrabold leading-none tracking-[-0.02em] text-num outline-none placeholder:text-muted-foreground/40"
+                  />
+                  <p id="amount-min" className="mt-1 text-[11px] text-muted-foreground">
                     Minimum {naira(p.minimum)}
                   </p>
                 </div>
                 <button
                   type="button"
                   aria-label="Increase amount"
-                  onClick={() => setAmount((a) => a + step)}
+                  onClick={() => adjustAmount(step)}
                   className="grid size-10 shrink-0 place-items-center rounded-xl border border-border bg-card press"
                 >
                   <Plus className="size-4" />
