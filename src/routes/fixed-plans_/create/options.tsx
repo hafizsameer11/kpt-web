@@ -85,6 +85,8 @@ function PlanOptionsScreen() {
   const [autoInvest, setAutoInvest] = useState(false);
   const [autoAmount, setAutoAmount] = useState("");
   const [frequency, setFrequency] = useState<(typeof FREQUENCIES)[number]>("Monthly");
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const [startDate, setStartDate] = useState(todayISO);
 
   /* MOB-072/073 — gift */
   const [forWhom, setForWhom] = useState<"self" | "gift">("self");
