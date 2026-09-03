@@ -563,7 +563,7 @@ function DesktopInvest() {
         </div>
 
         {/* Right column */}
-        <aside className="grid min-w-0 gap-4">
+        <div className="grid min-w-0 gap-4">
           <section className="card-surface p-6">
             <h2 className="font-display text-base font-extrabold">Invest tools</h2>
             <div className="mt-4 grid gap-2">
@@ -608,7 +608,7 @@ function DesktopInvest() {
           </section>
 
           <DisclosureStrip variant="fixed" />
-        </aside>
+        </div>
       </div>
     </div>
   );
