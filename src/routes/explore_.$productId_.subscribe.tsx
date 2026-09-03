@@ -222,37 +222,48 @@ function SubscribeScreen() {
 
             {/* Expected value */}
             <Rise delay={80}>
-              <section className="card-surface overflow-hidden p-0">
-                <div className="p-4 pb-3.5 md:p-5 md:pb-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              <section className="relative overflow-hidden rounded-xl bg-brand-gradient p-4 text-primary-foreground shadow-float md:p-5">
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -right-16 -top-20 size-48 rounded-full bg-gold/20 blur-[48px]"
+                />
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -bottom-20 -left-12 size-40 rounded-full bg-white/10 blur-[40px]"
+                />
+
+                <div className="relative">
+                  <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-primary-foreground/60">
                     Expected at maturity
                   </p>
-                  <p className="mt-1.5 font-display text-[28px] font-extrabold leading-none text-num">
+                  <p className="mt-1.5 font-display text-[30px] font-extrabold leading-none tracking-[-0.02em] text-gold text-num">
                     {naira(expected)}
                   </p>
-                  <div className="mt-3.5 flex divide-x divide-border rounded-lg border border-border/60">
-                    <div className="flex-1 px-3.5 py-2.5">
-                      <p className="text-[10.5px] font-semibold text-muted-foreground">
+
+                  <div className="mt-4 grid grid-cols-2 gap-2">
+                    <div className="rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2.5">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-primary-foreground/55">
                         Expected return
                       </p>
-                      <p className="mt-0.5 font-display text-[16px] font-extrabold leading-none text-gold text-num">
-                        {naira(earn)}
+                      <p className="mt-1 font-display text-[16px] font-extrabold leading-none text-gold text-num">
+                        +{naira(earn)}
                       </p>
                     </div>
-                    <div className="flex-1 px-3.5 py-2.5">
-                      <p className="text-[10.5px] font-semibold text-muted-foreground">
+                    <div className="rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2.5">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-primary-foreground/55">
                         Rate &middot; tenor
                       </p>
-                      <p className="mt-0.5 whitespace-nowrap text-[13.5px] font-bold text-foreground text-num">
+                      <p className="mt-1 whitespace-nowrap text-[13px] font-bold text-primary-foreground text-num">
                         {product.rate} &middot; {product.tenor}
                       </p>
                     </div>
                   </div>
+
+                  <p className="mt-3 flex items-start gap-1.5 border-t border-white/10 pt-2.5 text-[11px] text-primary-foreground/60">
+                    <Building2 className="mt-0.5 size-3.5 shrink-0" />
+                    {product.issuer} &middot; indicative until allotted. Paid at maturity to your wallet.
+                  </p>
                 </div>
-                <p className="flex items-start gap-1.5 border-t border-border/60 bg-muted/40 px-4 py-2.5 text-[11px] text-muted-foreground md:px-5">
-                  <Building2 className="mt-0.5 size-3.5 shrink-0" />
-                  {product.issuer} &middot; indicative until allotted. Paid at maturity to your wallet.
-                </p>
               </section>
             </Rise>
           </div>
