@@ -74,11 +74,17 @@ function CreatePlanAmountScreen() {
                 <ArrowLeft className="size-3.5" /> Fixed plans
               </Link>
               <span className="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
-                Up to {BEST_RATE}% p.a.
+                {band ? `${band.rate} p.a.` : `Up to ${BEST_RATE}% p.a.`}
               </span>
             </div>
 
-            <p className="mt-6 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+            {band && (
+              <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground">
+                {band.name} &middot; {band.days}
+              </p>
+            )}
+
+            <p className="mt-4 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
               How much do you want to lock in?
             </p>
 
