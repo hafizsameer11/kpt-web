@@ -383,11 +383,6 @@ function ProductDetailScreen() {
             </section>
           </Rise>
 
-          <p className="mt-4 flex items-start gap-2 text-[11px] leading-relaxed text-muted-foreground">
-            <Info className="mt-[1px] size-3.5 shrink-0" />
-            Offered by a third-party issuer and administered by Kipit's SEC-licensed partner.
-          </p>
-
           <DisclosureStrip variant="marketplace" />
 
           {/* Sticky CTA */}
