@@ -42,7 +42,154 @@ function InvestmentHistoryScreen() {
 
   return (
     <AppShell title="Investment history" navVariant="elevated">
-      <div className="pb-2">
+      {/* ── Desktop (md+) ───────────────────────────────────────── */}
+      <div className="hidden md:block">
+        <div className="mx-auto w-full max-w-[1080px] space-y-6 pb-10">
+          <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-8 text-primary-foreground shadow-float">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -right-24 -top-32 size-80 rounded-full bg-gold/15 blur-[70px]"
+            />
+            <div className="relative flex flex-wrap items-end justify-between gap-8">
+              <div>
+                <Link
+                  to="/portfolio"
+                  className="press inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[12px] font-bold hover:bg-white/15"
+                >
+                  <ArrowLeft className="size-4" /> Portfolio
+                </Link>
+                <p className="mt-6 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                  Interest earned all-time
+                </p>
+                <p className="mt-1 font-display text-[46px] font-extrabold leading-none tracking-[-0.035em] text-num">
+                  <AmountCounter value={interestTotal} hidden={hidden} mask={mask} />
+                </p>
+              </div>
+              <div className="flex gap-3">
+                {FILTERS.map((f) => {
+                  const count = INVESTMENT_HISTORY.filter((r) => r.status === f).length;
+                  const active = f === filter;
+                  return (
+                    <button
+                      key={f}
+                      type="button"
+                      onClick={() => setFilter(f)}
+                      className={`press rounded-xl px-5 py-3 text-left transition-colors ${
+                        active
+                          ? "bg-gold text-brand shadow-float"
+                          : "bg-white/10 text-primary-foreground hover:bg-white/15"
+                      }`}
+                    >
+                      <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] opacity-70">
+                        {f}
+                      </p>
+                      <p className="mt-0.5 font-display text-[20px] font-extrabold text-num">
+                        {count}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+
+          <section className="overflow-hidden rounded-2xl border border-border bg-card">
+            <div className="flex items-center justify-between border-b border-border px-6 py-4">
+              <h2 className="font-display text-[17px] font-extrabold">
+                {filter} investments
+              </h2>
+              <Link
+                to="/portfolio/transactions"
+                className="inline-flex items-center gap-1 text-[12px] font-bold text-brand hover:underline"
+              >
+                Transaction history <ChevronRight className="size-3.5" />
+              </Link>
+            </div>
+            {records.length > 0 ? (
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-border text-[10px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
+                    <th className="px-6 py-3">Investment</th>
+                    <th className="px-4 py-3">Rate</th>
+                    <th className="px-4 py-3">Principal</th>
+                    <th className="px-4 py-3">Interest</th>
+                    <th className="px-4 py-3">Period</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-6 py-3" aria-label="Open" />
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {records.map((r) => {
+                    const row = (
+                      <>
+                        <td className="px-6 py-4">
+                          <p className="text-[13.5px] font-extrabold">{r.name}</p>
+                          <p className="mt-0.5 text-[11px] text-muted-foreground">{r.kind}</p>
+                        </td>
+                        <td className="px-4 py-4 text-[12.5px] font-bold text-gold">{r.rate}</td>
+                        <td className="px-4 py-4 text-[13px] font-bold text-num">{mask(r.principal)}</td>
+                        <td className="px-4 py-4 text-[13px] font-extrabold text-gold text-num">
+                          {mask(r.interest)}
+                        </td>
+                        <td className="px-4 py-4 text-[11.5px] text-muted-foreground">
+                          {r.startDate} → {r.endDate}
+                        </td>
+                        <td className="px-4 py-4">
+                          <span
+                            className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] ${
+                              r.status === "Active"
+                                ? "bg-gold/15 text-gold"
+                                : r.status === "Matured"
+                                  ? "bg-brand/10 text-brand"
+                                  : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {r.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          {r.holdingId && (
+                            <ChevronRight className="ml-auto size-4 text-muted-foreground" />
+                          )}
+                        </td>
+                      </>
+                    );
+                    return (
+                      <tr key={r.id} className="transition-colors hover:bg-secondary/40">
+                        {r.holdingId ? (
+                          <td colSpan={7} className="p-0">
+                            <Link
+                              to="/portfolio/$holdingId"
+                              params={{ holdingId: r.holdingId }}
+                              className="block"
+                            >
+                              <table className="w-full">
+                                <tbody>
+                                  <tr className="grid grid-cols-[1.6fr_0.6fr_1fr_1fr_1.2fr_0.8fr_2rem] items-center">
+                                    {row.props ? row.props.children : row}
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </Link>
+                          </td>
+                        ) : (
+                          row
+                        )}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            ) : (
+              <p className="px-6 py-12 text-center text-[12.5px] text-muted-foreground">
+                No {filter.toLowerCase()} investments yet.
+              </p>
+            )}
+          </section>
+        </div>
+      </div>
+
+      <div className="pb-2 md:hidden">
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pt-8 md:shadow-float">
           <span
             aria-hidden
