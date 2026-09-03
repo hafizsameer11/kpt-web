@@ -414,20 +414,29 @@ function PlanOptionsScreen() {
 
           {/* CTA → MOB-075 Plan Review */}
           <div className="mt-5">
-            <button
-              type="button"
+            <Link
+              to="/fixed-plans/create/review"
+              search={{
+                amount,
+                days,
+                name: planName.trim(),
+                maturity,
+                auto: autoInvest && autoAmount ? `${naira(Number(autoAmount))} ${frequency.toLowerCase()} from ${startDate}` : "",
+                gift: forWhom === "gift" ? recipient.trim() : "",
+              }}
               disabled={!giftValid}
               className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
-                giftValid ? "k-glow" : "opacity-40 shadow-none"
+                giftValid ? "k-glow" : "pointer-events-none opacity-40 shadow-none"
               }`}
             >
               Review plan
               <ChevronDown className="size-4 rotate-[-90deg]" strokeWidth={2.6} />
-            </button>
+            </Link>
             <p className="mt-2.5 text-center text-[11.5px] text-muted-foreground md:text-left">
               Next: review the full summary and confirm your investment.
             </p>
           </div>
+
         </div>
       </div>
     </AppShell>
