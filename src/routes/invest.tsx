@@ -412,6 +412,67 @@ function DesktopInvest() {
             </div>
           </section>
 
+          {/* Active plans table */}
+          <section className="card-surface p-6">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-display text-base font-extrabold">Your active plans</h2>
+              <Link
+                to="/portfolio"
+                className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
+              >
+                Portfolio <ChevronRight className="size-3.5" />
+              </Link>
+            </div>
+            <table className="mt-4 w-full table-fixed text-left">
+              <thead>
+                <tr className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                  <th className="w-[38%] pb-2 font-bold">Plan</th>
+                  <th className="w-[16%] pb-2 font-bold">Rate</th>
+                  <th className="pb-2 font-bold">Progress</th>
+                  <th className="pb-2 text-right font-bold">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {HOLDINGS.map((h) => {
+                  const progress = Math.min(
+                    100,
+                    Math.max(6, Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)),
+                  );
+                  return (
+                    <tr key={h.name} className="border-t border-border/60">
+                      <td className="py-3.5 pr-4">
+                        <p className="text-sm font-bold">{h.name}</p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground">
+                          Matures {h.date}
+                        </p>
+                      </td>
+                      <td className="py-3.5 pr-4">
+                        <span className="inline-flex whitespace-nowrap rounded-full bg-accent/15 px-2 py-1 text-[11px] font-bold text-brand">
+                          {h.rate}
+                        </span>
+                      </td>
+                      <td className="w-[32%] py-3.5 pr-4">
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="k-fill h-full rounded-full bg-brand"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <div className="mt-1.5 flex items-center justify-between text-[10px] font-semibold text-muted-foreground">
+                          <span className="whitespace-nowrap">{progress}%</span>
+                          <span className="whitespace-nowrap">{h.daysLeft} days left</span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 text-right text-sm font-extrabold text-num">
+                        {mask(h.amount)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </section>
+
           {/* Fixed plans */}
           <section className="card-surface p-6">
             <div className="flex items-center justify-between gap-3">
@@ -498,67 +559,6 @@ function DesktopInvest() {
                 );
               })}
             </div>
-          </section>
-
-          {/* Active plans table */}
-          <section className="card-surface p-6">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="font-display text-base font-extrabold">Your active plans</h2>
-              <Link
-                to="/portfolio"
-                className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
-              >
-                Portfolio <ChevronRight className="size-3.5" />
-              </Link>
-            </div>
-            <table className="mt-4 w-full table-fixed text-left">
-              <thead>
-                <tr className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                  <th className="w-[38%] pb-2 font-bold">Plan</th>
-                  <th className="w-[16%] pb-2 font-bold">Rate</th>
-                  <th className="pb-2 font-bold">Progress</th>
-                  <th className="pb-2 text-right font-bold">Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {HOLDINGS.map((h) => {
-                  const progress = Math.min(
-                    100,
-                    Math.max(6, Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)),
-                  );
-                  return (
-                    <tr key={h.name} className="border-t border-border/60">
-                      <td className="py-3.5 pr-4">
-                        <p className="text-sm font-bold">{h.name}</p>
-                        <p className="mt-0.5 text-[11px] text-muted-foreground">
-                          Matures {h.date}
-                        </p>
-                      </td>
-                      <td className="py-3.5 pr-4">
-                        <span className="inline-flex whitespace-nowrap rounded-full bg-accent/15 px-2 py-1 text-[11px] font-bold text-brand">
-                          {h.rate}
-                        </span>
-                      </td>
-                      <td className="w-[32%] py-3.5 pr-4">
-                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                          <div
-                            className="k-fill h-full rounded-full bg-brand"
-                            style={{ width: `${progress}%` }}
-                          />
-                        </div>
-                        <div className="mt-1.5 flex items-center justify-between text-[10px] font-semibold text-muted-foreground">
-                          <span className="whitespace-nowrap">{progress}%</span>
-                          <span className="whitespace-nowrap">{h.daysLeft} days left</span>
-                        </div>
-                      </td>
-                      <td className="py-3.5 text-right text-sm font-extrabold text-num">
-                        {mask(h.amount)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
           </section>
         </div>
 
