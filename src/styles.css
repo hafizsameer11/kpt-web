@@ -397,3 +397,37 @@
   border: 1px solid color-mix(in oklch, white 60%, transparent);
   box-shadow: 0 24px 50px -34px oklch(0.24 0.07 254 / 0.5);
 }
+
+/* Success — payment-complete pop + check draw */
+@keyframes k-success-pop {
+  0% { transform: scale(0.3); opacity: 0; }
+  55% { transform: scale(1.12); opacity: 1; }
+  75% { transform: scale(0.96); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.k-success-pop { animation: k-success-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both; }
+
+@keyframes k-success-ring {
+  0% { transform: scale(0.6); opacity: 0.7; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+.k-success-ring { animation: k-success-ring 1s ease-out 0.35s both; }
+
+@keyframes k-success-check {
+  from { stroke-dashoffset: 26; }
+  to { stroke-dashoffset: 0; }
+}
+.k-success-check {
+  stroke-dasharray: 26;
+  animation: k-success-check 0.4s ease-out 0.55s both;
+}
+
+@keyframes k-success-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.k-success-fade { animation: k-success-fade 0.5s ease-out 0.7s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .k-success-pop, .k-success-ring, .k-success-check, .k-success-fade { animation: none; }
+}
