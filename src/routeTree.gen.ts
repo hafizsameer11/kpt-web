@@ -61,8 +61,12 @@ import { Route as VerificationBvnRouteImport } from './routes/verification_/bvn'
 import { Route as VerificationBvnFailedRouteImport } from './routes/verification_/bvn-failed'
 import { Route as VerificationBvnMatchRouteImport } from './routes/verification_/bvn-match'
 import { Route as VerificationBvnProcessingRouteImport } from './routes/verification_/bvn-processing'
+import { Route as VerificationLivenessRouteImport } from './routes/verification_/liveness'
+import { Route as VerificationNinRouteImport } from './routes/verification_/nin'
+import { Route as VerificationSelfieRouteImport } from './routes/verification_/selfie'
 import { Route as VerificationTier1RouteImport } from './routes/verification_/tier1'
 import { Route as VerificationTier1VerifiedRouteImport } from './routes/verification_/tier1-verified'
+import { Route as VerificationTier2RouteImport } from './routes/verification_/tier2'
 import { Route as WalletAddMoneyRouteImport } from './routes/wallet_/add-money'
 import { Route as WalletCardRouteImport } from './routes/wallet_/card'
 import { Route as WalletFailedRouteImport } from './routes/wallet_/failed'
@@ -360,6 +364,21 @@ const VerificationBvnProcessingRoute =
     path: '/verification/bvn-processing',
     getParentRoute: () => rootRouteImport,
   } as any)
+const VerificationLivenessRoute = VerificationLivenessRouteImport.update({
+  id: '/verification_/liveness',
+  path: '/verification/liveness',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationNinRoute = VerificationNinRouteImport.update({
+  id: '/verification_/nin',
+  path: '/verification/nin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationSelfieRoute = VerificationSelfieRouteImport.update({
+  id: '/verification_/selfie',
+  path: '/verification/selfie',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VerificationTier1Route = VerificationTier1RouteImport.update({
   id: '/verification_/tier1',
   path: '/verification/tier1',
@@ -371,6 +390,11 @@ const VerificationTier1VerifiedRoute =
     path: '/verification/tier1-verified',
     getParentRoute: () => rootRouteImport,
   } as any)
+const VerificationTier2Route = VerificationTier2RouteImport.update({
+  id: '/verification_/tier2',
+  path: '/verification/tier2',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WalletAddMoneyRoute = WalletAddMoneyRouteImport.update({
   id: '/wallet_/add-money',
   path: '/wallet/add-money',
@@ -611,8 +635,12 @@ export interface FileRoutesByFullPath {
   '/verification/bvn-failed': typeof VerificationBvnFailedRoute
   '/verification/bvn-match': typeof VerificationBvnMatchRoute
   '/verification/bvn-processing': typeof VerificationBvnProcessingRoute
+  '/verification/liveness': typeof VerificationLivenessRoute
+  '/verification/nin': typeof VerificationNinRoute
+  '/verification/selfie': typeof VerificationSelfieRoute
   '/verification/tier1': typeof VerificationTier1Route
   '/verification/tier1-verified': typeof VerificationTier1VerifiedRoute
+  '/verification/tier2': typeof VerificationTier2Route
   '/wallet/add-money': typeof WalletAddMoneyRoute
   '/wallet/card': typeof WalletCardRoute
   '/wallet/failed': typeof WalletFailedRoute
@@ -701,8 +729,12 @@ export interface FileRoutesByTo {
   '/verification/bvn-failed': typeof VerificationBvnFailedRoute
   '/verification/bvn-match': typeof VerificationBvnMatchRoute
   '/verification/bvn-processing': typeof VerificationBvnProcessingRoute
+  '/verification/liveness': typeof VerificationLivenessRoute
+  '/verification/nin': typeof VerificationNinRoute
+  '/verification/selfie': typeof VerificationSelfieRoute
   '/verification/tier1': typeof VerificationTier1Route
   '/verification/tier1-verified': typeof VerificationTier1VerifiedRoute
+  '/verification/tier2': typeof VerificationTier2Route
   '/wallet/add-money': typeof WalletAddMoneyRoute
   '/wallet/card': typeof WalletCardRoute
   '/wallet/failed': typeof WalletFailedRoute
@@ -793,8 +825,12 @@ export interface FileRoutesById {
   '/verification_/bvn-failed': typeof VerificationBvnFailedRoute
   '/verification_/bvn-match': typeof VerificationBvnMatchRoute
   '/verification_/bvn-processing': typeof VerificationBvnProcessingRoute
+  '/verification_/liveness': typeof VerificationLivenessRoute
+  '/verification_/nin': typeof VerificationNinRoute
+  '/verification_/selfie': typeof VerificationSelfieRoute
   '/verification_/tier1': typeof VerificationTier1Route
   '/verification_/tier1-verified': typeof VerificationTier1VerifiedRoute
+  '/verification_/tier2': typeof VerificationTier2Route
   '/wallet_/add-money': typeof WalletAddMoneyRoute
   '/wallet_/card': typeof WalletCardRoute
   '/wallet_/failed': typeof WalletFailedRoute
@@ -886,8 +922,12 @@ export interface FileRouteTypes {
     | '/verification/bvn-failed'
     | '/verification/bvn-match'
     | '/verification/bvn-processing'
+    | '/verification/liveness'
+    | '/verification/nin'
+    | '/verification/selfie'
     | '/verification/tier1'
     | '/verification/tier1-verified'
+    | '/verification/tier2'
     | '/wallet/add-money'
     | '/wallet/card'
     | '/wallet/failed'
@@ -976,8 +1016,12 @@ export interface FileRouteTypes {
     | '/verification/bvn-failed'
     | '/verification/bvn-match'
     | '/verification/bvn-processing'
+    | '/verification/liveness'
+    | '/verification/nin'
+    | '/verification/selfie'
     | '/verification/tier1'
     | '/verification/tier1-verified'
+    | '/verification/tier2'
     | '/wallet/add-money'
     | '/wallet/card'
     | '/wallet/failed'
@@ -1067,8 +1111,12 @@ export interface FileRouteTypes {
     | '/verification_/bvn-failed'
     | '/verification_/bvn-match'
     | '/verification_/bvn-processing'
+    | '/verification_/liveness'
+    | '/verification_/nin'
+    | '/verification_/selfie'
     | '/verification_/tier1'
     | '/verification_/tier1-verified'
+    | '/verification_/tier2'
     | '/wallet_/add-money'
     | '/wallet_/card'
     | '/wallet_/failed'
@@ -1159,8 +1207,12 @@ export interface RootRouteChildren {
   VerificationBvnFailedRoute: typeof VerificationBvnFailedRoute
   VerificationBvnMatchRoute: typeof VerificationBvnMatchRoute
   VerificationBvnProcessingRoute: typeof VerificationBvnProcessingRoute
+  VerificationLivenessRoute: typeof VerificationLivenessRoute
+  VerificationNinRoute: typeof VerificationNinRoute
+  VerificationSelfieRoute: typeof VerificationSelfieRoute
   VerificationTier1Route: typeof VerificationTier1Route
   VerificationTier1VerifiedRoute: typeof VerificationTier1VerifiedRoute
+  VerificationTier2Route: typeof VerificationTier2Route
   WalletAddMoneyRoute: typeof WalletAddMoneyRoute
   WalletCardRoute: typeof WalletCardRoute
   WalletFailedRoute: typeof WalletFailedRoute
@@ -1558,6 +1610,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerificationBvnProcessingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/verification_/liveness': {
+      id: '/verification_/liveness'
+      path: '/verification/liveness'
+      fullPath: '/verification/liveness'
+      preLoaderRoute: typeof VerificationLivenessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification_/nin': {
+      id: '/verification_/nin'
+      path: '/verification/nin'
+      fullPath: '/verification/nin'
+      preLoaderRoute: typeof VerificationNinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification_/selfie': {
+      id: '/verification_/selfie'
+      path: '/verification/selfie'
+      fullPath: '/verification/selfie'
+      preLoaderRoute: typeof VerificationSelfieRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/verification_/tier1': {
       id: '/verification_/tier1'
       path: '/verification/tier1'
@@ -1570,6 +1643,13 @@ declare module '@tanstack/react-router' {
       path: '/verification/tier1-verified'
       fullPath: '/verification/tier1-verified'
       preLoaderRoute: typeof VerificationTier1VerifiedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification_/tier2': {
+      id: '/verification_/tier2'
+      path: '/verification/tier2'
+      fullPath: '/verification/tier2'
+      preLoaderRoute: typeof VerificationTier2RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/wallet_/add-money': {
@@ -1894,8 +1974,12 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationBvnFailedRoute: VerificationBvnFailedRoute,
   VerificationBvnMatchRoute: VerificationBvnMatchRoute,
   VerificationBvnProcessingRoute: VerificationBvnProcessingRoute,
+  VerificationLivenessRoute: VerificationLivenessRoute,
+  VerificationNinRoute: VerificationNinRoute,
+  VerificationSelfieRoute: VerificationSelfieRoute,
   VerificationTier1Route: VerificationTier1Route,
   VerificationTier1VerifiedRoute: VerificationTier1VerifiedRoute,
+  VerificationTier2Route: VerificationTier2Route,
   WalletAddMoneyRoute: WalletAddMoneyRoute,
   WalletCardRoute: WalletCardRoute,
   WalletFailedRoute: WalletFailedRoute,
