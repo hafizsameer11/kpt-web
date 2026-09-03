@@ -20,6 +20,8 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
+import { Route as FixedPlansCreateRouteImport } from './routes/fixed-plans_.create'
+import { Route as FixedPlansCreateTenorRouteImport } from './routes/fixed-plans_.create.tenor'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -76,6 +78,16 @@ const CallAccountSuccessRoute = CallAccountSuccessRouteImport.update({
   path: '/call-account/success',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FixedPlansCreateRoute = FixedPlansCreateRouteImport.update({
+  id: '/fixed-plans_/create',
+  path: '/fixed-plans/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FixedPlansCreateTenorRoute = FixedPlansCreateTenorRouteImport.update({
+  id: '/tenor',
+  path: '/tenor',
+  getParentRoute: () => FixedPlansCreateRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +101,8 @@ export interface FileRoutesByFullPath {
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
+  '/fixed-plans/create': typeof FixedPlansCreateRouteWithChildren
+  '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +116,8 @@ export interface FileRoutesByTo {
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
+  '/fixed-plans/create': typeof FixedPlansCreateRouteWithChildren
+  '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +132,8 @@ export interface FileRoutesById {
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
   '/call-account_/review': typeof CallAccountReviewRoute
   '/call-account_/success': typeof CallAccountSuccessRoute
+  '/fixed-plans_/create': typeof FixedPlansCreateRouteWithChildren
+  '/fixed-plans_/create/tenor': typeof FixedPlansCreateTenorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +149,8 @@ export interface FileRouteTypes {
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
+    | '/fixed-plans/create'
+    | '/fixed-plans/create/tenor'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +164,8 @@ export interface FileRouteTypes {
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
+    | '/fixed-plans/create'
+    | '/fixed-plans/create/tenor'
   id:
     | '__root__'
     | '/'
@@ -157,6 +179,8 @@ export interface FileRouteTypes {
     | '/call-account_/add-money'
     | '/call-account_/review'
     | '/call-account_/success'
+    | '/fixed-plans_/create'
+    | '/fixed-plans_/create/tenor'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +195,7 @@ export interface RootRouteChildren {
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
   CallAccountReviewRoute: typeof CallAccountReviewRoute
   CallAccountSuccessRoute: typeof CallAccountSuccessRoute
+  FixedPlansCreateRoute: typeof FixedPlansCreateRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -252,8 +277,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CallAccountSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fixed-plans_/create': {
+      id: '/fixed-plans_/create'
+      path: '/fixed-plans/create'
+      fullPath: '/fixed-plans/create'
+      preLoaderRoute: typeof FixedPlansCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fixed-plans_/create/tenor': {
+      id: '/fixed-plans_/create/tenor'
+      path: '/tenor'
+      fullPath: '/fixed-plans/create/tenor'
+      preLoaderRoute: typeof FixedPlansCreateTenorRouteImport
+      parentRoute: typeof FixedPlansCreateRoute
+    }
   }
 }
+
+interface FixedPlansCreateRouteChildren {
+  FixedPlansCreateTenorRoute: typeof FixedPlansCreateTenorRoute
+}
+
+const FixedPlansCreateRouteChildren: FixedPlansCreateRouteChildren = {
+  FixedPlansCreateTenorRoute: FixedPlansCreateTenorRoute,
+}
+
+const FixedPlansCreateRouteWithChildren =
+  FixedPlansCreateRoute._addFileChildren(FixedPlansCreateRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -267,6 +317,7 @@ const rootRouteChildren: RootRouteChildren = {
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
   CallAccountReviewRoute: CallAccountReviewRoute,
   CallAccountSuccessRoute: CallAccountSuccessRoute,
+  FixedPlansCreateRoute: FixedPlansCreateRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
