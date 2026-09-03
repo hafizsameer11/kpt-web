@@ -254,9 +254,35 @@ function PlanOptionsScreen() {
                         </button>
                       ))}
                     </div>
-                    <p className="text-[11px] text-muted-foreground">
-                      Starts today · funded from your wallet ({naira(WALLET)} available).
-                    </p>
+                    <label className="block">
+                      <span className="text-[12px] font-semibold text-foreground">Start date</span>
+                      <input
+                        type="date"
+                        value={startDate}
+                        min={todayISO}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="mt-1.5 w-full rounded-2xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium text-foreground outline-none transition-colors focus:border-gold/60"
+                      />
+                    </label>
+                    <div className="flex items-center gap-3 rounded-2xl border border-border/70 bg-background px-3.5 py-3">
+                      <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-gold/15 text-gold">
+                        <Wallet className="size-4" strokeWidth={2.4} />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[12.5px] font-bold text-foreground">
+                          Kipit Wallet
+                        </span>
+                        <span className="block text-[11px] text-muted-foreground">
+                          Funding source · {naira(WALLET)} available
+                        </span>
+                      </span>
+                      <Check className="size-4 shrink-0 text-gold" strokeWidth={3} />
+                    </div>
+                    {autoAmount && Number(autoAmount) > WALLET && (
+                      <p className="k-shake rounded-2xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
+                        Auto-invest amount is above your wallet balance of {naira(WALLET)}.
+                      </p>
+                    )}
                   </div>
                 )}
               </section>
