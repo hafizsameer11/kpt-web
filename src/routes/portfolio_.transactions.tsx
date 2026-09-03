@@ -352,7 +352,7 @@ function FilterPanel({
                 {p}
                 {period === p && (
                   <span className="grid size-5 place-items-center rounded-full bg-brand text-primary-foreground">
-                    <ChevronRight className="size-3.5 -rotate-90" />
+                    <Check className="size-3.5" strokeWidth={2.6} />
                   </span>
                 )}
               </button>
