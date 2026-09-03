@@ -341,10 +341,12 @@ function PortfolioScreen() {
                     </div>
                   </div>
                 </section>
-              </li>
+              </div>
+            </div>
 
-
+            <ul className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0 lg:hidden">
               {/* Fixed plans */}
+
               {HOLDINGS.map((h, i) => {
                 const progress = Math.min(
                   100,
