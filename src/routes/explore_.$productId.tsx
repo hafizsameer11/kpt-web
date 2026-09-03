@@ -5,7 +5,6 @@ import {
   Download,
   Clock3,
   FileText,
-  Info,
   Minus,
   Plus,
   ShieldCheck,
