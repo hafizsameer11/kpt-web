@@ -81,7 +81,7 @@ function CreatePlanTenorScreen() {
     <AppShell title="Choose Tenor" navVariant="elevated">
       <div className="pb-2">
         {/* ── Hero summary ───────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-14 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
@@ -113,7 +113,7 @@ function CreatePlanTenorScreen() {
           />
 
           {/* Tenor options (MOB-067) — sleek app-style selector list */}
-          <div className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-card">
+          <div className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-card">
             {TENOR_BANDS.map((b, i) => {
               const active = selected === b.days;
               const unaffordable = amount < b.minimum;
@@ -188,7 +188,7 @@ function CreatePlanTenorScreen() {
           <Rise delay={TENOR_BANDS.length * 60} className="mt-3">
             <section
               aria-label="Custom tenor"
-              className={`relative overflow-hidden rounded-3xl border transition-all duration-200 ${
+              className={`relative overflow-hidden rounded-2xl border transition-all duration-200 ${
                 selected === "custom"
                   ? "border-gold/50 bg-primary text-primary-foreground shadow-float"
                   : "border-border/60 bg-card shadow-card"

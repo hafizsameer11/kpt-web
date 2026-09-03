@@ -63,7 +63,7 @@ function FixedPlansScreen() {
     <AppShell title="Fixed plans" navVariant="elevated">
       <div className="pb-2">
         {/* ── Hero ──────────────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-14 md:pt-12 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
@@ -85,7 +85,7 @@ function FixedPlansScreen() {
             </p>
 
             <section
-              className="k-rise mt-6 rounded-[1.75rem] border border-white/12 bg-white/8 p-5 backdrop-blur-md md:p-6"
+              className="k-rise mt-6 rounded-2xl border border-white/12 bg-white/8 p-5 backdrop-blur-md md:p-6"
               style={{ ["--d" as string]: "120ms" }}
             >
               <p className="text-[13px] text-primary-foreground/70">Total in fixed plans</p>
@@ -193,7 +193,7 @@ function FixedPlansScreen() {
                   <article
                     key={band.days}
                     style={{ ["--d" as string]: `${i * 90}ms` }}
-                    className={`k-rise relative flex flex-col justify-between overflow-hidden rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-5 ${
+                    className={`k-rise relative flex flex-col justify-between overflow-hidden rounded-2xl p-4 md:rounded-2xl md:p-5 ${
                       featured
                         ? "bg-brand-gradient text-primary-foreground shadow-float"
                         : "border border-border bg-card"
@@ -300,7 +300,7 @@ function FixedPlansScreen() {
 
             {tab === "active" ? (
               HOLDINGS.length === 0 ? (
-                <div className="k-rise rounded-3xl border border-dashed border-border bg-card p-6 text-center">
+                <div className="k-rise rounded-2xl border border-dashed border-border bg-card p-6 text-center">
                   <p className="text-sm font-bold">No fixed plans yet</p>
                   <p className="mt-1 text-[12px] text-muted-foreground">
                     Pick a tenor above to start your first plan.

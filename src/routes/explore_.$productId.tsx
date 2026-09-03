@@ -99,7 +99,7 @@ function ProductDetailScreen() {
     <AppShell title="Product" navVariant="elevated">
       <div className="pb-2">
         {/* ── Hero ─────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-14 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-28 size-72 rounded-full bg-gold/20 blur-[64px]"
@@ -284,7 +284,7 @@ function ProductDetailScreen() {
 
           {/* Risks */}
           <Rise delay={140}>
-            <section className="mt-4 overflow-hidden rounded-[1.5rem] bg-brand-gradient p-4 text-primary-foreground shadow-float">
+            <section className="mt-4 overflow-hidden rounded-2xl bg-brand-gradient p-4 text-primary-foreground shadow-float">
               <div className="flex items-center gap-2.5">
                 <span className="grid size-9 place-items-center rounded-2xl bg-gold/15 text-gold">
                   <ShieldCheck className="size-4.5" />
