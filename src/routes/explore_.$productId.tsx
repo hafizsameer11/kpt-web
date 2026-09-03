@@ -10,6 +10,7 @@ import {
   Plus,
   ShieldCheck,
   Wallet,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
@@ -347,29 +348,37 @@ function ProductDetailScreen() {
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Questions
               </p>
-              <div className="mt-2.5 divide-y divide-border rounded-xl border border-border bg-card">
-                {detail.faqs.map((f, i) => (
-                  <div key={f.q}>
-                    <button
-                      type="button"
-                      onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                      className="flex w-full items-center justify-between gap-3 px-3.5 py-3 text-left"
-                      aria-expanded={openFaq === i}
+              <div className="mt-3 overflow-hidden rounded-xl border border-border bg-card">
+                {detail.faqs.map((f, i) => {
+                  const isOpen = openFaq === i;
+                  return (
+                    <div
+                      key={f.q}
+                      className={`${i !== 0 ? "border-t border-border" : ""}`}
                     >
-                      <span className="text-[12.5px] font-bold">{f.q}</span>
-                      <Plus
-                        className={`size-4 shrink-0 text-muted-foreground transition-transform duration-300 ${
-                          openFaq === i ? "rotate-45" : ""
-                        }`}
-                      />
-                    </button>
-                    {openFaq === i && (
-                      <p className="k-rise px-3.5 pb-3.5 text-[12px] leading-relaxed text-muted-foreground">
-                        {f.a}
-                      </p>
-                    )}
-                  </div>
-                ))}
+                      <button
+                        type="button"
+                        onClick={() => setOpenFaq(isOpen ? null : i)}
+                        className="flex w-full items-center justify-between gap-4 px-4 py-4 text-left"
+                        aria-expanded={isOpen}
+                      >
+                        <span className="text-[13.5px] font-bold leading-snug text-foreground">
+                          {f.q}
+                        </span>
+                        {isOpen ? (
+                          <X className="size-5 shrink-0 text-muted-foreground" />
+                        ) : (
+                          <Plus className="size-5 shrink-0 text-muted-foreground" />
+                        )}
+                      </button>
+                      {isOpen && (
+                        <p className="k-rise px-4 pb-4 text-[13px] leading-relaxed text-muted-foreground">
+                          {f.a}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </section>
           </Rise>
