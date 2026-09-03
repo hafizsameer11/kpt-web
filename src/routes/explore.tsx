@@ -1,5 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ComingSoon } from "@/components/kipit/ComingSoon";
+import {
+  Building2,
+  Clock3,
+  Landmark,
+  Layers,
+  LineChart,
+  Search,
+  ShieldCheck,
+  X,
+} from "lucide-react";
+import { useMemo, useState } from "react";
+import { AppShell } from "@/components/kipit/AppShell";
+import { Rise } from "@/components/kipit/motion";
+import { naira } from "@/lib/home-data";
+import {
+  AVAILABILITY_LABEL,
+  EXPLORE_CATEGORIES,
+  EXPLORE_COMING_SOON,
+  EXPLORE_PRODUCTS,
+  type ExploreProduct,
+} from "@/lib/explore-data";
 
 export const Route = createFileRoute("/explore")({
   head: () => ({
@@ -7,11 +27,340 @@ export const Route = createFileRoute("/explore")({
       { title: "Explore — Kipit Investment Marketplace" },
       {
         name: "description",
-        content: "Discover partner investment opportunities in the Kipit marketplace, with rate, tenor and minimums shown together.",
+        content:
+          "Browse treasury bills, commercial papers, structured notes and managed portfolios, each with its rate, tenor and minimum investment shown together.",
       },
       { property: "og:title", content: "Explore — Kipit Investment Marketplace" },
-      { property: "og:description", content: "Discover partner investment opportunities in the Kipit marketplace." },
+      {
+        property: "og:description",
+        content:
+          "Discover partner investment opportunities on Kipit with transparent rate, tenor, minimum and availability.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: () => <ComingSoon screen="MOB-080" title="Explore" />,
+  component: ExploreScreen,
 });
+
+const CATEGORY_ICON = {
+  tbills: Landmark,
+  cp: Building2,
+  notes: Layers,
+  portfolios: LineChart,
+} as const;
+
+function ExploreScreen() {
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState<string | null>(null);
+
+  const featured = EXPLORE_PRODUCTS.filter((p) => p.featured);
+
+  const results = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return EXPLORE_PRODUCTS.filter((p) => {
+      const inCategory = !category || p.categoryId === category;
+      const inQuery =
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        p.issuer.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q);
+      return inCategory && inQuery;
+    });
+  }, [query, category]);
+
+  const activeCategory = EXPLORE_CATEGORIES.find((c) => c.id === category);
+
+  return (
+    <AppShell title="Explore" navVariant="elevated">
+      <div className="pb-2">
+        {/* ── Hero ─────────────────────────────────────────────── */}
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-14 md:pt-12 md:shadow-float">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -bottom-28 -left-20 size-64 rounded-full bg-white/10 blur-[56px]"
+          />
+
+          <div className="relative md:max-w-3xl">
+            <h1 className="font-display text-[32px] font-extrabold leading-[1.05] tracking-[-0.035em] md:text-[40px]">
+              Explore
+            </h1>
+            <p className="mt-2 text-[13px] leading-relaxed text-primary-foreground/70 md:text-sm">
+              Partner opportunities beyond Kipit&rsquo;s own plans
+            </p>
+
+            {/* Search */}
+            <div className="mt-6 flex items-center gap-2.5 rounded-2xl border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-md">
+              <Search className="size-4 shrink-0 text-primary-foreground/70" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search products or issuers"
+                aria-label="Search marketplace products"
+                className="min-w-0 flex-1 bg-transparent text-[13.5px] font-semibold text-primary-foreground outline-none placeholder:font-medium placeholder:text-primary-foreground/50"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  aria-label="Clear search"
+                  className="rounded-full bg-white/15 p-1 press"
+                >
+                  <X className="size-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Sheet ────────────────────────────────────────────── */}
+        <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
+          <span
+            aria-hidden
+            className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
+          />
+
+          {/* Categories */}
+          <Rise>
+            <section>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Categories
+              </p>
+              <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0">
+                {EXPLORE_CATEGORIES.map((c) => {
+                  const Icon = CATEGORY_ICON[c.id as keyof typeof CATEGORY_ICON];
+                  const active = category === c.id;
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setCategory(active ? null : c.id)}
+                      aria-pressed={active}
+                      className={`min-w-[9.5rem] shrink-0 snap-start rounded-2xl border p-3.5 text-left press md:min-w-0 ${
+                        active
+                          ? "border-transparent bg-brand-gradient text-primary-foreground shadow-float"
+                          : "border-border bg-card text-foreground"
+                      }`}
+                    >
+                      <span
+                        className={`inline-flex size-8 items-center justify-center rounded-xl ${
+                          active ? "bg-white/15 text-gold" : "bg-muted text-foreground"
+                        }`}
+                      >
+                        <Icon className="size-4" />
+                      </span>
+                      <p className="mt-2.5 text-[12.5px] font-extrabold leading-tight">
+                        {c.name}
+                      </p>
+                      <p
+                        className={`mt-0.5 text-[11px] ${
+                          active
+                            ? "text-primary-foreground/70"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {c.count} products
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          </Rise>
+
+          {/* Featured */}
+          {!category && !query && (
+            <Rise delay={60}>
+              <section className="mt-6">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Featured this week
+                </p>
+                <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0">
+                  {featured.map((p) => (
+                    <article
+                      key={p.id}
+                      className="relative w-[85%] shrink-0 snap-start overflow-hidden rounded-[1.6rem] bg-brand-gradient p-5 text-primary-foreground shadow-float md:w-auto"
+                    >
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute -right-10 -top-16 size-40 rounded-full bg-gold/20 blur-[48px]"
+                      />
+                      <div className="relative">
+                        <div className="flex items-start justify-between gap-3">
+                          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary-foreground/60">
+                            {p.category}
+                          </p>
+                          <span className="shrink-0 rounded-full bg-gold-gradient px-2.5 py-1 text-[11px] font-extrabold text-gold-foreground">
+                            {p.rate}
+                          </span>
+                        </div>
+                        <h3 className="mt-3 font-display text-[19px] font-extrabold leading-tight tracking-[-0.02em]">
+                          {p.name}
+                        </h3>
+                        <p className="mt-1 text-[11.5px] text-primary-foreground/65">
+                          {p.issuer}
+                        </p>
+                        <div className="mt-4 flex items-center gap-4 text-[11.5px] text-primary-foreground/75">
+                          <span>{p.tenor}</span>
+                          <span className="h-3 w-px bg-white/20" />
+                          <span>Min {naira(p.minimum)}</span>
+                        </div>
+                        <p className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-semibold text-gold">
+                          <Clock3 className="size-3.5" /> {p.closes}
+                        </p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            </Rise>
+          )}
+
+          {/* Product list */}
+          <Rise delay={120}>
+            <section className="mt-6">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  {activeCategory ? activeCategory.name : "All products"}
+                </p>
+                {(category || query) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCategory(null);
+                      setQuery("");
+                    }}
+                    className="text-[11.5px] font-bold text-foreground underline-offset-4 hover:underline"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+
+              {results.length === 0 ? (
+                <div className="mt-3 rounded-2xl border border-dashed border-border p-6 text-center">
+                  <p className="text-[13px] font-bold">No matching products</p>
+                  <p className="mt-1 text-[12px] text-muted-foreground">
+                    Try a different search or category.
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-3 space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
+                  {results.map((p) => (
+                    <ProductCard key={p.id} product={p} />
+                  ))}
+                </div>
+              )}
+            </section>
+          </Rise>
+
+          {/* Coming soon */}
+          <Rise delay={180}>
+            <section className="mt-6">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Coming soon
+              </p>
+              <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+                {EXPLORE_COMING_SOON.map((c) => (
+                  <article
+                    key={c.name}
+                    className="min-w-[13rem] shrink-0 snap-start rounded-2xl border border-dashed border-border bg-card p-4 md:min-w-0"
+                  >
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.12em] text-muted-foreground">
+                      Soon
+                    </span>
+                    <p className="mt-2.5 text-[13px] font-extrabold">{c.name}</p>
+                    <p className="mt-1 text-[11.5px] leading-relaxed text-muted-foreground">
+                      {c.note}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          </Rise>
+
+          <p className="mt-6 flex items-start gap-2 text-[11px] leading-relaxed text-muted-foreground">
+            <ShieldCheck className="mt-px size-3.5 shrink-0" />
+            Marketplace products are offered by third-party issuers through
+            Kipit&rsquo;s SEC-licensed partner. Rates are indicative and subject to
+            availability at the time of subscription.
+          </p>
+        </div>
+      </div>
+    </AppShell>
+  );
+}
+
+function ProductCard({ product: p }: { product: ExploreProduct }) {
+  const tone =
+    p.availability === "open"
+      ? "bg-emerald-500/10 text-emerald-600"
+      : p.availability === "closing"
+        ? "bg-gold/15 text-gold"
+        : "bg-muted text-muted-foreground";
+
+  return (
+    <article className="card-surface p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+            {p.category}
+          </p>
+          <h3 className="mt-1 truncate text-[14px] font-extrabold leading-tight">
+            {p.name}
+          </h3>
+          <p className="mt-0.5 truncate text-[11.5px] text-muted-foreground">
+            {p.issuer}
+          </p>
+        </div>
+        <span
+          className={`shrink-0 rounded-full px-2.5 py-1 text-[10.5px] font-extrabold ${tone}`}
+        >
+          {AVAILABILITY_LABEL[p.availability]}
+        </span>
+      </div>
+
+      <div className="mt-3.5 flex divide-x divide-border rounded-xl bg-muted/50 py-2.5">
+        <Stat label="Rate" value={p.rate} accent />
+        <Stat label="Tenor" value={p.tenor} />
+        <Stat label="Minimum" value={naira(p.minimum)} />
+      </div>
+
+      <p className="mt-3 text-[11.5px] leading-relaxed text-muted-foreground">
+        {p.blurb}
+      </p>
+      <p className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
+        <Clock3 className="size-3.5" /> {p.closes}
+      </p>
+    </article>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+}) {
+  return (
+    <div className="flex-1 px-2.5 text-center">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+        {label}
+      </p>
+      <p
+        className={`mt-0.5 text-[12.5px] font-extrabold leading-tight ${
+          accent ? "text-gold" : "text-foreground"
+        }`}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
