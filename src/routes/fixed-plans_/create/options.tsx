@@ -185,7 +185,7 @@ function PlanOptionsScreen() {
                       <span className="text-[13px] font-bold text-muted-foreground">₦</span>
                       <input
                         inputMode="numeric"
-                        value={target}
+                        value={target ? Number(target).toLocaleString("en-NG") : ""}
                         onChange={(e) => setTarget(e.target.value.replace(/[^0-9]/g, ""))}
                         placeholder="5,000,000"
                         className="w-full bg-transparent text-[13.5px] font-medium text-num outline-none placeholder:text-muted-foreground/50"
@@ -232,7 +232,7 @@ function PlanOptionsScreen() {
                         <span className="text-[13px] font-bold text-muted-foreground">₦</span>
                         <input
                           inputMode="numeric"
-                          value={autoAmount}
+                          value={autoAmount ? Number(autoAmount).toLocaleString("en-NG") : ""}
                           onChange={(e) => setAutoAmount(e.target.value.replace(/[^0-9]/g, ""))}
                           placeholder="50,000"
                           className="w-full bg-transparent text-[13.5px] font-medium text-num outline-none placeholder:text-muted-foreground/50"
