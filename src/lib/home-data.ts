@@ -40,6 +40,8 @@ export const HOLDINGS = [
     date: "24 Sep 2026",
     daysLeft: 22,
     totalDays: 90,
+    expectedPayout: 785_500,
+    autoRenew: true,
   },
   {
     name: "Kipit Target Savings",
@@ -48,6 +50,8 @@ export const HOLDINGS = [
     date: "12 Dec 2026",
     daysLeft: 101,
     totalDays: 180,
+    expectedPayout: 971_000,
+    autoRenew: false,
   },
   {
     name: "Kipit Vault (365d)",
@@ -56,8 +60,11 @@ export const HOLDINGS = [
     date: "03 Jun 2027",
     daysLeft: 274,
     totalDays: 365,
+    expectedPayout: 972_000,
+    autoRenew: false,
   },
 ];
+
 
 /** Upcoming interest / maturity payouts. */
 export const PAYOUTS = [
