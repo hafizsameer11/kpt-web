@@ -23,6 +23,9 @@ import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.s
 import { Route as ExploreProductIdRouteImport } from './routes/explore_.$productId'
 import { Route as FixedPlansCreateRouteImport } from './routes/fixed-plans_/create'
 import { Route as PortfolioHoldingIdRouteImport } from './routes/portfolio_.$holdingId'
+import { Route as PortfolioHistoryRouteImport } from './routes/portfolio_.history'
+import { Route as PortfolioMaturitiesRouteImport } from './routes/portfolio_.maturities'
+import { Route as PortfolioTransactionsRouteImport } from './routes/portfolio_.transactions'
 import { Route as ExploreProductIdProcessingRouteImport } from './routes/explore_.$productId_.processing'
 import { Route as ExploreProductIdRequestRouteImport } from './routes/explore_.$productId_.request'
 import { Route as ExploreProductIdRequestSubmittedRouteImport } from './routes/explore_.$productId_.request-submitted'
@@ -36,6 +39,8 @@ import { Route as FixedPlansCreateProcessingRouteImport } from './routes/fixed-p
 import { Route as FixedPlansCreateReviewRouteImport } from './routes/fixed-plans_/create/review'
 import { Route as FixedPlansCreateSuccessRouteImport } from './routes/fixed-plans_/create/success'
 import { Route as FixedPlansCreateTenorRouteImport } from './routes/fixed-plans_/create/tenor'
+import { Route as PortfolioTransactionsTxnIdRouteImport } from './routes/portfolio_.transactions_.$txnId'
+import { Route as PortfolioTransactionsTxnIdReceiptRouteImport } from './routes/portfolio_.transactions_.$txnId_.receipt'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -105,6 +110,21 @@ const FixedPlansCreateRoute = FixedPlansCreateRouteImport.update({
 const PortfolioHoldingIdRoute = PortfolioHoldingIdRouteImport.update({
   id: '/portfolio_/$holdingId',
   path: '/portfolio/$holdingId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioHistoryRoute = PortfolioHistoryRouteImport.update({
+  id: '/portfolio_/history',
+  path: '/portfolio/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioMaturitiesRoute = PortfolioMaturitiesRouteImport.update({
+  id: '/portfolio_/maturities',
+  path: '/portfolio/maturities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioTransactionsRoute = PortfolioTransactionsRouteImport.update({
+  id: '/portfolio_/transactions',
+  path: '/portfolio/transactions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExploreProductIdProcessingRoute =
@@ -177,6 +197,18 @@ const FixedPlansCreateTenorRoute = FixedPlansCreateTenorRouteImport.update({
   path: '/tenor',
   getParentRoute: () => FixedPlansCreateRoute,
 } as any)
+const PortfolioTransactionsTxnIdRoute =
+  PortfolioTransactionsTxnIdRouteImport.update({
+    id: '/portfolio_/transactions_/$txnId',
+    path: '/portfolio/transactions/$txnId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const PortfolioTransactionsTxnIdReceiptRoute =
+  PortfolioTransactionsTxnIdReceiptRouteImport.update({
+    id: '/portfolio_/transactions_/$txnId_/receipt',
+    path: '/portfolio/transactions/$txnId/receipt',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -193,6 +225,9 @@ export interface FileRoutesByFullPath {
   '/explore/$productId': typeof ExploreProductIdRoute
   '/fixed-plans/create': typeof FixedPlansCreateRouteWithChildren
   '/portfolio/$holdingId': typeof PortfolioHoldingIdRoute
+  '/portfolio/history': typeof PortfolioHistoryRoute
+  '/portfolio/maturities': typeof PortfolioMaturitiesRoute
+  '/portfolio/transactions': typeof PortfolioTransactionsRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
   '/explore/$productId/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -205,7 +240,9 @@ export interface FileRoutesByFullPath {
   '/fixed-plans/create/review': typeof FixedPlansCreateReviewRoute
   '/fixed-plans/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
+  '/portfolio/transactions/$txnId': typeof PortfolioTransactionsTxnIdRoute
   '/fixed-plans/create/': typeof FixedPlansCreateIndexRoute
+  '/portfolio/transactions/$txnId/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -221,6 +258,9 @@ export interface FileRoutesByTo {
   '/call-account/success': typeof CallAccountSuccessRoute
   '/explore/$productId': typeof ExploreProductIdRoute
   '/portfolio/$holdingId': typeof PortfolioHoldingIdRoute
+  '/portfolio/history': typeof PortfolioHistoryRoute
+  '/portfolio/maturities': typeof PortfolioMaturitiesRoute
+  '/portfolio/transactions': typeof PortfolioTransactionsRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
   '/explore/$productId/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -233,7 +273,9 @@ export interface FileRoutesByTo {
   '/fixed-plans/create/review': typeof FixedPlansCreateReviewRoute
   '/fixed-plans/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
+  '/portfolio/transactions/$txnId': typeof PortfolioTransactionsTxnIdRoute
   '/fixed-plans/create': typeof FixedPlansCreateIndexRoute
+  '/portfolio/transactions/$txnId/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -251,6 +293,9 @@ export interface FileRoutesById {
   '/explore_/$productId': typeof ExploreProductIdRoute
   '/fixed-plans_/create': typeof FixedPlansCreateRouteWithChildren
   '/portfolio_/$holdingId': typeof PortfolioHoldingIdRoute
+  '/portfolio_/history': typeof PortfolioHistoryRoute
+  '/portfolio_/maturities': typeof PortfolioMaturitiesRoute
+  '/portfolio_/transactions': typeof PortfolioTransactionsRoute
   '/explore_/$productId_/processing': typeof ExploreProductIdProcessingRoute
   '/explore_/$productId_/request': typeof ExploreProductIdRequestRoute
   '/explore_/$productId_/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -263,7 +308,9 @@ export interface FileRoutesById {
   '/fixed-plans_/create/review': typeof FixedPlansCreateReviewRoute
   '/fixed-plans_/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans_/create/tenor': typeof FixedPlansCreateTenorRoute
+  '/portfolio_/transactions_/$txnId': typeof PortfolioTransactionsTxnIdRoute
   '/fixed-plans_/create/': typeof FixedPlansCreateIndexRoute
+  '/portfolio_/transactions_/$txnId_/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -282,6 +329,9 @@ export interface FileRouteTypes {
     | '/explore/$productId'
     | '/fixed-plans/create'
     | '/portfolio/$holdingId'
+    | '/portfolio/history'
+    | '/portfolio/maturities'
+    | '/portfolio/transactions'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
     | '/explore/$productId/request-submitted'
@@ -294,7 +344,9 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/review'
     | '/fixed-plans/create/success'
     | '/fixed-plans/create/tenor'
+    | '/portfolio/transactions/$txnId'
     | '/fixed-plans/create/'
+    | '/portfolio/transactions/$txnId/receipt'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -310,6 +362,9 @@ export interface FileRouteTypes {
     | '/call-account/success'
     | '/explore/$productId'
     | '/portfolio/$holdingId'
+    | '/portfolio/history'
+    | '/portfolio/maturities'
+    | '/portfolio/transactions'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
     | '/explore/$productId/request-submitted'
@@ -322,7 +377,9 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/review'
     | '/fixed-plans/create/success'
     | '/fixed-plans/create/tenor'
+    | '/portfolio/transactions/$txnId'
     | '/fixed-plans/create'
+    | '/portfolio/transactions/$txnId/receipt'
   id:
     | '__root__'
     | '/'
@@ -339,6 +396,9 @@ export interface FileRouteTypes {
     | '/explore_/$productId'
     | '/fixed-plans_/create'
     | '/portfolio_/$holdingId'
+    | '/portfolio_/history'
+    | '/portfolio_/maturities'
+    | '/portfolio_/transactions'
     | '/explore_/$productId_/processing'
     | '/explore_/$productId_/request'
     | '/explore_/$productId_/request-submitted'
@@ -351,7 +411,9 @@ export interface FileRouteTypes {
     | '/fixed-plans_/create/review'
     | '/fixed-plans_/create/success'
     | '/fixed-plans_/create/tenor'
+    | '/portfolio_/transactions_/$txnId'
     | '/fixed-plans_/create/'
+    | '/portfolio_/transactions_/$txnId_/receipt'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -369,6 +431,9 @@ export interface RootRouteChildren {
   ExploreProductIdRoute: typeof ExploreProductIdRoute
   FixedPlansCreateRoute: typeof FixedPlansCreateRouteWithChildren
   PortfolioHoldingIdRoute: typeof PortfolioHoldingIdRoute
+  PortfolioHistoryRoute: typeof PortfolioHistoryRoute
+  PortfolioMaturitiesRoute: typeof PortfolioMaturitiesRoute
+  PortfolioTransactionsRoute: typeof PortfolioTransactionsRoute
   ExploreProductIdProcessingRoute: typeof ExploreProductIdProcessingRoute
   ExploreProductIdRequestRoute: typeof ExploreProductIdRequestRoute
   ExploreProductIdRequestSubmittedRoute: typeof ExploreProductIdRequestSubmittedRoute
@@ -376,6 +441,8 @@ export interface RootRouteChildren {
   ExploreProductIdSubscribeRoute: typeof ExploreProductIdSubscribeRoute
   ExploreProductIdSuccessRoute: typeof ExploreProductIdSuccessRoute
   ExploreProductIdUnavailableRoute: typeof ExploreProductIdUnavailableRoute
+  PortfolioTransactionsTxnIdRoute: typeof PortfolioTransactionsTxnIdRoute
+  PortfolioTransactionsTxnIdReceiptRoute: typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -478,6 +545,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioHoldingIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio_/history': {
+      id: '/portfolio_/history'
+      path: '/portfolio/history'
+      fullPath: '/portfolio/history'
+      preLoaderRoute: typeof PortfolioHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio_/maturities': {
+      id: '/portfolio_/maturities'
+      path: '/portfolio/maturities'
+      fullPath: '/portfolio/maturities'
+      preLoaderRoute: typeof PortfolioMaturitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio_/transactions': {
+      id: '/portfolio_/transactions'
+      path: '/portfolio/transactions'
+      fullPath: '/portfolio/transactions'
+      preLoaderRoute: typeof PortfolioTransactionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore_/$productId_/processing': {
       id: '/explore_/$productId_/processing'
       path: '/explore/$productId/processing'
@@ -569,6 +657,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FixedPlansCreateTenorRouteImport
       parentRoute: typeof FixedPlansCreateRoute
     }
+    '/portfolio_/transactions_/$txnId': {
+      id: '/portfolio_/transactions_/$txnId'
+      path: '/portfolio/transactions/$txnId'
+      fullPath: '/portfolio/transactions/$txnId'
+      preLoaderRoute: typeof PortfolioTransactionsTxnIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio_/transactions_/$txnId_/receipt': {
+      id: '/portfolio_/transactions_/$txnId_/receipt'
+      path: '/portfolio/transactions/$txnId/receipt'
+      fullPath: '/portfolio/transactions/$txnId/receipt'
+      preLoaderRoute: typeof PortfolioTransactionsTxnIdReceiptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -608,6 +710,9 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreProductIdRoute: ExploreProductIdRoute,
   FixedPlansCreateRoute: FixedPlansCreateRouteWithChildren,
   PortfolioHoldingIdRoute: PortfolioHoldingIdRoute,
+  PortfolioHistoryRoute: PortfolioHistoryRoute,
+  PortfolioMaturitiesRoute: PortfolioMaturitiesRoute,
+  PortfolioTransactionsRoute: PortfolioTransactionsRoute,
   ExploreProductIdProcessingRoute: ExploreProductIdProcessingRoute,
   ExploreProductIdRequestRoute: ExploreProductIdRequestRoute,
   ExploreProductIdRequestSubmittedRoute: ExploreProductIdRequestSubmittedRoute,
@@ -615,6 +720,9 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreProductIdSubscribeRoute: ExploreProductIdSubscribeRoute,
   ExploreProductIdSuccessRoute: ExploreProductIdSuccessRoute,
   ExploreProductIdUnavailableRoute: ExploreProductIdUnavailableRoute,
+  PortfolioTransactionsTxnIdRoute: PortfolioTransactionsTxnIdRoute,
+  PortfolioTransactionsTxnIdReceiptRoute:
+    PortfolioTransactionsTxnIdReceiptRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
