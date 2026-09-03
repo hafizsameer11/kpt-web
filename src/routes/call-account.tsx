@@ -620,3 +620,342 @@ function CallAccountScreen() {
     </AppShell>
   );
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Desktop layout (md+) — dashboard-style Call Account
+   ───────────────────────────────────────────────────────────── */
+function DesktopCallAccount() {
+  const { mask, hidden, toggle } = useBalanceVisibility();
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const total14 = CALL_ACCRUAL_TREND.reduce((a, b) => a + b, 0);
+  const maxTrend = Math.max(...CALL_ACCRUAL_TREND);
+
+  return (
+    <div className="hidden md:block">
+      <div className="mx-auto w-full max-w-[1180px] space-y-6 pb-10">
+        {/* Hero */}
+        <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-8 text-primary-foreground shadow-float">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-24 -top-32 size-80 rounded-full bg-gold/15 blur-[70px]"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -bottom-32 -left-24 size-72 rounded-full bg-white/10 blur-[60px]"
+          />
+          <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-end gap-8">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2.5">
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                  {CALL_ACCOUNT.name}
+                </p>
+                <span className="rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
+                  {CALL_ACCOUNT.rate}
+                </span>
+              </div>
+              <p className="mt-3 font-display text-[52px] font-extrabold leading-none tracking-[-0.035em] text-num">
+                <AmountCounter value={CALL_ACCOUNT.balance} hidden={hidden} mask={mask} />
+              </p>
+              <p className="mt-3 flex items-center gap-1.5 text-[12.5px] font-medium text-primary-foreground/65">
+                <ShieldCheck className="size-4 text-primary-foreground/70" />
+                {CALL_ACCOUNT.liquidity} &middot; min {naira(CALL_ACCOUNT.minimum)}
+              </p>
+
+              <div className="mt-6 flex flex-wrap items-center gap-2.5">
+                <Link
+                  to="/call-account/add-money"
+                  className="press inline-flex items-center gap-1.5 rounded-full bg-gold px-5 py-2.5 text-[12.5px] font-extrabold text-gold-foreground"
+                >
+                  <Plus className="size-4" strokeWidth={2.6} /> Add money
+                </Link>
+                <Link
+                  to="/withdraw"
+                  className="press inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-[12.5px] font-bold text-primary-foreground hover:bg-white/15"
+                >
+                  <ArrowDownLeft className="size-4" strokeWidth={2.6} /> Withdraw
+                </Link>
+                <Link
+                  to="/portfolio/transactions"
+                  className="press inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[12.5px] font-bold text-primary-foreground/85 hover:text-primary-foreground"
+                >
+                  Statements <ChevronRight className="size-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="w-[280px] shrink-0 space-y-3">
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={toggle}
+                  aria-label={hidden ? "Show balances" : "Hide balances"}
+                  className="grid size-9 place-items-center rounded-full border border-white/15 bg-white/10 press"
+                >
+                  {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
+              <div className="rounded-xl border border-white/12 bg-white/10 p-4 backdrop-blur">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/55">
+                      Earned today
+                    </p>
+                    <p className="mt-1 text-[18px] font-extrabold leading-none text-gold text-num">
+                      <AmountCounter value={CALL_ACCOUNT.accruedToday} hidden={hidden} mask={mask} />
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/55">
+                      This month
+                    </p>
+                    <p className="mt-1 text-[18px] font-extrabold leading-none text-num">
+                      <AmountCounter value={CALL_ACCOUNT.accruedThisMonth} hidden={hidden} mask={mask} />
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 border-t border-white/12 pt-3">
+                  <p className="text-[9.5px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/55">
+                    Wallet available
+                  </p>
+                  <p className="mt-1 text-[18px] font-extrabold leading-none text-num">
+                    <AmountCounter value={WALLET} hidden={hidden} mask={mask} />
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Body */}
+        <div className="grid grid-cols-[minmax(0,1fr)_340px] items-start gap-6">
+          <div className="space-y-6">
+            {/* Trend */}
+            <section className="rounded-2xl border border-border bg-card p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="font-display text-[17px] font-extrabold">Daily interest</h2>
+                  <p className="mt-1 text-[12px] text-muted-foreground">
+                    Last 14 days &middot; accrues daily, credited monthly
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    14-day total
+                  </p>
+                  <p className="mt-1 font-display text-[22px] font-extrabold leading-none text-num">
+                    {mask(total14)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 flex h-[168px] items-end gap-2">
+                {CALL_ACCRUAL_TREND.map((v, i) => {
+                  const isToday = i === CALL_ACCRUAL_TREND.length - 1;
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setSelectedDay(i)}
+                      title={`${fullDate(i, CALL_ACCRUAL_TREND.length)} — ${naira(v)}`}
+                      className="group flex h-full flex-1 flex-col justify-end gap-2 rounded-lg pb-0 outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                    >
+                      <span
+                        className={`w-full rounded-t-md transition-all duration-200 ${
+                          isToday ? "bg-brand" : "bg-accent/25 group-hover:bg-accent/45"
+                        }`}
+                        style={{ height: `${Math.max(8, (v / maxTrend) * 120)}px` }}
+                      />
+                      <span
+                        className={`text-[9.5px] font-semibold ${
+                          isToday ? "text-brand" : "text-muted-foreground"
+                        }`}
+                      >
+                        {dayLabel(i, CALL_ACCRUAL_TREND.length)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {selectedDay !== null && (
+                <DayDetail day={selectedDay} onClose={() => setSelectedDay(null)} />
+              )}
+            </section>
+
+            {/* Activity */}
+            <section className="overflow-hidden rounded-2xl border border-border bg-card">
+              <div className="flex items-center justify-between border-b border-border px-6 py-4">
+                <h2 className="font-display text-[17px] font-extrabold">Recent activity</h2>
+                <Link to="/portfolio/transactions" className="text-xs font-bold text-brand">
+                  View all
+                </Link>
+              </div>
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-border bg-muted/30 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                    <th className="px-6 py-2.5">Transaction</th>
+                    <th className="px-4 py-2.5">Date</th>
+                    <th className="px-4 py-2.5">Status</th>
+                    <th className="px-6 py-2.5 text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {CALL_ACTIVITY.map((item) => {
+                    const credit = item.kind !== "withdrawal";
+                    const failed = item.status === "failed";
+                    const Icon =
+                      item.kind === "interest"
+                        ? TrendingUp
+                        : item.kind === "deposit"
+                          ? ArrowUpRight
+                          : ArrowDownLeft;
+                    const statusStyle: Record<string, string> = {
+                      successful: "bg-accent/15 text-brand",
+                      processing: "bg-gold/20 text-brand",
+                      pending: "bg-muted text-muted-foreground",
+                      failed: "bg-destructive/10 text-destructive",
+                    };
+                    return (
+                      <tr
+                        key={item.id}
+                        className="border-b border-border/60 last:border-0 transition-colors hover:bg-secondary/50"
+                      >
+                        <td className="px-6 py-3.5">
+                          <Link
+                            to="/portfolio/transactions/$txnId"
+                            params={{ txnId: callActivityTxnId(item.id) }}
+                            className="flex items-center gap-3"
+                          >
+                            <span
+                              className={`grid size-9 shrink-0 place-items-center rounded-lg ${
+                                failed
+                                  ? "bg-destructive/10 text-destructive"
+                                  : credit
+                                    ? "bg-accent/15 text-brand"
+                                    : "bg-muted text-muted-foreground"
+                              }`}
+                            >
+                              <Icon className="size-4" />
+                            </span>
+                            <span className="text-[13px] font-bold">{item.label}</span>
+                          </Link>
+                        </td>
+                        <td className="px-4 py-3.5 text-[12px] text-muted-foreground">{item.date}</td>
+                        <td className="px-4 py-3.5">
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-[0.08em] ${statusStyle[item.status]}`}
+                          >
+                            {item.status}
+                          </span>
+                        </td>
+                        <td
+                          className={`px-6 py-3.5 text-right text-[13px] font-extrabold text-num ${
+                            failed
+                              ? "text-muted-foreground line-through"
+                              : credit
+                                ? "text-brand"
+                                : "text-foreground"
+                          }`}
+                        >
+                          {credit ? "+" : "−"}
+                          {mask(item.amount)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </section>
+          </div>
+
+          {/* Right rail */}
+          <div className="space-y-6">
+            <section className="rounded-2xl border border-border bg-card p-5">
+              <div className="flex items-baseline justify-between gap-2">
+                <h2 className="font-display text-[15px] font-extrabold">Projected earnings</h2>
+                <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                  At {CALL_ACCOUNT.rate}
+                </span>
+              </div>
+              <p className="mt-1 text-[11.5px] leading-snug text-muted-foreground">
+                If your balance stays invested. Rates may change.
+              </p>
+              <div className="mt-4 space-y-3 border-t border-border/60 pt-4">
+                {[
+                  { label: "Next 30 days", value: (CALL_ACCOUNT.balance * 0.145) / 12 },
+                  { label: "Next 12 months", value: CALL_ACCOUNT.balance * 0.145 },
+                ].map((p) => (
+                  <div key={p.label} className="flex items-center justify-between gap-3">
+                    <p className="text-[11.5px] font-semibold text-muted-foreground">{p.label}</p>
+                    <p className="font-display text-[19px] font-extrabold leading-none text-brand text-num">
+                      <AmountCounter value={Math.round(p.value)} hidden={hidden} mask={mask} />
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="relative overflow-hidden rounded-2xl border border-gold/20 bg-brand p-6 shadow-float">
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -right-16 -top-16 size-32 rounded-full bg-gold/10 blur-3xl"
+              />
+              <div className="relative">
+                <div className="flex items-center gap-3">
+                  <div className="grid size-10 place-items-center rounded-xl bg-gold-gradient">
+                    <Info className="size-5 text-brand" strokeWidth={2.5} />
+                  </div>
+                  <h2 className="font-display text-base font-extrabold text-primary-foreground">
+                    How it works
+                  </h2>
+                </div>
+                <ul className="mt-5 space-y-3.5">
+                  {CALL_ACCOUNT_FACTS.map((fact, i) => (
+                    <li
+                      key={fact}
+                      className={`flex gap-3 text-[12px] leading-relaxed ${
+                        i === CALL_ACCOUNT_FACTS.length - 1
+                          ? "border-t border-gold/10 pt-3.5 text-primary-foreground/55"
+                          : "text-primary-foreground/85"
+                      }`}
+                    >
+                      {i === CALL_ACCOUNT_FACTS.length - 1 ? (
+                        <ShieldCheck className="mt-0.5 size-4 shrink-0 text-gold/70" />
+                      ) : (
+                        <span
+                          aria-hidden
+                          className="mt-[6px] size-1.5 shrink-0 rounded-full bg-gold ring-4 ring-gold/10"
+                        />
+                      )}
+                      {fact}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-border bg-card p-5">
+              <div className="flex items-start gap-3">
+                <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-gold/15 text-brand">
+                  <Wallet className="size-5" strokeWidth={2.2} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[13px] font-extrabold">Idle cash in wallet</p>
+                  <p className="mt-1 text-[11.5px] leading-snug text-muted-foreground">
+                    Move it to your Call Account to start earning daily.
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/call-account/add-money"
+                className="press mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-brand px-4 py-2.5 text-[12.5px] font-extrabold text-brand-foreground"
+              >
+                <Plus className="size-4" strokeWidth={2.6} /> Add money
+              </Link>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
