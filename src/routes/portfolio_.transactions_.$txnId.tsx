@@ -6,7 +6,9 @@ import {
   ChevronRight,
   Receipt,
 } from "lucide-react";
+import { useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
+import { ReceiptDialog } from "@/components/kipit/ReceiptView";
 import { getTransaction, naira, type TxnStatus } from "@/lib/portfolio-data";
 
 export const Route = createFileRoute("/portfolio_/transactions_/$txnId")({
@@ -54,6 +56,7 @@ function Row({ label, value }: { label: string; value: string }) {
 function TransactionDetailScreen() {
   const { txnId } = Route.useParams();
   const txn = getTransaction(txnId)!;
+  const [receiptOpen, setReceiptOpen] = useState(false);
 
   return (
     <AppShell title="Transaction" navVariant="elevated">
@@ -147,13 +150,24 @@ function TransactionDetailScreen() {
             </p>
           )}
 
+          {/* Mobile: full receipt screen */}
           <Link
             to="/portfolio/transactions/$txnId/receipt"
             params={{ txnId: txn.id }}
-            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
+            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:hidden"
           >
             <Receipt className="size-4" strokeWidth={2.4} /> View receipt
           </Link>
+
+          {/* Desktop: receipt popup */}
+          <button
+            type="button"
+            onClick={() => setReceiptOpen(true)}
+            className="mt-5 hidden items-center justify-center gap-2 rounded-xl bg-brand-gradient px-10 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:inline-flex"
+          >
+            <Receipt className="size-4" strokeWidth={2.4} /> View receipt
+          </button>
+          <ReceiptDialog txn={txn} open={receiptOpen} onOpenChange={setReceiptOpen} />
         </div>
       </div>
     </AppShell>
