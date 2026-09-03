@@ -22,6 +22,7 @@ import { Route as CallAccountReviewRouteImport } from './routes/call-account_.re
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
 import { Route as ExploreProductIdRouteImport } from './routes/explore_.$productId'
 import { Route as FixedPlansCreateRouteImport } from './routes/fixed-plans_/create'
+import { Route as ExploreProductIdSubscribeRouteImport } from './routes/explore_.$productId_.subscribe'
 import { Route as FixedPlansCreateIndexRouteImport } from './routes/fixed-plans_/create/index'
 import { Route as FixedPlansCreateOptionsRouteImport } from './routes/fixed-plans_/create/options'
 import { Route as FixedPlansCreateProcessingRouteImport } from './routes/fixed-plans_/create/processing'
@@ -94,6 +95,12 @@ const FixedPlansCreateRoute = FixedPlansCreateRouteImport.update({
   path: '/fixed-plans/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExploreProductIdSubscribeRoute =
+  ExploreProductIdSubscribeRouteImport.update({
+    id: '/explore_/$productId_/subscribe',
+    path: '/explore/$productId/subscribe',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const FixedPlansCreateIndexRoute = FixedPlansCreateIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -140,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/call-account/success': typeof CallAccountSuccessRoute
   '/explore/$productId': typeof ExploreProductIdRoute
   '/fixed-plans/create': typeof FixedPlansCreateRouteWithChildren
+  '/explore/$productId/subscribe': typeof ExploreProductIdSubscribeRoute
   '/fixed-plans/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans/create/processing': typeof FixedPlansCreateProcessingRoute
   '/fixed-plans/create/review': typeof FixedPlansCreateReviewRoute
@@ -160,6 +168,7 @@ export interface FileRoutesByTo {
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
   '/explore/$productId': typeof ExploreProductIdRoute
+  '/explore/$productId/subscribe': typeof ExploreProductIdSubscribeRoute
   '/fixed-plans/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans/create/processing': typeof FixedPlansCreateProcessingRoute
   '/fixed-plans/create/review': typeof FixedPlansCreateReviewRoute
@@ -182,6 +191,7 @@ export interface FileRoutesById {
   '/call-account_/success': typeof CallAccountSuccessRoute
   '/explore_/$productId': typeof ExploreProductIdRoute
   '/fixed-plans_/create': typeof FixedPlansCreateRouteWithChildren
+  '/explore_/$productId_/subscribe': typeof ExploreProductIdSubscribeRoute
   '/fixed-plans_/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans_/create/processing': typeof FixedPlansCreateProcessingRoute
   '/fixed-plans_/create/review': typeof FixedPlansCreateReviewRoute
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/call-account/success'
     | '/explore/$productId'
     | '/fixed-plans/create'
+    | '/explore/$productId/subscribe'
     | '/fixed-plans/create/options'
     | '/fixed-plans/create/processing'
     | '/fixed-plans/create/review'
@@ -225,6 +236,7 @@ export interface FileRouteTypes {
     | '/call-account/review'
     | '/call-account/success'
     | '/explore/$productId'
+    | '/explore/$productId/subscribe'
     | '/fixed-plans/create/options'
     | '/fixed-plans/create/processing'
     | '/fixed-plans/create/review'
@@ -246,6 +258,7 @@ export interface FileRouteTypes {
     | '/call-account_/success'
     | '/explore_/$productId'
     | '/fixed-plans_/create'
+    | '/explore_/$productId_/subscribe'
     | '/fixed-plans_/create/options'
     | '/fixed-plans_/create/processing'
     | '/fixed-plans_/create/review'
@@ -268,6 +281,7 @@ export interface RootRouteChildren {
   CallAccountSuccessRoute: typeof CallAccountSuccessRoute
   ExploreProductIdRoute: typeof ExploreProductIdRoute
   FixedPlansCreateRoute: typeof FixedPlansCreateRouteWithChildren
+  ExploreProductIdSubscribeRoute: typeof ExploreProductIdSubscribeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -363,6 +377,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FixedPlansCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/explore_/$productId_/subscribe': {
+      id: '/explore_/$productId_/subscribe'
+      path: '/explore/$productId/subscribe'
+      fullPath: '/explore/$productId/subscribe'
+      preLoaderRoute: typeof ExploreProductIdSubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/fixed-plans_/create/': {
       id: '/fixed-plans_/create/'
       path: '/'
@@ -443,6 +464,7 @@ const rootRouteChildren: RootRouteChildren = {
   CallAccountSuccessRoute: CallAccountSuccessRoute,
   ExploreProductIdRoute: ExploreProductIdRoute,
   FixedPlansCreateRoute: FixedPlansCreateRouteWithChildren,
+  ExploreProductIdSubscribeRoute: ExploreProductIdSubscribeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
