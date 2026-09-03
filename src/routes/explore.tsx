@@ -128,7 +128,7 @@ function ExploreScreen() {
           {/* Categories */}
           <Rise>
             <section>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              <p class name="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Categories
               </p>
               <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -141,26 +141,33 @@ function ExploreScreen() {
                       type="button"
                       onClick={() => setCategory(active ? null : c.id)}
                       aria-pressed={active}
-                      className={`rounded-2xl border p-3.5 text-left press ${
+                      className={`relative rounded-2xl border p-4 text-left press transition-all ${
                         active
-                          ? "border-transparent bg-brand-gradient text-primary-foreground shadow-float"
-                          : "border-border bg-card text-foreground"
+                          ? "border-gold bg-primary text-primary-foreground shadow-lg ring-1 ring-gold/20"
+                          : "border-border bg-card text-foreground hover:border-border/80"
                       }`}
                     >
+                      {active && (
+                        <span className="absolute right-3 top-3 inline-flex size-4 items-center justify-center rounded-full bg-gold text-gold-foreground">
+                          <Check className="size-2.5" strokeWidth={3} />
+                        </span>
+                      )}
                       <span
-                        className={`inline-flex size-8 items-center justify-center rounded-xl ${
-                          active ? "bg-white/15 text-gold" : "bg-muted text-foreground"
+                        className={`inline-flex size-10 items-center justify-center rounded-xl ${
+                          active
+                            ? "bg-gold text-gold-foreground"
+                            : "bg-muted text-foreground"
                         }`}
                       >
-                        <Icon className="size-4" />
+                        <Icon className="size-5" />
                       </span>
-                      <p className="mt-2.5 text-[12.5px] font-extrabold leading-tight">
+                      <p className="mt-5 text-[15px] font-semibold leading-tight">
                         {c.name}
                       </p>
                       <p
-                        className={`mt-0.5 text-[11px] ${
+                        className={`mt-1 text-[11px] font-medium uppercase tracking-[0.08em] ${
                           active
-                            ? "text-primary-foreground/70"
+                            ? "text-gold"
                             : "text-muted-foreground"
                         }`}
                       >
