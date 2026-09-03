@@ -815,7 +815,7 @@ function DesktopHome() {
         </section>
       </div>
 
-      <ForYouFeature className="mt-4" />
+      <ForYouFeature className="mt-3" />
     </div>
   );
 }
