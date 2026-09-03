@@ -19,7 +19,7 @@ export const Route = createFileRoute("/verification_/nin")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: NinEntry;
+  component: NinEntry,
 });
 
 function NinEntry() {
