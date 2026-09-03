@@ -53,14 +53,14 @@ function PhoneEntry() {
       subtitle="We'll text you a six-digit code to confirm it's really you."
     >
       <AuthField label="Phone number" error={error}>
-        <div className="flex gap-2">
+        <div className="grid min-w-0 grid-cols-[6.5rem_minmax(0,1fr)] gap-2">
           <select
             value={dial}
             onChange={(e) => {
               setDial(e.target.value);
               setError(null);
             }}
-            className={`${authInputClass} w-20 shrink-0 appearance-none pr-2 [&>option]:text-foreground`}
+            className="min-w-0 appearance-none rounded-xl border border-white/15 bg-white/10 px-3 py-3 text-base text-brand-foreground outline-none focus:border-gold/70 focus:bg-white/14 [&>option]:text-foreground"
             aria-label="Country"
           >
             {COUNTRIES.map((c) => (
@@ -77,7 +77,7 @@ function PhoneEntry() {
               setPhone(e.target.value.replace(/[^\d\s]/g, ""));
               setError(null);
             }}
-            className={`${authInputClass} min-w-0 flex-1`}
+            className={`${authInputClass} min-w-0`}
           />
         </div>
       </AuthField>
