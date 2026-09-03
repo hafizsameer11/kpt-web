@@ -119,65 +119,52 @@ function InvestmentHistoryScreen() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/60">
-                  {records.map((r) => {
-                    const row = (
-                      <>
-                        <td className="px-6 py-4">
-                          <p className="text-[13.5px] font-extrabold">{r.name}</p>
-                          <p className="mt-0.5 text-[11px] text-muted-foreground">{r.kind}</p>
-                        </td>
-                        <td className="px-4 py-4 text-[12.5px] font-bold text-gold">{r.rate}</td>
-                        <td className="px-4 py-4 text-[13px] font-bold text-num">{mask(r.principal)}</td>
-                        <td className="px-4 py-4 text-[13px] font-extrabold text-gold text-num">
-                          {mask(r.interest)}
-                        </td>
-                        <td className="px-4 py-4 text-[11.5px] text-muted-foreground">
-                          {r.startDate} → {r.endDate}
-                        </td>
-                        <td className="px-4 py-4">
-                          <span
-                            className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] ${
-                              r.status === "Active"
-                                ? "bg-gold/15 text-gold"
-                                : r.status === "Matured"
-                                  ? "bg-brand/10 text-brand"
-                                  : "bg-muted text-muted-foreground"
-                            }`}
-                          >
-                            {r.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          {r.holdingId && (
-                            <ChevronRight className="ml-auto size-4 text-muted-foreground" />
-                          )}
-                        </td>
-                      </>
-                    );
-                    return (
-                      <tr key={r.id} className="transition-colors hover:bg-secondary/40">
-                        {r.holdingId ? (
-                          <td colSpan={7} className="p-0">
-                            <Link
-                              to="/portfolio/$holdingId"
-                              params={{ holdingId: r.holdingId }}
-                              className="block"
-                            >
-                              <table className="w-full">
-                                <tbody>
-                                  <tr className="grid grid-cols-[1.6fr_0.6fr_1fr_1fr_1.2fr_0.8fr_2rem] items-center">
-                                    {row.props ? row.props.children : row}
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </Link>
-                          </td>
-                        ) : (
-                          row
+                  {records.map((r) => (
+                    <tr
+                      key={r.id}
+                      onClick={() =>
+                        r.holdingId &&
+                        navigate({
+                          to: "/portfolio/$holdingId",
+                          params: { holdingId: r.holdingId },
+                        })
+                      }
+                      className={`transition-colors hover:bg-secondary/40 ${
+                        r.holdingId ? "cursor-pointer" : ""
+                      }`}
+                    >
+                      <td className="px-6 py-4">
+                        <p className="text-[13.5px] font-extrabold">{r.name}</p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground">{r.kind}</p>
+                      </td>
+                      <td className="px-4 py-4 text-[12.5px] font-bold text-gold">{r.rate}</td>
+                      <td className="px-4 py-4 text-[13px] font-bold text-num">{mask(r.principal)}</td>
+                      <td className="px-4 py-4 text-[13px] font-extrabold text-gold text-num">
+                        {mask(r.interest)}
+                      </td>
+                      <td className="px-4 py-4 text-[11.5px] text-muted-foreground">
+                        {r.startDate} → {r.endDate}
+                      </td>
+                      <td className="px-4 py-4">
+                        <span
+                          className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] ${
+                            r.status === "Active"
+                              ? "bg-gold/15 text-gold"
+                              : r.status === "Matured"
+                                ? "bg-brand/10 text-brand"
+                                : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {r.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        {r.holdingId && (
+                          <ChevronRight className="ml-auto size-4 text-muted-foreground" />
                         )}
-                      </tr>
-                    );
-                  })}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             ) : (
