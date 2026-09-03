@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { Download, Eye, FileText, Mail } from "lucide-react";
 import { z } from "zod";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
@@ -78,18 +79,21 @@ function GeneratedStatement() {
         <div className="mt-4 grid gap-2.5 sm:grid-cols-3">
           <button
             type="button"
+            onClick={() => toast.info("Opening statement preview")}
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 py-3.5 text-[13px] font-extrabold text-primary-foreground shadow-float press"
           >
             <Eye className="size-4" strokeWidth={2.6} /> View
           </button>
           <button
             type="button"
+            onClick={() => toast.success("Statement downloaded (PDF)")}
             className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-[13px] font-bold press"
           >
             <Download className="size-4" strokeWidth={2.4} /> Download
           </button>
           <button
             type="button"
+            onClick={() => toast.success("Statement emailed to you")}
             className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-[13px] font-bold press"
           >
             <Mail className="size-4" strokeWidth={2.4} /> Email
