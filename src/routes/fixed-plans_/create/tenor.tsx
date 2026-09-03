@@ -185,45 +185,44 @@ function CreatePlanTenorScreen() {
           </div>
 
           {/* Custom tenor (MOB-068) */}
-          <Rise delay={TENOR_BANDS.length * 60} className="mt-4">
+          <Rise delay={TENOR_BANDS.length * 60} className="mt-3">
             <button
               type="button"
               onClick={() => setSelected("custom")}
-              className={`flex w-full items-center justify-between rounded-[2rem] border p-5 text-left transition-all duration-200 press ${
+              aria-pressed={selected === "custom"}
+              className={`flex w-full items-center gap-3.5 rounded-3xl border px-4 py-4 text-left transition-colors duration-150 press md:px-5 ${
                 selected === "custom"
-                  ? "border-gold bg-primary text-primary-foreground shadow-float ring-4 ring-gold/10"
-                  : "border-transparent bg-card shadow-card hover:shadow-float"
+                  ? "border-gold/60 bg-gold/[0.06] shadow-card"
+                  : "border-border/60 bg-card shadow-card hover:bg-muted/40"
               }`}
             >
-              <span className="flex items-center gap-4">
-                <span
-                  className={`grid size-12 shrink-0 place-items-center rounded-2xl border ${
-                    selected === "custom"
-                      ? "border-white/10 bg-white/10 text-gold"
-                      : "border-border bg-muted/60 text-foreground"
-                  }`}
-                >
-                  <SlidersHorizontal className="size-5" strokeWidth={2} />
-                </span>
-                <span>
-                  <span
-                    className={`block text-[16px] font-bold ${
-                      selected === "custom" ? "text-primary-foreground" : "text-foreground"
-                    }`}
-                  >
+              <span
+                className={`grid size-5 shrink-0 place-items-center rounded-full border-2 transition-all duration-200 ${
+                  selected === "custom"
+                    ? "border-gold bg-gold"
+                    : "border-muted-foreground/30 bg-transparent"
+                }`}
+              >
+                {selected === "custom" && (
+                  <Check className="size-3 text-gold-foreground" strokeWidth={4} />
+                )}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-baseline gap-2">
+                  <span className="font-display text-[17px] font-extrabold tracking-[-0.01em] text-foreground">
                     Custom tenor
                   </span>
-                  <span
-                    className={`block text-[12px] ${
-                      selected === "custom" ? "text-primary-foreground/60" : "text-muted-foreground"
-                    }`}
-                  >
-                    Pick your own number of days
-                  </span>
+                  <SlidersHorizontal
+                    className="size-3.5 self-center text-muted-foreground"
+                    strokeWidth={2.5}
+                  />
+                </span>
+                <span className="mt-0.5 block text-[11.5px] text-muted-foreground">
+                  Pick your own number of days
                 </span>
               </span>
               <ChevronRight
-                className={`size-5 shrink-0 ${
+                className={`size-4 shrink-0 ${
                   selected === "custom" ? "text-gold" : "text-muted-foreground/40"
                 }`}
                 strokeWidth={2.5}
