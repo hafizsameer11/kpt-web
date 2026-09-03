@@ -307,27 +307,27 @@ function ProductDetailScreen() {
           {/* Documents */}
           <Rise delay={180}>
             <section className="mt-5">
-              <div className="flex items-center gap-2 px-1">
-                <span className="h-px w-4 bg-gold" />
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gold">
-                  Documents
-                </p>
+              <div className="flex items-center justify-between px-1">
+                <h3 className="font-display text-lg font-semibold">Documents</h3>
+                <span className="rounded-full bg-gold/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-gold">
+                  {detail.documents.length} Files
+                </span>
               </div>
-              <div className="mt-3 space-y-2.5">
+              <div className="mt-3 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-[0_4px_20px_-4px_rgba(0,29,61,0.08)]">
                 {detail.documents.map((d) => (
                   <button
                     key={d.name}
                     type="button"
-                    className="group flex w-full items-center gap-3.5 rounded-xl border border-border bg-card p-3.5 text-left shadow-sm transition-all duration-300 press hover:border-gold"
+                    className="group flex w-full items-center gap-4 p-4 text-left transition-colors duration-300 press hover:bg-secondary/60"
                   >
-                    <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary/5 text-gold transition-colors group-hover:bg-gold group-hover:text-primary-foreground">
-                      <FileText className="size-5" strokeWidth={1.5} />
+                    <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-gold/10 text-gold">
+                      <FileText className="size-6" strokeWidth={1.5} />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate font-display text-[15px] font-semibold leading-tight">
+                      <span className="block truncate text-[15px] font-medium leading-tight text-primary">
                         {d.name}
                       </span>
-                      <span className="mt-0.5 block text-[11px] font-medium text-muted-foreground">
+                      <span className="mt-0.5 block text-xs text-muted-foreground">
                         {d.meta}
                       </span>
                     </span>
@@ -335,6 +335,9 @@ function ProductDetailScreen() {
                   </button>
                 ))}
               </div>
+              <p className="mt-4 text-center text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                Tap to preview or download
+              </p>
             </section>
           </Rise>
 
