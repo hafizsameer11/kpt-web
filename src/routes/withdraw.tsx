@@ -174,6 +174,162 @@ function MobileWithdraw() {
   );
 }
 
+function DesktopWithdraw() {
+  const eligible = TIER.eligible;
+
+  return (
+    <AppShell title="Withdraw">
+      <div className="mx-auto w-full max-w-[1100px] space-y-6 pb-10">
+        <section className="relative overflow-hidden rounded-3xl bg-brand-gradient px-10 py-10 text-primary-foreground shadow-float">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-24 -top-36 size-96 rounded-full bg-gold/15 blur-[80px]"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -bottom-32 -left-16 size-80 rounded-full bg-white/10 blur-[64px]"
+          />
+          <div className="relative flex flex-wrap items-end justify-between gap-6">
+            <div className="min-w-0">
+              <span className="inline-flex items-center gap-1 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
+                <BadgeCheck className="size-3.5" /> {TIER.label}
+              </span>
+              <p className="mt-4 text-[11px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                Available to withdraw
+              </p>
+              <p className="mt-2 font-display text-[52px] font-extrabold leading-none tracking-[-0.035em] text-num">
+                {naira(WALLET)}
+              </p>
+              <p className="mt-3 flex items-center gap-1.5 text-[13px] font-medium text-primary-foreground/60">
+                <ShieldCheck className="size-4 text-primary-foreground/70" />
+                Kipit Wallet &middot; {payoutEta}
+              </p>
+            </div>
+            <Link
+              to={eligible ? "/withdraw/accounts" : "/withdraw/restricted"}
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gold px-10 py-4 text-[14px] font-extrabold text-navy shadow-float press"
+            >
+              Withdraw funds <ArrowRight className="size-4" strokeWidth={2.6} />
+            </Link>
+          </div>
+        </section>
+
+        <div className="grid grid-cols-[minmax(0,1fr)_340px] items-start gap-6">
+          <div className="min-w-0 space-y-6">
+            <section className="card-surface p-6">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Withdrawal limits &amp; fees
+              </p>
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {[
+                  { label: "Minimum", value: naira(MIN_WITHDRAWAL) },
+                  { label: "Per transaction", value: naira(TIER.singleLimit) },
+                  { label: "Daily limit", value: naira(TIER.dailyLimit) },
+                  {
+                    label: "Transfer fee",
+                    value: WITHDRAWAL_FEE === 0 ? "₦0" : naira(WITHDRAWAL_FEE),
+                  },
+                ].map((s) => (
+                  <div
+                    key={s.label}
+                    className="rounded-2xl border border-border bg-muted/40 p-4"
+                  >
+                    <p className="text-[11px] font-semibold text-muted-foreground">
+                      {s.label}
+                    </p>
+                    <p className="mt-1 text-[15px] font-extrabold text-num">
+                      {s.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="card-surface p-6">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Saved payout accounts
+                </p>
+                <Link
+                  to="/settings/payout-account"
+                  className="text-[12px] font-bold text-primary press"
+                >
+                  Manage
+                </Link>
+              </div>
+              <ul className="mt-4 divide-y divide-border">
+                {SAVED_ACCOUNTS.map((a) => (
+                  <li key={a.id} className="flex items-center gap-4 py-4">
+                    <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-navy/5 text-primary">
+                      <Landmark className="size-5" strokeWidth={2} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-2">
+                        <span className="truncate text-[14px] font-bold text-foreground">
+                          {a.bank}
+                        </span>
+                        {a.primary ? (
+                          <span className="shrink-0 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-extrabold text-gold">
+                            Primary
+                          </span>
+                        ) : null}
+                      </span>
+                      <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
+                        {a.accountName} &middot; {maskAccount(a.accountNumber)}
+                      </span>
+                    </span>
+                    <ShieldCheck className="size-4 shrink-0 text-primary" />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
+
+          <aside className="min-w-0 space-y-6">
+            <section className="card-surface p-6">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                How it works
+              </p>
+              <ul className="mt-4 space-y-4">
+                {[
+                  { icon: Landmark, text: "Pick a verified payout account" },
+                  { icon: Banknote, text: "Enter the amount to withdraw" },
+                  {
+                    icon: Clock,
+                    text: "Authorize and track until it settles",
+                  },
+                ].map((s, i) => (
+                  <li key={s.text} className="flex items-center gap-3">
+                    <span className="relative grid size-10 shrink-0 place-items-center rounded-xl bg-gold/15 text-gold">
+                      <s.icon className="size-4.5" strokeWidth={2.2} />
+                      <span className="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full bg-navy text-[9px] font-extrabold text-primary-foreground">
+                        {i + 1}
+                      </span>
+                    </span>
+                    <span className="text-[13px] font-semibold text-foreground">
+                      {s.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <section className="rounded-2xl border border-border bg-muted/40 p-5">
+              <p className="flex items-center gap-2 text-[12px] font-bold text-foreground">
+                <ShieldCheck className="size-4 text-primary" /> Secure payouts
+              </p>
+              <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
+                Withdrawals go only to bank accounts verified in your name, and
+                every payout is confirmed with your transaction PIN.
+              </p>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </AppShell>
+  );
+}
+
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-3 py-2.5">
