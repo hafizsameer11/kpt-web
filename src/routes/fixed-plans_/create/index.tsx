@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Info, ShieldCheck, Wallet } from "lucide-react";
 import { useState } from "react";
+import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { useCountUp } from "@/components/kipit/motion";
 import { naira, WALLET } from "@/lib/home-data";
 import { TENOR_BANDS } from "@/lib/invest-data";
 
 export const Route = createFileRoute("/fixed-plans_/create/")({
+  validateSearch: z.object({ plan: z.string().optional().catch(undefined) }),
   head: () => ({
     meta: [
       { title: "Create a Fixed Plan | Kipit" },
@@ -29,12 +31,17 @@ export const Route = createFileRoute("/fixed-plans_/create/")({
 });
 
 const QUICK = [100_000, 250_000, 500_000];
-const MINIMUM = Math.min(...TENOR_BANDS.map((b) => b.minimum));
-const BEST_RATE = Math.max(
+const LOWEST_MIN = Math.min(...TENOR_BANDS.map((b) => b.minimum));
+const TOP_RATE = Math.max(
   ...TENOR_BANDS.map((b) => Number(b.rate.replace("%", ""))),
 );
 
 function CreatePlanAmountScreen() {
+  const { plan } = Route.useSearch();
+  const band = TENOR_BANDS.find((b) => b.days === plan);
+  const MINIMUM = band?.minimum ?? LOWEST_MIN;
+  const BEST_RATE = band ? Number(band.rate.replace("%", "")) : TOP_RATE;
+
   const [raw, setRaw] = useState("");
   const amount = Number(raw.replace(/[^0-9]/g, "")) || 0;
   const belowMin = amount > 0 && amount < MINIMUM;
@@ -67,11 +74,17 @@ function CreatePlanAmountScreen() {
                 <ArrowLeft className="size-3.5" /> Fixed plans
               </Link>
               <span className="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
-                Up to {BEST_RATE}% p.a.
+                {band ? `${band.rate} p.a.` : `Up to ${BEST_RATE}% p.a.`}
               </span>
             </div>
 
-            <p className="mt-6 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+            {band && (
+              <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground">
+                {band.name} &middot; {band.days}
+              </p>
+            )}
+
+            <p className="mt-4 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
               How much do you want to lock in?
             </p>
 
@@ -187,11 +200,15 @@ function CreatePlanAmountScreen() {
                 {naira(bestYearly)}
               </p>
               <p className="mt-1 text-[12px] text-muted-foreground">
-                per year at our best rate of {BEST_RATE}% p.a.
+                {band
+                  ? `per year on ${band.name} at ${BEST_RATE}% p.a.`
+                  : `per year at our best rate of ${BEST_RATE}% p.a.`}
               </p>
               <p className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
                 <Info className="size-3.5 shrink-0" />
-                Your exact rate depends on the tenor you choose next.
+                {band
+                  ? `${band.name} is fixed for ${band.days} — confirm it on the next screen.`
+                  : "Your exact rate depends on the tenor you choose next."}
               </p>
             </section>
           </div>
@@ -200,7 +217,7 @@ function CreatePlanAmountScreen() {
           <div className="mt-5">
             <Link
               to="/fixed-plans/create/tenor"
-              search={{ amount }}
+              search={{ amount, plan }}
               aria-disabled={!valid}
               className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
                 valid ? "" : "pointer-events-none opacity-40 shadow-none"
