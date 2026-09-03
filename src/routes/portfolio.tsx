@@ -104,12 +104,22 @@ function AllocationDonut({ size = 156 }: { size?: number }) {
 }
 
 function PortfolioScreen() {
+  return (
+    <AppShell title="Portfolio" navVariant="elevated">
+      <DesktopPortfolio />
+      <MobilePortfolio />
+    </AppShell>
+  );
+}
+
+function MobilePortfolio() {
   const { hidden, mask, toggle } = useBalanceVisibility();
   const next = UPCOMING_MATURITIES[0];
 
   return (
-    <AppShell title="Portfolio" navVariant="elevated">
+    <div className="md:hidden">
       <div className="pb-2">
+
         {/* ── Hero ─────────────────────────────────────────────── */}
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
           <span
@@ -524,6 +534,362 @@ function PortfolioScreen() {
           <DisclosureStrip variant="marketplace" />
         </div>
       </div>
-    </AppShell>
+    </div>
   );
 }
+
+/* ─────────────────────────── Desktop ─────────────────────────── */
+
+const ALL_HOLDINGS = [
+  ...HOLDINGS.map((h, i) => ({
+    id: `f${i + 1}`,
+    name: h.name,
+    kind: "Fixed plan",
+    rate: h.rate,
+    amount: h.amount,
+    payout: h.expectedPayout,
+    date: h.date,
+    daysLeft: h.daysLeft,
+    totalDays: h.totalDays,
+    accent: "bg-gold",
+  })),
+  ...EXPLORE_HOLDINGS.map((h) => ({
+    id: `e-${h.id}`,
+    name: h.name,
+    kind: h.issuer,
+    rate: h.rate,
+    amount: h.amount,
+    payout: h.expectedPayout,
+    date: h.date,
+    daysLeft: h.daysLeft,
+    totalDays: h.totalDays,
+    accent: "bg-brand/60",
+  })),
+];
+
+const RECORDS = [
+  {
+    to: "/portfolio/history",
+    icon: History,
+    title: "Investment history",
+    sub: "Active, matured and closed",
+    meta: "12 records",
+  },
+  {
+    to: "/portfolio/transactions",
+    icon: Receipt,
+    title: "Transaction history",
+    sub: "Deposits, interest, withdrawals",
+    meta: "38 records",
+  },
+  {
+    to: "/gifts",
+    icon: Gift,
+    title: "Gift investments",
+    sub: "Sent, pending and claimed",
+    meta: "3 gifts",
+  },
+  {
+    to: "/reports",
+    icon: FileBarChart,
+    title: "Kipit reports",
+    sub: "Monthly, quarterly and annual",
+    meta: "PDF",
+  },
+] as const;
+
+function DesktopPortfolio() {
+  const { hidden, mask, toggle } = useBalanceVisibility();
+  const next = UPCOMING_MATURITIES[0];
+
+  return (
+    <div className="hidden pb-4 md:block">
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+        {/* Left column */}
+        <div className="grid min-w-0 grid-cols-1 gap-4">
+          {/* Hero */}
+          <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-7 text-primary-foreground shadow-float">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -right-20 -top-28 size-72 rounded-full bg-gold/25 blur-3xl"
+            />
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -left-24 bottom-[-6rem] size-72 rounded-full bg-white/10 blur-3xl"
+            />
+            <div className="relative flex flex-wrap items-end justify-between gap-6">
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary-foreground/60">
+                  Portfolio total
+                </p>
+                <div className="mt-3 flex items-end gap-3">
+                  <AmountCounter
+                    value={PORTFOLIO_TOTAL}
+                    hidden={hidden}
+                    mask={mask}
+                    className="font-display text-[48px] font-extrabold leading-none tracking-[-0.045em] text-num"
+                  />
+                  <button
+                    type="button"
+                    onClick={toggle}
+                    aria-label={hidden ? "Show balances" : "Hide balances"}
+                    className="mb-1.5 grid size-9 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 press hover:bg-white/20"
+                  >
+                    {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
+                </div>
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-gold/20 px-3 py-1.5 text-[11px] font-extrabold text-gold">
+                    <ArrowUpRight className="size-3.5" strokeWidth={2.6} />
+                    {mask(PORTFOLIO_MONTH_CHANGE)} · {PORTFOLIO_MONTH_CHANGE_PCT}%
+                  </span>
+                  <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-primary-foreground/75">
+                    past 30 days
+                  </span>
+                  <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-primary-foreground/75">
+                    Interest earned {mask(INTEREST_EARNED_YTD)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2.5">
+                <Link
+                  to="/fixed-plans/create"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-gold-gradient px-5 py-2.5 text-xs font-extrabold text-gold-foreground press"
+                >
+                  New plan <ArrowUpRight className="size-3.5" />
+                </Link>
+                <Link
+                  to="/portfolio/maturities"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-xs font-bold press hover:bg-white/20"
+                >
+                  <CalendarClock className="size-3.5" /> Calendar
+                </Link>
+              </div>
+            </div>
+          </section>
+
+          {/* Active holdings table */}
+          <section className="card-surface p-6">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-display text-base font-extrabold">Active holdings</h2>
+              <span className="text-[11px] font-semibold text-muted-foreground">
+                {ALL_HOLDINGS.length + 1} items
+              </span>
+            </div>
+
+            {/* Call account row */}
+            <Link
+              to="/call-account"
+              className="mt-4 flex items-center gap-4 rounded-xl bg-brand px-5 py-4 text-brand-foreground transition-transform press hover:-translate-y-0.5"
+            >
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-foreground/10 text-gold">
+                <Wallet className="size-5" strokeWidth={2.2} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[13.5px] font-bold">{CALL_ACCOUNT.name}</p>
+                <p className="text-[11px] text-brand-foreground/70">
+                  {CALL_ACCOUNT.rate} · {CALL_ACCOUNT.liquidity} · earned today{" "}
+                  {mask(CALL_ACCOUNT.accruedToday)}
+                </p>
+              </div>
+              <p className="shrink-0 text-[17px] font-extrabold text-num">
+                {mask(CALL_ACCOUNT.balance)}
+              </p>
+              <ChevronRight className="size-4 shrink-0 text-brand-foreground/60" />
+            </Link>
+
+            <div className="mt-4 overflow-hidden rounded-xl border border-border/60">
+              <table className="w-full table-fixed text-left">
+                <thead className="bg-secondary/60">
+                  <tr className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                    <th className="w-[30%] px-3 py-2.5">Holding</th>
+                    <th className="w-[13%] px-3 py-2.5">Rate</th>
+                    <th className="w-[22%] px-3 py-2.5">Progress</th>
+                    <th className="w-[15%] px-3 py-2.5">Matures</th>
+                    <th className="w-[20%] px-3 py-2.5 text-right">Value</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {ALL_HOLDINGS.map((h) => {
+                    const progress = Math.min(
+                      100,
+                      Math.max(6, Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)),
+                    );
+                    return (
+                      <tr
+                        key={h.id}
+                        className="cursor-pointer transition-colors hover:bg-secondary/50"
+                      >
+                        <td className="px-3 py-3">
+                          <Link
+                            to="/portfolio/$holdingId"
+                            params={{ holdingId: h.id }}
+                            className="block"
+                          >
+                            <p className="truncate text-[13px] font-bold">{h.name}</p>
+                            <p className="truncate text-[11px] text-muted-foreground">{h.kind}</p>
+                          </Link>
+                        </td>
+                        <td className="px-3 py-3">
+                          <span className="inline-flex rounded-full bg-accent/15 px-2 py-0.5 text-[10.5px] font-bold text-brand">
+                            {h.rate}
+                          </span>
+                        </td>
+                        <td className="px-3 py-3">
+                          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                            <div
+                              className={`h-full rounded-full ${h.accent}`}
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
+                          <p className="mt-1.5 text-[10.5px] text-muted-foreground">
+                            {h.daysLeft} days left
+                          </p>
+                        </td>
+                        <td className="px-3 py-3 text-[12px] text-muted-foreground">{h.date}</td>
+                        <td className="px-3 py-3 text-right">
+                          <p className="whitespace-nowrap text-[13px] font-extrabold text-num">{mask(h.amount)}</p>
+                          <p className="whitespace-nowrap text-[10.5px] text-muted-foreground">
+                            payout {mask(h.payout)}
+                          </p>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* Records */}
+          <section className="card-surface p-6">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-display text-base font-extrabold">Records</h2>
+              <span className="text-[11px] font-semibold text-muted-foreground">
+                Statements &amp; activity
+              </span>
+            </div>
+            <ul className="mt-4 grid gap-3 xl:grid-cols-2">
+              {RECORDS.map((item) => (
+                <li key={item.to}>
+                  <Link
+                    to={item.to}
+                    className="group flex items-center gap-3.5 rounded-xl border border-border/60 px-4 py-3.5 transition-colors hover:border-gold/40 hover:bg-secondary/50"
+                  >
+                    <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25 transition-transform duration-300 group-hover:scale-105">
+                      <item.icon className="size-5" strokeWidth={2} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13px] font-bold">{item.title}</p>
+                      <p className="truncate text-[11px] text-muted-foreground">{item.sub}</p>
+                    </div>
+                    <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-brand">
+                      {item.meta}
+                    </span>
+                    <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-brand" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+
+        {/* Right column */}
+        <div className="grid min-w-0 grid-cols-1 gap-4">
+          {/* Allocation */}
+          <section className="card-surface p-6">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-display text-base font-extrabold">Allocation</h2>
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground">
+                <PieChart className="size-3.5" /> 4 buckets
+              </span>
+            </div>
+
+            <div className="mt-5 grid place-items-center">
+              <div className="relative grid place-items-center">
+                <AllocationDonut size={176} />
+                <div className="absolute text-center">
+                  <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                    Invested
+                  </p>
+                  <p className="text-base font-extrabold text-num">
+                    {pctOf(PORTFOLIO_TOTAL - WALLET_TOTAL)}%
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <ul className="mt-5 space-y-1">
+              {ALLOCATION.map((slice) => (
+                <li key={slice.key}>
+                  <Link
+                    to={slice.to}
+                    className="flex items-center gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-secondary/60"
+                  >
+                    <span
+                      aria-hidden
+                      className="size-2.5 shrink-0 rounded-full"
+                      style={{ background: slice.color }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[12.5px] font-bold">{slice.label}</p>
+                      <p className="truncate text-[11px] text-muted-foreground">{slice.note}</p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p className="text-[12.5px] font-extrabold text-num">{mask(slice.value)}</p>
+                      <p className="text-[10.5px] font-semibold text-muted-foreground">
+                        {pctOf(slice.value)}%
+                      </p>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {/* Upcoming maturities */}
+          <section className="card-surface p-6">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-display text-base font-extrabold">Upcoming maturities</h2>
+              <Link
+                to="/portfolio/maturities"
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand"
+              >
+                Calendar <ChevronRight className="size-3.5" />
+              </Link>
+            </div>
+            {next && (
+              <div className="mt-4 rounded-xl bg-secondary/60 px-4 py-3.5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                  Next up
+                </p>
+                <p className="mt-1 truncate text-[13.5px] font-bold">{next.name}</p>
+                <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  {next.daysLeft} days · {next.date} · {mask(next.amount)}
+                </p>
+              </div>
+            )}
+            <ul className="mt-3 divide-y divide-border/60">
+              {UPCOMING_MATURITIES.slice(1, 5).map((m) => (
+                <li key={`${m.name}-${m.date}`} className="flex items-center gap-3 py-3">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-extrabold text-brand text-num">
+                    {m.daysLeft}d
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[12.5px] font-bold">{m.name}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {m.kind} · {m.date}
+                    </p>
+                  </div>
+                  <p className="shrink-0 text-[12.5px] font-extrabold text-num">{mask(m.amount)}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
