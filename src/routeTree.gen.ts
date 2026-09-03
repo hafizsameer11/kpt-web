@@ -23,6 +23,7 @@ import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SplashRouteImport } from './routes/splash'
+import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
@@ -56,6 +57,12 @@ import { Route as SignupPasswordRouteImport } from './routes/signup_/password'
 import { Route as SignupPhoneRouteImport } from './routes/signup_/phone'
 import { Route as SignupPinRouteImport } from './routes/signup_/pin'
 import { Route as SignupSuccessRouteImport } from './routes/signup_/success'
+import { Route as VerificationBvnRouteImport } from './routes/verification_/bvn'
+import { Route as VerificationBvnFailedRouteImport } from './routes/verification_/bvn-failed'
+import { Route as VerificationBvnMatchRouteImport } from './routes/verification_/bvn-match'
+import { Route as VerificationBvnProcessingRouteImport } from './routes/verification_/bvn-processing'
+import { Route as VerificationTier1RouteImport } from './routes/verification_/tier1'
+import { Route as VerificationTier1VerifiedRouteImport } from './routes/verification_/tier1-verified'
 import { Route as WalletAddMoneyRouteImport } from './routes/wallet_/add-money'
 import { Route as WalletCardRouteImport } from './routes/wallet_/card'
 import { Route as WalletFailedRouteImport } from './routes/wallet_/failed'
@@ -160,6 +167,11 @@ const SignupRoute = SignupRouteImport.update({
 const SplashRoute = SplashRouteImport.update({
   id: '/splash',
   path: '/splash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationRoute = VerificationRouteImport.update({
+  id: '/verification',
+  path: '/verification',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -327,6 +339,38 @@ const SignupSuccessRoute = SignupSuccessRouteImport.update({
   path: '/signup/success',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VerificationBvnRoute = VerificationBvnRouteImport.update({
+  id: '/verification_/bvn',
+  path: '/verification/bvn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationBvnFailedRoute = VerificationBvnFailedRouteImport.update({
+  id: '/verification_/bvn-failed',
+  path: '/verification/bvn-failed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationBvnMatchRoute = VerificationBvnMatchRouteImport.update({
+  id: '/verification_/bvn-match',
+  path: '/verification/bvn-match',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationBvnProcessingRoute =
+  VerificationBvnProcessingRouteImport.update({
+    id: '/verification_/bvn-processing',
+    path: '/verification/bvn-processing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const VerificationTier1Route = VerificationTier1RouteImport.update({
+  id: '/verification_/tier1',
+  path: '/verification/tier1',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationTier1VerifiedRoute =
+  VerificationTier1VerifiedRouteImport.update({
+    id: '/verification_/tier1-verified',
+    path: '/verification/tier1-verified',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const WalletAddMoneyRoute = WalletAddMoneyRouteImport.update({
   id: '/wallet_/add-money',
   path: '/wallet/add-money',
@@ -529,6 +573,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
+  '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
@@ -562,6 +607,12 @@ export interface FileRoutesByFullPath {
   '/signup/phone': typeof SignupPhoneRoute
   '/signup/pin': typeof SignupPinRoute
   '/signup/success': typeof SignupSuccessRoute
+  '/verification/bvn': typeof VerificationBvnRoute
+  '/verification/bvn-failed': typeof VerificationBvnFailedRoute
+  '/verification/bvn-match': typeof VerificationBvnMatchRoute
+  '/verification/bvn-processing': typeof VerificationBvnProcessingRoute
+  '/verification/tier1': typeof VerificationTier1Route
+  '/verification/tier1-verified': typeof VerificationTier1VerifiedRoute
   '/wallet/add-money': typeof WalletAddMoneyRoute
   '/wallet/card': typeof WalletCardRoute
   '/wallet/failed': typeof WalletFailedRoute
@@ -613,6 +664,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
+  '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
@@ -645,6 +697,12 @@ export interface FileRoutesByTo {
   '/signup/phone': typeof SignupPhoneRoute
   '/signup/pin': typeof SignupPinRoute
   '/signup/success': typeof SignupSuccessRoute
+  '/verification/bvn': typeof VerificationBvnRoute
+  '/verification/bvn-failed': typeof VerificationBvnFailedRoute
+  '/verification/bvn-match': typeof VerificationBvnMatchRoute
+  '/verification/bvn-processing': typeof VerificationBvnProcessingRoute
+  '/verification/tier1': typeof VerificationTier1Route
+  '/verification/tier1-verified': typeof VerificationTier1VerifiedRoute
   '/wallet/add-money': typeof WalletAddMoneyRoute
   '/wallet/card': typeof WalletCardRoute
   '/wallet/failed': typeof WalletFailedRoute
@@ -697,6 +755,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
+  '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
@@ -730,6 +789,12 @@ export interface FileRoutesById {
   '/signup_/phone': typeof SignupPhoneRoute
   '/signup_/pin': typeof SignupPinRoute
   '/signup_/success': typeof SignupSuccessRoute
+  '/verification_/bvn': typeof VerificationBvnRoute
+  '/verification_/bvn-failed': typeof VerificationBvnFailedRoute
+  '/verification_/bvn-match': typeof VerificationBvnMatchRoute
+  '/verification_/bvn-processing': typeof VerificationBvnProcessingRoute
+  '/verification_/tier1': typeof VerificationTier1Route
+  '/verification_/tier1-verified': typeof VerificationTier1VerifiedRoute
   '/wallet_/add-money': typeof WalletAddMoneyRoute
   '/wallet_/card': typeof WalletCardRoute
   '/wallet_/failed': typeof WalletFailedRoute
@@ -783,6 +848,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signup'
     | '/splash'
+    | '/verification'
     | '/welcome'
     | '/withdraw'
     | '/call-account/add-money'
@@ -816,6 +882,12 @@ export interface FileRouteTypes {
     | '/signup/phone'
     | '/signup/pin'
     | '/signup/success'
+    | '/verification/bvn'
+    | '/verification/bvn-failed'
+    | '/verification/bvn-match'
+    | '/verification/bvn-processing'
+    | '/verification/tier1'
+    | '/verification/tier1-verified'
     | '/wallet/add-money'
     | '/wallet/card'
     | '/wallet/failed'
@@ -867,6 +939,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signup'
     | '/splash'
+    | '/verification'
     | '/welcome'
     | '/withdraw'
     | '/call-account/add-money'
@@ -899,6 +972,12 @@ export interface FileRouteTypes {
     | '/signup/phone'
     | '/signup/pin'
     | '/signup/success'
+    | '/verification/bvn'
+    | '/verification/bvn-failed'
+    | '/verification/bvn-match'
+    | '/verification/bvn-processing'
+    | '/verification/tier1'
+    | '/verification/tier1-verified'
     | '/wallet/add-money'
     | '/wallet/card'
     | '/wallet/failed'
@@ -950,6 +1029,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signup'
     | '/splash'
+    | '/verification'
     | '/welcome'
     | '/withdraw'
     | '/call-account_/add-money'
@@ -983,6 +1063,12 @@ export interface FileRouteTypes {
     | '/signup_/phone'
     | '/signup_/pin'
     | '/signup_/success'
+    | '/verification_/bvn'
+    | '/verification_/bvn-failed'
+    | '/verification_/bvn-match'
+    | '/verification_/bvn-processing'
+    | '/verification_/tier1'
+    | '/verification_/tier1-verified'
     | '/wallet_/add-money'
     | '/wallet_/card'
     | '/wallet_/failed'
@@ -1035,6 +1121,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
   SplashRoute: typeof SplashRoute
+  VerificationRoute: typeof VerificationRoute
   WelcomeRoute: typeof WelcomeRoute
   WithdrawRoute: typeof WithdrawRoute
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
@@ -1068,6 +1155,12 @@ export interface RootRouteChildren {
   SignupPhoneRoute: typeof SignupPhoneRoute
   SignupPinRoute: typeof SignupPinRoute
   SignupSuccessRoute: typeof SignupSuccessRoute
+  VerificationBvnRoute: typeof VerificationBvnRoute
+  VerificationBvnFailedRoute: typeof VerificationBvnFailedRoute
+  VerificationBvnMatchRoute: typeof VerificationBvnMatchRoute
+  VerificationBvnProcessingRoute: typeof VerificationBvnProcessingRoute
+  VerificationTier1Route: typeof VerificationTier1Route
+  VerificationTier1VerifiedRoute: typeof VerificationTier1VerifiedRoute
   WalletAddMoneyRoute: typeof WalletAddMoneyRoute
   WalletCardRoute: typeof WalletCardRoute
   WalletFailedRoute: typeof WalletFailedRoute
@@ -1197,6 +1290,13 @@ declare module '@tanstack/react-router' {
       path: '/splash'
       fullPath: '/splash'
       preLoaderRoute: typeof SplashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification': {
+      id: '/verification'
+      path: '/verification'
+      fullPath: '/verification'
+      preLoaderRoute: typeof VerificationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/welcome': {
@@ -1428,6 +1528,48 @@ declare module '@tanstack/react-router' {
       path: '/signup/success'
       fullPath: '/signup/success'
       preLoaderRoute: typeof SignupSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification_/bvn': {
+      id: '/verification_/bvn'
+      path: '/verification/bvn'
+      fullPath: '/verification/bvn'
+      preLoaderRoute: typeof VerificationBvnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification_/bvn-failed': {
+      id: '/verification_/bvn-failed'
+      path: '/verification/bvn-failed'
+      fullPath: '/verification/bvn-failed'
+      preLoaderRoute: typeof VerificationBvnFailedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification_/bvn-match': {
+      id: '/verification_/bvn-match'
+      path: '/verification/bvn-match'
+      fullPath: '/verification/bvn-match'
+      preLoaderRoute: typeof VerificationBvnMatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification_/bvn-processing': {
+      id: '/verification_/bvn-processing'
+      path: '/verification/bvn-processing'
+      fullPath: '/verification/bvn-processing'
+      preLoaderRoute: typeof VerificationBvnProcessingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification_/tier1': {
+      id: '/verification_/tier1'
+      path: '/verification/tier1'
+      fullPath: '/verification/tier1'
+      preLoaderRoute: typeof VerificationTier1RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification_/tier1-verified': {
+      id: '/verification_/tier1-verified'
+      path: '/verification/tier1-verified'
+      fullPath: '/verification/tier1-verified'
+      preLoaderRoute: typeof VerificationTier1VerifiedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/wallet_/add-money': {
@@ -1714,6 +1856,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
   SplashRoute: SplashRoute,
+  VerificationRoute: VerificationRoute,
   WelcomeRoute: WelcomeRoute,
   WithdrawRoute: WithdrawRoute,
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
@@ -1747,6 +1890,12 @@ const rootRouteChildren: RootRouteChildren = {
   SignupPhoneRoute: SignupPhoneRoute,
   SignupPinRoute: SignupPinRoute,
   SignupSuccessRoute: SignupSuccessRoute,
+  VerificationBvnRoute: VerificationBvnRoute,
+  VerificationBvnFailedRoute: VerificationBvnFailedRoute,
+  VerificationBvnMatchRoute: VerificationBvnMatchRoute,
+  VerificationBvnProcessingRoute: VerificationBvnProcessingRoute,
+  VerificationTier1Route: VerificationTier1Route,
+  VerificationTier1VerifiedRoute: VerificationTier1VerifiedRoute,
   WalletAddMoneyRoute: WalletAddMoneyRoute,
   WalletCardRoute: WalletCardRoute,
   WalletFailedRoute: WalletFailedRoute,
