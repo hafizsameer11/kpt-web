@@ -30,6 +30,7 @@ import { Route as PortfolioHoldingIdRouteImport } from './routes/portfolio_.$hol
 import { Route as PortfolioHistoryRouteImport } from './routes/portfolio_.history'
 import { Route as PortfolioMaturitiesRouteImport } from './routes/portfolio_.maturities'
 import { Route as PortfolioTransactionsRouteImport } from './routes/portfolio_.transactions'
+import { Route as WithdrawAccountsRouteImport } from './routes/withdraw_/accounts'
 import { Route as WithdrawRestrictedRouteImport } from './routes/withdraw_/restricted'
 import { Route as ExploreProductIdProcessingRouteImport } from './routes/explore_.$productId_.processing'
 import { Route as ExploreProductIdRequestRouteImport } from './routes/explore_.$productId_.request'
@@ -152,6 +153,11 @@ const PortfolioTransactionsRoute = PortfolioTransactionsRouteImport.update({
   path: '/portfolio/transactions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WithdrawAccountsRoute = WithdrawAccountsRouteImport.update({
+  id: '/withdraw_/accounts',
+  path: '/withdraw/accounts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WithdrawRestrictedRoute = WithdrawRestrictedRouteImport.update({
   id: '/withdraw_/restricted',
   path: '/withdraw/restricted',
@@ -262,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/portfolio/history': typeof PortfolioHistoryRoute
   '/portfolio/maturities': typeof PortfolioMaturitiesRoute
   '/portfolio/transactions': typeof PortfolioTransactionsRoute
+  '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/restricted': typeof WithdrawRestrictedRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
@@ -300,6 +307,7 @@ export interface FileRoutesByTo {
   '/portfolio/history': typeof PortfolioHistoryRoute
   '/portfolio/maturities': typeof PortfolioMaturitiesRoute
   '/portfolio/transactions': typeof PortfolioTransactionsRoute
+  '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/restricted': typeof WithdrawRestrictedRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
@@ -340,6 +348,7 @@ export interface FileRoutesById {
   '/portfolio_/history': typeof PortfolioHistoryRoute
   '/portfolio_/maturities': typeof PortfolioMaturitiesRoute
   '/portfolio_/transactions': typeof PortfolioTransactionsRoute
+  '/withdraw_/accounts': typeof WithdrawAccountsRoute
   '/withdraw_/restricted': typeof WithdrawRestrictedRoute
   '/explore_/$productId_/processing': typeof ExploreProductIdProcessingRoute
   '/explore_/$productId_/request': typeof ExploreProductIdRequestRoute
@@ -381,6 +390,7 @@ export interface FileRouteTypes {
     | '/portfolio/history'
     | '/portfolio/maturities'
     | '/portfolio/transactions'
+    | '/withdraw/accounts'
     | '/withdraw/restricted'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
@@ -419,6 +429,7 @@ export interface FileRouteTypes {
     | '/portfolio/history'
     | '/portfolio/maturities'
     | '/portfolio/transactions'
+    | '/withdraw/accounts'
     | '/withdraw/restricted'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
@@ -458,6 +469,7 @@ export interface FileRouteTypes {
     | '/portfolio_/history'
     | '/portfolio_/maturities'
     | '/portfolio_/transactions'
+    | '/withdraw_/accounts'
     | '/withdraw_/restricted'
     | '/explore_/$productId_/processing'
     | '/explore_/$productId_/request'
@@ -498,6 +510,7 @@ export interface RootRouteChildren {
   PortfolioHistoryRoute: typeof PortfolioHistoryRoute
   PortfolioMaturitiesRoute: typeof PortfolioMaturitiesRoute
   PortfolioTransactionsRoute: typeof PortfolioTransactionsRoute
+  WithdrawAccountsRoute: typeof WithdrawAccountsRoute
   WithdrawRestrictedRoute: typeof WithdrawRestrictedRoute
   ExploreProductIdProcessingRoute: typeof ExploreProductIdProcessingRoute
   ExploreProductIdRequestRoute: typeof ExploreProductIdRequestRoute
@@ -659,6 +672,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioTransactionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/withdraw_/accounts': {
+      id: '/withdraw_/accounts'
+      path: '/withdraw/accounts'
+      fullPath: '/withdraw/accounts'
+      preLoaderRoute: typeof WithdrawAccountsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/withdraw_/restricted': {
       id: '/withdraw_/restricted'
       path: '/withdraw/restricted'
@@ -817,6 +837,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioHistoryRoute: PortfolioHistoryRoute,
   PortfolioMaturitiesRoute: PortfolioMaturitiesRoute,
   PortfolioTransactionsRoute: PortfolioTransactionsRoute,
+  WithdrawAccountsRoute: WithdrawAccountsRoute,
   WithdrawRestrictedRoute: WithdrawRestrictedRoute,
   ExploreProductIdProcessingRoute: ExploreProductIdProcessingRoute,
   ExploreProductIdRequestRoute: ExploreProductIdRequestRoute,
