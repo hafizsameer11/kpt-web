@@ -465,7 +465,7 @@ function FilterPanel({
       <DrawerContent className="max-h-[92svh] rounded-t-[2rem] bg-card px-0 pb-0 pt-2">
         <DrawerTitle className="sr-only">Filters</DrawerTitle>
         <DrawerDescription className="sr-only">
-          Filter transactions by type, period and status.
+          Filter transactions by search, type, period and status.
         </DrawerDescription>
         {content}
       </DrawerContent>
