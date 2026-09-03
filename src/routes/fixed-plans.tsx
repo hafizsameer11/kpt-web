@@ -241,8 +241,8 @@ function FixedPlansScreen() {
                       >
                         {band.rate}
                       </p>
-                      <button
-                        type="button"
+                      <Link
+                        to="/fixed-plans/create"
                         className={`mt-3 inline-flex w-full items-center justify-center gap-1 rounded-full px-3 py-2 text-[11px] font-extrabold press ${
                           featured
                             ? "bg-gold-gradient text-gold-foreground k-glow"
@@ -251,7 +251,7 @@ function FixedPlansScreen() {
                       >
                         <Plus className="size-3.5" strokeWidth={2.6} />
                         Invest
-                      </button>
+                      </Link>
                     </div>
                   </article>
                 );
