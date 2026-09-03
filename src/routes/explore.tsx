@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
+  Bell,
   Building2,
   Check,
   ChevronRight,
