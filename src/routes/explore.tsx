@@ -601,7 +601,9 @@ function Stat({
 function DesktopExplore() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
+  const [visible, setVisible] = useState(6);
   const [notified, setNotified] = useState<string[]>([]);
+
   const toggleNotify = (name: string) =>
     setNotified((prev) =>
       prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
@@ -654,7 +656,10 @@ function DesktopExplore() {
             <Search className="size-4 shrink-0 text-primary-foreground/70" />
             <input
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setVisible(6);
+              }}
               placeholder="Search products or issuers"
               aria-label="Search marketplace products"
               className="min-w-0 flex-1 bg-transparent text-[13.5px] font-semibold text-primary-foreground outline-none placeholder:font-medium placeholder:text-primary-foreground/50"
@@ -682,11 +687,14 @@ function DesktopExplore() {
             <button
               key={c.id}
               type="button"
-              onClick={() => setCategory(active ? null : c.id)}
+              onClick={() => {
+                setCategory(active ? null : c.id);
+                setVisible(6);
+              }}
               aria-pressed={active}
               className={`relative flex items-center gap-3.5 overflow-hidden rounded-xl px-5 py-4 text-left transition-transform press hover:-translate-y-0.5 ${
                 active
-                  ? "bg-brand-gradient text-primary-foreground shadow-float"
+                  ? "bg-brand-gradient text-primary-foreground shadow-float ring-2 ring-gold/70"
                   : "border border-border bg-card"
               }`}
             >
@@ -719,7 +727,7 @@ function DesktopExplore() {
         })}
       </div>
 
-      <div className="mt-4 grid items-start gap-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+      <div className="mt-4 grid items-start gap-4 lg:grid-cols-[minmax(0,2.4fr)_minmax(0,1fr)]">
         {/* Left column */}
         <div className="grid min-w-0 grid-cols-1 gap-4">
           {activeCategory && (
@@ -750,6 +758,7 @@ function DesktopExplore() {
                     onClick={() => {
                       setCategory(null);
                       setQuery("");
+                      setVisible(6);
                     }}
                     className="text-[11.5px] font-bold text-foreground underline-offset-4 hover:underline"
                   >
@@ -767,12 +776,24 @@ function DesktopExplore() {
                 </p>
               </div>
             ) : (
-              <div className="mt-4 grid gap-3 xl:grid-cols-2">
-                {results.map((p) => (
-                  <ProductCard key={p.id} product={p} />
-                ))}
-              </div>
+              <>
+                <div className="mt-4 divide-y divide-border overflow-hidden rounded-xl border border-border">
+                  {results.slice(0, visible).map((p) => (
+                    <DesktopProductRow key={p.id} product={p} />
+                  ))}
+                </div>
+                {results.length > visible && (
+                  <button
+                    type="button"
+                    onClick={() => setVisible((v) => v + 6)}
+                    className="mt-4 w-full rounded-xl border border-border py-3 text-[11.5px] font-bold uppercase tracking-[0.12em] text-foreground transition-colors press hover:border-gold/40 hover:text-gold"
+                  >
+                    Show {Math.min(6, results.length - visible)} more
+                  </button>
+                )}
+              </>
             )}
+
           </section>
         </div>
 
@@ -921,5 +942,63 @@ function DesktopExplore() {
         </div>
       </div>
     </div>
+  );
+}
+
+function DesktopProductRow({ product: p }: { product: ExploreProduct }) {
+  const tone =
+    p.availability === "open"
+      ? "bg-emerald-500/10 text-emerald-600"
+      : p.availability === "closing"
+        ? "bg-gold/15 text-gold"
+        : "bg-muted text-muted-foreground";
+
+  return (
+    <Link
+      to="/explore/$productId"
+      params={{ productId: p.id }}
+      className="group flex items-center gap-4 bg-card px-5 py-4 transition-colors hover:bg-accent/40"
+    >
+      <div className="min-w-0 flex-1">
+        <h3 className="text-[14px] font-extrabold leading-tight">{p.name}</h3>
+        <p className="mt-1 truncate text-[11.5px] text-muted-foreground">
+          {p.issuer} &middot; {p.category}
+        </p>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <span
+            className={`rounded-full px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-[0.1em] ${tone}`}
+          >
+            {AVAILABILITY_LABEL[p.availability]}
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-[10.5px] font-semibold text-muted-foreground">
+            <Clock3 className="size-3" /> {p.closes}
+          </span>
+        </div>
+      </div>
+
+      <div className="hidden w-20 shrink-0 text-right xl:block">
+        <p className="text-[9.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          Tenor
+        </p>
+        <p className="mt-0.5 text-[12.5px] font-bold">{p.tenor}</p>
+      </div>
+      <div className="hidden w-24 shrink-0 text-right lg:block">
+        <p className="text-[9.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          Minimum
+        </p>
+        <p className="mt-0.5 text-[12.5px] font-bold text-num">
+          {naira(p.minimum)}
+        </p>
+      </div>
+      <div className="w-28 shrink-0 text-right">
+        <p className="text-[9.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          Rate p.a.
+        </p>
+        <p className="mt-0.5 font-display text-[19px] font-extrabold leading-none tracking-[-0.02em] text-gold text-num">
+          {p.rate.replace(" p.a.", "")}
+        </p>
+      </div>
+      <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+    </Link>
   );
 }
