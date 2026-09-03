@@ -93,7 +93,8 @@ const GROUPS: { label: string; items: Item[] }[] = [
 function SettingsHome() {
   return (
     <AppShell title="Settings" navVariant="elevated">
-      <div className="pb-2">
+      {/* ===== MOBILE (unchanged) ===== */}
+      <div className="pb-2 md:hidden">
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-8 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:shadow-float">
           <span
             aria-hidden
