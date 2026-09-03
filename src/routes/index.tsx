@@ -90,10 +90,7 @@ function WeekStrip() {
 
 
 function HomeV2Screen() {
-  const { hidden, toggle, mask } = useBalanceVisibility();
   const isNewUser = useIsNewUser();
-  const [lens, setLens] = useState<LensKey>("total");
-  const active = LENSES.find((l) => l.key === lens) ?? LENSES[0];
 
   return (
     <AppShell title="Home" navVariant="elevated">
@@ -102,6 +99,22 @@ function HomeV2Screen() {
           <NewUserEmptyState />
         </div>
       ) : (
+        <>
+          <DesktopHome />
+          <MobileHome />
+        </>
+      )}
+    </AppShell>
+  );
+}
+
+function MobileHome() {
+  const { hidden, toggle, mask } = useBalanceVisibility();
+  const [lens, setLens] = useState<LensKey>("total");
+  const active = LENSES.find((l) => l.key === lens) ?? LENSES[0];
+
+  return (
+    <div className="md:hidden">
         <div className="pb-2">
           {/* ── Immersive navy canvas (full-bleed on mobile) ───────────── */}
           <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-5 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-10 md:pt-8 md:shadow-float">
