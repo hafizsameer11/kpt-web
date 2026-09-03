@@ -112,8 +112,8 @@ function CreatePlanTenorScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          {/* Tenor options (MOB-067) — premium layered cards */}
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {/* Tenor options (MOB-067) — sleek app-style selector list */}
+          <div className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-card">
             {TENOR_BANDS.map((b, i) => {
               const active = selected === b.days;
               const unaffordable = amount < b.minimum;
@@ -123,66 +123,61 @@ function CreatePlanTenorScreen() {
                   <button
                     type="button"
                     onClick={() => setSelected(b.days)}
-                    className={`relative w-full rounded-[2rem] border-2 p-5 text-left transition-all duration-200 press ${
-                      active
-                        ? "border-gold bg-primary text-primary-foreground shadow-float ring-4 ring-gold/10"
-                        : unaffordable
-                          ? "border-dashed border-border bg-card/60 opacity-70 grayscale"
-                          : "border-transparent bg-card shadow-card hover:shadow-float"
-                    }`}
+                    aria-pressed={active}
+                    className={`relative flex w-full items-center gap-3.5 px-4 py-4 text-left transition-colors duration-150 press md:px-5 ${
+                      i > 0 ? "border-t border-border/60" : ""
+                    } ${active ? "bg-primary/[0.04]" : "hover:bg-muted/40"}`}
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <p
-                        className={`text-[11px] font-semibold uppercase tracking-wider ${
-                          active ? "text-gold/70" : "text-muted-foreground"
-                        }`}
-                      >
-                        {label}
-                      </p>
-                      {active && (
-                        <span className="grid size-5 shrink-0 place-items-center rounded-full bg-gold text-gold-foreground">
-                          <Check className="size-3" strokeWidth={4} />
-                        </span>
-                      )}
-                    </div>
-                    <p
-                      className={`mt-1 font-display text-[24px] font-extrabold leading-none tracking-[-0.02em] ${
+                    {/* radio indicator */}
+                    <span
+                      className={`grid size-5 shrink-0 place-items-center rounded-full border-2 transition-all duration-200 ${
                         active
-                          ? "text-primary-foreground"
-                          : unaffordable
-                            ? "text-foreground/60"
-                            : "text-foreground"
+                          ? "border-gold bg-gold"
+                          : "border-muted-foreground/30 bg-transparent"
                       }`}
                     >
-                      {b.days}
-                    </p>
-                    <div className="mt-3">
-                      <span
-                        className={`inline-block rounded-md px-2 py-1 text-[13px] font-bold ${
-                          active
-                            ? "bg-gold text-gold-foreground"
-                            : unaffordable
-                              ? "bg-muted text-muted-foreground"
-                              : "bg-primary text-gold"
-                        }`}
-                      >
-                        {b.rate} p.a.
-                      </span>
-                    </div>
-                    <div className="mt-3 flex flex-col gap-1">
-                      <span
-                        className={`text-[10px] font-medium uppercase ${
-                          active ? "text-primary-foreground/50" : "text-muted-foreground"
-                        }`}
-                      >
-                        Min {naira(b.minimum)}
-                      </span>
-                      {unaffordable && !active && (
-                        <span className="text-[10px] font-bold uppercase tracking-tight text-destructive">
-                          Above your amount
+                      {active && <Check className="size-3 text-gold-foreground" strokeWidth={4} />}
+                    </span>
+
+                    {/* tenor + meta */}
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-baseline gap-2">
+                        <span
+                          className={`font-display text-[17px] font-extrabold tracking-[-0.01em] ${
+                            unaffordable ? "text-muted-foreground/70" : "text-foreground"
+                          }`}
+                        >
+                          {b.days}
                         </span>
-                      )}
-                    </div>
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                          {label}
+                        </span>
+                      </span>
+                      <span
+                        className={`mt-0.5 block text-[11.5px] ${
+                          unaffordable && !active
+                            ? "font-semibold text-destructive"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {unaffordable && !active
+                          ? `Above your amount · min ${naira(b.minimum)}`
+                          : `Min ${naira(b.minimum)}`}
+                      </span>
+                    </span>
+
+                    {/* rate */}
+                    <span
+                      className={`shrink-0 rounded-full px-3 py-1.5 text-[13px] font-extrabold text-num transition-colors ${
+                        active
+                          ? "bg-primary text-gold shadow-sm"
+                          : unaffordable
+                            ? "bg-muted text-muted-foreground"
+                            : "bg-gold/15 text-gold"
+                      }`}
+                    >
+                      {b.rate}
+                    </span>
                   </button>
                 </Rise>
               );
