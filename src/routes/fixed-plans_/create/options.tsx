@@ -57,6 +57,12 @@ const MATURITY_OPTIONS = [
     note: "Automatically reinvest principal + interest into the same plan.",
     icon: RefreshCcw,
   },
+  {
+    id: "call",
+    name: "Move to Call Account",
+    note: "Keep earning daily interest with same-day access.",
+    icon: PiggyBank,
+  },
 ] as const;
 
 /** MOB-071 — auto-invest frequencies. */
