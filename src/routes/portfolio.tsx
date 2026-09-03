@@ -111,8 +111,8 @@ function PortfolioScreen() {
     <AppShell title="Portfolio" navVariant="elevated">
       <div className="pb-2">
         {/* ── Hero + upcoming maturities (desktop side-by-side) ── */}
-        <div className="md:mx-auto md:max-w-[1200px] lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start lg:gap-6">
-          <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
+        <div className="md:mx-auto md:max-w-[1200px] lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-stretch lg:gap-6">
+          <section className="relative -mx-4 flex h-full flex-col overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
             <span
               aria-hidden
               className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
