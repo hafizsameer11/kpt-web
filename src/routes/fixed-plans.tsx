@@ -243,6 +243,7 @@ function FixedPlansScreen() {
                       </p>
                       <Link
                         to="/fixed-plans/create"
+                        search={{ plan: band.days }}
                         className={`mt-3 inline-flex w-full items-center justify-center gap-1 rounded-full px-3 py-2 text-[11px] font-extrabold press ${
                           featured
                             ? "bg-gold-gradient text-gold-foreground k-glow"
