@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, CalendarClock, Check, ChevronRight, Info, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, CalendarClock, Check, ChevronRight, Info, Minus, Plus, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
