@@ -36,6 +36,7 @@ import { Route as SettingsNotificationsRouteImport } from './routes/settings_/no
 import { Route as SettingsProfileRouteImport } from './routes/settings_/profile'
 import { Route as SettingsReferralsRouteImport } from './routes/settings_/referrals'
 import { Route as SettingsSecurityRouteImport } from './routes/settings_/security'
+import { Route as SettingsStatementsRouteImport } from './routes/settings_/statements'
 import { Route as WithdrawAccountsRouteImport } from './routes/withdraw_/accounts'
 import { Route as WithdrawAddAccountRouteImport } from './routes/withdraw_/add-account'
 import { Route as WithdrawAmountRouteImport } from './routes/withdraw_/amount'
@@ -197,6 +198,11 @@ const SettingsReferralsRoute = SettingsReferralsRouteImport.update({
 const SettingsSecurityRoute = SettingsSecurityRouteImport.update({
   id: '/settings_/security',
   path: '/settings/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsStatementsRoute = SettingsStatementsRouteImport.update({
+  id: '/settings_/statements',
+  path: '/settings/statements',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WithdrawAccountsRoute = WithdrawAccountsRouteImport.update({
@@ -373,6 +379,7 @@ export interface FileRoutesByFullPath {
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/referrals': typeof SettingsReferralsRoute
   '/settings/security': typeof SettingsSecurityRoute
+  '/settings/statements': typeof SettingsStatementsRoute
   '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/add-account': typeof WithdrawAddAccountRoute
   '/withdraw/amount': typeof WithdrawAmountRoute
@@ -428,6 +435,7 @@ export interface FileRoutesByTo {
   '/settings/profile': typeof SettingsProfileRoute
   '/settings/referrals': typeof SettingsReferralsRoute
   '/settings/security': typeof SettingsSecurityRoute
+  '/settings/statements': typeof SettingsStatementsRoute
   '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/add-account': typeof WithdrawAddAccountRoute
   '/withdraw/amount': typeof WithdrawAmountRoute
@@ -485,6 +493,7 @@ export interface FileRoutesById {
   '/settings_/profile': typeof SettingsProfileRoute
   '/settings_/referrals': typeof SettingsReferralsRoute
   '/settings_/security': typeof SettingsSecurityRoute
+  '/settings_/statements': typeof SettingsStatementsRoute
   '/withdraw_/accounts': typeof WithdrawAccountsRoute
   '/withdraw_/add-account': typeof WithdrawAddAccountRoute
   '/withdraw_/amount': typeof WithdrawAmountRoute
@@ -543,6 +552,7 @@ export interface FileRouteTypes {
     | '/settings/profile'
     | '/settings/referrals'
     | '/settings/security'
+    | '/settings/statements'
     | '/withdraw/accounts'
     | '/withdraw/add-account'
     | '/withdraw/amount'
@@ -598,6 +608,7 @@ export interface FileRouteTypes {
     | '/settings/profile'
     | '/settings/referrals'
     | '/settings/security'
+    | '/settings/statements'
     | '/withdraw/accounts'
     | '/withdraw/add-account'
     | '/withdraw/amount'
@@ -654,6 +665,7 @@ export interface FileRouteTypes {
     | '/settings_/profile'
     | '/settings_/referrals'
     | '/settings_/security'
+    | '/settings_/statements'
     | '/withdraw_/accounts'
     | '/withdraw_/add-account'
     | '/withdraw_/amount'
@@ -711,6 +723,7 @@ export interface RootRouteChildren {
   SettingsProfileRoute: typeof SettingsProfileRoute
   SettingsReferralsRoute: typeof SettingsReferralsRoute
   SettingsSecurityRoute: typeof SettingsSecurityRoute
+  SettingsStatementsRoute: typeof SettingsStatementsRoute
   WithdrawAccountsRoute: typeof WithdrawAccountsRoute
   WithdrawAddAccountRoute: typeof WithdrawAddAccountRoute
   WithdrawAmountRoute: typeof WithdrawAmountRoute
@@ -923,6 +936,13 @@ declare module '@tanstack/react-router' {
       path: '/settings/security'
       fullPath: '/settings/security'
       preLoaderRoute: typeof SettingsSecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/statements': {
+      id: '/settings_/statements'
+      path: '/settings/statements'
+      fullPath: '/settings/statements'
+      preLoaderRoute: typeof SettingsStatementsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/withdraw_/accounts': {
@@ -1166,6 +1186,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsProfileRoute: SettingsProfileRoute,
   SettingsReferralsRoute: SettingsReferralsRoute,
   SettingsSecurityRoute: SettingsSecurityRoute,
+  SettingsStatementsRoute: SettingsStatementsRoute,
   WithdrawAccountsRoute: WithdrawAccountsRoute,
   WithdrawAddAccountRoute: WithdrawAddAccountRoute,
   WithdrawAmountRoute: WithdrawAmountRoute,
