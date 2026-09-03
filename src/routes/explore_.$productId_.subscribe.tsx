@@ -269,8 +269,8 @@ function SubscribeScreen() {
               {closed ? "Fully subscribed" : "Continue"}
               {!closed && <ArrowRight className="size-4" strokeWidth={2.6} />}
             </button>
-            <p className="mt-2.5 text-center text-[11.5px] text-muted-foreground md:text-left">
-              You'll review the product, amount and funding method before confirming.
+            <p className="mt-2.5 whitespace-nowrap text-center text-[11.5px] text-muted-foreground md:text-left">
+              Review product, amount and funding method before confirming.
             </p>
           </div>
         </div>
