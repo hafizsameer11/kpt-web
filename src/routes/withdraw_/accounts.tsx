@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Check, Landmark, Plus, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
-import { maskAccount, SAVED_ACCOUNTS } from "@/lib/withdraw-data";
+import { findAccount, maskAccount, payoutEta, SAVED_ACCOUNTS } from "@/lib/withdraw-data";
 
 export const Route = createFileRoute("/withdraw_/accounts")({
   head: () => ({
@@ -33,6 +33,27 @@ export const Route = createFileRoute("/withdraw_/accounts")({
 function SelectAccountScreen() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState(SAVED_ACCOUNTS[0]?.id ?? "");
+
+  return (
+    <>
+      <div className="md:hidden">
+        <MobileSelectAccount selected={selected} setSelected={setSelected} />
+      </div>
+      <div className="hidden md:block">
+        <DesktopSelectAccount selected={selected} setSelected={setSelected} />
+      </div>
+    </>
+  );
+}
+
+function MobileSelectAccount({
+  selected,
+  setSelected,
+}: {
+  selected: string;
+  setSelected: (id: string) => void;
+}) {
+  const navigate = useNavigate();
 
   return (
     <AppShell title="Payout Account" navVariant="elevated">
@@ -143,6 +164,166 @@ function SelectAccountScreen() {
               Continue <ArrowRight className="size-4" strokeWidth={2.6} />
             </button>
           </div>
+        </div>
+      </div>
+    </AppShell>
+  );
+}
+
+function DesktopSelectAccount({
+  selected,
+  setSelected,
+}: {
+  selected: string;
+  setSelected: (id: string) => void;
+}) {
+  const navigate = useNavigate();
+  const acct = findAccount(selected);
+
+  return (
+    <AppShell title="Payout Account">
+      <div className="mx-auto w-full max-w-[1100px] space-y-6 pb-10">
+        <section className="relative overflow-hidden rounded-3xl bg-brand-gradient px-10 py-10 text-primary-foreground shadow-float">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-24 -top-36 size-96 rounded-full bg-gold/15 blur-[80px]"
+          />
+          <div className="relative flex flex-wrap items-end justify-between gap-6">
+            <div className="min-w-0">
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                Withdraw &middot; Step 1 of 3
+              </p>
+              <p className="mt-3 font-display text-[36px] font-extrabold leading-tight tracking-[-0.02em]">
+                Where should we send it?
+              </p>
+              <p className="mt-2 flex items-center gap-1.5 text-[13px] text-primary-foreground/65">
+                <ShieldCheck className="size-4" /> Payouts only go to accounts
+                in your name.
+              </p>
+            </div>
+            <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 text-[11px] font-bold text-primary-foreground">
+              {SAVED_ACCOUNTS.length} saved account
+              {SAVED_ACCOUNTS.length === 1 ? "" : "s"}
+            </span>
+          </div>
+        </section>
+
+        <div className="grid grid-cols-[minmax(0,1fr)_340px] items-start gap-6">
+          <div className="min-w-0 space-y-4">
+            <ul className="grid grid-cols-2 gap-4">
+              {SAVED_ACCOUNTS.map((a) => {
+                const active = a.id === selected;
+                return (
+                  <li key={a.id}>
+                    <button
+                      type="button"
+                      onClick={() => setSelected(a.id)}
+                      aria-pressed={active}
+                      className={`flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition-colors press ${
+                        active
+                          ? "border-gold bg-gold/[0.07] ring-1 ring-gold/40"
+                          : "border-border bg-card hover:border-gold/40"
+                      }`}
+                    >
+                      <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                        <Landmark className="size-5" strokeWidth={2.2} />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-center gap-2">
+                          <span className="truncate text-[14px] font-bold text-foreground">
+                            {a.accountName}
+                          </span>
+                          {a.primary && (
+                            <span className="shrink-0 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-gold">
+                              Primary
+                            </span>
+                          )}
+                        </span>
+                        <span className="mt-0.5 block truncate text-[12.5px] text-muted-foreground">
+                          {a.bank} &middot; {maskAccount(a.accountNumber)}
+                        </span>
+                      </span>
+                      <span
+                        className={`grid size-5 shrink-0 place-items-center rounded-full border ${
+                          active
+                            ? "border-gold bg-gold text-gold-foreground"
+                            : "border-border"
+                        }`}
+                      >
+                        {active && <Check className="size-3.5" strokeWidth={3} />}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <Link
+              to="/withdraw/add-account"
+              className="flex w-full items-center gap-4 rounded-2xl border border-dashed border-border bg-card p-5 text-left press hover:border-gold/50"
+            >
+              <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-gold/15 text-gold">
+                <Plus className="size-5" strokeWidth={2.4} />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[14px] font-bold text-foreground">
+                  Add New Account
+                </span>
+                <span className="block text-[12.5px] text-muted-foreground">
+                  We'll verify the account name instantly
+                </span>
+              </span>
+              <ArrowRight className="ml-auto size-4 shrink-0 text-muted-foreground" />
+            </Link>
+          </div>
+
+          <aside className="sticky top-6 min-w-0 space-y-4">
+            <section className="card-surface p-6">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Receiving account
+              </p>
+              <div className="mt-4 flex items-center gap-3">
+                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-navy/5 text-primary">
+                  <Landmark className="size-5" strokeWidth={2} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block truncate text-[14px] font-bold text-foreground">
+                    {acct.bank}
+                  </span>
+                  <span className="block truncate text-[12px] text-muted-foreground">
+                    {acct.accountName} &middot; {maskAccount(acct.accountNumber)}
+                  </span>
+                </span>
+              </div>
+              <p className="mt-4 flex items-center gap-1.5 text-[12px] text-muted-foreground">
+                <ShieldCheck className="size-3.5 text-primary" /> {payoutEta}
+              </p>
+              <button
+                type="button"
+                disabled={!selected}
+                onClick={() =>
+                  void navigate({
+                    to: "/withdraw/amount",
+                    search: { acct: selected },
+                  })
+                }
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40 disabled:shadow-none"
+              >
+                Continue <ArrowRight className="size-4" strokeWidth={2.6} />
+              </button>
+            </section>
+
+            <section className="rounded-2xl border border-border bg-muted/40 p-5">
+              <p className="flex items-center gap-2 text-[12px] font-bold text-foreground">
+                <ShieldCheck className="size-4 text-primary" /> Name-matched
+                payouts
+              </p>
+              <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
+                We only pay out to bank accounts that match your verified Kipit
+                name.
+              </p>
+            </section>
+          </aside>
         </div>
       </div>
     </AppShell>
