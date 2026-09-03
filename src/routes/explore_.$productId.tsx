@@ -217,9 +217,18 @@ function ProductDetailScreen() {
           {/* Estimate calculator */}
           <Rise delay={60}>
             <section className="mt-4 card-surface p-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Estimate your return
-              </p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Estimate your return
+                </p>
+                <Link
+                  to="/explore/$productId/calculator"
+                  params={{ productId: p.id }}
+                  className="text-[11.5px] font-bold text-foreground underline-offset-4 hover:underline"
+                >
+                  Full calculator
+                </Link>
+              </div>
               <div className="mt-3 flex items-center gap-3">
                 <button
                   type="button"
