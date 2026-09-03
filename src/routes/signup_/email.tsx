@@ -67,8 +67,7 @@ function EmailEntry() {
       </AuthField>
 
       <p className="mt-4 text-[11px] leading-relaxed text-brand-foreground/55">
-        We'll use this email for your statements, receipts and security alerts. You can add a
-        phone number later — no ID or documents needed to get in.
+        Used for statements and alerts. Add a phone number later.
       </p>
 
       <div className="mt-8">
