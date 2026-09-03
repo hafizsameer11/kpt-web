@@ -601,7 +601,9 @@ function Stat({
 function DesktopExplore() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
+  const [visible, setVisible] = useState(6);
   const [notified, setNotified] = useState<string[]>([]);
+
   const toggleNotify = (name: string) =>
     setNotified((prev) =>
       prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
