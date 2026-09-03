@@ -344,7 +344,7 @@ function ProductDetailScreen() {
           {/* FAQs */}
           <Rise delay={220}>
             <section className="mt-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                 Questions
               </p>
               <div className="mt-3 overflow-hidden rounded-xl border border-border bg-card">
@@ -358,20 +358,20 @@ function ProductDetailScreen() {
                       <button
                         type="button"
                         onClick={() => setOpenFaq(isOpen ? null : i)}
-                        className="flex w-full items-center justify-between gap-4 px-4 py-4 text-left"
+                        className="flex w-full items-center justify-between gap-4 px-5 py-[18px] text-left"
                         aria-expanded={isOpen}
                       >
-                        <span className="text-[13.5px] font-bold leading-snug text-foreground">
+                        <span className="text-[14.5px] font-bold leading-snug text-foreground">
                           {f.q}
                         </span>
                         {isOpen ? (
-                          <X className="size-5 shrink-0 text-muted-foreground" />
+                          <X className="size-5 shrink-0 text-muted-foreground" strokeWidth={1.5} />
                         ) : (
-                          <Plus className="size-5 shrink-0 text-muted-foreground" />
+                          <Plus className="size-5 shrink-0 text-muted-foreground" strokeWidth={1.5} />
                         )}
                       </button>
                       {isOpen && (
-                        <p className="k-rise px-4 pb-4 text-[13px] leading-relaxed text-muted-foreground">
+                        <p className="k-rise px-5 pb-[18px] text-[13px] leading-relaxed text-muted-foreground">
                           {f.a}
                         </p>
                       )}
