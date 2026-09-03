@@ -389,6 +389,7 @@ function ProductDetailScreen() {
             <Link
               to="/explore/$productId/subscribe"
               params={{ productId: p.id }}
+              search={{ amount }}
               aria-disabled={closed || belowMin || overWallet}
 
               className={`flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
