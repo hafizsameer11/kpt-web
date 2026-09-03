@@ -629,6 +629,7 @@ function DesktopCallAccount() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const total14 = CALL_ACCRUAL_TREND.reduce((a, b) => a + b, 0);
   const maxTrend = Math.max(...CALL_ACCRUAL_TREND);
+  const minTrend = Math.min(...CALL_ACCRUAL_TREND);
 
   return (
     <div className="hidden md:block">
@@ -763,7 +764,9 @@ function DesktopCallAccount() {
                         className={`w-full rounded-t-md transition-all duration-200 ${
                           isToday ? "bg-brand" : "bg-accent/25 group-hover:bg-accent/45"
                         }`}
-                        style={{ height: `${Math.max(8, (v / maxTrend) * 120)}px` }}
+                        style={{
+                          height: `${28 + ((v - minTrend) / (maxTrend - minTrend || 1)) * 100}px`,
+                        }}
                       />
                       <span
                         className={`text-[9.5px] font-semibold ${
