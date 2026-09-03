@@ -10,6 +10,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
+import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import { AmountCounter } from "@/components/kipit/motion";
 import { naira, HOLDINGS } from "@/lib/home-data";
