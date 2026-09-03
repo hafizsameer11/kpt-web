@@ -77,15 +77,19 @@ export const PAYOUTS = [
 export type QuickAction = {
   label: string;
   icon: LucideIcon;
-  to: "/invest" | "/portfolio" | "/explore";
+  to:
+    | "/call-account/add-money"
+    | "/call-account"
+    | "/fixed-plans/create"
+    | "/portfolio/transactions";
 };
 
 /** MOB-020 quick actions and their prototype destinations. */
 export const QUICK_ACTIONS: QuickAction[] = [
-  { label: "Add Money", icon: ArrowDownLeft, to: "/invest" },
-  { label: "Withdraw", icon: ArrowUpRight, to: "/portfolio" },
-  { label: "New Plan", icon: PlusCircle, to: "/invest" },
-  { label: "Statements", icon: FileText, to: "/portfolio" },
+  { label: "Add Money", icon: ArrowDownLeft, to: "/call-account/add-money" },
+  { label: "Withdraw", icon: ArrowUpRight, to: "/call-account" },
+  { label: "New Plan", icon: PlusCircle, to: "/fixed-plans/create" },
+  { label: "Statements", icon: FileText, to: "/portfolio/transactions" },
 ];
 
 /** Content feed — product updates, education, announcements. */

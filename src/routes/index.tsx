@@ -228,7 +228,11 @@ function HomeV2Screen() {
 
             <div className="grid gap-3 md:gap-4 lg:grid-cols-3">
               {/* Maturity countdown */}
-              <article className="card-surface p-4 md:p-6 lg:col-span-2">
+              <Link
+                to="/portfolio/$holdingId"
+                params={{ holdingId: "f1" }}
+                className="card-surface block p-4 press md:p-6 lg:col-span-2"
+              >
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
                   <div className="min-w-0">
                     <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
@@ -268,10 +272,10 @@ function HomeV2Screen() {
                     Payout {mask(NEXT_MATURITY.expectedPayout)}
                   </span>
                 </div>
-              </article>
+              </Link>
 
               {/* Weekly interest */}
-              <article className="card-surface p-4 md:p-6">
+              <Link to="/call-account" className="card-surface block p-4 press md:p-6">
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
                   Interest this week
                 </p>
@@ -281,7 +285,7 @@ function HomeV2Screen() {
                 <div className="mt-4">
                   <WeekStrip />
                 </div>
-              </article>
+              </Link>
             </div>
 
             {/* Stacked plan cards */}
@@ -302,8 +306,10 @@ function HomeV2Screen() {
                   );
                   const rail = i === 0 ? "bg-gold" : i === 1 ? "bg-brand" : "bg-teal";
                   return (
-                    <article
+                    <Link
                       key={h.name}
+                      to="/portfolio/$holdingId"
+                      params={{ holdingId: `f${i + 1}` }}
                       style={{ ["--d" as string]: `${150 + i * 90}ms` }}
                       className="k-rise card-surface flex items-center gap-3 p-4 press md:block md:p-5 md:transition-all md:hover:-translate-y-0.5 md:hover:shadow-float"
                     >
@@ -340,7 +346,7 @@ function HomeV2Screen() {
                       <p className="shrink-0 text-sm font-extrabold text-num md:hidden">
                         {mask(h.amount)}
                       </p>
-                    </article>
+                    </Link>
                   );
                 })}
               </div>
@@ -396,7 +402,15 @@ function HomeV2Screen() {
 
             {/* Payout timeline */}
             <section className="card-surface mt-5 p-4 md:p-6">
-              <h2 className="font-display text-base font-extrabold">Coming up</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="font-display text-base font-extrabold">Coming up</h2>
+                <Link
+                  to="/portfolio/maturities"
+                  className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
+                >
+                  Calendar <ChevronRight className="size-3.5" />
+                </Link>
+              </div>
               <ol className="mt-3.5 space-y-3.5">
                 {PAYOUTS.map((p, i) => (
                   <li
