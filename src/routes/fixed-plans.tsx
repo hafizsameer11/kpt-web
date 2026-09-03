@@ -6,10 +6,10 @@ import {
   ChevronRight,
   Plus,
   RefreshCw,
-  ShieldCheck,
   TrendingUp,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
+import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import { AmountCounter } from "@/components/kipit/motion";
 import { naira, HOLDINGS } from "@/lib/home-data";
@@ -423,11 +423,7 @@ function FixedPlansScreen() {
             )}
           </section>
 
-          <p className="mt-5 flex items-start gap-2 px-1 text-[11px] leading-relaxed text-muted-foreground">
-            <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
-            Rates are indicative per annum and confirmed at the point of investment. Funds are locked
-            for the selected tenor; early liquidation terms apply.
-          </p>
+          <DisclosureStrip variant="fixed" />
         </div>
       </div>
     </AppShell>
