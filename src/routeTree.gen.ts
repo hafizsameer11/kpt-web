@@ -52,6 +52,7 @@ import { Route as SettingsStatementsRouteImport } from './routes/settings_/state
 import { Route as SignupBiometricsRouteImport } from './routes/signup_/biometrics'
 import { Route as SignupConfirmPinRouteImport } from './routes/signup_/confirm-pin'
 import { Route as SignupDetailsRouteImport } from './routes/signup_/details'
+import { Route as SignupEmailRouteImport } from './routes/signup_/email'
 import { Route as SignupOtpRouteImport } from './routes/signup_/otp'
 import { Route as SignupPasswordRouteImport } from './routes/signup_/password'
 import { Route as SignupPinRouteImport } from './routes/signup_/pin'
@@ -322,6 +323,11 @@ const SignupConfirmPinRoute = SignupConfirmPinRouteImport.update({
 const SignupDetailsRoute = SignupDetailsRouteImport.update({
   id: '/signup_/details',
   path: '/signup/details',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupEmailRoute = SignupEmailRouteImport.update({
+  id: '/signup_/email',
+  path: '/signup/email',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupOtpRoute = SignupOtpRouteImport.update({
@@ -663,6 +669,7 @@ export interface FileRoutesByFullPath {
   '/signup/biometrics': typeof SignupBiometricsRoute
   '/signup/confirm-pin': typeof SignupConfirmPinRoute
   '/signup/details': typeof SignupDetailsRoute
+  '/signup/email': typeof SignupEmailRoute
   '/signup/otp': typeof SignupOtpRoute
   '/signup/password': typeof SignupPasswordRoute
   '/signup/pin': typeof SignupPinRoute
@@ -763,6 +770,7 @@ export interface FileRoutesByTo {
   '/signup/biometrics': typeof SignupBiometricsRoute
   '/signup/confirm-pin': typeof SignupConfirmPinRoute
   '/signup/details': typeof SignupDetailsRoute
+  '/signup/email': typeof SignupEmailRoute
   '/signup/otp': typeof SignupOtpRoute
   '/signup/password': typeof SignupPasswordRoute
   '/signup/pin': typeof SignupPinRoute
@@ -865,6 +873,7 @@ export interface FileRoutesById {
   '/signup_/biometrics': typeof SignupBiometricsRoute
   '/signup_/confirm-pin': typeof SignupConfirmPinRoute
   '/signup_/details': typeof SignupDetailsRoute
+  '/signup_/email': typeof SignupEmailRoute
   '/signup_/otp': typeof SignupOtpRoute
   '/signup_/password': typeof SignupPasswordRoute
   '/signup_/pin': typeof SignupPinRoute
@@ -968,6 +977,7 @@ export interface FileRouteTypes {
     | '/signup/biometrics'
     | '/signup/confirm-pin'
     | '/signup/details'
+    | '/signup/email'
     | '/signup/otp'
     | '/signup/password'
     | '/signup/pin'
@@ -1068,6 +1078,7 @@ export interface FileRouteTypes {
     | '/signup/biometrics'
     | '/signup/confirm-pin'
     | '/signup/details'
+    | '/signup/email'
     | '/signup/otp'
     | '/signup/password'
     | '/signup/pin'
@@ -1169,6 +1180,7 @@ export interface FileRouteTypes {
     | '/signup_/biometrics'
     | '/signup_/confirm-pin'
     | '/signup_/details'
+    | '/signup_/email'
     | '/signup_/otp'
     | '/signup_/password'
     | '/signup_/pin'
@@ -1271,6 +1283,7 @@ export interface RootRouteChildren {
   SignupBiometricsRoute: typeof SignupBiometricsRoute
   SignupConfirmPinRoute: typeof SignupConfirmPinRoute
   SignupDetailsRoute: typeof SignupDetailsRoute
+  SignupEmailRoute: typeof SignupEmailRoute
   SignupOtpRoute: typeof SignupOtpRoute
   SignupPasswordRoute: typeof SignupPasswordRoute
   SignupPinRoute: typeof SignupPinRoute
@@ -1624,6 +1637,13 @@ declare module '@tanstack/react-router' {
       path: '/signup/details'
       fullPath: '/signup/details'
       preLoaderRoute: typeof SignupDetailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup_/email': {
+      id: '/signup_/email'
+      path: '/signup/email'
+      fullPath: '/signup/email'
+      preLoaderRoute: typeof SignupEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup_/otp': {
@@ -2086,6 +2106,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupBiometricsRoute: SignupBiometricsRoute,
   SignupConfirmPinRoute: SignupConfirmPinRoute,
   SignupDetailsRoute: SignupDetailsRoute,
+  SignupEmailRoute: SignupEmailRoute,
   SignupOtpRoute: SignupOtpRoute,
   SignupPasswordRoute: SignupPasswordRoute,
   SignupPinRoute: SignupPinRoute,
