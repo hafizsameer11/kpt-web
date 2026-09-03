@@ -511,7 +511,7 @@ function DesktopHome() {
     <div className="hidden pb-4 md:block">
       {/* Row 1 — balance hero + quick actions */}
       <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
-        <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-6 text-primary-foreground shadow-float">
+        <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 pt-6 pb-4 text-primary-foreground shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-28 size-72 rounded-full bg-gold/25 blur-3xl"
