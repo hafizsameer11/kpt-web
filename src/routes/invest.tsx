@@ -331,6 +331,7 @@ function MobileInvest() {
 
 function DesktopInvest() {
   const { hidden, toggle, mask } = useBalanceVisibility();
+  const navigate = useNavigate();
 
   return (
     <div className="hidden pb-4 md:block">
