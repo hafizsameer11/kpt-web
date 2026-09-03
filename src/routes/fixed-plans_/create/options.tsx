@@ -353,7 +353,13 @@ function PlanOptionsScreen() {
                             active ? "border-gold bg-gold" : "border-muted-foreground/30"
                           }`}
                         >
-                          {active && <Check className="size-3 text-gold-foreground" strokeWidth={4} />}
+                          {active && (
+                            <Check
+                              key={o.id}
+                              className="k-pop size-3 text-gold-foreground"
+                              strokeWidth={4}
+                            />
+                          )}
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="block text-[13px] font-bold text-foreground">{o.name}</span>
