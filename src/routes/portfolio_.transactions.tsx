@@ -274,6 +274,8 @@ function TransactionHistoryScreen() {
         setStatus={setStatus}
         period={period}
         setPeriod={setPeriod}
+        query={query}
+        setQuery={setQuery}
         results={list.length}
       />
     </AppShell>
