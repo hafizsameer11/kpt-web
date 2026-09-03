@@ -76,7 +76,7 @@ function ExploreScreen() {
     <AppShell title="Explore" navVariant="elevated">
       <div className="pb-2">
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-14 md:pt-12 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
@@ -142,7 +142,7 @@ function ExploreScreen() {
                       onClick={() => setCategory(active ? null : c.id)}
                       aria-pressed={active}
                       style={{ ["--d" as string]: `${i * 80}ms` }}
-                      className={`k-rise relative flex flex-col justify-between overflow-hidden rounded-[1.5rem] p-4 text-left press md:rounded-[2rem] md:p-5 ${
+                      className={`k-rise relative flex flex-col justify-between overflow-hidden rounded-2xl p-4 text-left press md:rounded-2xl md:p-5 ${
                         active
                           ? "bg-brand-gradient text-primary-foreground shadow-float"
                           : "border border-border bg-card"
@@ -376,7 +376,7 @@ function FeaturedCarousel({ items }: { items: ExploreProduct[] }) {
                 params={{ productId: p.id }}
                 className="block press"
               >
-              <article className="relative flex min-h-[23rem] flex-col justify-between overflow-hidden rounded-[1.9rem] bg-brand-gradient p-5 text-primary-foreground shadow-float md:min-h-[24rem] md:p-6">
+              <article className="relative flex min-h-[23rem] flex-col justify-between overflow-hidden rounded-2xl bg-brand-gradient p-5 text-primary-foreground shadow-float md:min-h-[24rem] md:p-6">
                 <span
                   aria-hidden
                   className="pointer-events-none absolute -right-12 -top-20 size-52 rounded-full bg-gold/25 blur-[56px]"

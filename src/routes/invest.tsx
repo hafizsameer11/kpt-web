@@ -45,7 +45,7 @@ function InvestScreen() {
     <AppShell title="Invest" navVariant="elevated">
       <div className="pb-2">
         {/* ── Header canvas ─────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-14 md:pt-12 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
           {/* Soft aurora glows */}
           <span
             aria-hidden
@@ -65,7 +65,7 @@ function InvestScreen() {
             </p>
 
             {/* Call Account glass card (MOB-061 entry) */}
-            <section className="mt-6 rounded-[1.75rem] border border-white/12 bg-white/8 p-5 backdrop-blur-md md:p-6">
+            <section className="mt-6 rounded-2xl border border-white/12 bg-white/8 p-5 backdrop-blur-md md:p-6">
               <div className="flex items-start justify-between gap-3">
                 <Link
                   to="/call-account"
@@ -143,7 +143,7 @@ function InvestScreen() {
                   <article
                     key={band.days}
                     style={{ ["--d" as string]: `${i * 90}ms` }}
-                    className={`k-rise relative flex flex-col justify-between overflow-hidden rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-5 ${
+                    className={`k-rise relative flex flex-col justify-between overflow-hidden rounded-2xl p-4 md:rounded-2xl md:p-5 ${
                       featured
                         ? "bg-brand-gradient text-primary-foreground shadow-float"
                         : "border border-border bg-card"
@@ -270,7 +270,7 @@ function InvestScreen() {
           {/* Invest tools — MOB-069 / MOB-071 / MOB-072 / MOB-075 entry points */}
           <section className="mt-7">
             <h2 className="mb-3 px-1 font-display text-base font-extrabold">Invest tools</h2>
-            <div className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-sm md:grid md:grid-cols-2">
+            <div className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm md:grid md:grid-cols-2">
               {[
                 { icon: Calculator, label: "Calculator", note: "Model your payout before you commit" },
                 { icon: Repeat, label: "Auto-invest", note: "Fund your plans on a schedule" },

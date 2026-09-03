@@ -104,7 +104,7 @@ function HomeV2Screen() {
       ) : (
         <div className="pb-2">
           {/* ── Immersive navy canvas (full-bleed on mobile) ───────────── */}
-          <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-5 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-10 md:pt-8 md:shadow-float">
+          <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-5 text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:pb-10 md:pt-8 md:shadow-float">
             <div
               aria-hidden
               className="pointer-events-none absolute -right-20 -top-24 size-64 rounded-full bg-gold/25 blur-3xl"
@@ -200,7 +200,7 @@ function HomeV2Screen() {
               </div>
 
               {/* Quick actions — thumb row on mobile, panel on desktop */}
-              <div className="mt-6 grid grid-cols-4 gap-2 md:mt-0 md:grid-cols-2 md:gap-3 md:rounded-3xl md:border md:border-white/15 md:bg-white/5 md:p-4">
+              <div className="mt-6 grid grid-cols-4 gap-2 md:mt-0 md:grid-cols-2 md:gap-3 md:rounded-2xl md:border md:border-white/15 md:bg-white/5 md:p-4">
                 {QUICK_ACTIONS.map((a, i) => (
                   <Link
                     key={a.label}
@@ -347,7 +347,7 @@ function HomeV2Screen() {
             </section>
 
             {/* Idle wallet nudge */}
-            <section className="relative mt-5 overflow-hidden rounded-3xl bg-brand p-5 text-brand-foreground shadow-card md:p-6">
+            <section className="relative mt-5 overflow-hidden rounded-2xl bg-brand p-5 text-brand-foreground shadow-card md:p-6">
               <span
                 aria-hidden
                 className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-gold-gradient opacity-20 blur-2xl"
