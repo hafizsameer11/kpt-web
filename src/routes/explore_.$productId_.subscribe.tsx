@@ -259,8 +259,10 @@ function SubscribeScreen() {
 
           {/* CTA */}
           <div className="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom)+0.75rem)] z-30 mt-5 md:static md:bottom-auto">
-            <button
-              type="button"
+            <Link
+              to="/explore/$productId/review"
+              params={{ productId: product.id }}
+              search={{ amount, source }}
               disabled={!valid}
               className={`flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
                 valid ? "" : "pointer-events-none opacity-40 shadow-none"
@@ -268,7 +270,7 @@ function SubscribeScreen() {
             >
               {closed ? "Fully subscribed" : "Continue"}
               {!closed && <ArrowRight className="size-4" strokeWidth={2.6} />}
-            </button>
+            </Link>
             <p className="mt-2.5 whitespace-nowrap text-center text-[11.5px] text-muted-foreground md:text-left">
               Review product, amount and funding method before confirming.
             </p>
