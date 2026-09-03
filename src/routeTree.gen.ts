@@ -19,6 +19,7 @@ import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
@@ -29,6 +30,15 @@ import { Route as PortfolioHoldingIdRouteImport } from './routes/portfolio_.$hol
 import { Route as PortfolioHistoryRouteImport } from './routes/portfolio_.history'
 import { Route as PortfolioMaturitiesRouteImport } from './routes/portfolio_.maturities'
 import { Route as PortfolioTransactionsRouteImport } from './routes/portfolio_.transactions'
+import { Route as WithdrawAccountsRouteImport } from './routes/withdraw_/accounts'
+import { Route as WithdrawAddAccountRouteImport } from './routes/withdraw_/add-account'
+import { Route as WithdrawAmountRouteImport } from './routes/withdraw_/amount'
+import { Route as WithdrawDeclinedRouteImport } from './routes/withdraw_/declined'
+import { Route as WithdrawProcessingRouteImport } from './routes/withdraw_/processing'
+import { Route as WithdrawRestrictedRouteImport } from './routes/withdraw_/restricted'
+import { Route as WithdrawReviewRouteImport } from './routes/withdraw_/review'
+import { Route as WithdrawSuccessRouteImport } from './routes/withdraw_/success'
+import { Route as WithdrawTrackerRouteImport } from './routes/withdraw_/tracker'
 import { Route as ExploreProductIdProcessingRouteImport } from './routes/explore_.$productId_.processing'
 import { Route as ExploreProductIdRequestRouteImport } from './routes/explore_.$productId_.request'
 import { Route as ExploreProductIdRequestSubmittedRouteImport } from './routes/explore_.$productId_.request-submitted'
@@ -95,6 +105,11 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WithdrawRoute = WithdrawRouteImport.update({
+  id: '/withdraw',
+  path: '/withdraw',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CallAccountAddMoneyRoute = CallAccountAddMoneyRouteImport.update({
   id: '/call-account_/add-money',
   path: '/call-account/add-money',
@@ -143,6 +158,51 @@ const PortfolioMaturitiesRoute = PortfolioMaturitiesRouteImport.update({
 const PortfolioTransactionsRoute = PortfolioTransactionsRouteImport.update({
   id: '/portfolio_/transactions',
   path: '/portfolio/transactions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WithdrawAccountsRoute = WithdrawAccountsRouteImport.update({
+  id: '/withdraw_/accounts',
+  path: '/withdraw/accounts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WithdrawAddAccountRoute = WithdrawAddAccountRouteImport.update({
+  id: '/withdraw_/add-account',
+  path: '/withdraw/add-account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WithdrawAmountRoute = WithdrawAmountRouteImport.update({
+  id: '/withdraw_/amount',
+  path: '/withdraw/amount',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WithdrawDeclinedRoute = WithdrawDeclinedRouteImport.update({
+  id: '/withdraw_/declined',
+  path: '/withdraw/declined',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WithdrawProcessingRoute = WithdrawProcessingRouteImport.update({
+  id: '/withdraw_/processing',
+  path: '/withdraw/processing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WithdrawRestrictedRoute = WithdrawRestrictedRouteImport.update({
+  id: '/withdraw_/restricted',
+  path: '/withdraw/restricted',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WithdrawReviewRoute = WithdrawReviewRouteImport.update({
+  id: '/withdraw_/review',
+  path: '/withdraw/review',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WithdrawSuccessRoute = WithdrawSuccessRouteImport.update({
+  id: '/withdraw_/success',
+  path: '/withdraw/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WithdrawTrackerRoute = WithdrawTrackerRouteImport.update({
+  id: '/withdraw_/tracker',
+  path: '/withdraw/tracker',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExploreProductIdProcessingRoute =
@@ -239,6 +299,7 @@ export interface FileRoutesByFullPath {
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/withdraw': typeof WithdrawRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
@@ -249,6 +310,15 @@ export interface FileRoutesByFullPath {
   '/portfolio/history': typeof PortfolioHistoryRoute
   '/portfolio/maturities': typeof PortfolioMaturitiesRoute
   '/portfolio/transactions': typeof PortfolioTransactionsRoute
+  '/withdraw/accounts': typeof WithdrawAccountsRoute
+  '/withdraw/add-account': typeof WithdrawAddAccountRoute
+  '/withdraw/amount': typeof WithdrawAmountRoute
+  '/withdraw/declined': typeof WithdrawDeclinedRoute
+  '/withdraw/processing': typeof WithdrawProcessingRoute
+  '/withdraw/restricted': typeof WithdrawRestrictedRoute
+  '/withdraw/review': typeof WithdrawReviewRoute
+  '/withdraw/success': typeof WithdrawSuccessRoute
+  '/withdraw/tracker': typeof WithdrawTrackerRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
   '/explore/$productId/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -276,6 +346,7 @@ export interface FileRoutesByTo {
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/withdraw': typeof WithdrawRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
@@ -285,6 +356,15 @@ export interface FileRoutesByTo {
   '/portfolio/history': typeof PortfolioHistoryRoute
   '/portfolio/maturities': typeof PortfolioMaturitiesRoute
   '/portfolio/transactions': typeof PortfolioTransactionsRoute
+  '/withdraw/accounts': typeof WithdrawAccountsRoute
+  '/withdraw/add-account': typeof WithdrawAddAccountRoute
+  '/withdraw/amount': typeof WithdrawAmountRoute
+  '/withdraw/declined': typeof WithdrawDeclinedRoute
+  '/withdraw/processing': typeof WithdrawProcessingRoute
+  '/withdraw/restricted': typeof WithdrawRestrictedRoute
+  '/withdraw/review': typeof WithdrawReviewRoute
+  '/withdraw/success': typeof WithdrawSuccessRoute
+  '/withdraw/tracker': typeof WithdrawTrackerRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
   '/explore/$productId/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -313,6 +393,7 @@ export interface FileRoutesById {
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/withdraw': typeof WithdrawRoute
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
   '/call-account_/review': typeof CallAccountReviewRoute
   '/call-account_/success': typeof CallAccountSuccessRoute
@@ -323,6 +404,15 @@ export interface FileRoutesById {
   '/portfolio_/history': typeof PortfolioHistoryRoute
   '/portfolio_/maturities': typeof PortfolioMaturitiesRoute
   '/portfolio_/transactions': typeof PortfolioTransactionsRoute
+  '/withdraw_/accounts': typeof WithdrawAccountsRoute
+  '/withdraw_/add-account': typeof WithdrawAddAccountRoute
+  '/withdraw_/amount': typeof WithdrawAmountRoute
+  '/withdraw_/declined': typeof WithdrawDeclinedRoute
+  '/withdraw_/processing': typeof WithdrawProcessingRoute
+  '/withdraw_/restricted': typeof WithdrawRestrictedRoute
+  '/withdraw_/review': typeof WithdrawReviewRoute
+  '/withdraw_/success': typeof WithdrawSuccessRoute
+  '/withdraw_/tracker': typeof WithdrawTrackerRoute
   '/explore_/$productId_/processing': typeof ExploreProductIdProcessingRoute
   '/explore_/$productId_/request': typeof ExploreProductIdRequestRoute
   '/explore_/$productId_/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -352,6 +442,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/reports'
     | '/settings'
+    | '/withdraw'
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
@@ -362,6 +453,15 @@ export interface FileRouteTypes {
     | '/portfolio/history'
     | '/portfolio/maturities'
     | '/portfolio/transactions'
+    | '/withdraw/accounts'
+    | '/withdraw/add-account'
+    | '/withdraw/amount'
+    | '/withdraw/declined'
+    | '/withdraw/processing'
+    | '/withdraw/restricted'
+    | '/withdraw/review'
+    | '/withdraw/success'
+    | '/withdraw/tracker'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
     | '/explore/$productId/request-submitted'
@@ -389,6 +489,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/reports'
     | '/settings'
+    | '/withdraw'
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
@@ -398,6 +499,15 @@ export interface FileRouteTypes {
     | '/portfolio/history'
     | '/portfolio/maturities'
     | '/portfolio/transactions'
+    | '/withdraw/accounts'
+    | '/withdraw/add-account'
+    | '/withdraw/amount'
+    | '/withdraw/declined'
+    | '/withdraw/processing'
+    | '/withdraw/restricted'
+    | '/withdraw/review'
+    | '/withdraw/success'
+    | '/withdraw/tracker'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
     | '/explore/$productId/request-submitted'
@@ -425,6 +535,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/reports'
     | '/settings'
+    | '/withdraw'
     | '/call-account_/add-money'
     | '/call-account_/review'
     | '/call-account_/success'
@@ -435,6 +546,15 @@ export interface FileRouteTypes {
     | '/portfolio_/history'
     | '/portfolio_/maturities'
     | '/portfolio_/transactions'
+    | '/withdraw_/accounts'
+    | '/withdraw_/add-account'
+    | '/withdraw_/amount'
+    | '/withdraw_/declined'
+    | '/withdraw_/processing'
+    | '/withdraw_/restricted'
+    | '/withdraw_/review'
+    | '/withdraw_/success'
+    | '/withdraw_/tracker'
     | '/explore_/$productId_/processing'
     | '/explore_/$productId_/request'
     | '/explore_/$productId_/request-submitted'
@@ -463,6 +583,7 @@ export interface RootRouteChildren {
   PortfolioRoute: typeof PortfolioRoute
   ReportsRoute: typeof ReportsRoute
   SettingsRoute: typeof SettingsRoute
+  WithdrawRoute: typeof WithdrawRoute
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
   CallAccountReviewRoute: typeof CallAccountReviewRoute
   CallAccountSuccessRoute: typeof CallAccountSuccessRoute
@@ -473,6 +594,15 @@ export interface RootRouteChildren {
   PortfolioHistoryRoute: typeof PortfolioHistoryRoute
   PortfolioMaturitiesRoute: typeof PortfolioMaturitiesRoute
   PortfolioTransactionsRoute: typeof PortfolioTransactionsRoute
+  WithdrawAccountsRoute: typeof WithdrawAccountsRoute
+  WithdrawAddAccountRoute: typeof WithdrawAddAccountRoute
+  WithdrawAmountRoute: typeof WithdrawAmountRoute
+  WithdrawDeclinedRoute: typeof WithdrawDeclinedRoute
+  WithdrawProcessingRoute: typeof WithdrawProcessingRoute
+  WithdrawRestrictedRoute: typeof WithdrawRestrictedRoute
+  WithdrawReviewRoute: typeof WithdrawReviewRoute
+  WithdrawSuccessRoute: typeof WithdrawSuccessRoute
+  WithdrawTrackerRoute: typeof WithdrawTrackerRoute
   ExploreProductIdProcessingRoute: typeof ExploreProductIdProcessingRoute
   ExploreProductIdRequestRoute: typeof ExploreProductIdRequestRoute
   ExploreProductIdRequestSubmittedRoute: typeof ExploreProductIdRequestSubmittedRoute
@@ -556,6 +686,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/withdraw': {
+      id: '/withdraw'
+      path: '/withdraw'
+      fullPath: '/withdraw'
+      preLoaderRoute: typeof WithdrawRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/call-account_/add-money': {
       id: '/call-account_/add-money'
       path: '/call-account/add-money'
@@ -624,6 +761,69 @@ declare module '@tanstack/react-router' {
       path: '/portfolio/transactions'
       fullPath: '/portfolio/transactions'
       preLoaderRoute: typeof PortfolioTransactionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/withdraw_/accounts': {
+      id: '/withdraw_/accounts'
+      path: '/withdraw/accounts'
+      fullPath: '/withdraw/accounts'
+      preLoaderRoute: typeof WithdrawAccountsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/withdraw_/add-account': {
+      id: '/withdraw_/add-account'
+      path: '/withdraw/add-account'
+      fullPath: '/withdraw/add-account'
+      preLoaderRoute: typeof WithdrawAddAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/withdraw_/amount': {
+      id: '/withdraw_/amount'
+      path: '/withdraw/amount'
+      fullPath: '/withdraw/amount'
+      preLoaderRoute: typeof WithdrawAmountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/withdraw_/declined': {
+      id: '/withdraw_/declined'
+      path: '/withdraw/declined'
+      fullPath: '/withdraw/declined'
+      preLoaderRoute: typeof WithdrawDeclinedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/withdraw_/processing': {
+      id: '/withdraw_/processing'
+      path: '/withdraw/processing'
+      fullPath: '/withdraw/processing'
+      preLoaderRoute: typeof WithdrawProcessingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/withdraw_/restricted': {
+      id: '/withdraw_/restricted'
+      path: '/withdraw/restricted'
+      fullPath: '/withdraw/restricted'
+      preLoaderRoute: typeof WithdrawRestrictedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/withdraw_/review': {
+      id: '/withdraw_/review'
+      path: '/withdraw/review'
+      fullPath: '/withdraw/review'
+      preLoaderRoute: typeof WithdrawReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/withdraw_/success': {
+      id: '/withdraw_/success'
+      path: '/withdraw/success'
+      fullPath: '/withdraw/success'
+      preLoaderRoute: typeof WithdrawSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/withdraw_/tracker': {
+      id: '/withdraw_/tracker'
+      path: '/withdraw/tracker'
+      fullPath: '/withdraw/tracker'
+      preLoaderRoute: typeof WithdrawTrackerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/explore_/$productId_/processing': {
@@ -766,6 +966,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioRoute: PortfolioRoute,
   ReportsRoute: ReportsRoute,
   SettingsRoute: SettingsRoute,
+  WithdrawRoute: WithdrawRoute,
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
   CallAccountReviewRoute: CallAccountReviewRoute,
   CallAccountSuccessRoute: CallAccountSuccessRoute,
@@ -776,6 +977,15 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioHistoryRoute: PortfolioHistoryRoute,
   PortfolioMaturitiesRoute: PortfolioMaturitiesRoute,
   PortfolioTransactionsRoute: PortfolioTransactionsRoute,
+  WithdrawAccountsRoute: WithdrawAccountsRoute,
+  WithdrawAddAccountRoute: WithdrawAddAccountRoute,
+  WithdrawAmountRoute: WithdrawAmountRoute,
+  WithdrawDeclinedRoute: WithdrawDeclinedRoute,
+  WithdrawProcessingRoute: WithdrawProcessingRoute,
+  WithdrawRestrictedRoute: WithdrawRestrictedRoute,
+  WithdrawReviewRoute: WithdrawReviewRoute,
+  WithdrawSuccessRoute: WithdrawSuccessRoute,
+  WithdrawTrackerRoute: WithdrawTrackerRoute,
   ExploreProductIdProcessingRoute: ExploreProductIdProcessingRoute,
   ExploreProductIdRequestRoute: ExploreProductIdRequestRoute,
   ExploreProductIdRequestSubmittedRoute: ExploreProductIdRequestSubmittedRoute,

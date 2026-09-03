@@ -304,12 +304,12 @@ function CallAccountScreen() {
               >
                 Add money <ArrowUpRight className="size-3.5" strokeWidth={2.6} />
               </Link>
-              <button
-                type="button"
+              <Link
+                to="/withdraw"
                 className="inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[12px] font-bold text-primary-foreground/90 press hover:text-primary-foreground"
               >
                 <ArrowDownLeft className="size-3.5" strokeWidth={2.6} /> Withdraw
-              </button>
+              </Link>
               <a
                 href="#activity"
                 className="inline-flex items-center rounded-full px-4 py-2.5 text-[12px] font-bold text-primary-foreground/90 press hover:text-primary-foreground"
