@@ -272,10 +272,10 @@ function HomeV2Screen() {
                     Payout {mask(NEXT_MATURITY.expectedPayout)}
                   </span>
                 </div>
-              </article>
+              </Link>
 
               {/* Weekly interest */}
-              <article className="card-surface p-4 md:p-6">
+              <Link to="/call-account" className="card-surface block p-4 press md:p-6">
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
                   Interest this week
                 </p>
