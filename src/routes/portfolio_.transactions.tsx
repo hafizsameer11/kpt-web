@@ -189,20 +189,6 @@ function TransactionHistoryScreen() {
             </div>
           </div>
 
-          <FilterPanel
-            open={filtersOpen}
-            onOpenChange={setFiltersOpen}
-            isMobile={isMobile}
-            type={type}
-            setType={setType}
-            status={status}
-            setStatus={setStatus}
-            period={period}
-            setPeriod={setPeriod}
-            results={list.length}
-          />
-
-
           {/* List */}
           <ul className="mt-4 card-surface divide-y divide-border/60 overflow-hidden">
             {list.map((t, i) => (
