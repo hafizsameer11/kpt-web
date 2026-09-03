@@ -59,7 +59,7 @@ export function DashboardSidebar({
             <Link
               key={item.to}
               to={item.to}
-              className={`group relative flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-[13.5px] font-semibold press ${
+              className={`group relative flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13.5px] font-semibold press ${
                 active
                   ? "bg-brand text-brand-foreground shadow-card"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground"
@@ -81,7 +81,7 @@ export function DashboardSidebar({
         })}
       </nav>
 
-      <div className="m-4 overflow-hidden rounded-xl bg-brand-gradient p-5 text-primary-foreground">
+      <div className="m-4 overflow-hidden rounded-lg bg-brand-gradient p-5 text-primary-foreground">
         <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary-foreground/55">
           Wallet
         </p>

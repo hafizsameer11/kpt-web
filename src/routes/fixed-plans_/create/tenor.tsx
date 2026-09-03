@@ -81,7 +81,7 @@ function CreatePlanTenorScreen() {
     <AppShell title="Choose Tenor" navVariant="elevated">
       <div className="pb-2">
         {/* ── Hero summary ───────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
@@ -113,7 +113,7 @@ function CreatePlanTenorScreen() {
           />
 
           {/* Tenor options (MOB-067) — sleek app-style selector list */}
-          <div className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-card">
+          <div className="overflow-hidden rounded-xl border border-border/60 bg-card shadow-card">
             {TENOR_BANDS.map((b, i) => {
               const active = selected === b.days;
               const unaffordable = amount < b.minimum;
@@ -188,7 +188,7 @@ function CreatePlanTenorScreen() {
           <Rise delay={TENOR_BANDS.length * 60} className="mt-3">
             <section
               aria-label="Custom tenor"
-              className={`relative overflow-hidden rounded-2xl border transition-all duration-200 ${
+              className={`relative overflow-hidden rounded-xl border transition-all duration-200 ${
                 selected === "custom"
                   ? "border-gold/50 bg-primary text-primary-foreground shadow-float"
                   : "border-border/60 bg-card shadow-card"
@@ -208,7 +208,7 @@ function CreatePlanTenorScreen() {
                   className="flex w-full items-center gap-3.5 text-left press"
                 >
                   <span
-                    className={`grid size-10 shrink-0 place-items-center rounded-2xl ${
+                    className={`grid size-10 shrink-0 place-items-center rounded-xl ${
                       selected === "custom"
                         ? "bg-gold text-gold-foreground"
                         : "bg-primary/[0.06] text-foreground"
@@ -255,7 +255,7 @@ function CreatePlanTenorScreen() {
                     >
                       <Minus className="size-4" strokeWidth={3} />
                     </button>
-                    <span className="relative flex min-w-0 flex-1 items-baseline justify-center gap-1.5 rounded-2xl bg-white/10 px-3 py-2.5">
+                    <span className="relative flex min-w-0 flex-1 items-baseline justify-center gap-1.5 rounded-xl bg-white/10 px-3 py-2.5">
                       <input
                         inputMode="numeric"
                         autoComplete="off"
@@ -332,7 +332,7 @@ function CreatePlanTenorScreen() {
               to="/fixed-plans/create/options"
               search={{ amount, days }}
               aria-disabled={!valid}
-              className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
+              className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
                 valid ? "" : "pointer-events-none opacity-40 shadow-none"
               }`}
             >

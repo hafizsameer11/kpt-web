@@ -7,7 +7,7 @@ import { EMPTY_STATE_ART } from "@/components/kipit/art";
  */
 export function NewUserEmptyState() {
   return (
-    <section className="overflow-hidden rounded-2xl border border-dashed border-gold/60 bg-surface text-center shadow-card">
+    <section className="overflow-hidden rounded-xl border border-dashed border-gold/60 bg-surface text-center shadow-card">
       <img
         src={EMPTY_STATE_ART}
         alt="Abstract navy and gold shapes representing a growing portfolio"
