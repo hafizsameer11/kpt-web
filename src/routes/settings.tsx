@@ -222,105 +222,119 @@ function SettingsHome() {
             </div>
           </section>
 
-          <div className="mt-5 grid grid-cols-3 gap-5">
-            {[
-              {
-                to: "/verification" as const,
-                icon: ShieldCheck,
-                label: "Verification",
-                value: `${PROFILE.tier} verified`,
-                note: "Full access to funding and withdrawals",
-              },
-              {
-                to: "/withdraw/accounts" as const,
-                icon: Landmark,
-                label: "Payout accounts",
-                value: "2 saved",
-                note: "Bank destinations for withdrawals",
-              },
-              {
-                to: "/settings/cards" as const,
-                icon: CreditCard,
-                label: "Linked cards",
-                value: "2 cards",
-                note: "Saved cards for quick funding",
-              },
-            ].map((s) => (
-              <Link
-                key={s.label}
-                to={s.to}
-                className="card-surface group flex items-start gap-3.5 p-5 transition-colors hover:border-gold/40"
-              >
-                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25">
-                  <s.icon className="size-5" strokeWidth={2} />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                    {s.label}
-                  </p>
-                  <p className="mt-1 font-display text-[17px] font-extrabold tracking-[-0.01em]">
-                    {s.value}
-                  </p>
-                  <p className="mt-1 text-[11.5px] leading-snug text-muted-foreground">{s.note}</p>
-                </div>
-                <ChevronRight className="ml-auto size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            ))}
-          </div>
-
-          <div className="mt-5 grid grid-cols-2 items-start gap-5">
-            {GROUPS.map((group) => (
-              <section key={group.label}>
-                <h2 className="mb-2.5 px-1 font-display text-[12px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
-                  {group.label}
-                </h2>
-                <ul className="card-surface divide-y divide-border/60 overflow-hidden">
-                  {group.items.map((item) => (
-                    <li key={item.to}>
-                      <Link
-                        to={item.to}
-                        className="group relative flex items-center gap-3.5 px-5 py-4 transition-colors hover:bg-secondary/50"
-                      >
-                        <span
-                          aria-hidden
-                          className="absolute inset-y-0 left-0 w-[3px] origin-center scale-y-0 bg-gold transition-transform duration-300 group-hover:scale-y-100"
-                        />
-                        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25 transition-transform duration-300 group-hover:scale-105">
-                          <item.icon className="size-[18px]" strokeWidth={2} />
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-[14px] font-bold tracking-tight">
-                            {item.title}
-                          </p>
-                          <p className="mt-0.5 truncate text-[11.5px] text-muted-foreground">
-                            {item.sub}
-                          </p>
-                        </div>
-                        {item.meta ? (
-                          <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10.5px] font-extrabold text-muted-foreground">
-                            {item.meta}
+          <div className="mt-5 grid grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)] items-start gap-5">
+            {/* Left: one unified settings list */}
+            <div className="card-surface overflow-hidden">
+              {GROUPS.map((group, gi) => (
+                <section key={group.label} className={gi > 0 ? "border-t border-border" : ""}>
+                  <h2 className="bg-secondary/40 px-5 py-2.5 font-display text-[11px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
+                    {group.label}
+                  </h2>
+                  <ul className="divide-y divide-border/60">
+                    {group.items.map((item) => (
+                      <li key={item.to}>
+                        <Link
+                          to={item.to}
+                          className="group relative flex items-center gap-3.5 px-5 py-3.5 transition-colors hover:bg-secondary/50"
+                        >
+                          <span
+                            aria-hidden
+                            className="absolute inset-y-0 left-0 w-[3px] origin-center scale-y-0 bg-gold transition-transform duration-300 group-hover:scale-y-100"
+                          />
+                          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25 transition-transform duration-300 group-hover:scale-105">
+                            <item.icon className="size-[18px]" strokeWidth={2} />
                           </span>
-                        ) : null}
-                        <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform duration-300 group-hover:translate-x-0.5" />
-                      </Link>
-                    </li>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-[14px] font-bold tracking-tight">
+                              {item.title}
+                            </p>
+                            <p className="mt-0.5 truncate text-[11.5px] text-muted-foreground">
+                              {item.sub}
+                            </p>
+                          </div>
+                          {item.meta ? (
+                            <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10.5px] font-extrabold text-muted-foreground">
+                              {item.meta}
+                            </span>
+                          ) : null}
+                          <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform duration-300 group-hover:translate-x-0.5" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
+            </div>
+
+            {/* Right rail: account status + footer */}
+            <aside className="space-y-4">
+              <div className="card-surface overflow-hidden">
+                <p className="border-b border-border/60 bg-secondary/40 px-5 py-2.5 text-[11px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
+                  Account status
+                </p>
+                <div className="divide-y divide-border/60">
+                  {[
+                    {
+                      to: "/verification" as const,
+                      icon: ShieldCheck,
+                      label: "Verification",
+                      value: `${PROFILE.tier} verified`,
+                      note: "Full access to funding and withdrawals",
+                    },
+                    {
+                      to: "/withdraw/accounts" as const,
+                      icon: Landmark,
+                      label: "Payout accounts",
+                      value: "2 saved",
+                      note: "Bank destinations for withdrawals",
+                    },
+                    {
+                      to: "/settings/cards" as const,
+                      icon: CreditCard,
+                      label: "Linked cards",
+                      value: "2 cards",
+                      note: "Saved cards for quick funding",
+                    },
+                  ].map((s) => (
+                    <Link
+                      key={s.label}
+                      to={s.to}
+                      className="group flex items-start gap-3.5 px-5 py-4 transition-colors hover:bg-secondary/50"
+                    >
+                      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25">
+                        <s.icon className="size-[18px]" strokeWidth={2} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                          {s.label}
+                        </p>
+                        <p className="mt-0.5 font-display text-[16px] font-extrabold tracking-[-0.01em]">
+                          {s.value}
+                        </p>
+                        <p className="mt-1 text-[11.5px] leading-snug text-muted-foreground">
+                          {s.note}
+                        </p>
+                      </div>
+                      <ChevronRight className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                    </Link>
                   ))}
-                </ul>
-              </section>
-            ))}
+                </div>
+              </div>
+
+              <div className="card-surface p-5">
+                <Link
+                  to="/login"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-destructive/30 px-5 py-2.5 text-[13px] font-extrabold text-destructive transition-colors hover:bg-destructive/5"
+                >
+                  <LogOut className="size-4" strokeWidth={2.6} /> Log out
+                </Link>
+                <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
+                  Kipit v1.0.0 (prototype) · Investments carry risk. Returns are not guaranteed.
+                </p>
+              </div>
+            </aside>
           </div>
 
-          <div className="mt-6 flex items-center justify-between gap-6 rounded-xl border border-border bg-card px-5 py-4">
-            <p className="text-[11.5px] text-muted-foreground">
-              Kipit v1.0.0 (prototype) · Investments carry risk. Returns are not guaranteed.
-            </p>
-            <Link
-              to="/login"
-              className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-destructive/30 px-5 py-2.5 text-[13px] font-extrabold text-destructive transition-colors hover:bg-destructive/5"
-            >
-              <LogOut className="size-4" strokeWidth={2.6} /> Log out
-            </Link>
-          </div>
         </div>
       </div>
     </AppShell>
