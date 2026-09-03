@@ -19,6 +19,7 @@ import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
@@ -93,6 +94,11 @@ const ReportsRoute = ReportsRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WithdrawRoute = WithdrawRouteImport.update({
+  id: '/withdraw',
+  path: '/withdraw',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CallAccountAddMoneyRoute = CallAccountAddMoneyRouteImport.update({
@@ -239,6 +245,7 @@ export interface FileRoutesByFullPath {
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/withdraw': typeof WithdrawRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
@@ -276,6 +283,7 @@ export interface FileRoutesByTo {
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/withdraw': typeof WithdrawRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
@@ -313,6 +321,7 @@ export interface FileRoutesById {
   '/portfolio': typeof PortfolioRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
+  '/withdraw': typeof WithdrawRoute
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
   '/call-account_/review': typeof CallAccountReviewRoute
   '/call-account_/success': typeof CallAccountSuccessRoute
@@ -352,6 +361,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/reports'
     | '/settings'
+    | '/withdraw'
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
@@ -389,6 +399,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/reports'
     | '/settings'
+    | '/withdraw'
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
@@ -425,6 +436,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/reports'
     | '/settings'
+    | '/withdraw'
     | '/call-account_/add-money'
     | '/call-account_/review'
     | '/call-account_/success'
@@ -463,6 +475,7 @@ export interface RootRouteChildren {
   PortfolioRoute: typeof PortfolioRoute
   ReportsRoute: typeof ReportsRoute
   SettingsRoute: typeof SettingsRoute
+  WithdrawRoute: typeof WithdrawRoute
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
   CallAccountReviewRoute: typeof CallAccountReviewRoute
   CallAccountSuccessRoute: typeof CallAccountSuccessRoute
@@ -554,6 +567,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/withdraw': {
+      id: '/withdraw'
+      path: '/withdraw'
+      fullPath: '/withdraw'
+      preLoaderRoute: typeof WithdrawRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/call-account_/add-money': {
@@ -766,6 +786,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioRoute: PortfolioRoute,
   ReportsRoute: ReportsRoute,
   SettingsRoute: SettingsRoute,
+  WithdrawRoute: WithdrawRoute,
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
   CallAccountReviewRoute: CallAccountReviewRoute,
   CallAccountSuccessRoute: CallAccountSuccessRoute,
