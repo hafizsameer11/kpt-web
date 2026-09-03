@@ -409,9 +409,12 @@ function PortfolioScreen() {
               })}
             </ul>
           </section>
+          </div>
 
+          <aside className="min-w-0 lg:sticky lg:top-6">
           {/* Upcoming maturities */}
-          <section className="mt-7">
+          <section className="mt-7 lg:mt-0">
+
             <div className="mb-3 flex items-center justify-between px-1">
               <h2 className="font-display text-base font-extrabold">Upcoming maturities</h2>
               <Link
