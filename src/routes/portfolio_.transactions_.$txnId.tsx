@@ -178,10 +178,10 @@ function TransactionDetailScreen() {
                     <ChevronRight className="size-4 text-muted-foreground" />
                   </Link>
                   <Link
-                    to="/settings/support"
+                    to="/settings/help"
                     className="flex items-center justify-between gap-3 rounded-xl border border-border px-4 py-3 transition-colors hover:bg-secondary/50"
                   >
-                    <span className="text-[12.5px] font-bold">Report an issue</span>
+                    <span className="text-[12.5px] font-bold">Get help with this</span>
                     <ChevronRight className="size-4 text-muted-foreground" />
                   </Link>
                 </div>
