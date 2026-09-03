@@ -767,12 +767,24 @@ function DesktopExplore() {
                 </p>
               </div>
             ) : (
-              <div className="mt-4 grid gap-3 xl:grid-cols-2">
-                {results.map((p) => (
-                  <ProductCard key={p.id} product={p} />
-                ))}
-              </div>
+              <>
+                <div className="mt-4 divide-y divide-border overflow-hidden rounded-xl border border-border">
+                  {results.slice(0, visible).map((p) => (
+                    <DesktopProductRow key={p.id} product={p} />
+                  ))}
+                </div>
+                {results.length > visible && (
+                  <button
+                    type="button"
+                    onClick={() => setVisible((v) => v + 6)}
+                    className="mt-4 w-full rounded-xl border border-border py-3 text-[11.5px] font-bold uppercase tracking-[0.12em] text-foreground transition-colors press hover:border-gold/40 hover:text-gold"
+                  >
+                    Show {Math.min(6, results.length - visible)} more
+                  </button>
+                )}
+              </>
             )}
+
           </section>
         </div>
 
