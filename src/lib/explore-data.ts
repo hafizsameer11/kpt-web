@@ -72,6 +72,7 @@ export const EXPLORE_PRODUCTS: ExploreProduct[] = [
     minimum: 100_000,
     availability: "open",
     closes: "Closes 19 Sep 2026",
+    featured: true,
     blurb: "A half-year sovereign bill for parked cash.",
   },
   {
@@ -98,6 +99,7 @@ export const EXPLORE_PRODUCTS: ExploreProduct[] = [
     minimum: 5_000_000,
     availability: "closing",
     closes: "Closes in 6 days",
+    featured: true,
     blurb: "Private note secured on operating infrastructure assets.",
   },
   {
