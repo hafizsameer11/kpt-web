@@ -6,7 +6,7 @@ import { Rise } from "@/components/kipit/motion";
 import { feedArt } from "@/components/kipit/art";
 import { LEARN_ARTICLES, getLearnArticle } from "@/lib/learn-data";
 
-export const Route = createFileRoute("/learn/$articleId")({
+export const Route = createFileRoute("/learn_/$articleId")({
   loader: ({ params }) => {
     const article = getLearnArticle(params.articleId);
     if (!article) throw notFound();
@@ -142,7 +142,7 @@ function ArticleScreen() {
           </section>
         </Rise>
 
-        <DisclosureStrip className="mt-8" />
+        <div className="mt-8"><DisclosureStrip /></div>
       </div>
     </AppShell>
   );

@@ -211,7 +211,7 @@ function LearnScreen() {
           </Rise>
         )}
 
-        <DisclosureStrip className="mt-8" />
+        <div className="mt-8"><DisclosureStrip /></div>
       </div>
     </AppShell>
   );
