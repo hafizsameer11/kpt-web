@@ -27,7 +27,7 @@ export const Route = createFileRoute("/withdraw_/declined")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: WithdrawDeclined;
+  component: WithdrawDeclined,
 });
 
 function WithdrawDeclined() {
