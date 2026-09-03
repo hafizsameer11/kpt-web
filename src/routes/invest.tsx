@@ -334,7 +334,7 @@ function DesktopInvest() {
 
   return (
     <div className="hidden pb-4 md:block">
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(19rem,1fr)]">
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
         {/* Left column */}
         <div className="grid min-w-0 gap-4">
           {/* Call Account hero */}
@@ -429,7 +429,7 @@ function DesktopInvest() {
               </Link>
             </div>
 
-            <div className="mt-5 grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-5 grid gap-4 grid-cols-2 xl:grid-cols-4">
               {TENOR_BANDS.map((band, i) => {
                 const featured = i === 1;
                 return (
