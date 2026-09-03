@@ -414,7 +414,7 @@ function HomeV2Screen() {
                 </Link>
               </div>
               <ol className="mt-3.5 space-y-3.5">
-                {PAYOUTS.map((p, i) => (
+                {PAYOUTS.slice(0, 3).map((p, i) => (
                   <li
                     key={p.label}
                     style={{ ["--d" as string]: `${i * 90}ms` }}
