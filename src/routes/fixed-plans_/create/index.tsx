@@ -31,12 +31,17 @@ export const Route = createFileRoute("/fixed-plans_/create/")({
 });
 
 const QUICK = [100_000, 250_000, 500_000];
-const MINIMUM = Math.min(...TENOR_BANDS.map((b) => b.minimum));
-const BEST_RATE = Math.max(
+const LOWEST_MIN = Math.min(...TENOR_BANDS.map((b) => b.minimum));
+const TOP_RATE = Math.max(
   ...TENOR_BANDS.map((b) => Number(b.rate.replace("%", ""))),
 );
 
 function CreatePlanAmountScreen() {
+  const { plan } = Route.useSearch();
+  const band = TENOR_BANDS.find((b) => b.days === plan);
+  const MINIMUM = band?.minimum ?? LOWEST_MIN;
+  const BEST_RATE = band ? Number(band.rate.replace("%", "")) : TOP_RATE;
+
   const [raw, setRaw] = useState("");
   const amount = Number(raw.replace(/[^0-9]/g, "")) || 0;
   const belowMin = amount > 0 && amount < MINIMUM;
