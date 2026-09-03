@@ -168,7 +168,7 @@ function NotificationsScreen() {
                       <span className="flex items-center gap-2">
                         <span className="truncate text-sm font-bold">{item.title}</span>
                         {item.unread && (
-                          <span className="size-2 shrink-0 rounded-full bg-gold" />
+                          <span className="k-glow size-2 shrink-0 rounded-full bg-gold" />
                         )}
                       </span>
                       <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">

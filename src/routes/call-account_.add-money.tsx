@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira, WALLET } from "@/lib/home-data";
 import { CALL_ACCOUNT } from "@/lib/invest-data";
+import { useCountUp } from "@/components/kipit/motion";
 
 export const Route = createFileRoute("/call-account_/add-money")({
   head: () => ({
@@ -38,8 +39,8 @@ function AddMoneyScreen() {
   const overWallet = amount > WALLET;
   const valid = amount > 0 && !belowMin && !overWallet;
 
-  const dailyInterest = Math.round((amount * RATE) / 365);
-  const monthlyInterest = Math.round((amount * RATE) / 12);
+  const dailyInterest = useCountUp(Math.round((amount * RATE) / 365), 500);
+  const monthlyInterest = useCountUp(Math.round((amount * RATE) / 12), 500);
 
   return (
     <AppShell title="Add Money" navVariant="elevated">
@@ -99,7 +100,7 @@ function AddMoneyScreen() {
                   key={q}
                   type="button"
                   onClick={() => setRaw(String(q))}
-                  className={`shrink-0 flex-1 rounded-full border py-2 text-[12px] font-bold press ${
+                  className={`shrink-0 flex-1 rounded-full border py-2 text-[12px] font-bold transition-transform duration-150 press ${
                     amount === q
                       ? "border-gold bg-gold text-gold-foreground"
                       : "border-white/15 bg-white/10 text-primary-foreground/90"
@@ -145,7 +146,7 @@ function AddMoneyScreen() {
               </div>
 
               {(belowMin || overWallet) && (
-                <p className="mt-3 rounded-2xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
+                <p className="k-shake mt-3 rounded-2xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
                   {overWallet
                     ? `Amount exceeds your wallet balance. Shortfall ${naira(amount - WALLET)}.`
                     : `Minimum for the Call Account is ${naira(CALL_ACCOUNT.minimum)}.`}
