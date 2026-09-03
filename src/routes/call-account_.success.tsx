@@ -45,16 +45,31 @@ function SuccessScreen() {
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/20 blur-[64px]"
           />
           <div className="relative">
-            <span className="mx-auto grid size-16 place-items-center rounded-full bg-gold text-gold-foreground shadow-float">
-              <Check className="size-8" strokeWidth={3} />
+            <span className="relative mx-auto grid size-16 place-items-center">
+              <span
+                aria-hidden
+                className="k-success-ring absolute inset-0 rounded-full border-2 border-gold"
+              />
+              <span className="k-success-pop grid size-16 place-items-center rounded-full bg-gold text-gold-foreground shadow-float">
+                <svg viewBox="0 0 24 24" className="size-8" fill="none" aria-hidden>
+                  <path
+                    d="M5 12.5l4.5 4.5L19 7.5"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="k-success-check"
+                  />
+                </svg>
+              </span>
             </span>
-            <p className="mt-5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+            <p className="k-success-fade mt-5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
               Added to Call Account
             </p>
-            <p className="mt-2 font-display text-[38px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[46px]">
+            <p className="k-success-fade mt-2 font-display text-[38px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[46px]">
               {naira(amount)}
             </p>
-            <p className="mt-3 text-[12.5px] font-medium text-primary-foreground/70">
+            <p className="k-success-fade mt-3 text-[12.5px] font-medium text-primary-foreground/70">
               Interest starts accruing today at {CALL_ACCOUNT.rate}
             </p>
           </div>
