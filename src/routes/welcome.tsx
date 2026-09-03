@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ShieldCheck, TrendingUp, Wallet } from "lucide-react";
-import { Logo } from "@/components/kipit/Logo";
+import { ArrowRight, ShieldCheck, TrendingUp, Wallet } from "lucide-react";
+import { AnimatedLogo } from "@/components/kipit/AnimatedLogo";
 
 export const Route = createFileRoute("/welcome")({
   head: () => ({
@@ -24,53 +24,105 @@ export const Route = createFileRoute("/welcome")({
 });
 
 const highlights = [
-  { icon: TrendingUp, label: "Up to 22% p.a. on fixed plans" },
-  { icon: Wallet, label: "Daily interest on your call account" },
-  { icon: ShieldCheck, label: "SEC-licensed fund manager" },
+  {
+    icon: TrendingUp,
+    label: "Up to 22% p.a.",
+    detail: "on fixed-return plans",
+  },
+  {
+    icon: Wallet,
+    label: "Daily interest",
+    detail: "on your call account balance",
+  },
+  {
+    icon: ShieldCheck,
+    label: "SEC-licensed",
+    detail: "fund manager, funds held separately",
+  },
 ];
 
 function Welcome() {
   return (
     <div className="relative flex min-h-dvh flex-col overflow-hidden bg-brand-gradient text-brand-foreground">
-      <div className="pointer-events-none absolute -left-24 top-10 size-80 rounded-full bg-gold/20 blur-3xl" />
-      <div className="pointer-events-none absolute -right-24 bottom-10 size-80 rounded-full bg-white/10 blur-3xl" />
+      {/* ambient field */}
+      <div className="pointer-events-none absolute -left-28 -top-16 size-96 rounded-full bg-gold/25 blur-[110px]" />
+      <div className="pointer-events-none absolute -right-28 top-1/3 size-96 rounded-full bg-white/12 blur-[120px]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-[-14rem] mx-auto h-[26rem] w-[130%] rounded-[100%] border-t border-white/10 bg-white/[0.04]" />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.07]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
+          backgroundSize: "44px 44px",
+          maskImage: "radial-gradient(70% 55% at 50% 25%, black, transparent)",
+        }}
+      />
 
       <div className="relative mx-auto flex w-full max-w-md flex-1 flex-col px-6 pb-10 pt-14 md:max-w-lg md:justify-center">
-        <Logo tone="light" className="text-3xl" />
+        <div className="animate-rise" style={{ animationDelay: "40ms" }}>
+          <AnimatedLogo tone="light" className="text-3xl" />
+        </div>
 
-        <h1 className="mt-12 text-4xl font-semibold leading-[1.1] tracking-tight">
+        <span
+          className="animate-rise mt-10 inline-flex w-fit items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-gold"
+          style={{ animationDelay: "160ms" }}
+        >
+          <span className="size-1.5 rounded-full bg-gold" />
+          Wealth, simplified
+        </span>
+
+        <h1
+          className="animate-rise mt-5 text-[2.6rem] font-semibold leading-[1.05] tracking-tight"
+          style={{ animationDelay: "240ms" }}
+        >
           Your money,
           <br />
-          <span className="text-gold">working every day.</span>
+          <span className="bg-gradient-to-r from-gold via-gold to-[oklch(0.92_0.11_92)] bg-clip-text text-transparent">
+            working every day.
+          </span>
         </h1>
-        <p className="mt-4 max-w-sm text-sm leading-relaxed text-brand-foreground/70">
+        <p
+          className="animate-rise mt-4 max-w-sm text-sm leading-relaxed text-brand-foreground/70"
+          style={{ animationDelay: "320ms" }}
+        >
           Kipit brings your savings, fixed-return plans and curated investment products into one
           simple account.
         </p>
 
-        <ul className="mt-8 space-y-3">
-          {highlights.map(({ icon: Icon, label }) => (
-            <li key={label} className="flex items-center gap-3 text-sm text-brand-foreground/85">
-              <span className="flex size-9 items-center justify-center rounded-full bg-white/10 text-gold">
-                <Icon className="size-4" />
+        <ul className="mt-9 space-y-2.5">
+          {highlights.map(({ icon: Icon, label, detail }, i) => (
+            <li
+              key={label}
+              className="animate-rise group flex items-center gap-3.5 rounded-2xl border border-white/12 bg-white/[0.07] px-4 py-3.5 backdrop-blur-sm transition hover:border-gold/35 hover:bg-white/[0.11]"
+              style={{ animationDelay: `${400 + i * 90}ms` }}
+            >
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gold/15 text-gold ring-1 ring-inset ring-gold/25">
+                <Icon className="size-[1.15rem]" />
               </span>
-              {label}
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold leading-tight">{label}</span>
+                <span className="block truncate text-xs text-brand-foreground/60">{detail}</span>
+              </span>
             </li>
           ))}
         </ul>
 
-        <div className="mt-auto space-y-3 pt-12">
+        <div
+          className="animate-rise mt-auto space-y-3 pt-12"
+          style={{ animationDelay: "700ms" }}
+        >
           <Link
             to="/signup"
-            className="block w-full rounded-xl bg-gold px-5 py-3.5 text-center text-sm font-semibold text-gold-foreground transition active:scale-[0.99]"
+            className="group flex w-full items-center justify-center gap-2 rounded-2xl bg-gold px-5 py-4 text-center text-sm font-semibold text-gold-foreground shadow-[0_16px_40px_-16px_oklch(0.82_0.15_88_/_0.8)] transition active:scale-[0.99] hover:brightness-105"
           >
             Create account
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
           <Link
             to="/login"
-            className="block w-full rounded-xl border border-white/20 px-5 py-3.5 text-center text-sm font-semibold transition hover:bg-white/10"
+            className="block w-full rounded-2xl border border-white/20 bg-white/[0.04] px-5 py-4 text-center text-sm font-semibold backdrop-blur-sm transition hover:bg-white/10"
           >
-            Log in
+            I already have an account
           </Link>
           <p className="pt-2 text-center text-[11px] leading-relaxed text-brand-foreground/50">
             Investments carry risk. Returns are not guaranteed unless expressly stated in the
@@ -78,6 +130,20 @@ function Welcome() {
           </p>
         </div>
       </div>
+
+      <style>{`
+        @keyframes welcome-rise {
+          0% { opacity: 0; transform: translateY(14px); filter: blur(6px); }
+          100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+        .animate-rise {
+          opacity: 0;
+          animation: welcome-rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-rise { animation-duration: 0.01ms; opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }
