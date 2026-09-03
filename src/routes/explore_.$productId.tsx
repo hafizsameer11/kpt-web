@@ -78,7 +78,7 @@ function ProductNotFound() {
 function ProductDetailScreen() {
   const { product: p, detail } = Route.useLoaderData();
   const [amount, setAmount] = useState(p.minimum);
-  const [inputValue, setInputValue] = useState(String(p.minimum));
+  const [inputValue, setInputValue] = useState(p.minimum.toLocaleString("en-NG"));
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const closed = p.availability === "closed";
