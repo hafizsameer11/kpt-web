@@ -192,44 +192,73 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
         </div>
       </div>
 
-      {/* Desktop: four image cards */}
+      {/* Desktop: four image cards — first blue, rest white */}
       <div className="mt-4 hidden gap-4 md:grid md:grid-cols-4">
-        {LEARN_ARTICLES.slice(0, 4).map((item, i) => (
-          <Link
-            key={item.id}
-            to="/learn/$articleId"
-            params={{ articleId: item.id }}
-            className="group card-surface flex flex-col overflow-hidden rounded-xl p-4 press hover:-translate-y-0.5 hover:shadow-float"
-          >
-            <div className="relative -mx-4 -mt-4 h-36 overflow-hidden">
-              <img
-                src={articleArt(item.id, i)}
-                alt=""
-                aria-hidden="true"
-                loading="lazy"
-                className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <span
-                aria-hidden
-                className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-background to-transparent"
-              />
-            </div>
-            <div className="mt-3 flex flex-1 flex-col">
-              <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-brand">
-                {item.tag}
-              </p>
-              <h3 className="mt-1.5 font-display text-sm font-extrabold leading-snug">
-                {item.title}
-              </h3>
-              <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
-                {item.body}
-              </p>
-              <span className="mt-auto inline-flex items-center gap-1 pt-3 text-[10px] font-bold uppercase tracking-[0.16em] text-gold">
-                Read <ArrowUpRight className="size-3" />
-              </span>
-            </div>
-          </Link>
-        ))}
+        {LEARN_ARTICLES.slice(0, 4).map((item, i) => {
+          const isLead = i === 0;
+          return (
+            <Link
+              key={item.id}
+              to="/learn/$articleId"
+              params={{ articleId: item.id }}
+              className={`group flex flex-col overflow-hidden rounded-xl p-4 press hover:-translate-y-0.5 hover:shadow-float ${
+                isLead
+                  ? "bg-brand-gradient text-primary-foreground"
+                  : "card-surface"
+              }`}
+            >
+              <div className="relative -mx-4 -mt-4 h-36 overflow-hidden">
+                <img
+                  src={articleArt(item.id, i)}
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <span
+                  aria-hidden
+                  className={`absolute inset-x-0 bottom-0 h-10 ${
+                    isLead
+                      ? "bg-gradient-to-t from-brand to-transparent"
+                      : "bg-gradient-to-t from-background to-transparent"
+                  }`}
+                />
+              </div>
+              <div className="mt-3 flex flex-1 flex-col">
+                <span
+                  className={`self-start rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.14em] ${
+                    isLead
+                      ? "border border-white/20 bg-white/10 text-primary-foreground/85"
+                      : "text-brand"
+                  }`}
+                >
+                  {item.tag}
+                </span>
+                <h3
+                  className={`mt-1.5 font-display text-sm font-extrabold leading-snug ${
+                    isLead ? "" : "text-foreground"
+                  }`}
+                >
+                  {item.title}
+                </h3>
+                <p
+                  className={`mt-1 line-clamp-2 text-[11px] leading-relaxed ${
+                    isLead ? "text-primary-foreground/75" : "text-muted-foreground"
+                  }`}
+                >
+                  {item.body}
+                </p>
+                <span
+                  className={`mt-auto inline-flex items-center gap-1 pt-3 text-[10px] font-bold uppercase tracking-[0.16em] ${
+                    isLead ? "text-gold" : "text-gold"
+                  }`}
+                >
+                  Read <ArrowUpRight className="size-3" />
+                </span>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
