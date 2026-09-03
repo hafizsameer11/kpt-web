@@ -9,7 +9,6 @@ import {
   RefreshCw,
   Repeat,
 } from "lucide-react";
-import { toast } from "sonner";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
@@ -275,23 +274,15 @@ function InvestScreen() {
             <div className="overflow-hidden rounded-xl border border-border/60 bg-card shadow-sm md:grid md:grid-cols-2">
               {[
                 { icon: Calculator, label: "Calculator", note: "Model your payout before you commit", to: "/calculator" as const },
-                { icon: Repeat, label: "Auto-invest", note: "Fund your plans on a schedule" },
+                { icon: Repeat, label: "Auto-invest", note: "Fund your plans on a schedule", to: "/auto-invest" as const },
                 { icon: Gift, label: "Gift invest", note: "Send a plan to someone", to: "/gifts" as const },
                 { icon: RefreshCw, label: "Roll over", note: "Reinvest automatically at maturity", to: "/portfolio/maturities" as const },
               ].map((t, i) => {
-                const Comp = ("to" in t && t.to ? Link : "button") as React.ElementType;
                 return (
-                <Comp
+                <Link
                   key={t.label}
-                  {...("to" in t && t.to
-                    ? { to: t.to }
-                    : {
-                        type: "button" as const,
-                        onClick: () =>
-                          toast("Auto-invest is coming soon", {
-                            description: "You'll be able to schedule recurring funding for your plans.",
-                          }),
-                      })}
+                  to={t.to}
+
 
                   style={{ ["--d" as string]: `${i * 70}ms` }}
                   className={`k-rise group flex w-full items-center gap-3.5 px-4 py-4 text-left transition-colors hover:bg-muted/50 ${
@@ -310,7 +301,7 @@ function InvestScreen() {
                     </span>
                   </span>
                   <ChevronRight className="size-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
-                </Comp>
+                </Link>
                 );
               })}
             </div>

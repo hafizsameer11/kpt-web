@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AutoInvestRouteImport } from './routes/auto-invest'
 import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as CallAccountRouteImport } from './routes/call-account'
 import { Route as ExploreRouteImport } from './routes/explore'
@@ -118,6 +119,11 @@ import { Route as PortfolioTransactionsTxnIdReceiptRouteImport } from './routes/
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AutoInvestRoute = AutoInvestRouteImport.update({
+  id: '/auto-invest',
+  path: '/auto-invest',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalculatorRoute = CalculatorRouteImport.update({
@@ -659,6 +665,7 @@ const PortfolioTransactionsTxnIdReceiptRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
@@ -766,6 +773,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
@@ -873,6 +881,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
@@ -982,6 +991,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auto-invest'
     | '/calculator'
     | '/call-account'
     | '/explore'
@@ -1089,6 +1099,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auto-invest'
     | '/calculator'
     | '/call-account'
     | '/explore'
@@ -1195,6 +1206,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/auto-invest'
     | '/calculator'
     | '/call-account'
     | '/explore'
@@ -1303,6 +1315,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AutoInvestRoute: typeof AutoInvestRoute
   CalculatorRoute: typeof CalculatorRoute
   CallAccountRoute: typeof CallAccountRoute
   ExploreRoute: typeof ExploreRoute
@@ -1410,6 +1423,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auto-invest': {
+      id: '/auto-invest'
+      path: '/auto-invest'
+      fullPath: '/auto-invest'
+      preLoaderRoute: typeof AutoInvestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calculator': {
@@ -2166,6 +2186,7 @@ const FixedPlansCreateRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AutoInvestRoute: AutoInvestRoute,
   CalculatorRoute: CalculatorRoute,
   CallAccountRoute: CallAccountRoute,
   ExploreRoute: ExploreRoute,

@@ -119,3 +119,67 @@ export const MATURED_PLANS = [
     status: "Rolled over",
   },
 ];
+
+/** Auto-invest rules — recurring funding schedules for Kipit plans. */
+export type AutoInvestFrequency = "Weekly" | "Every 2 weeks" | "Monthly";
+
+export type AutoInvestRule = {
+  id: string;
+  destination: string;
+  rate: string;
+  amount: number;
+  frequency: AutoInvestFrequency;
+  nextRun: string;
+  fundedFrom: string;
+  investedToDate: number;
+  active: boolean;
+};
+
+export const AUTO_INVEST_FREQUENCIES: AutoInvestFrequency[] = [
+  "Weekly",
+  "Every 2 weeks",
+  "Monthly",
+];
+
+export const AUTO_INVEST_DESTINATIONS = [
+  { name: "Kipit Call Account", rate: "14.5% p.a.", minimum: 5_000 },
+  { name: "Kipit Fixed Income", rate: "19.2% p.a.", minimum: 100_000 },
+  { name: "Kipit Target Savings", rate: "16.0% p.a.", minimum: 50_000 },
+  { name: "Kipit Vault", rate: "21.5% p.a.", minimum: 250_000 },
+];
+
+export const AUTO_INVEST_RULES: AutoInvestRule[] = [
+  {
+    id: "ai1",
+    destination: "Kipit Call Account",
+    rate: "14.5% p.a.",
+    amount: 150_000,
+    frequency: "Monthly",
+    nextRun: "01 Oct 2026",
+    fundedFrom: "Kipit wallet",
+    investedToDate: 1_350_000,
+    active: true,
+  },
+  {
+    id: "ai2",
+    destination: "Kipit Target Savings",
+    rate: "16.0% p.a.",
+    amount: 50_000,
+    frequency: "Weekly",
+    nextRun: "08 Sep 2026",
+    fundedFrom: "Kipit wallet",
+    investedToDate: 600_000,
+    active: true,
+  },
+  {
+    id: "ai3",
+    destination: "Kipit Fixed Income",
+    rate: "19.2% p.a.",
+    amount: 100_000,
+    frequency: "Monthly",
+    nextRun: "Paused",
+    fundedFrom: "Kipit wallet",
+    investedToDate: 300_000,
+    active: false,
+  },
+];
