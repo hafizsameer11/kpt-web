@@ -1,3 +1,4 @@
+import { KycGuard } from "@/components/kipit/KycGate";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Check, Landmark, Plus, ShieldCheck } from "lucide-react";
 import { useState } from "react";
@@ -22,7 +23,11 @@ export const Route = createFileRoute("/withdraw_/accounts")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: SelectAccountScreen,
+  component: () => (
+    <KycGuard required={2}>
+      <SelectAccountScreen />
+    </KycGuard>
+  ),
 });
 
 function SelectAccountScreen() {

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { TIERS } from "@/lib/kyc-data";
+import { setKycTier, TIER_LABEL, useKycTier, type KycTier } from "@/lib/kyc-state";
 
 export const Route = createFileRoute("/verification")({
   head: () => ({
@@ -36,13 +37,17 @@ export const Route = createFileRoute("/verification")({
 });
 
 const CHECKLIST = [
-  { icon: Fingerprint, label: "BVN verification", meta: "Tier 1", done: false },
-  { icon: IdCard, label: "National Identity Number", meta: "Tier 2", done: false },
-  { icon: Camera, label: "Live selfie check", meta: "Tier 2", done: false },
-  { icon: Landmark, label: "Address & proof of residence", meta: "Tier 2", done: false },
+  { icon: Fingerprint, label: "BVN verification", meta: "Tier 1", tier: 1 as const },
+  { icon: IdCard, label: "National Identity Number", meta: "Tier 2", tier: 2 as const },
+  { icon: Camera, label: "Live selfie check", meta: "Tier 2", tier: 2 as const },
+  { icon: Landmark, label: "Address & proof of residence", meta: "Tier 2", tier: 2 as const },
 ];
 
 function VerificationCentre() {
+  const tierLevel = useKycTier();
+  const checklist = CHECKLIST.map((c) => ({ ...c, done: tierLevel >= c.tier }));
+  const doneCount = checklist.filter((c) => c.done).length;
+
   return (
     <AppShell title="Verification" navVariant="elevated">
       <div className="pb-2">
@@ -64,10 +69,13 @@ function VerificationCentre() {
             </p>
 
             <div className="mt-5 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-white/15">
-              <span className="block h-full w-[10%] rounded-full bg-gold" />
+              <span
+                className="block h-full rounded-full bg-gold transition-all"
+                style={{ width: `${Math.max(10, (doneCount / checklist.length) * 100)}%` }}
+              />
             </div>
             <p className="mt-2 text-[11.5px] text-primary-foreground/60">
-              0 of 4 checks completed
+              {doneCount} of {checklist.length} checks completed · {TIER_LABEL[tierLevel]}
             </p>
           </div>
         </section>
@@ -92,10 +100,14 @@ function VerificationCentre() {
                     </span>
                     <div>
                       <p className="text-[14px] font-extrabold text-foreground">{tier.name}</p>
-                      <p className="text-[11.5px] text-muted-foreground">{tier.status}</p>
+                      <p className="text-[11.5px] text-muted-foreground">
+                        {(tier.id === "tier1" ? tierLevel >= 1 : tierLevel >= 2)
+                          ? "Verified"
+                          : "Not started"}
+                      </p>
                     </div>
                   </div>
-                  {tier.id === "tier2" && (
+                  {tier.id === "tier2" && tierLevel < 2 && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[10.5px] font-extrabold uppercase tracking-wide text-muted-foreground">
                       <Lock className="size-3" strokeWidth={2.6} /> Locked
                     </span>
@@ -119,7 +131,11 @@ function VerificationCentre() {
                   to={tier.id === "tier1" ? "/verification/tier1" : "/verification/tier2"}
                   className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3 text-[13px] font-extrabold text-primary-foreground shadow-float press"
                 >
-                  {tier.id === "tier1" ? "Start Tier 1" : "Start Tier 2"}
+                  {(tier.id === "tier1" ? tierLevel >= 1 : tierLevel >= 2)
+                    ? "Review details"
+                    : tier.id === "tier1"
+                      ? "Start Tier 1"
+                      : "Start Tier 2"}
                   <ArrowRight className="size-4" strokeWidth={2.6} />
                 </Link>
               </section>
@@ -131,7 +147,7 @@ function VerificationCentre() {
               Your checks
             </h2>
             <ul className="card-surface divide-y divide-border/60 overflow-hidden">
-              {CHECKLIST.map((item) => {
+              {checklist.map((item) => {
                 const Icon = item.icon;
                 return (
                   <li key={item.label} className="flex items-center gap-3.5 px-4 py-3.5">
@@ -162,6 +178,29 @@ function VerificationCentre() {
             <p className="mt-3 px-1 text-[11.5px] text-muted-foreground">
               Your data is encrypted and only used to verify your identity as required by law.
             </p>
+
+            <div className="card-surface mt-5 p-4">
+              <p className="text-[12.5px] font-extrabold text-foreground">Demo controls</p>
+              <p className="mt-1 text-[11.5px] text-muted-foreground">
+                Switch tier to preview how the just-in-time gates behave across the app.
+              </p>
+              <div className="mt-3 grid grid-cols-3 gap-2">
+                {([0, 1, 2] as KycTier[]).map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setKycTier(t)}
+                    className={`rounded-xl px-3 py-2.5 text-[12px] font-extrabold press ${
+                      tierLevel === t
+                        ? "bg-brand-gradient text-primary-foreground shadow-float"
+                        : "bg-secondary text-muted-foreground"
+                    }`}
+                  >
+                    {t === 0 ? "Tier 0" : `Tier ${t}`}
+                  </button>
+                ))}
+              </div>
+            </div>
           </section>
         </div>
       </div>

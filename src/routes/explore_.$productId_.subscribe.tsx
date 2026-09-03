@@ -1,3 +1,4 @@
+import { KycGuard } from "@/components/kipit/KycGate";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -46,7 +47,11 @@ export const Route = createFileRoute("/explore_/$productId_/subscribe")({
     if (!product) throw notFound();
     return { product };
   },
-  component: SubscribeScreen,
+  component: () => (
+    <KycGuard required={1}>
+      <SubscribeScreen />
+    </KycGuard>
+  ),
 });
 
 type Source = "wallet" | "add" | "card";

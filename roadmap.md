@@ -10,7 +10,8 @@
 - Settings section (MOB-140–154)
 - Wallet funding: add money, bank transfer, processing, success, card payment, failed (MOB-030–035)
 - KYC / Verification centre, Tier 1 BVN flow, Tier 2 NIN/selfie/address/occupation, review, pending, approved, rejected (MOB-040–057)
-- Onboarding & auth: splash, welcome, sign-up, OTP, PIN, biometrics, login, password reset (MOB-001–017)
+- Onboarding & auth: splash, welcome, email sign-up, OTP, PIN, biometrics, login, password reset (MOB-001–017)
+- Just-in-time KYC gates: Tier 1 on funding/investing, Tier 2 on withdrawals & payout accounts (Product Paper §7.2)
 
 ## Left to build
 ### 1. Gaps in built flows — 4 screens
