@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import { articleArt } from "@/components/kipit/art";
 import { FEED } from "@/lib/home-data";
+import { LEARN_ARTICLES } from "@/lib/learn-data";
 
 function SectionHead({ label = "For you" }: { label?: string }) {
   return (
