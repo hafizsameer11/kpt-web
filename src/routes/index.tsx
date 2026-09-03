@@ -511,7 +511,7 @@ function DesktopHome() {
     <div className="hidden pb-4 md:block">
       {/* Row 1 — balance hero + quick actions */}
       <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
-        <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-6 text-primary-foreground shadow-float">
+        <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 pt-6 pb-4 text-primary-foreground shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-28 size-72 rounded-full bg-gold/25 blur-3xl"
@@ -651,7 +651,7 @@ function DesktopHome() {
       </div>
 
       {/* Row 2 — interest this week + next maturity */}
-      <div className="mt-3 grid items-start gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+      <div className="mt-2 grid items-start gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
         <section className="card-surface p-6">
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -720,7 +720,7 @@ function DesktopHome() {
       </div>
 
       {/* Row 3 — plans table + payout timeline */}
-      <div className="mt-3 grid gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+      <div className="mt-2 grid gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
         <section className="card-surface overflow-hidden">
           <div className="flex items-center justify-between border-b border-border px-6 py-4">
             <h2 className="font-display text-base font-extrabold">Your plans</h2>
@@ -815,7 +815,7 @@ function DesktopHome() {
         </section>
       </div>
 
-      <ForYouFeature className="mt-4" />
+      <ForYouFeature className="mt-3" />
     </div>
   );
 }
