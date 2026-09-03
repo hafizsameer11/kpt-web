@@ -23,6 +23,8 @@ import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.s
 import { Route as ExploreProductIdRouteImport } from './routes/explore_.$productId'
 import { Route as FixedPlansCreateRouteImport } from './routes/fixed-plans_/create'
 import { Route as ExploreProductIdProcessingRouteImport } from './routes/explore_.$productId_.processing'
+import { Route as ExploreProductIdRequestRouteImport } from './routes/explore_.$productId_.request'
+import { Route as ExploreProductIdRequestSubmittedRouteImport } from './routes/explore_.$productId_.request-submitted'
 import { Route as ExploreProductIdReviewRouteImport } from './routes/explore_.$productId_.review'
 import { Route as ExploreProductIdSubscribeRouteImport } from './routes/explore_.$productId_.subscribe'
 import { Route as ExploreProductIdSuccessRouteImport } from './routes/explore_.$productId_.success'
@@ -105,6 +107,17 @@ const ExploreProductIdProcessingRoute =
     path: '/explore/$productId/processing',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ExploreProductIdRequestRoute = ExploreProductIdRequestRouteImport.update({
+  id: '/explore_/$productId_/request',
+  path: '/explore/$productId/request',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExploreProductIdRequestSubmittedRoute =
+  ExploreProductIdRequestSubmittedRouteImport.update({
+    id: '/explore_/$productId_/request-submitted',
+    path: '/explore/$productId/request-submitted',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ExploreProductIdReviewRoute = ExploreProductIdReviewRouteImport.update({
   id: '/explore_/$productId_/review',
   path: '/explore/$productId/review',
@@ -174,6 +187,8 @@ export interface FileRoutesByFullPath {
   '/explore/$productId': typeof ExploreProductIdRoute
   '/fixed-plans/create': typeof FixedPlansCreateRouteWithChildren
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
+  '/explore/$productId/request': typeof ExploreProductIdRequestRoute
+  '/explore/$productId/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
   '/explore/$productId/review': typeof ExploreProductIdReviewRoute
   '/explore/$productId/subscribe': typeof ExploreProductIdSubscribeRoute
   '/explore/$productId/success': typeof ExploreProductIdSuccessRoute
@@ -199,6 +214,8 @@ export interface FileRoutesByTo {
   '/call-account/success': typeof CallAccountSuccessRoute
   '/explore/$productId': typeof ExploreProductIdRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
+  '/explore/$productId/request': typeof ExploreProductIdRequestRoute
+  '/explore/$productId/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
   '/explore/$productId/review': typeof ExploreProductIdReviewRoute
   '/explore/$productId/subscribe': typeof ExploreProductIdSubscribeRoute
   '/explore/$productId/success': typeof ExploreProductIdSuccessRoute
@@ -226,6 +243,8 @@ export interface FileRoutesById {
   '/explore_/$productId': typeof ExploreProductIdRoute
   '/fixed-plans_/create': typeof FixedPlansCreateRouteWithChildren
   '/explore_/$productId_/processing': typeof ExploreProductIdProcessingRoute
+  '/explore_/$productId_/request': typeof ExploreProductIdRequestRoute
+  '/explore_/$productId_/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
   '/explore_/$productId_/review': typeof ExploreProductIdReviewRoute
   '/explore_/$productId_/subscribe': typeof ExploreProductIdSubscribeRoute
   '/explore_/$productId_/success': typeof ExploreProductIdSuccessRoute
@@ -254,6 +273,8 @@ export interface FileRouteTypes {
     | '/explore/$productId'
     | '/fixed-plans/create'
     | '/explore/$productId/processing'
+    | '/explore/$productId/request'
+    | '/explore/$productId/request-submitted'
     | '/explore/$productId/review'
     | '/explore/$productId/subscribe'
     | '/explore/$productId/success'
@@ -279,6 +300,8 @@ export interface FileRouteTypes {
     | '/call-account/success'
     | '/explore/$productId'
     | '/explore/$productId/processing'
+    | '/explore/$productId/request'
+    | '/explore/$productId/request-submitted'
     | '/explore/$productId/review'
     | '/explore/$productId/subscribe'
     | '/explore/$productId/success'
@@ -305,6 +328,8 @@ export interface FileRouteTypes {
     | '/explore_/$productId'
     | '/fixed-plans_/create'
     | '/explore_/$productId_/processing'
+    | '/explore_/$productId_/request'
+    | '/explore_/$productId_/request-submitted'
     | '/explore_/$productId_/review'
     | '/explore_/$productId_/subscribe'
     | '/explore_/$productId_/success'
@@ -332,6 +357,8 @@ export interface RootRouteChildren {
   ExploreProductIdRoute: typeof ExploreProductIdRoute
   FixedPlansCreateRoute: typeof FixedPlansCreateRouteWithChildren
   ExploreProductIdProcessingRoute: typeof ExploreProductIdProcessingRoute
+  ExploreProductIdRequestRoute: typeof ExploreProductIdRequestRoute
+  ExploreProductIdRequestSubmittedRoute: typeof ExploreProductIdRequestSubmittedRoute
   ExploreProductIdReviewRoute: typeof ExploreProductIdReviewRoute
   ExploreProductIdSubscribeRoute: typeof ExploreProductIdSubscribeRoute
   ExploreProductIdSuccessRoute: typeof ExploreProductIdSuccessRoute
@@ -436,6 +463,20 @@ declare module '@tanstack/react-router' {
       path: '/explore/$productId/processing'
       fullPath: '/explore/$productId/processing'
       preLoaderRoute: typeof ExploreProductIdProcessingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore_/$productId_/request': {
+      id: '/explore_/$productId_/request'
+      path: '/explore/$productId/request'
+      fullPath: '/explore/$productId/request'
+      preLoaderRoute: typeof ExploreProductIdRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore_/$productId_/request-submitted': {
+      id: '/explore_/$productId_/request-submitted'
+      path: '/explore/$productId/request-submitted'
+      fullPath: '/explore/$productId/request-submitted'
+      preLoaderRoute: typeof ExploreProductIdRequestSubmittedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/explore_/$productId_/review': {
@@ -547,6 +588,8 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreProductIdRoute: ExploreProductIdRoute,
   FixedPlansCreateRoute: FixedPlansCreateRouteWithChildren,
   ExploreProductIdProcessingRoute: ExploreProductIdProcessingRoute,
+  ExploreProductIdRequestRoute: ExploreProductIdRequestRoute,
+  ExploreProductIdRequestSubmittedRoute: ExploreProductIdRequestSubmittedRoute,
   ExploreProductIdReviewRoute: ExploreProductIdReviewRoute,
   ExploreProductIdSubscribeRoute: ExploreProductIdSubscribeRoute,
   ExploreProductIdSuccessRoute: ExploreProductIdSuccessRoute,
