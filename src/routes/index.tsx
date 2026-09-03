@@ -439,6 +439,8 @@ function HomeV2Screen() {
                 ))}
               </ol>
             </section>
+            </div>
+
 
 
 
