@@ -170,7 +170,7 @@ const fmtDate = (d: Date) =>
 /** Back-computes the start date from the maturity date and tenor. */
 const startFrom = (maturity: string, totalDays: number) => {
   const [day, mon, year] = maturity.split(" ");
-  const d = new Date(Number(year), MONTHS.indexOf(mon), Number(day));
+  const d = new Date(Number(year), MONTHS.indexOf(mon ?? ""), Number(day));
   d.setDate(d.getDate() - totalDays);
   return fmtDate(d);
 };
