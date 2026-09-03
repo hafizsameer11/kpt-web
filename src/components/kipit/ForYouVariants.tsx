@@ -118,20 +118,22 @@ export function ForYouList() {
 
 /**
  * Variant C — "Feature + chips".
- * One large navy feature card followed by slim, text-only chips. Gives the
- * lead story real weight without three heavy cards competing.
+ * Mobile: one large navy feature card followed by slim text-only chips.
+ * Desktop: four image cards, each with a cover image like the lead card.
  */
 export function ForYouFeature({ className = "" }: { className?: string }) {
   const [lead, ...rest] = FEED;
   return (
     <section className={className}>
       <SectionHead />
-      <div className="mt-3 grid gap-2.5 md:mt-4 md:grid-cols-[1.4fr_1fr] md:gap-4">
+
+      {/* Mobile: lead + text chips (unchanged) */}
+      <div className="mt-3 grid gap-2.5 md:hidden">
         {lead && (
           <Link
             to="/learn/$articleId"
             params={{ articleId: lead.id }}
-            className="relative block overflow-hidden rounded-xl bg-brand-gradient p-5 text-primary-foreground shadow-card press hover:-translate-y-0.5 hover:shadow-float md:p-6"
+            className="relative block overflow-hidden rounded-xl bg-brand-gradient p-5 text-primary-foreground shadow-card press"
           >
             <span
               aria-hidden
@@ -143,7 +145,7 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
                 alt=""
                 aria-hidden="true"
                 loading="lazy"
-                className="mb-4 h-32 w-full rounded-xl object-cover md:h-40"
+                className="mb-4 h-32 w-full rounded-xl object-cover"
               />
               <span className="inline-block rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.16em] text-primary-foreground/85">
                 {lead.tag}
@@ -161,13 +163,13 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
           </Link>
         )}
 
-        <div className="grid gap-2.5 md:gap-4">
+        <div className="grid gap-2.5">
           {rest.map((item, i) => (
             <Link
               key={item.id}
               to="/learn/$articleId"
               params={{ articleId: item.id }}
-              className="card-surface flex items-start gap-3 p-4 press hover:-translate-y-0.5 hover:shadow-float"
+              className="card-surface flex items-start gap-3 p-4 press"
             >
               <span
                 aria-hidden
@@ -187,6 +189,46 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
             </Link>
           ))}
         </div>
+      </div>
+
+      {/* Desktop: four image cards */}
+      <div className="mt-4 hidden gap-4 md:grid md:grid-cols-4">
+        {FEED.slice(0, 4).map((item, i) => (
+          <Link
+            key={item.id}
+            to="/learn/$articleId"
+            params={{ articleId: item.id }}
+            className="group card-surface flex flex-col overflow-hidden rounded-xl p-4 press hover:-translate-y-0.5 hover:shadow-float"
+          >
+            <div className="relative -mx-4 -mt-4 h-36 overflow-hidden">
+              <img
+                src={articleArt(item.id, i)}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <span
+                aria-hidden
+                className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-background to-transparent"
+              />
+            </div>
+            <div className="mt-3 flex flex-1 flex-col">
+              <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-brand">
+                {item.tag}
+              </p>
+              <h3 className="mt-1.5 font-display text-sm font-extrabold leading-snug">
+                {item.title}
+              </h3>
+              <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
+                {item.body}
+              </p>
+              <span className="mt-auto inline-flex items-center gap-1 pt-3 text-[10px] font-bold uppercase tracking-[0.16em] text-gold">
+                Read <ArrowUpRight className="size-3" />
+              </span>
+            </div>
+          </Link>
+        ))}
       </div>
     </section>
   );
