@@ -15,6 +15,7 @@ import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { ForYouFeature } from "@/components/kipit/ForYouVariants";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 import { GreetingText } from "@/components/kipit/SpecBlocks";
+import { AmountCounter } from "@/components/kipit/motion";
 import {
   HOLDINGS,
   INVESTED,
@@ -70,10 +71,10 @@ function WeekStrip() {
         return (
           <div key={WEEK_LABELS[i]} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
             <div
-              className={`w-1 rounded-full ${
+              className={`k-grow w-1 rounded-full ${
                 peak ? "bg-gold" : "bg-brand/20"
               }`}
-              style={{ height: `${pct}%` }}
+              style={{ height: `${pct}%`, ["--d" as string]: `${i * 70}ms` }}
             />
             <span
               className={`text-[9px] font-semibold ${peak ? "text-foreground" : "text-muted-foreground/70"}`}
@@ -160,9 +161,12 @@ function HomeV2Screen() {
                 </div>
 
                 <div className="mt-4 flex items-end gap-3">
-                  <h1 className="font-display text-[40px] font-extrabold leading-none tracking-[-0.045em] text-num md:text-[56px]">
-                    {mask(active.value)}
-                  </h1>
+                  <AmountCounter
+                    value={active.value}
+                    hidden={hidden}
+                    mask={mask}
+                    className="font-display text-[40px] font-extrabold leading-none tracking-[-0.045em] text-num md:text-[56px]"
+                  />
                   <button
                     type="button"
                     onClick={toggle}
@@ -187,7 +191,9 @@ function HomeV2Screen() {
                       <dt className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary-foreground/60">
                         {l.label}
                       </dt>
-                      <dd className="mt-1 text-lg font-extrabold text-num">{mask(l.value)}</dd>
+                      <dd className="mt-1 text-lg font-extrabold text-num">
+                        <AmountCounter value={l.value} hidden={hidden} mask={mask} />
+                      </dd>
                     </div>
                   ))}
                 </dl>
@@ -195,11 +201,12 @@ function HomeV2Screen() {
 
               {/* Quick actions — thumb row on mobile, panel on desktop */}
               <div className="mt-6 grid grid-cols-4 gap-2 md:mt-0 md:grid-cols-2 md:gap-3 md:rounded-3xl md:border md:border-white/15 md:bg-white/5 md:p-4">
-                {QUICK_ACTIONS.map((a) => (
+                {QUICK_ACTIONS.map((a, i) => (
                   <Link
                     key={a.label}
                     to={a.to}
-                    className="flex flex-col items-center gap-2 rounded-2xl py-1 text-[10px] font-semibold text-primary-foreground/85 press md:flex-row md:gap-3 md:rounded-2xl md:bg-white/5 md:px-3 md:py-3 md:text-xs md:hover:bg-white/10"
+                    style={{ ["--d" as string]: `${120 + i * 70}ms` }}
+                    className="k-rise flex flex-col items-center gap-2 rounded-2xl py-1 text-[10px] font-semibold text-primary-foreground/85 press md:flex-row md:gap-3 md:rounded-2xl md:bg-white/5 md:px-3 md:py-3 md:text-xs md:hover:bg-white/10"
                   >
                     <span className="grid size-12 place-items-center rounded-2xl border border-white/15 bg-white/10 md:size-9">
                       <a.icon className="size-5 md:size-4" strokeWidth={1.9} />
@@ -245,7 +252,7 @@ function HomeV2Screen() {
                 </div>
                 <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary">
                   <div
-                    className="h-full rounded-full bg-gold-gradient"
+                    className="k-fill h-full rounded-full bg-gold-gradient"
                     style={{
                       width: `${Math.round(
                         ((NEXT_MATURITY.totalDays - NEXT_MATURITY.daysLeft) /
@@ -297,7 +304,8 @@ function HomeV2Screen() {
                   return (
                     <article
                       key={h.name}
-                      className="card-surface flex items-center gap-3 p-4 press md:block md:p-5 md:transition-all md:hover:-translate-y-0.5 md:hover:shadow-float"
+                      style={{ ["--d" as string]: `${150 + i * 90}ms` }}
+                      className="k-rise card-surface flex items-center gap-3 p-4 press md:block md:p-5 md:transition-all md:hover:-translate-y-0.5 md:hover:shadow-float"
                     >
                       <span
                         className={`h-11 w-1.5 shrink-0 rounded-full md:mb-3 md:h-1.5 md:w-12 ${rail}`}
@@ -320,8 +328,8 @@ function HomeV2Screen() {
                         </p>
                         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary md:mt-3">
                           <div
-                            className={`h-full rounded-full ${i === 0 ? "bg-gold-gradient" : "bg-brand"}`}
-                            style={{ width: `${progress}%` }}
+                            className={`k-fill h-full rounded-full ${i === 0 ? "bg-gold-gradient" : "bg-brand"}`}
+                            style={{ width: `${progress}%`, ["--d" as string]: `${250 + i * 90}ms` }}
                           />
                         </div>
                         <div className="mt-2 hidden items-center justify-between text-[11px] md:flex">
@@ -356,7 +364,9 @@ function HomeV2Screen() {
 
                 <div className="mt-3 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
                   <div className="min-w-0">
-                    <p className="text-3xl font-extrabold tracking-tight text-num">{mask(WALLET)}</p>
+                    <p className="text-3xl font-extrabold tracking-tight text-num">
+                      <AmountCounter value={WALLET} hidden={hidden} mask={mask} />
+                    </p>
                     <p className="mt-1 text-xs text-brand-foreground/70">
                       Sitting idle — earning nothing today.
                     </p>
@@ -389,11 +399,15 @@ function HomeV2Screen() {
               <h2 className="font-display text-base font-extrabold">Coming up</h2>
               <ol className="mt-3.5 space-y-3.5">
                 {PAYOUTS.map((p, i) => (
-                  <li key={p.label} className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3">
+                  <li
+                    key={p.label}
+                    style={{ ["--d" as string]: `${i * 90}ms` }}
+                    className="k-rise relative grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3"
+                  >
                     <span className="relative flex w-3 justify-center">
                       <span
                         className={`z-10 mt-1.5 size-2.5 rounded-full ring-4 ring-surface ${
-                          i === 0 ? "bg-gold" : "bg-brand/30"
+                          i === 0 ? "bg-gold k-glow" : "bg-brand/30"
                         }`}
                       />
                       {i < PAYOUTS.length - 1 && (
