@@ -55,6 +55,72 @@ function AmountScreen() {
   const valid = amount > 0 && !belowMin && !overWallet && !overLimit;
 
   return (
+    <>
+      <div className="md:hidden">
+        <MobileAmount
+          raw={raw}
+          setRaw={setRaw}
+          amount={amount}
+          belowMin={belowMin}
+          overWallet={overWallet}
+          overLimit={overLimit}
+          valid={valid}
+          accountId={account.id}
+          accountName={account.accountName}
+          bank={account.bank}
+          accountNumber={account.accountNumber}
+        />
+      </div>
+      <div className="hidden md:block">
+        <DesktopAmount
+          raw={raw}
+          setRaw={setRaw}
+          amount={amount}
+          belowMin={belowMin}
+          overWallet={overWallet}
+          overLimit={overLimit}
+          valid={valid}
+          accountId={account.id}
+          accountName={account.accountName}
+          bank={account.bank}
+          accountNumber={account.accountNumber}
+        />
+      </div>
+    </>
+  );
+}
+
+interface AmountProps {
+  raw: string;
+  setRaw: (v: string) => void;
+  amount: number;
+  belowMin: boolean;
+  overWallet: boolean;
+  overLimit: boolean;
+  valid: boolean;
+  accountId: string;
+  accountName: string;
+  bank: string;
+  accountNumber: string;
+}
+
+function MobileAmount({
+  raw: _raw,
+  setRaw,
+  amount,
+  belowMin,
+  overWallet,
+  overLimit,
+  valid,
+  accountId,
+  accountName,
+  bank,
+  accountNumber,
+}: AmountProps) {
+  void _raw;
+  const navigate = useNavigate();
+
+  return (
     <AppShell title="Withdrawal Amount" navVariant="elevated">
       <div className="pb-2">
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pt-8 md:shadow-float">
