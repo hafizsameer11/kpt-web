@@ -104,95 +104,129 @@ function CreatePlanTenorScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          {/* Tenor options (MOB-067) */}
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+          {/* Tenor options (MOB-067) — premium layered cards */}
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             {TENOR_BANDS.map((b, i) => {
               const active = selected === b.days;
               const unaffordable = amount < b.minimum;
+              const label = TERM_LABELS[b.days] ?? "Fixed Term";
               return (
                 <Rise key={b.days} delay={i * 60}>
                   <button
                     type="button"
                     onClick={() => setSelected(b.days)}
-                    className={`relative w-full rounded-3xl border p-4 text-left transition-all duration-200 press ${
+                    className={`relative w-full rounded-[2rem] border-2 p-5 text-left transition-all duration-200 press ${
                       active
-                        ? "border-gold bg-primary text-primary-foreground shadow-float"
-                        : "card-surface"
+                        ? "border-gold bg-primary text-primary-foreground shadow-float ring-4 ring-gold/10"
+                        : unaffordable
+                          ? "border-dashed border-border bg-card/60 opacity-70 grayscale"
+                          : "border-transparent bg-card shadow-card hover:shadow-float"
                     }`}
                   >
-                    {active && (
-                      <span className="absolute right-3 top-3 grid size-5 place-items-center rounded-full bg-gold text-gold-foreground">
-                        <Check className="size-3" strokeWidth={3} />
-                      </span>
-                    )}
+                    <div className="flex items-start justify-between gap-2">
+                      <p
+                        className={`text-[11px] font-semibold uppercase tracking-wider ${
+                          active ? "text-gold/70" : "text-muted-foreground"
+                        }`}
+                      >
+                        {label}
+                      </p>
+                      {active && (
+                        <span className="grid size-5 shrink-0 place-items-center rounded-full bg-gold text-gold-foreground">
+                          <Check className="size-3" strokeWidth={4} />
+                        </span>
+                      )}
+                    </div>
                     <p
-                      className={`font-display text-[20px] font-extrabold leading-none ${
-                        active ? "text-gold" : "text-foreground"
+                      className={`mt-1 font-display text-[24px] font-extrabold leading-none tracking-[-0.02em] ${
+                        active
+                          ? "text-primary-foreground"
+                          : unaffordable
+                            ? "text-foreground/60"
+                            : "text-foreground"
                       }`}
                     >
                       {b.days}
                     </p>
-                    <p
-                      className={`mt-1.5 text-[12px] font-bold ${
-                        active ? "text-primary-foreground" : "text-foreground"
-                      }`}
-                    >
-                      {b.rate} p.a.
-                    </p>
-                    <p
-                      className={`mt-0.5 text-[10.5px] ${
-                        active ? "text-primary-foreground/60" : "text-muted-foreground"
-                      }`}
-                    >
-                      Min {naira(b.minimum)}
-                    </p>
-                    {unaffordable && !active && (
-                      <p className="mt-1.5 text-[10px] font-semibold text-destructive">
-                        Above your amount
-                      </p>
-                    )}
+                    <div className="mt-3">
+                      <span
+                        className={`inline-block rounded-md px-2 py-1 text-[13px] font-bold ${
+                          active
+                            ? "bg-gold text-gold-foreground"
+                            : unaffordable
+                              ? "bg-muted text-muted-foreground"
+                              : "bg-primary text-gold"
+                        }`}
+                      >
+                        {b.rate} p.a.
+                      </span>
+                    </div>
+                    <div className="mt-3 flex flex-col gap-1">
+                      <span
+                        className={`text-[10px] font-medium uppercase ${
+                          active ? "text-primary-foreground/50" : "text-muted-foreground"
+                        }`}
+                      >
+                        Min {naira(b.minimum)}
+                      </span>
+                      {unaffordable && !active && (
+                        <span className="text-[10px] font-bold uppercase tracking-tight text-destructive">
+                          Above your amount
+                        </span>
+                      )}
+                    </div>
                   </button>
                 </Rise>
               );
             })}
+          </div>
 
-            {/* Custom tenor (MOB-068) */}
-            <Rise delay={TENOR_BANDS.length * 60} className="col-span-2 md:col-span-1">
-              <button
-                type="button"
-                onClick={() => setSelected("custom")}
-                className={`flex h-full w-full items-center gap-3 rounded-3xl border p-4 text-left transition-all duration-200 press ${
-                  selected === "custom"
-                    ? "border-gold bg-primary text-primary-foreground shadow-float"
-                    : "card-surface"
-                }`}
-              >
+          {/* Custom tenor (MOB-068) */}
+          <Rise delay={TENOR_BANDS.length * 60} className="mt-4">
+            <button
+              type="button"
+              onClick={() => setSelected("custom")}
+              className={`flex w-full items-center justify-between rounded-[2rem] border p-5 text-left transition-all duration-200 press ${
+                selected === "custom"
+                  ? "border-gold bg-primary text-primary-foreground shadow-float ring-4 ring-gold/10"
+                  : "border-transparent bg-card shadow-card hover:shadow-float"
+              }`}
+            >
+              <span className="flex items-center gap-4">
                 <span
-                  className={`grid size-10 shrink-0 place-items-center rounded-2xl ${
-                    selected === "custom" ? "bg-gold/15 text-gold" : "bg-muted text-muted-foreground"
+                  className={`grid size-12 shrink-0 place-items-center rounded-2xl border ${
+                    selected === "custom"
+                      ? "border-white/10 bg-white/10 text-gold"
+                      : "border-border bg-muted/60 text-foreground"
                   }`}
                 >
-                  <SlidersHorizontal className="size-4.5" strokeWidth={2.2} />
+                  <SlidersHorizontal className="size-5" strokeWidth={2} />
                 </span>
                 <span>
                   <span
-                    className={`block text-[13px] font-extrabold ${
+                    className={`block text-[16px] font-bold ${
                       selected === "custom" ? "text-primary-foreground" : "text-foreground"
                     }`}
                   >
                     Custom tenor
                   </span>
                   <span
-                    className={`block text-[10.5px] ${
+                    className={`block text-[12px] ${
                       selected === "custom" ? "text-primary-foreground/60" : "text-muted-foreground"
                     }`}
                   >
                     Pick your own number of days
                   </span>
                 </span>
-              </button>
-            </Rise>
-          </div>
+              </span>
+              <ChevronRight
+                className={`size-5 shrink-0 ${
+                  selected === "custom" ? "text-gold" : "text-muted-foreground/40"
+                }`}
+                strokeWidth={2.5}
+              />
+            </button>
+          </Rise>
 
           {/* Custom days input */}
           {selected === "custom" && (
