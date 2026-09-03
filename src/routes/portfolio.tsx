@@ -308,8 +308,13 @@ function PortfolioScreen() {
                   <li
                     key={h.name}
                     style={{ ["--d" as string]: `${(i + 1) * 70}ms` }}
-                    className="k-rise card-surface relative overflow-hidden p-4"
+                    className="k-rise"
                   >
+                    <Link
+                      to="/portfolio/$holdingId"
+                      params={{ holdingId: `f${i + 1}` }}
+                      className="card-surface relative block overflow-hidden p-4 transition-shadow hover:shadow-md"
+                    >
                     <span className="absolute inset-y-0 left-0 w-1 bg-gold" aria-hidden />
                     <div className="flex items-start justify-between gap-3 pl-2">
                       <div className="min-w-0">
@@ -337,6 +342,7 @@ function PortfolioScreen() {
                         <span className="font-bold text-foreground">{mask(h.expectedPayout)}</span>
                       </p>
                     </div>
+                    </Link>
                   </li>
                 );
               })}
@@ -354,8 +360,8 @@ function PortfolioScreen() {
                     className="k-rise"
                   >
                     <Link
-                      to="/explore/$productId"
-                      params={{ productId: h.id }}
+                      to="/portfolio/$holdingId"
+                      params={{ holdingId: `e-${h.id}` }}
                       className="card-surface relative block overflow-hidden p-4 transition-shadow hover:shadow-md"
                     >
                       <span
