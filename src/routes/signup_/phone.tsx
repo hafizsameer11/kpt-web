@@ -60,7 +60,7 @@ function PhoneEntry() {
               setDial(e.target.value);
               setError(null);
             }}
-            className={`${authInputClass} w-28 appearance-none pr-2 [&>option]:text-foreground`}
+            className={`${authInputClass} w-20 shrink-0 appearance-none pr-2 [&>option]:text-foreground`}
             aria-label="Country"
           >
             {COUNTRIES.map((c) => (
@@ -77,7 +77,7 @@ function PhoneEntry() {
               setPhone(e.target.value.replace(/[^\d\s]/g, ""));
               setError(null);
             }}
-            className={`${authInputClass} flex-1`}
+            className={`${authInputClass} min-w-0 flex-1`}
           />
         </div>
       </AuthField>
