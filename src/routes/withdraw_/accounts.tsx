@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Check, Landmark, Plus, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
-import { maskAccount, SAVED_ACCOUNTS } from "@/lib/withdraw-data";
+import { findAccount, maskAccount, payoutEta, SAVED_ACCOUNTS } from "@/lib/withdraw-data";
 
 export const Route = createFileRoute("/withdraw_/accounts")({
   head: () => ({
