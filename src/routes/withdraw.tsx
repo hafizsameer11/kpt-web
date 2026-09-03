@@ -13,6 +13,7 @@ import {
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira, WALLET } from "@/lib/home-data";
 import {
+  maskAccount,
   MIN_WITHDRAWAL,
   payoutEta,
   SAVED_ACCOUNTS,
