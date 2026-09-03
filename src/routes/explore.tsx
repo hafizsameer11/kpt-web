@@ -197,11 +197,11 @@ function ExploreScreen() {
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   Featured this week
                 </p>
-                <div className="mt-3 grid gap-3 md:grid-cols-2">
+                <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0">
                   {featured.map((p) => (
                     <article
                       key={p.id}
-                      className="relative overflow-hidden rounded-[1.6rem] bg-brand-gradient p-5 text-primary-foreground shadow-float"
+                      className="relative w-[85%] min-w-[85%] shrink-0 snap-center overflow-hidden rounded-[1.6rem] bg-brand-gradient p-5 text-primary-foreground shadow-float md:w-auto md:min-w-0"
                     >
                       <span
                         aria-hidden
@@ -234,6 +234,7 @@ function ExploreScreen() {
                     </article>
                   ))}
                 </div>
+
               </section>
             </Rise>
           )}
