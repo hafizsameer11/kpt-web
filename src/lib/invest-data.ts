@@ -97,3 +97,25 @@ export const CALL_ACTIVITY: CallActivity[] = [
 export const CALL_ACCRUAL_TREND = [
   8_580, 8_720, 8_690, 8_910, 9_050, 9_120, 9_080, 9_340, 9_410, 9_520, 9_680, 9_750, 9_860, 9_932,
 ];
+
+/** MOB-065 — matured fixed plans shown under the "Matured" filter. */
+export const MATURED_PLANS = [
+  {
+    name: "Kipit Fixed Income",
+    rate: "18.4% p.a.",
+    principal: 500_000,
+    payout: 522_600,
+    tenor: "90 days",
+    maturedOn: "12 Jul 2026",
+    status: "Paid to wallet",
+  },
+  {
+    name: "Kipit Starter",
+    rate: "12.8% p.a.",
+    principal: 150_000,
+    payout: 151_600,
+    tenor: "30 days",
+    maturedOn: "02 Apr 2026",
+    status: "Rolled over",
+  },
+];
