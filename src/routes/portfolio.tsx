@@ -286,9 +286,10 @@ function PortfolioScreen() {
               </span>
             </div>
 
-            <ul className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
-              {/* Call account — brand card, matching the Home idle-cash design */}
-              <li className="k-rise md:col-span-2">
+            {/* Call account — brand card, matching the Home idle-cash design */}
+            <div className="mb-3 lg:mb-4">
+              <div className="k-rise">
+
                 <section className="relative overflow-hidden rounded-xl bg-brand p-5 text-brand-foreground shadow-card md:p-6">
                   <span
                     aria-hidden
@@ -340,10 +341,12 @@ function PortfolioScreen() {
                     </div>
                   </div>
                 </section>
-              </li>
+              </div>
+            </div>
 
-
+            <ul className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0 lg:hidden">
               {/* Fixed plans */}
+
               {HOLDINGS.map((h, i) => {
                 const progress = Math.min(
                   100,
@@ -446,7 +449,85 @@ function PortfolioScreen() {
                 );
               })}
             </ul>
+
+            {/* Desktop: dense table view */}
+            <div className="hidden overflow-hidden card-surface lg:block">
+              <div className="grid grid-cols-[minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)_1.25rem] items-center gap-4 border-b border-border/60 bg-secondary/40 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                <span>Holding</span>
+                <span className="text-right">Amount</span>
+                <span>Progress</span>
+                <span className="text-right">Payout</span>
+                <span />
+              </div>
+              <ul className="divide-y divide-border/60">
+                {[
+                  ...HOLDINGS.map((h, i) => ({
+                    id: `f${i + 1}`,
+                    name: h.name,
+                    sub: `Fixed plan · matures ${h.date}`,
+                    amount: h.amount,
+                    rate: h.rate,
+                    payout: h.expectedPayout,
+                    left: `${h.daysLeft} days left`,
+                    progress: Math.min(
+                      100,
+                      Math.max(6, Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)),
+                    ),
+                    accent: "bg-gold",
+                  })),
+                  ...EXPLORE_HOLDINGS.map((h) => ({
+                    id: `e-${h.id}`,
+                    name: h.name,
+                    sub: `${h.issuer} · matures ${h.date}`,
+                    amount: h.amount,
+                    rate: h.rate,
+                    payout: h.expectedPayout,
+                    left: `${h.daysLeft} days left`,
+                    progress: Math.min(
+                      100,
+                      Math.max(6, Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)),
+                    ),
+                    accent: "bg-brand/60",
+                  })),
+                ].map((row, i) => (
+                  <li key={row.id} style={{ ["--d" as string]: `${i * 50}ms` }} className="k-rise">
+                    <Link
+                      to="/portfolio/$holdingId"
+                      params={{ holdingId: row.id }}
+                      className="group grid grid-cols-[minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)_1.25rem] items-center gap-4 px-5 py-3.5 transition-colors hover:bg-secondary/50"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate text-[13.5px] font-bold">{row.name}</p>
+                        <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                          {row.sub}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[13.5px] font-extrabold text-num">{mask(row.amount)}</p>
+                        <span className="mt-0.5 inline-flex rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-brand">
+                          {row.rate}
+                        </span>
+                      </div>
+                      <div className="min-w-0">
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                          <div
+                            className={`k-fill h-full rounded-full ${row.accent}`}
+                            style={{ width: `${row.progress}%`, ["--d" as string]: "200ms" }}
+                          />
+                        </div>
+                        <p className="mt-1.5 text-[11px] text-muted-foreground">{row.left}</p>
+                      </div>
+                      <p className="text-right text-[13px] font-extrabold text-num">
+                        {mask(row.payout)}
+                      </p>
+                      <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-brand" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </section>
+
           </div>
 
           <aside className="min-w-0 lg:sticky lg:top-6">
