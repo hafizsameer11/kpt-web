@@ -95,23 +95,13 @@ export const QUICK_ACTIONS: QuickAction[] = [
 ];
 
 /** Content feed — product updates, education, announcements. */
-export const FEED = [
-  {
-    tag: "Product update",
-    title: "Kipit Fixed Income now settles same-day",
-    body: "Maturity payouts land in your wallet within minutes of maturity.",
-  },
-  {
-    tag: "Education",
-    title: "Understanding tenor and effective yield",
-    body: "A 3-minute read on how rate and tenor shape your real return.",
-  },
-  {
-    tag: "Announcement",
-    title: "Tier 2 verification is now instant",
-    body: "Upgrade with your BVN and NIN to raise your transaction limits.",
-  },
-];
+export const FEED = LEARN_ARTICLES.slice(0, 3).map((a) => ({
+  id: a.id,
+  tag: a.tag,
+  title: a.title,
+  body: a.body,
+}));
+
 
 /** Weekly interest series used by the earnings chart (Mon–Sun). */
 export const WEEK_SERIES = [1_320, 1_610, 1_540, 2_010, 1_880, 2_150, 1_970];
