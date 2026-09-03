@@ -246,36 +246,77 @@ function ExploreScreen() {
           {/* Coming soon */}
           <Rise delay={180}>
             <section className="mt-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Coming soon
-              </p>
-              <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
-                {EXPLORE_COMING_SOON.map((c, i) => (
-                  <article
-                    key={c.name}
-                    style={{ ["--d" as string]: `${i * 80}ms` }}
-                    className="k-rise relative w-[72%] min-w-[72%] shrink-0 snap-center overflow-hidden rounded-[1.5rem] border border-border bg-card p-4 md:w-auto md:min-w-0 md:rounded-[1.75rem] md:p-5"
-                  >
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute -right-8 -top-10 size-24 rounded-full bg-accent/60"
-                    />
-                    <div className="relative">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-widest text-muted-foreground">
-                        <Clock3 className="size-3" /> Soon
-                      </span>
-                      <h3 className="mt-3 font-display text-[14px] font-extrabold leading-tight">
-                        {c.name}
-                      </h3>
-                      <p className="mt-1 text-[11.5px] leading-relaxed text-muted-foreground">
-                        {c.note}
-                      </p>
-                      <span className="mt-4 block h-1 w-10 rounded-full bg-gold/60" />
-                    </div>
-                  </article>
-                ))}
+              <div className="flex items-center gap-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Coming soon
+                </p>
+                <div className="h-px flex-1 bg-border" />
               </div>
 
+              <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+                {EXPLORE_COMING_SOON.map((c, i) => {
+                  const navy = i % 2 === 0;
+                  return (
+                    <article
+                      key={c.name}
+                      style={{ ["--d" as string]: `${i * 80}ms` }}
+                      className={`k-rise relative w-[78%] min-w-[78%] shrink-0 snap-center overflow-hidden rounded-[1.75rem] p-5 shadow-card md:w-auto md:min-w-0 md:rounded-[2rem] md:p-6 ${
+                        navy
+                          ? "bg-brand-gradient text-primary-foreground"
+                          : "border border-border bg-card text-card-foreground"
+                      }`}
+                    >
+                      {navy && (
+                        <span
+                          aria-hidden
+                          className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-gold/15 blur-3xl"
+                        />
+                      )}
+
+                      <div className="relative">
+                        {navy ? (
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex size-5 items-center justify-center rounded-full border border-gold">
+                              <span className="size-1 rounded-full bg-gold animate-pulse" />
+                            </span>
+                            <span className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-gold">
+                              Soon
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-[9px] font-extrabold uppercase tracking-[0.12em] text-secondary-foreground/70">
+                            Coming Q4
+                          </span>
+                        )}
+
+                        <h3 className="mt-5 font-display text-[17px] font-extrabold leading-tight md:text-lg">
+                          {c.name}
+                        </h3>
+                        <p
+                          className={`mt-1.5 text-[12px] leading-relaxed ${
+                            navy ? "text-primary-foreground/65" : "text-muted-foreground"
+                          }`}
+                        >
+                          {c.note}
+                        </p>
+
+                        <div className="mt-5 flex items-center gap-2">
+                          <span
+                            className={`h-0.5 w-10 rounded-full ${
+                              navy ? "bg-gradient-to-r from-gold to-gold/60" : "bg-border"
+                            }`}
+                          />
+                          <span
+                            className={`h-0.5 w-2 rounded-full ${
+                              navy ? "bg-gold/30" : "bg-muted"
+                            }`}
+                          />
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
             </section>
           </Rise>
 
