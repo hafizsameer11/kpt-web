@@ -88,12 +88,12 @@ export function DashboardSidebar({
         <p className="mt-1.5 text-[22px] font-bold text-num">
           {hideBalance ? "₦ • • • • • •" : naira(walletBalance)}
         </p>
-        <button
-          type="button"
+        <Link
+          to="/wallet/add-money"
           className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-white/12 px-4 py-2.5 text-xs font-bold text-primary-foreground press hover:bg-white/20"
         >
           <Plus className="size-3.5" /> Fund wallet
-        </button>
+        </Link>
       </div>
 
       <div className="flex items-center gap-3 border-t border-border px-5 py-4">
@@ -104,13 +104,13 @@ export function DashboardSidebar({
           <p className="truncate text-[13px] font-semibold">Adaeze Okafor</p>
           <p className="text-[11px] text-muted-foreground">Tier 2 verified</p>
         </div>
-        <button
-          type="button"
+        <Link
+          to="/login"
           aria-label="Sign out"
           className="grid size-8 place-items-center rounded-full text-muted-foreground press hover:bg-secondary hover:text-foreground"
         >
           <LogOut className="size-4" />
-        </button>
+        </Link>
       </div>
     </aside>
   );
