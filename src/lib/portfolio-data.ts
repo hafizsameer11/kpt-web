@@ -197,7 +197,12 @@ const fixedHoldings: HoldingDetail[] = HOLDINGS.map((h, i) => ({
   ],
   transactions: [
     { label: "Plan funded from Wallet", date: startFrom(h.date, h.totalDays), amount: h.amount, direction: "out" as const },
-    { label: "Interest accrued to date", date: "Ongoing", amount: Math.round(((h.expectedPayout - h.amount) * (h.totalDays - h.daysLeft)) / h.totalDays), amount2: 0, direction: "in" as const } as HoldingTxn,
+    {
+      label: "Interest accrued to date",
+      date: "Ongoing",
+      amount: Math.round(((h.expectedPayout - h.amount) * (h.totalDays - h.daysLeft)) / h.totalDays),
+      direction: "in" as const,
+    },
   ],
 }));
 
