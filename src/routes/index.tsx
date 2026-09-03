@@ -509,8 +509,8 @@ function DesktopHome() {
 
   return (
     <div className="hidden pb-4 md:block">
-      {/* Row 1 — balance hero + quick actions */}
-      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(18rem,1fr)]">
+        <div className="grid min-w-0 gap-2">
         <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 pt-6 pb-4 text-primary-foreground shadow-float">
           <span
             aria-hidden
@@ -595,8 +595,32 @@ function DesktopHome() {
           </div>
         </section>
 
-        {/* Quick actions + idle cash */}
-        <div className="grid gap-4">
+        {/* Interest follows the hero independently of the right column height. */}
+        <section className="card-surface p-6">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                Interest this week
+              </p>
+              <p className="mt-1.5 font-display text-2xl font-extrabold text-num">
+                {mask(WEEK_EARNINGS)}
+              </p>
+            </div>
+            <Link
+              to="/call-account"
+              className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
+            >
+              Details <ChevronRight className="size-3.5" />
+            </Link>
+          </div>
+          <div className="mt-4">
+            <DesktopWeekChart hidden={hidden} />
+          </div>
+        </section>
+        </div>
+
+        {/* Quick actions + idle cash + next maturity */}
+        <div className="grid min-w-0 gap-4">
           <section className="card-surface p-5">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
               Quick actions
@@ -647,33 +671,6 @@ function DesktopHome() {
               </Link>
             </div>
           </section>
-        </div>
-      </div>
-
-      {/* Row 2 — interest this week + next maturity */}
-      <div className="mt-2 grid items-start gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
-        <section className="card-surface p-6">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                Interest this week
-              </p>
-              <p className="mt-1.5 font-display text-2xl font-extrabold text-num">
-                {mask(WEEK_EARNINGS)}
-              </p>
-            </div>
-            <Link
-              to="/call-account"
-              className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
-            >
-              Details <ChevronRight className="size-3.5" />
-            </Link>
-          </div>
-          <div className="mt-4">
-            <DesktopWeekChart hidden={hidden} />
-          </div>
-        </section>
-
         <Link
           to="/portfolio/$holdingId"
           params={{ holdingId: "f1" }}
@@ -717,6 +714,7 @@ function DesktopHome() {
             <span className="font-bold">Payout {mask(NEXT_MATURITY.expectedPayout)}</span>
           </div>
         </Link>
+        </div>
       </div>
 
       {/* Row 3 — plans table + payout timeline */}
