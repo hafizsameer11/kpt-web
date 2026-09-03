@@ -10,7 +10,7 @@ import {
   ShieldCheck,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { Rise } from "@/components/kipit/motion";
 import { naira } from "@/lib/home-data";
