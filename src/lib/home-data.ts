@@ -36,6 +36,7 @@ export const NEXT_MATURITY = {
 
 export const HOLDINGS = [
   {
+    id: "f1",
     name: "Kipit Fixed Income",
     rate: "19.2% p.a.",
     amount: 750_000,
@@ -46,6 +47,7 @@ export const HOLDINGS = [
     autoRenew: true,
   },
   {
+    id: "f2",
     name: "Kipit Target Savings",
     rate: "16.0% p.a.",
     amount: 900_000,
@@ -56,6 +58,7 @@ export const HOLDINGS = [
     autoRenew: false,
   },
   {
+    id: "f3",
     name: "Kipit Vault (365d)",
     rate: "21.5% p.a.",
     amount: 800_000,
