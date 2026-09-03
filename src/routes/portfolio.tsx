@@ -700,14 +700,14 @@ function DesktopPortfolio() {
             </Link>
 
             <div className="mt-4 overflow-hidden rounded-xl border border-border/60">
-              <table className="w-full text-left">
+              <table className="w-full table-fixed text-left">
                 <thead className="bg-secondary/60">
                   <tr className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                    <th className="px-4 py-2.5">Holding</th>
-                    <th className="px-4 py-2.5">Rate</th>
-                    <th className="px-4 py-2.5">Progress</th>
-                    <th className="px-4 py-2.5">Matures</th>
-                    <th className="px-4 py-2.5 text-right">Value</th>
+                    <th className="w-[30%] px-3 py-2.5">Holding</th>
+                    <th className="w-[13%] px-3 py-2.5">Rate</th>
+                    <th className="w-[22%] px-3 py-2.5">Progress</th>
+                    <th className="w-[15%] px-3 py-2.5">Matures</th>
+                    <th className="w-[20%] px-3 py-2.5 text-right">Value</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/60">
@@ -721,7 +721,7 @@ function DesktopPortfolio() {
                         key={h.id}
                         className="cursor-pointer transition-colors hover:bg-secondary/50"
                       >
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3">
                           <Link
                             to="/portfolio/$holdingId"
                             params={{ holdingId: h.id }}
@@ -731,13 +731,13 @@ function DesktopPortfolio() {
                             <p className="truncate text-[11px] text-muted-foreground">{h.kind}</p>
                           </Link>
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3">
                           <span className="inline-flex rounded-full bg-accent/15 px-2 py-0.5 text-[10.5px] font-bold text-brand">
                             {h.rate}
                           </span>
                         </td>
-                        <td className="px-4 py-3">
-                          <div className="h-1.5 w-28 overflow-hidden rounded-full bg-muted">
+                        <td className="px-3 py-3">
+                          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
                             <div
                               className={`h-full rounded-full ${h.accent}`}
                               style={{ width: `${progress}%` }}
@@ -747,10 +747,10 @@ function DesktopPortfolio() {
                             {h.daysLeft} days left
                           </p>
                         </td>
-                        <td className="px-4 py-3 text-[12px] text-muted-foreground">{h.date}</td>
-                        <td className="px-4 py-3 text-right">
-                          <p className="text-[13px] font-extrabold text-num">{mask(h.amount)}</p>
-                          <p className="text-[10.5px] text-muted-foreground">
+                        <td className="px-3 py-3 text-[12px] text-muted-foreground">{h.date}</td>
+                        <td className="px-3 py-3 text-right">
+                          <p className="whitespace-nowrap text-[13px] font-extrabold text-num">{mask(h.amount)}</p>
+                          <p className="whitespace-nowrap text-[10.5px] text-muted-foreground">
                             payout {mask(h.payout)}
                           </p>
                         </td>
@@ -770,7 +770,7 @@ function DesktopPortfolio() {
                 Statements &amp; activity
               </span>
             </div>
-            <ul className="mt-4 grid gap-3 lg:grid-cols-2">
+            <ul className="mt-4 grid gap-3 xl:grid-cols-2">
               {RECORDS.map((item) => (
                 <li key={item.to}>
                   <Link
