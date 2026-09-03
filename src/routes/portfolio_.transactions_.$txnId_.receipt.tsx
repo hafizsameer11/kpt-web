@@ -83,7 +83,7 @@ function ReceiptScreen() {
               className="pointer-events-none absolute -right-16 -top-24 size-56 rounded-full bg-gold/20 blur-[56px]"
             />
             <div className="relative">
-              <Logo className="h-6 w-auto" />
+              <Logo tone="light" className="text-[18px]" />
               <p className="mt-5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
                 {txn.direction === "in" ? "Amount received" : "Amount paid"}
               </p>
