@@ -285,7 +285,7 @@ function HomeV2Screen() {
                 <div className="mt-4">
                   <WeekStrip />
                 </div>
-              </article>
+              </Link>
             </div>
 
             {/* Stacked plan cards */}
