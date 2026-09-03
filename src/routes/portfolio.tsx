@@ -104,12 +104,22 @@ function AllocationDonut({ size = 156 }: { size?: number }) {
 }
 
 function PortfolioScreen() {
+  return (
+    <AppShell title="Portfolio" navVariant="elevated">
+      <DesktopPortfolio />
+      <MobilePortfolio />
+    </AppShell>
+  );
+}
+
+function MobilePortfolio() {
   const { hidden, mask, toggle } = useBalanceVisibility();
   const next = UPCOMING_MATURITIES[0];
 
   return (
-    <AppShell title="Portfolio" navVariant="elevated">
+    <div className="md:hidden">
       <div className="pb-2">
+
         {/* ── Hero ─────────────────────────────────────────────── */}
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
           <span
