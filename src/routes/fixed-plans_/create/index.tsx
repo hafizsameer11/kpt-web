@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Info, ShieldCheck, Wallet } from "lucide-react";
 import { useState } from "react";
+import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { useCountUp } from "@/components/kipit/motion";
 import { naira, WALLET } from "@/lib/home-data";
 import { TENOR_BANDS } from "@/lib/invest-data";
 
 export const Route = createFileRoute("/fixed-plans_/create/")({
+  validateSearch: z.object({ plan: z.string().optional().catch(undefined) }),
   head: () => ({
     meta: [
       { title: "Create a Fixed Plan | Kipit" },
