@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Phone, X } from "lucide-react";
+import { Mail, X } from "lucide-react";
 import { useState } from "react";
 import { AuthShell, GhostButton } from "@/components/kipit/AuthShell";
 import {
@@ -80,11 +80,11 @@ function SignupMethod() {
         <div className="space-y-3">
           <button
             type="button"
-            onClick={() => navigate({ to: "/signup/phone" })}
+            onClick={() => navigate({ to: "/signup/email" })}
             className="flex w-full items-center justify-center gap-3 rounded-xl bg-gold px-5 py-3.5 text-sm font-semibold text-gold-foreground transition active:scale-[0.99]"
           >
-            <Phone className="size-4" />
-            Continue with phone
+            <Mail className="size-4" />
+            Continue with email
           </button>
 
           <GhostButton onClick={() => navigate({ to: "/signup/details" })}>

@@ -16,6 +16,7 @@ export const COUNTRIES = [
 ] as const;
 
 export type SignupDraft = {
+  email: string;
   dial: string;
   phone: string;
   firstName: string;
@@ -27,6 +28,7 @@ export type SignupDraft = {
 };
 
 export const signupDraft: SignupDraft = {
+  email: "",
   dial: "+234",
   phone: "",
   firstName: "",
@@ -38,6 +40,7 @@ export const signupDraft: SignupDraft = {
 };
 
 export function resetSignupDraft() {
+  signupDraft.email = "";
   signupDraft.phone = "";
   signupDraft.firstName = "";
   signupDraft.middleName = "";
