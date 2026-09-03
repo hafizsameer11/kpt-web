@@ -15,5 +15,8 @@
 
 - Custom tenor (MOB-068), Investment calculator (MOB-069), Explore category (MOB-081), Product calculator (MOB-083)
 
+- WEB-001 Web login (desktop split brand/auth layout)
+
 ## Left to build
-- Nothing outstanding from the PRD screen list.
+- WEB-002–013 desktop refinements (dashboard side panel, holdings/transaction tables, plan builder two-column, web withdrawal step flow)
+- Admin console ADM-xxx and Chat-to-Trade CHAT-xxx surfaces
