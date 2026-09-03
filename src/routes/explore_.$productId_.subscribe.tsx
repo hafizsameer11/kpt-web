@@ -35,6 +35,12 @@ export const Route = createFileRoute("/explore_/$productId_/subscribe")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  validateSearch: (search: Record<string, unknown>) => ({
+    amount:
+      search['amount'] !== undefined && search['amount'] !== null
+        ? Number(search['amount']) || undefined
+        : undefined,
+  }),
   loader: ({ params }) => {
     const product = getExploreProduct(params.productId);
     if (!product) throw notFound();
@@ -47,7 +53,10 @@ type Source = "wallet" | "add" | "card";
 
 function SubscribeScreen() {
   const { product } = Route.useLoaderData();
-  const [raw, setRaw] = useState(String(product.minimum));
+  const { amount: initialAmount } = Route.useSearch();
+  const [raw, setRaw] = useState(
+    String(initialAmount && initialAmount > 0 ? initialAmount : product.minimum),
+  );
   const [source, setSource] = useState<Source>("wallet");
 
   const amount = Number(raw.replace(/[^0-9]/g, "")) || 0;
