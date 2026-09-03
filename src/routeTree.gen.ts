@@ -56,6 +56,7 @@ import { Route as SignupPasswordRouteImport } from './routes/signup_/password'
 import { Route as SignupPhoneRouteImport } from './routes/signup_/phone'
 import { Route as SignupPinRouteImport } from './routes/signup_/pin'
 import { Route as SignupSuccessRouteImport } from './routes/signup_/success'
+import { Route as WalletAddMoneyRouteImport } from './routes/wallet_/add-money'
 import { Route as WithdrawAccountsRouteImport } from './routes/withdraw_/accounts'
 import { Route as WithdrawAddAccountRouteImport } from './routes/withdraw_/add-account'
 import { Route as WithdrawAmountRouteImport } from './routes/withdraw_/amount'
@@ -321,6 +322,11 @@ const SignupSuccessRoute = SignupSuccessRouteImport.update({
   path: '/signup/success',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WalletAddMoneyRoute = WalletAddMoneyRouteImport.update({
+  id: '/wallet_/add-money',
+  path: '/wallet/add-money',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WithdrawAccountsRoute = WithdrawAccountsRouteImport.update({
   id: '/withdraw_/accounts',
   path: '/withdraw/accounts',
@@ -526,6 +532,7 @@ export interface FileRoutesByFullPath {
   '/signup/phone': typeof SignupPhoneRoute
   '/signup/pin': typeof SignupPinRoute
   '/signup/success': typeof SignupSuccessRoute
+  '/wallet/add-money': typeof WalletAddMoneyRoute
   '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/add-account': typeof WithdrawAddAccountRoute
   '/withdraw/amount': typeof WithdrawAmountRoute
@@ -603,6 +610,7 @@ export interface FileRoutesByTo {
   '/signup/phone': typeof SignupPhoneRoute
   '/signup/pin': typeof SignupPinRoute
   '/signup/success': typeof SignupSuccessRoute
+  '/wallet/add-money': typeof WalletAddMoneyRoute
   '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/add-account': typeof WithdrawAddAccountRoute
   '/withdraw/amount': typeof WithdrawAmountRoute
@@ -682,6 +690,7 @@ export interface FileRoutesById {
   '/signup_/phone': typeof SignupPhoneRoute
   '/signup_/pin': typeof SignupPinRoute
   '/signup_/success': typeof SignupSuccessRoute
+  '/wallet_/add-money': typeof WalletAddMoneyRoute
   '/withdraw_/accounts': typeof WithdrawAccountsRoute
   '/withdraw_/add-account': typeof WithdrawAddAccountRoute
   '/withdraw_/amount': typeof WithdrawAmountRoute
@@ -762,6 +771,7 @@ export interface FileRouteTypes {
     | '/signup/phone'
     | '/signup/pin'
     | '/signup/success'
+    | '/wallet/add-money'
     | '/withdraw/accounts'
     | '/withdraw/add-account'
     | '/withdraw/amount'
@@ -839,6 +849,7 @@ export interface FileRouteTypes {
     | '/signup/phone'
     | '/signup/pin'
     | '/signup/success'
+    | '/wallet/add-money'
     | '/withdraw/accounts'
     | '/withdraw/add-account'
     | '/withdraw/amount'
@@ -917,6 +928,7 @@ export interface FileRouteTypes {
     | '/signup_/phone'
     | '/signup_/pin'
     | '/signup_/success'
+    | '/wallet_/add-money'
     | '/withdraw_/accounts'
     | '/withdraw_/add-account'
     | '/withdraw_/amount'
@@ -996,6 +1008,7 @@ export interface RootRouteChildren {
   SignupPhoneRoute: typeof SignupPhoneRoute
   SignupPinRoute: typeof SignupPinRoute
   SignupSuccessRoute: typeof SignupSuccessRoute
+  WalletAddMoneyRoute: typeof WalletAddMoneyRoute
   WithdrawAccountsRoute: typeof WithdrawAccountsRoute
   WithdrawAddAccountRoute: typeof WithdrawAddAccountRoute
   WithdrawAmountRoute: typeof WithdrawAmountRoute
@@ -1352,6 +1365,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wallet_/add-money': {
+      id: '/wallet_/add-money'
+      path: '/wallet/add-money'
+      fullPath: '/wallet/add-money'
+      preLoaderRoute: typeof WalletAddMoneyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/withdraw_/accounts': {
       id: '/withdraw_/accounts'
       path: '/withdraw/accounts'
@@ -1627,6 +1647,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupPhoneRoute: SignupPhoneRoute,
   SignupPinRoute: SignupPinRoute,
   SignupSuccessRoute: SignupSuccessRoute,
+  WalletAddMoneyRoute: WalletAddMoneyRoute,
   WithdrawAccountsRoute: WithdrawAccountsRoute,
   WithdrawAddAccountRoute: WithdrawAddAccountRoute,
   WithdrawAmountRoute: WithdrawAmountRoute,
