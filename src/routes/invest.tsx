@@ -273,14 +273,16 @@ function InvestScreen() {
             <h2 className="mb-3 px-1 font-display text-base font-extrabold">Invest tools</h2>
             <div className="overflow-hidden rounded-xl border border-border/60 bg-card shadow-sm md:grid md:grid-cols-2">
               {[
-                { icon: Calculator, label: "Calculator", note: "Model your payout before you commit" },
+                { icon: Calculator, label: "Calculator", note: "Model your payout before you commit", to: "/calculator" as const },
                 { icon: Repeat, label: "Auto-invest", note: "Fund your plans on a schedule" },
                 { icon: Gift, label: "Gift invest", note: "Send a plan to someone" },
                 { icon: RefreshCw, label: "Roll over", note: "Reinvest automatically at maturity" },
-              ].map((t, i) => (
-                <button
+              ].map((t, i) => {
+                const Comp = ("to" in t && t.to ? Link : "button") as React.ElementType;
+                return (
+                <Comp
                   key={t.label}
-                  type="button"
+                  {...("to" in t && t.to ? { to: t.to } : { type: "button" as const })}
                   style={{ ["--d" as string]: `${i * 70}ms` }}
                   className={`k-rise group flex w-full items-center gap-3.5 px-4 py-4 text-left transition-colors hover:bg-muted/50 ${
                     i > 0 ? "border-t border-border/50 md:border-t-0" : ""
@@ -298,8 +300,9 @@ function InvestScreen() {
                     </span>
                   </span>
                   <ChevronRight className="size-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
-                </button>
-              ))}
+                </Comp>
+                );
+              })}
             </div>
           </section>
 

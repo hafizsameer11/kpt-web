@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as CallAccountRouteImport } from './routes/call-account'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as FixedPlansRouteImport } from './routes/fixed-plans'
@@ -89,6 +90,7 @@ import { Route as WithdrawRestrictedRouteImport } from './routes/withdraw_/restr
 import { Route as WithdrawReviewRouteImport } from './routes/withdraw_/review'
 import { Route as WithdrawSuccessRouteImport } from './routes/withdraw_/success'
 import { Route as WithdrawTrackerRouteImport } from './routes/withdraw_/tracker'
+import { Route as ExploreProductIdCalculatorRouteImport } from './routes/explore_.$productId_.calculator'
 import { Route as ExploreProductIdProcessingRouteImport } from './routes/explore_.$productId_.processing'
 import { Route as ExploreProductIdRequestRouteImport } from './routes/explore_.$productId_.request'
 import { Route as ExploreProductIdRequestSubmittedRouteImport } from './routes/explore_.$productId_.request-submitted'
@@ -96,6 +98,7 @@ import { Route as ExploreProductIdReviewRouteImport } from './routes/explore_.$p
 import { Route as ExploreProductIdSubscribeRouteImport } from './routes/explore_.$productId_.subscribe'
 import { Route as ExploreProductIdSuccessRouteImport } from './routes/explore_.$productId_.success'
 import { Route as ExploreProductIdUnavailableRouteImport } from './routes/explore_.$productId_.unavailable'
+import { Route as ExploreCategoryCategoryIdRouteImport } from './routes/explore_.category.$categoryId'
 import { Route as FixedPlansCreateIndexRouteImport } from './routes/fixed-plans_/create/index'
 import { Route as FixedPlansCreateOptionsRouteImport } from './routes/fixed-plans_/create/options'
 import { Route as FixedPlansCreateProcessingRouteImport } from './routes/fixed-plans_/create/processing'
@@ -113,6 +116,11 @@ import { Route as PortfolioTransactionsTxnIdReceiptRouteImport } from './routes/
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CalculatorRoute = CalculatorRouteImport.update({
+  id: '/calculator',
+  path: '/calculator',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CallAccountRoute = CallAccountRouteImport.update({
@@ -513,6 +521,12 @@ const WithdrawTrackerRoute = WithdrawTrackerRouteImport.update({
   path: '/withdraw/tracker',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExploreProductIdCalculatorRoute =
+  ExploreProductIdCalculatorRouteImport.update({
+    id: '/explore_/$productId_/calculator',
+    path: '/explore/$productId/calculator',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ExploreProductIdProcessingRoute =
   ExploreProductIdProcessingRouteImport.update({
     id: '/explore_/$productId_/processing',
@@ -550,6 +564,12 @@ const ExploreProductIdUnavailableRoute =
   ExploreProductIdUnavailableRouteImport.update({
     id: '/explore_/$productId_/unavailable',
     path: '/explore/$productId/unavailable',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ExploreCategoryCategoryIdRoute =
+  ExploreCategoryCategoryIdRouteImport.update({
+    id: '/explore_/category/$categoryId',
+    path: '/explore/category/$categoryId',
     getParentRoute: () => rootRouteImport,
   } as any)
 const FixedPlansCreateIndexRoute = FixedPlansCreateIndexRouteImport.update({
@@ -627,6 +647,7 @@ const PortfolioTransactionsTxnIdReceiptRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
@@ -706,6 +727,7 @@ export interface FileRoutesByFullPath {
   '/withdraw/review': typeof WithdrawReviewRoute
   '/withdraw/success': typeof WithdrawSuccessRoute
   '/withdraw/tracker': typeof WithdrawTrackerRoute
+  '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
   '/explore/$productId/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -713,6 +735,7 @@ export interface FileRoutesByFullPath {
   '/explore/$productId/subscribe': typeof ExploreProductIdSubscribeRoute
   '/explore/$productId/success': typeof ExploreProductIdSuccessRoute
   '/explore/$productId/unavailable': typeof ExploreProductIdUnavailableRoute
+  '/explore/category/$categoryId': typeof ExploreCategoryCategoryIdRoute
   '/fixed-plans/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans/create/processing': typeof FixedPlansCreateProcessingRoute
   '/fixed-plans/create/review': typeof FixedPlansCreateReviewRoute
@@ -729,6 +752,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
@@ -807,6 +831,7 @@ export interface FileRoutesByTo {
   '/withdraw/review': typeof WithdrawReviewRoute
   '/withdraw/success': typeof WithdrawSuccessRoute
   '/withdraw/tracker': typeof WithdrawTrackerRoute
+  '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
   '/explore/$productId/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -814,6 +839,7 @@ export interface FileRoutesByTo {
   '/explore/$productId/subscribe': typeof ExploreProductIdSubscribeRoute
   '/explore/$productId/success': typeof ExploreProductIdSuccessRoute
   '/explore/$productId/unavailable': typeof ExploreProductIdUnavailableRoute
+  '/explore/category/$categoryId': typeof ExploreCategoryCategoryIdRoute
   '/fixed-plans/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans/create/processing': typeof FixedPlansCreateProcessingRoute
   '/fixed-plans/create/review': typeof FixedPlansCreateReviewRoute
@@ -831,6 +857,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
@@ -910,6 +937,7 @@ export interface FileRoutesById {
   '/withdraw_/review': typeof WithdrawReviewRoute
   '/withdraw_/success': typeof WithdrawSuccessRoute
   '/withdraw_/tracker': typeof WithdrawTrackerRoute
+  '/explore_/$productId_/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore_/$productId_/processing': typeof ExploreProductIdProcessingRoute
   '/explore_/$productId_/request': typeof ExploreProductIdRequestRoute
   '/explore_/$productId_/request-submitted': typeof ExploreProductIdRequestSubmittedRoute
@@ -917,6 +945,7 @@ export interface FileRoutesById {
   '/explore_/$productId_/subscribe': typeof ExploreProductIdSubscribeRoute
   '/explore_/$productId_/success': typeof ExploreProductIdSuccessRoute
   '/explore_/$productId_/unavailable': typeof ExploreProductIdUnavailableRoute
+  '/explore_/category/$categoryId': typeof ExploreCategoryCategoryIdRoute
   '/fixed-plans_/create/options': typeof FixedPlansCreateOptionsRoute
   '/fixed-plans_/create/processing': typeof FixedPlansCreateProcessingRoute
   '/fixed-plans_/create/review': typeof FixedPlansCreateReviewRoute
@@ -935,6 +964,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/calculator'
     | '/call-account'
     | '/explore'
     | '/fixed-plans'
@@ -1014,6 +1044,7 @@ export interface FileRouteTypes {
     | '/withdraw/review'
     | '/withdraw/success'
     | '/withdraw/tracker'
+    | '/explore/$productId/calculator'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
     | '/explore/$productId/request-submitted'
@@ -1021,6 +1052,7 @@ export interface FileRouteTypes {
     | '/explore/$productId/subscribe'
     | '/explore/$productId/success'
     | '/explore/$productId/unavailable'
+    | '/explore/category/$categoryId'
     | '/fixed-plans/create/options'
     | '/fixed-plans/create/processing'
     | '/fixed-plans/create/review'
@@ -1037,6 +1069,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/calculator'
     | '/call-account'
     | '/explore'
     | '/fixed-plans'
@@ -1115,6 +1148,7 @@ export interface FileRouteTypes {
     | '/withdraw/review'
     | '/withdraw/success'
     | '/withdraw/tracker'
+    | '/explore/$productId/calculator'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
     | '/explore/$productId/request-submitted'
@@ -1122,6 +1156,7 @@ export interface FileRouteTypes {
     | '/explore/$productId/subscribe'
     | '/explore/$productId/success'
     | '/explore/$productId/unavailable'
+    | '/explore/category/$categoryId'
     | '/fixed-plans/create/options'
     | '/fixed-plans/create/processing'
     | '/fixed-plans/create/review'
@@ -1138,6 +1173,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/calculator'
     | '/call-account'
     | '/explore'
     | '/fixed-plans'
@@ -1217,6 +1253,7 @@ export interface FileRouteTypes {
     | '/withdraw_/review'
     | '/withdraw_/success'
     | '/withdraw_/tracker'
+    | '/explore_/$productId_/calculator'
     | '/explore_/$productId_/processing'
     | '/explore_/$productId_/request'
     | '/explore_/$productId_/request-submitted'
@@ -1224,6 +1261,7 @@ export interface FileRouteTypes {
     | '/explore_/$productId_/subscribe'
     | '/explore_/$productId_/success'
     | '/explore_/$productId_/unavailable'
+    | '/explore_/category/$categoryId'
     | '/fixed-plans_/create/options'
     | '/fixed-plans_/create/processing'
     | '/fixed-plans_/create/review'
@@ -1241,6 +1279,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CalculatorRoute: typeof CalculatorRoute
   CallAccountRoute: typeof CallAccountRoute
   ExploreRoute: typeof ExploreRoute
   FixedPlansRoute: typeof FixedPlansRoute
@@ -1320,6 +1359,7 @@ export interface RootRouteChildren {
   WithdrawReviewRoute: typeof WithdrawReviewRoute
   WithdrawSuccessRoute: typeof WithdrawSuccessRoute
   WithdrawTrackerRoute: typeof WithdrawTrackerRoute
+  ExploreProductIdCalculatorRoute: typeof ExploreProductIdCalculatorRoute
   ExploreProductIdProcessingRoute: typeof ExploreProductIdProcessingRoute
   ExploreProductIdRequestRoute: typeof ExploreProductIdRequestRoute
   ExploreProductIdRequestSubmittedRoute: typeof ExploreProductIdRequestSubmittedRoute
@@ -1327,6 +1367,7 @@ export interface RootRouteChildren {
   ExploreProductIdSubscribeRoute: typeof ExploreProductIdSubscribeRoute
   ExploreProductIdSuccessRoute: typeof ExploreProductIdSuccessRoute
   ExploreProductIdUnavailableRoute: typeof ExploreProductIdUnavailableRoute
+  ExploreCategoryCategoryIdRoute: typeof ExploreCategoryCategoryIdRoute
   PortfolioTransactionsTxnIdRoute: typeof PortfolioTransactionsTxnIdRoute
   SettingsHelpTicketRoute: typeof SettingsHelpTicketRoute
   SettingsSecurityChangePinRoute: typeof SettingsSecurityChangePinRoute
@@ -1343,6 +1384,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calculator': {
+      id: '/calculator'
+      path: '/calculator'
+      fullPath: '/calculator'
+      preLoaderRoute: typeof CalculatorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/call-account': {
@@ -1898,6 +1946,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WithdrawTrackerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/explore_/$productId_/calculator': {
+      id: '/explore_/$productId_/calculator'
+      path: '/explore/$productId/calculator'
+      fullPath: '/explore/$productId/calculator'
+      preLoaderRoute: typeof ExploreProductIdCalculatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore_/$productId_/processing': {
       id: '/explore_/$productId_/processing'
       path: '/explore/$productId/processing'
@@ -1945,6 +2000,13 @@ declare module '@tanstack/react-router' {
       path: '/explore/$productId/unavailable'
       fullPath: '/explore/$productId/unavailable'
       preLoaderRoute: typeof ExploreProductIdUnavailableRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore_/category/$categoryId': {
+      id: '/explore_/category/$categoryId'
+      path: '/explore/category/$categoryId'
+      fullPath: '/explore/category/$categoryId'
+      preLoaderRoute: typeof ExploreCategoryCategoryIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fixed-plans_/create/': {
@@ -2064,6 +2126,7 @@ const FixedPlansCreateRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CalculatorRoute: CalculatorRoute,
   CallAccountRoute: CallAccountRoute,
   ExploreRoute: ExploreRoute,
   FixedPlansRoute: FixedPlansRoute,
@@ -2143,6 +2206,7 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawReviewRoute: WithdrawReviewRoute,
   WithdrawSuccessRoute: WithdrawSuccessRoute,
   WithdrawTrackerRoute: WithdrawTrackerRoute,
+  ExploreProductIdCalculatorRoute: ExploreProductIdCalculatorRoute,
   ExploreProductIdProcessingRoute: ExploreProductIdProcessingRoute,
   ExploreProductIdRequestRoute: ExploreProductIdRequestRoute,
   ExploreProductIdRequestSubmittedRoute: ExploreProductIdRequestSubmittedRoute,
@@ -2150,6 +2214,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreProductIdSubscribeRoute: ExploreProductIdSubscribeRoute,
   ExploreProductIdSuccessRoute: ExploreProductIdSuccessRoute,
   ExploreProductIdUnavailableRoute: ExploreProductIdUnavailableRoute,
+  ExploreCategoryCategoryIdRoute: ExploreCategoryCategoryIdRoute,
   PortfolioTransactionsTxnIdRoute: PortfolioTransactionsTxnIdRoute,
   SettingsHelpTicketRoute: SettingsHelpTicketRoute,
   SettingsSecurityChangePinRoute: SettingsSecurityChangePinRoute,

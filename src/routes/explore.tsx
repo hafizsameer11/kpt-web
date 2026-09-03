@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Building2,
   Check,
+  ChevronRight,
   Clock3,
   Landmark,
   Layers,
@@ -187,6 +188,18 @@ function ExploreScreen() {
                 })}
               </div>
 
+              {activeCategory && (
+                <Link
+                  to="/explore/category/$categoryId"
+                  params={{ categoryId: activeCategory.id }}
+                  className="mt-3 flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 press"
+                >
+                  <span className="text-[12.5px] font-bold">
+                    View all {activeCategory.name}
+                  </span>
+                  <ChevronRight className="size-4 text-muted-foreground" />
+                </Link>
+              )}
             </section>
           </Rise>
 
