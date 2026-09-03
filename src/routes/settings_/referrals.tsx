@@ -185,8 +185,8 @@ function ReferralsScreen() {
       <button
         type="button"
         onClick={() => {
-          void navigator.clipboard?.writeText(REFERRAL.link);
-          toast.success("Invite link copied", { description: REFERRAL.link });
+          void navigator.clipboard?.writeText(REFERRALS.link);
+          toast.success("Invite link copied", { description: REFERRALS.link });
         }}
         className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
       >
