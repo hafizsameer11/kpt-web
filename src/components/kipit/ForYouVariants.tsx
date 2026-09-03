@@ -192,7 +192,7 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
         </div>
       </div>
 
-      {/* Desktop: four image cards — first blue, rest white */}
+      {/* Desktop: four article cards — first blue, rest white */}
       <div className="mt-4 hidden gap-4 md:grid md:grid-cols-4">
         {LEARN_ARTICLES.slice(0, 4).map((item, i) => {
           const isLead = i === 0;
@@ -201,59 +201,41 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
               key={item.id}
               to="/learn/$articleId"
               params={{ articleId: item.id }}
-              className={`group flex flex-col overflow-hidden rounded-xl p-4 press hover:-translate-y-0.5 hover:shadow-float ${
+              className={`group flex flex-col rounded-2xl p-4 press hover:-translate-y-0.5 hover:shadow-float ${
                 isLead
                   ? "bg-brand-gradient text-primary-foreground"
                   : "card-surface"
               }`}
             >
-              <div className="relative -mx-4 -mt-4 h-36 overflow-hidden">
-                <img
-                  src={articleArt(item.id, i)}
-                  alt=""
-                  aria-hidden="true"
-                  loading="lazy"
-                  className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <span
-                  aria-hidden
-                  className={`absolute inset-x-0 bottom-0 h-10 ${
-                    isLead
-                      ? "bg-gradient-to-t from-brand to-transparent"
-                      : "bg-gradient-to-t from-background to-transparent"
-                  }`}
-                />
-              </div>
-              <div className="mt-3 flex flex-1 flex-col">
+              <img
+                src={articleArt(item.id, i)}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                className="mb-4 h-32 w-full rounded-xl object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="flex flex-1 flex-col">
                 <span
                   className={`self-start rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.14em] ${
                     isLead
                       ? "border border-white/20 bg-white/10 text-primary-foreground/85"
-                      : "text-brand"
+                      : "border border-gold/30 bg-gold/10 text-brand"
                   }`}
                 >
                   {item.tag}
                 </span>
-                <h3
-                  className={`mt-1.5 font-display text-sm font-extrabold leading-snug ${
-                    isLead ? "" : "text-foreground"
-                  }`}
-                >
+                <h3 className="mt-3 font-display text-sm font-extrabold leading-snug">
                   {item.title}
                 </h3>
                 <p
-                  className={`mt-1 line-clamp-2 text-[11px] leading-relaxed ${
+                  className={`mt-1.5 line-clamp-2 text-[11px] leading-relaxed ${
                     isLead ? "text-primary-foreground/75" : "text-muted-foreground"
                   }`}
                 >
                   {item.body}
                 </p>
-                <span
-                  className={`mt-auto inline-flex items-center gap-1 pt-3 text-[10px] font-bold uppercase tracking-[0.16em] ${
-                    isLead ? "text-gold" : "text-gold"
-                  }`}
-                >
-                  Read <ArrowUpRight className="size-3" />
+                <span className="mt-4 inline-flex items-center gap-1.5 self-start rounded-full bg-gold-gradient px-4 py-2 text-[11px] font-bold text-brand">
+                  Read now <ArrowUpRight className="size-3.5" />
                 </span>
               </div>
             </Link>
