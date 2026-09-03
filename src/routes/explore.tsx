@@ -285,7 +285,7 @@ function ExploreScreen() {
                         {c.name}
                       </h3>
                       <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.12em] text-gold">
-                        {i === 0 ? "Next up" : `Q${4 + i > 4 ? 1 : 4}`}
+                        {["Next up", "Q4", "Q1 2027"][i] ?? "Soon"}
                       </span>
                     </div>
                     <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
