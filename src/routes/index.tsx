@@ -19,6 +19,8 @@ import { AmountCounter } from "@/components/kipit/motion";
 import {
   HOLDINGS,
   INVESTED,
+  MONTH_CHANGE,
+  MONTH_CHANGE_PCT,
   NEXT_MATURITY,
   PAYOUTS,
   QUICK_ACTIONS,
