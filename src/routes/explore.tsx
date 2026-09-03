@@ -727,7 +727,7 @@ function DesktopExplore() {
         })}
       </div>
 
-      <div className="mt-4 grid items-start gap-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+      <div className="mt-4 grid items-start gap-4 lg:grid-cols-[minmax(0,2.4fr)_minmax(0,1fr)]">
         {/* Left column */}
         <div className="grid min-w-0 grid-cols-1 gap-4">
           {activeCategory && (
@@ -976,13 +976,13 @@ function DesktopProductRow({ product: p }: { product: ExploreProduct }) {
         </div>
       </div>
 
-      <div className="hidden w-24 shrink-0 text-right xl:block">
+      <div className="hidden w-20 shrink-0 text-right xl:block">
         <p className="text-[9.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
           Tenor
         </p>
         <p className="mt-0.5 text-[12.5px] font-bold">{p.tenor}</p>
       </div>
-      <div className="hidden w-28 shrink-0 text-right lg:block">
+      <div className="hidden w-24 shrink-0 text-right lg:block">
         <p className="text-[9.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
           Minimum
         </p>
