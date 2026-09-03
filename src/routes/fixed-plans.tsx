@@ -185,34 +185,77 @@ function FixedPlansScreen() {
                 <TrendingUp className="size-3.5" /> p.a.
               </span>
             </div>
-            <div className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-sm">
-              {TENOR_BANDS.map((band, i) => (
-                <div
-                  key={band.days}
-                  style={{ ["--d" as string]: `${i * 70}ms` }}
-                  className={`k-rise flex items-center gap-3 px-4 py-3.5 ${
-                    i > 0 ? "border-t border-border/50" : ""
-                  }`}
-                >
-                  <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-accent/15 text-[11px] font-extrabold text-brand">
-                    {band.days.replace(" days", "d")}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-bold">{band.name}</span>
-                    <span className="block text-[11.5px] text-muted-foreground">
-                      {band.days} lock-in · min {naira(band.minimum)}
-                    </span>
-                  </span>
-                  <span className="shrink-0 text-right">
-                    <span className="block text-base font-extrabold text-num text-brand">
-                      {band.rate}
-                    </span>
-                    <span className="block text-[10px] font-semibold text-muted-foreground">
-                      per annum
-                    </span>
-                  </span>
-                </div>
-              ))}
+            {/* Plan cards — same design as Invest */}
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+              {TENOR_BANDS.map((band, i) => {
+                const featured = i === 1;
+                return (
+                  <article
+                    key={band.days}
+                    style={{ ["--d" as string]: `${i * 90}ms` }}
+                    className={`k-rise relative flex flex-col justify-between overflow-hidden rounded-[1.5rem] p-4 md:rounded-[2rem] md:p-5 ${
+                      featured
+                        ? "bg-brand-gradient text-primary-foreground shadow-float"
+                        : "border border-border bg-card"
+                    }`}
+                  >
+                    <span
+                      aria-hidden
+                      className={`pointer-events-none absolute -right-10 -top-10 size-28 rounded-full ${
+                        featured ? "bg-gold/20" : "bg-accent/60"
+                      }`}
+                    />
+                    <div className="relative">
+                      <span
+                        className={`inline-flex rounded-full px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-widest md:px-3 md:text-[10px] ${
+                          featured
+                            ? "bg-white/15 text-primary-foreground"
+                            : "bg-secondary text-muted-foreground"
+                        }`}
+                      >
+                        {featured ? "Most popular" : "Fixed tenor"}
+                      </span>
+                      <h3 className="mt-2 font-display text-[13px] font-extrabold leading-tight md:mt-3 md:text-base">
+                        {band.name}
+                      </h3>
+                      <p
+                        className={`mt-0.5 text-[10px] font-semibold md:text-[11px] ${
+                          featured ? "text-primary-foreground/70" : "text-muted-foreground"
+                        }`}
+                      >
+                        {band.days} &middot; min {naira(band.minimum)}
+                      </p>
+                    </div>
+                    <div className="relative mt-4">
+                      <p
+                        className={`text-[9px] md:text-[10px] ${
+                          featured ? "text-primary-foreground/60" : "text-muted-foreground"
+                        }`}
+                      >
+                        Rate p.a.
+                      </p>
+                      <p
+                        className={`text-xl font-extrabold text-num md:text-2xl ${
+                          featured ? "text-gold" : ""
+                        }`}
+                      >
+                        {band.rate}
+                      </p>
+                      <button
+                        type="button"
+                        className={`mt-3 inline-flex w-full items-center justify-center gap-1 rounded-full px-3 py-2 text-[11px] font-extrabold press ${
+                          featured
+                            ? "bg-gold-gradient text-gold-foreground k-glow"
+                            : "bg-brand text-brand-foreground"
+                        }`}
+                      >
+                        <Plus className="size-3.5" strokeWidth={2.6} />
+                        Invest
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           </section>
 
