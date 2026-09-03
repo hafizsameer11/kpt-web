@@ -540,7 +540,7 @@ function CallAccountScreen() {
           <section id="activity" className="mt-7 scroll-mt-20">
             <div className="mb-3 flex items-center justify-between px-1">
               <h2 className="font-display text-base font-extrabold">Activity</h2>
-              <Link to="/portfolio" className="text-xs font-bold text-brand">
+              <Link to="/portfolio/transactions" className="text-xs font-bold text-brand">
                 View all
               </Link>
             </div>
