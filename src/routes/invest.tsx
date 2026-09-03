@@ -519,7 +519,6 @@ function DesktopInvest() {
             </div>
           </section>
 
-          <DisclosureStrip variant="fixed" />
         </div>
       </div>
 
