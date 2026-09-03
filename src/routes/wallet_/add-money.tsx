@@ -136,7 +136,7 @@ function WalletAddMoney() {
               icon={<Building2 className="size-5" strokeWidth={2.2} />}
               title="Bank transfer"
               desc="Send to your dedicated Kipit account · ₦0 fee"
-              badge="Instant"
+              badge="Free"
             />
             <MethodOption
               active={method === "card"}
