@@ -35,6 +35,27 @@ function SelectAccountScreen() {
   const [selected, setSelected] = useState(SAVED_ACCOUNTS[0]?.id ?? "");
 
   return (
+    <>
+      <div className="md:hidden">
+        <MobileSelectAccount selected={selected} setSelected={setSelected} />
+      </div>
+      <div className="hidden md:block">
+        <DesktopSelectAccount selected={selected} setSelected={setSelected} />
+      </div>
+    </>
+  );
+}
+
+function MobileSelectAccount({
+  selected,
+  setSelected,
+}: {
+  selected: string;
+  setSelected: (id: string) => void;
+}) {
+  const navigate = useNavigate();
+
+  return (
     <AppShell title="Payout Account" navVariant="elevated">
       <div className="pb-2">
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pt-8 md:shadow-float">
