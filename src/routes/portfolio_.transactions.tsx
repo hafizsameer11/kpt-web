@@ -134,40 +134,38 @@ function TransactionHistoryScreen() {
           />
 
           {/* Quick filter bar */}
-          <div className="flex items-center gap-2">
-            <div className="flex flex-1 items-center gap-2">
+          <div className="flex items-stretch gap-2 rounded-xl border border-border bg-card p-1.5 shadow-sm">
+            {(
+              [
+                { label: "Period", value: period },
+                { label: "Status", value: status },
+              ] as const
+            ).map((f) => (
               <button
+                key={f.label}
                 type="button"
                 onClick={() => setFiltersOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2 text-[12px] font-bold text-foreground press"
+                className="min-w-0 flex-1 rounded-lg px-3 py-1.5 text-left transition-colors hover:bg-secondary/60 press"
               >
-                <span className="text-[10px] font-extrabold uppercase tracking-wide text-muted-foreground">
-                  Period
+                <span className="block text-[9.5px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
+                  {f.label}
                 </span>
-                <span className="truncate">{period}</span>
-                <ChevronRight className="size-3.5 shrink-0 -rotate-90 text-muted-foreground" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setFiltersOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2 text-[12px] font-bold text-foreground press"
-              >
-                <span className="text-[10px] font-extrabold uppercase tracking-wide text-muted-foreground">
-                  Status
+                <span className="mt-0.5 flex items-center gap-1">
+                  <span className="truncate text-[12.5px] font-bold">{f.value}</span>
+                  <ChevronRight className="size-3 shrink-0 rotate-90 text-muted-foreground" />
                 </span>
-                <span className="truncate">{status}</span>
-                <ChevronRight className="size-3.5 shrink-0 -rotate-90 text-muted-foreground" />
               </button>
-            </div>
+            ))}
             <button
               type="button"
               onClick={() => setFiltersOpen(true)}
               aria-label="Open filters"
-              className="grid size-10 shrink-0 place-items-center rounded-full border border-border bg-card text-foreground press"
+              className="grid w-11 shrink-0 place-items-center rounded-lg bg-brand text-brand-foreground press"
             >
               <SlidersHorizontal className="size-4" />
             </button>
           </div>
+
 
 
           {/* List */}
