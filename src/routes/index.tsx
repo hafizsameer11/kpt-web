@@ -200,21 +200,24 @@ function HomeV2Screen() {
               </div>
 
               {/* Quick actions — thumb row on mobile, panel on desktop */}
-              <div className="mt-6 grid grid-cols-4 gap-2 md:mt-0 md:grid-cols-2 md:gap-3 md:rounded-xl md:border md:border-white/15 md:bg-white/5 md:p-4">
+              <div className="mt-6 grid grid-cols-4 gap-2 md:mt-0 md:w-[22rem] md:grid-cols-2 md:gap-2 md:rounded-2xl md:border md:border-white/15 md:bg-white/5 md:p-3">
                 {QUICK_ACTIONS.map((a, i) => (
                   <Link
                     key={a.label}
                     to={a.to}
                     style={{ ["--d" as string]: `${120 + i * 70}ms` }}
-                    className="k-rise flex flex-col items-center gap-2 rounded-xl py-1 text-[10px] font-semibold text-primary-foreground/85 press md:flex-row md:gap-3 md:rounded-xl md:bg-white/5 md:px-3 md:py-3 md:text-xs md:hover:bg-white/10"
+                    className="k-rise flex flex-col items-center gap-2 rounded-xl py-1 text-[10px] font-semibold text-primary-foreground/85 press md:h-14 md:flex-row md:items-center md:justify-start md:gap-2.5 md:bg-white/5 md:px-3 md:py-0 md:text-[13px] md:hover:bg-white/10"
                   >
-                    <span className="grid size-12 place-items-center rounded-xl border border-white/15 bg-white/10 md:size-9">
+                    <span className="grid size-12 shrink-0 place-items-center rounded-xl border border-white/15 bg-white/10 md:size-9">
                       <a.icon className="size-5 md:size-4" strokeWidth={1.9} />
                     </span>
-                    <span className="text-center leading-tight md:text-left">{a.label}</span>
+                    <span className="min-w-0 text-center leading-tight md:truncate md:whitespace-nowrap md:text-left">
+                      {a.label}
+                    </span>
                   </Link>
                 ))}
               </div>
+
             </div>
 
           </section>
