@@ -43,12 +43,21 @@ export function DashboardSidebar({
   const current = activePath ?? pathname;
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[17rem] flex-col border-r border-border bg-surface md:flex">
-      <div className="px-7 pb-7 pt-7">
-        <Logo tone="brand" className="text-2xl" />
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[17rem] flex-col overflow-hidden border-r border-white/10 bg-brand-gradient text-primary-foreground md:flex">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-16 -top-24 size-56 rounded-full bg-gold/20 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-20 bottom-10 size-56 rounded-full bg-white/10 blur-3xl"
+      />
+
+      <div className="relative px-7 pb-8 pt-7">
+        <Logo tone="light" className="text-2xl" />
       </div>
 
-      <nav className="flex-1 space-y-0.5 overflow-y-auto px-4">
+      <nav className="relative flex-1 space-y-1 overflow-y-auto px-4">
         {SIDEBAR_NAV.map((item) => {
           const Icon = item.icon;
           const active =
@@ -61,12 +70,12 @@ export function DashboardSidebar({
               to={item.to}
               className={`group relative flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13.5px] font-semibold press ${
                 active
-                  ? "bg-brand text-brand-foreground shadow-card"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  ? "bg-white/15 text-primary-foreground ring-1 ring-white/20"
+                  : "text-primary-foreground/65 hover:bg-white/10 hover:text-primary-foreground"
               }`}
             >
               <Icon
-                className="size-[18px]"
+                className={`size-[18px] ${active ? "text-gold" : ""}`}
                 strokeWidth={active ? 2.2 : 1.8}
               />
               {item.label}
@@ -81,8 +90,8 @@ export function DashboardSidebar({
         })}
       </nav>
 
-      <div className="m-4 overflow-hidden rounded-lg bg-brand-gradient p-5 text-primary-foreground">
-        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary-foreground/55">
+      <div className="relative m-4 overflow-hidden rounded-xl border border-white/15 bg-white/10 p-5 backdrop-blur">
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary-foreground/60">
           Wallet
         </p>
         <p className="mt-1.5 text-[22px] font-bold text-num">
@@ -90,24 +99,24 @@ export function DashboardSidebar({
         </p>
         <Link
           to="/wallet/add-money"
-          className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-white/12 px-4 py-2.5 text-xs font-bold text-primary-foreground press hover:bg-white/20"
+          className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-gold-gradient px-4 py-2.5 text-xs font-bold text-gold-foreground press hover:opacity-95"
         >
           <Plus className="size-3.5" /> Fund wallet
         </Link>
       </div>
 
-      <div className="flex items-center gap-3 border-t border-border px-5 py-4">
-        <div className="grid size-9 place-items-center rounded-full bg-brand text-xs font-bold text-brand-foreground">
+      <div className="relative flex items-center gap-3 border-t border-white/10 px-5 py-4">
+        <div className="grid size-9 place-items-center rounded-full bg-white/15 text-xs font-bold text-primary-foreground">
           AO
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-[13px] font-semibold">Adaeze Okafor</p>
-          <p className="text-[11px] text-muted-foreground">Tier 2 verified</p>
+          <p className="text-[11px] text-primary-foreground/60">Tier 2 verified</p>
         </div>
         <Link
           to="/login"
           aria-label="Sign out"
-          className="grid size-8 place-items-center rounded-full text-muted-foreground press hover:bg-secondary hover:text-foreground"
+          className="grid size-8 place-items-center rounded-full text-primary-foreground/70 press hover:bg-white/10 hover:text-primary-foreground"
         >
           <LogOut className="size-4" />
         </Link>
