@@ -242,27 +242,61 @@ function PortfolioScreen() {
             </div>
 
             <ul className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
-              {/* Call account */}
-              <li className="k-rise">
-                <Link
-                  to="/call-account"
-                  className="card-surface relative flex items-center gap-3 overflow-hidden p-4 transition-shadow hover:shadow-md"
-                >
-                  <span className="absolute inset-y-0 left-0 w-1 bg-brand" aria-hidden />
-                  <span className="ml-1 grid size-10 shrink-0 place-items-center rounded-lg bg-brand/10 text-brand">
-                    <Wallet className="size-5" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold">{CALL_ACCOUNT.name}</p>
-                    <p className="mt-0.5 text-[11px] text-muted-foreground">
-                      {CALL_ACCOUNT.rate} · {CALL_ACCOUNT.liquidity}
-                    </p>
+              {/* Call account — brand card, matching the Home idle-cash design */}
+              <li className="k-rise md:col-span-2">
+                <section className="relative overflow-hidden rounded-xl bg-brand p-5 text-brand-foreground shadow-card md:p-6">
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-gold-gradient opacity-20 blur-2xl"
+                  />
+                  <div className="relative">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex size-7 items-center justify-center rounded-full bg-brand-foreground/10">
+                        <Wallet className="size-3.5" strokeWidth={2.2} />
+                      </span>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-foreground/70">
+                        Call account
+                      </p>
+                    </div>
+
+                    <div className="mt-3 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+                      <div className="min-w-0">
+                        <p className="text-3xl font-extrabold tracking-tight text-num">
+                          <AmountCounter
+                            value={CALL_ACCOUNT.balance}
+                            hidden={hidden}
+                            mask={mask}
+                          />
+                        </p>
+                        <p className="mt-1 text-xs text-brand-foreground/70">
+                          Earning daily — withdraw anytime.
+                        </p>
+                      </div>
+                      <p className="text-right text-xs text-brand-foreground/70">
+                        Interest today
+                        <span className="block text-lg font-extrabold text-gold text-num">
+                          {mask(CALL_ACCOUNT.accruedToday)}
+                        </span>
+                      </p>
+                    </div>
+
+                    <div className="mt-4 h-px w-full bg-brand-foreground/12" />
+
+                    <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="text-[11px] text-brand-foreground/65">
+                        {CALL_ACCOUNT.name} · {CALL_ACCOUNT.rate} · {CALL_ACCOUNT.liquidity}
+                      </p>
+                      <Link
+                        to="/call-account"
+                        className="inline-flex items-center justify-center gap-1.5 rounded-full bg-gold-gradient px-5 py-3 text-xs font-bold text-brand press"
+                      >
+                        View account <ArrowUpRight className="size-3.5" />
+                      </Link>
+                    </div>
                   </div>
-                  <p className="shrink-0 text-sm font-extrabold text-num">
-                    {mask(CALL_ACCOUNT.balance)}
-                  </p>
-                </Link>
+                </section>
               </li>
+
 
               {/* Fixed plans */}
               {HOLDINGS.map((h, i) => {
