@@ -185,21 +185,21 @@ function ProductDetailScreen() {
                   const [head, ...rest] = h.value.split(" ");
                   const unit = rest.join(" ");
                   return (
-                    <div key={h.label} className="flex flex-col justify-center p-5">
+                    <div key={h.label} className="flex min-w-0 flex-col justify-center p-4 sm:p-5">
                       <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground/80">
                         {h.label}
                       </span>
-                      <div className="mt-1.5 flex items-baseline gap-1">
+                      <div className="mt-1.5 flex min-w-0 flex-wrap items-baseline gap-x-1 gap-y-0.5">
                         <span
-                          className={`font-display font-extrabold tracking-[-0.02em] text-num ${
-                            isRate ? "text-[24px] text-gold" : "text-[20px] text-foreground"
+                          className={`min-w-0 break-words font-display font-extrabold tracking-[-0.02em] text-num ${
+                            isRate ? "text-[22px] text-gold" : "text-[18px] text-foreground"
                           }`}
                         >
                           {head}
                         </span>
                         {unit ? (
                           <span
-                            className={`text-[11px] font-bold uppercase ${
+                            className={`min-w-0 break-words text-[11px] font-bold uppercase ${
                               isRate ? "text-gold/80" : "text-muted-foreground/70"
                             }`}
                           >
@@ -208,6 +208,7 @@ function ProductDetailScreen() {
                         ) : null}
                       </div>
                     </div>
+
                   );
                 })}
               </div>
