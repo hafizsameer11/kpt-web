@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
-import { feedArt } from "@/components/kipit/art";
+import { articleArt } from "@/components/kipit/art";
 import { FEED } from "@/lib/home-data";
 
 function SectionHead({ label = "For you" }: { label?: string }) {
@@ -35,7 +35,7 @@ export function ForYouCovers() {
             className="relative block h-[19rem] w-[72vw] max-w-[16rem] shrink-0 snap-start overflow-hidden rounded-xl shadow-card press hover:-translate-y-0.5 hover:shadow-float md:h-[21rem] md:w-auto md:max-w-none"
           >
             <img
-              src={feedArt(i)}
+              src={articleArt(item.id, i)}
               alt=""
               aria-hidden="true"
               loading="lazy"
@@ -86,7 +86,7 @@ export function ForYouList() {
           >
             <div className="relative size-20 shrink-0 overflow-hidden rounded-xl md:h-28 md:w-full">
               <img
-                src={feedArt(i)}
+                src={articleArt(item.id, i)}
                 alt=""
                 aria-hidden="true"
                 loading="lazy"
@@ -139,7 +139,7 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
             />
             <div className="relative">
               <img
-                src={feedArt(0)}
+                src={articleArt(lead.id, 0)}
                 alt=""
                 aria-hidden="true"
                 loading="lazy"
@@ -212,7 +212,7 @@ export function ForYouBento({ className = "" }: { className?: string }) {
           >
             <div className="relative -mx-3 -mt-3 h-24 overflow-hidden md:-mx-4 md:-mt-4 md:h-32">
               <img
-                src={feedArt(i)}
+                src={articleArt(item.id, i)}
                 alt=""
                 aria-hidden="true"
                 loading="lazy"

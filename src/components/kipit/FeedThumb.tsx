@@ -1,17 +1,19 @@
-import { feedArt } from "@/components/kipit/art";
+import { articleArt } from "@/components/kipit/art";
 import { cn } from "@/lib/utils";
 
 /** Abstract brand artwork thumbnail for "For you" content cards. */
 export function FeedThumb({
   index,
+  id,
   className,
 }: {
   index: number;
+  id?: string;
   className?: string;
 }) {
   return (
     <img
-      src={feedArt(index)}
+      src={articleArt(id ?? "", index)}
       alt=""
       aria-hidden="true"
       loading="lazy"
