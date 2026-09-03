@@ -75,6 +75,19 @@ function HoldingNotFound() {
 }
 
 function HoldingDetailScreen() {
+  return (
+    <AppShell title="Holding" navVariant="elevated">
+      <div className="hidden md:block">
+        <DesktopHolding />
+      </div>
+      <div className="md:hidden">
+        <MobileHolding />
+      </div>
+    </AppShell>
+  );
+}
+
+function DesktopHolding() {
   const { holding: h } = Route.useLoaderData();
   const { hidden, mask } = useBalanceVisibility();
 
@@ -83,7 +96,243 @@ function HoldingDetailScreen() {
   const accrued = accruedInterest(h);
 
   return (
-    <AppShell title="Holding" navVariant="elevated">
+    <div className="mx-auto w-full max-w-[1180px] pb-10">
+      <Link
+        to="/portfolio"
+        className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft className="size-4" /> Portfolio
+      </Link>
+
+      {/* Hero */}
+      <section className="relative mt-4 overflow-hidden rounded-2xl bg-brand-gradient px-8 py-7 text-primary-foreground shadow-float">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-24 -top-32 size-80 rounded-full bg-gold/15 blur-[70px]"
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -bottom-28 -left-24 size-64 rounded-full bg-white/10 blur-[56px]"
+        />
+        <div className="relative flex flex-wrap items-end justify-between gap-8">
+          <div className="min-w-0">
+            <span className="inline-flex rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary-foreground/70">
+              {h.kind}
+            </span>
+            <h1 className="mt-2 font-display text-[30px] font-extrabold leading-tight tracking-[-0.02em]">
+              {h.name}
+            </h1>
+            <p className="mt-1 text-[12.5px] text-primary-foreground/60">{h.issuer}</p>
+            <div className="mt-5 flex flex-wrap items-end gap-x-6 gap-y-3">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.1em] text-primary-foreground/55">
+                  Principal
+                </p>
+                <p className="mt-1 font-display text-[38px] font-extrabold leading-none text-num">
+                  <AmountCounter value={h.principal} hidden={hidden} mask={mask} />
+                </p>
+              </div>
+              <span className="inline-flex items-center gap-1 rounded-full bg-gold/15 px-2.5 py-1 text-[11.5px] font-extrabold text-gold">
+                <ArrowUpRight className="size-3.5" strokeWidth={2.6} />
+                {h.rate}
+              </span>
+            </div>
+          </div>
+
+          <div className="w-full max-w-sm rounded-xl border border-white/12 bg-white/8 p-4 backdrop-blur-md">
+            <div className="flex items-center justify-between text-[11.5px] text-primary-foreground/70">
+              <span>{elapsed} days elapsed</span>
+              <span>{h.daysLeft} days remaining</span>
+            </div>
+            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/15">
+              <div className="k-fill h-full rounded-full bg-gold" style={{ width: `${progress}%` }} />
+            </div>
+            <div className="mt-3 flex items-center justify-between text-[11.5px] text-primary-foreground/60">
+              <span>Started {h.startDate}</span>
+              <span>Matures {h.maturityDate}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Key figures */}
+      <section className="mt-6 grid grid-cols-4 gap-4">
+        {[
+          { label: "Interest accrued", value: mask(accrued), gold: true },
+          { label: "Expected payout", value: mask(h.expectedPayout), gold: false },
+          { label: "Rate", value: h.rate, gold: false },
+          { label: "Tenor", value: `${h.totalDays} days`, gold: false },
+        ].map((cell) => (
+          <div key={cell.label} className="card-surface p-5">
+            <p className="text-[10.5px] uppercase tracking-[0.1em] text-muted-foreground">
+              {cell.label}
+            </p>
+            <p
+              className={`mt-2 text-[22px] font-extrabold text-num ${cell.gold ? "text-gold" : ""}`}
+            >
+              {cell.value}
+            </p>
+          </div>
+        ))}
+      </section>
+
+      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_340px] items-start gap-6">
+        {/* Transactions */}
+        <section className="card-surface overflow-hidden">
+          <div className="flex items-center justify-between border-b border-border/60 px-5 py-4">
+            <h2 className="font-display text-base font-extrabold">Transactions</h2>
+            <span className="text-[11.5px] font-semibold text-muted-foreground">
+              {h.transactions.length} entries
+            </span>
+          </div>
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border/60 text-left text-[10.5px] uppercase tracking-[0.1em] text-muted-foreground">
+                <th className="px-5 py-2.5 font-bold">Activity</th>
+                <th className="px-5 py-2.5 font-bold">Date</th>
+                <th className="px-5 py-2.5 text-right font-bold">Amount</th>
+                <th className="w-10" />
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/60">
+              {h.transactions.map((t, i) => (
+                <tr
+                  key={`${t.label}-${i}`}
+                  className="cursor-pointer transition-colors hover:bg-secondary/60"
+                  onClick={() => {
+                    window.location.href = `/portfolio/transactions/${holdingTxnId(h.id, i)}`;
+                  }}
+                >
+                  <td className="px-5 py-3.5">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`grid size-9 shrink-0 place-items-center rounded-lg ${
+                          t.direction === "in" ? "bg-gold/15 text-gold" : "bg-secondary text-brand"
+                        }`}
+                      >
+                        {t.direction === "in" ? (
+                          <ArrowDownLeft className="size-4" />
+                        ) : (
+                          <ArrowUpRight className="size-4" />
+                        )}
+                      </span>
+                      <Link
+                        to="/portfolio/transactions/$txnId"
+                        params={{ txnId: holdingTxnId(h.id, i) }}
+                        className="text-[13.5px] font-bold hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {t.label}
+                      </Link>
+                    </div>
+                  </td>
+                  <td className="px-5 py-3.5 text-[12.5px] text-muted-foreground">{t.date}</td>
+                  <td className="px-5 py-3.5 text-right text-[13.5px] font-extrabold text-num">
+                    {mask(t.amount)}
+                  </td>
+                  <td className="pr-4">
+                    <ChevronRight className="size-4 text-muted-foreground/70" />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+
+        {/* Right rail */}
+        <div className="space-y-5">
+          <section className="card-surface p-5">
+            <div className="flex items-start gap-3">
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-brand/10 text-brand">
+                <CalendarClock className="size-4" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[10.5px] uppercase tracking-[0.1em] text-muted-foreground">
+                  At maturity
+                </p>
+                <p className="mt-1 text-[13.5px] font-bold">{h.maturityInstruction}</p>
+                <p className="mt-1 text-[11.5px] text-muted-foreground">
+                  {h.canManageMaturity
+                    ? "You can change this up to 24 hours before maturity."
+                    : "Set by the issuer — this instruction cannot be changed."}
+                </p>
+              </div>
+            </div>
+            {h.canManageMaturity ? (
+              <div className="mt-4 grid gap-2.5">
+                <button
+                  type="button"
+                  onClick={() =>
+                    toast.success("Maturity instruction updated", {
+                      description: "This plan will roll over at the prevailing rate.",
+                    })
+                  }
+                  className="inline-flex items-center justify-center gap-1.5 rounded-full bg-brand-gradient px-4 py-2.5 text-[12.5px] font-extrabold text-primary-foreground press"
+                >
+                  <RefreshCw className="size-3.5" /> Roll over
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    toast.success("Maturity instruction updated", {
+                      description: "Principal and interest will be paid to your wallet.",
+                    })
+                  }
+                  className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border bg-card px-4 py-2.5 text-[12.5px] font-extrabold press"
+                >
+                  <Wallet className="size-3.5" /> Pay to wallet
+                </button>
+              </div>
+            ) : null}
+          </section>
+
+          <section className="card-surface overflow-hidden">
+            <div className="flex items-center justify-between border-b border-border/60 px-5 py-4">
+              <h2 className="font-display text-base font-extrabold">Documents</h2>
+              <span className="rounded-full bg-secondary px-2.5 py-1 text-[10.5px] font-bold text-brand">
+                {h.documents.length} Files
+              </span>
+            </div>
+            <ul className="divide-y divide-border/60">
+              {h.documents.map((d) => (
+                <li key={d.label}>
+                  <button
+                    type="button"
+                    onClick={() => toast.success(`${d.label} downloaded`)}
+                    className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-secondary/60"
+                  >
+                    <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-gold/12 text-gold">
+                      <FileText className="size-4" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13px] font-bold">{d.label}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {d.kind} · {d.size}
+                      </p>
+                    </div>
+                    <Download className="size-4 shrink-0 text-gold" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <DisclosureStrip variant={h.kind === "Fixed plan" ? "fixed" : "marketplace"} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MobileHolding() {
+  const { holding: h } = Route.useLoaderData();
+  const { hidden, mask } = useBalanceVisibility();
+
+  const elapsed = h.totalDays - h.daysLeft;
+  const progress = Math.min(100, Math.max(4, Math.round((elapsed / h.totalDays) * 100)));
+  const accrued = accruedInterest(h);
+
+  return (
       <div className="pb-2">
         {/* ── Hero ─────────────────────────────────────────────── */}
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-5 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-7 md:shadow-float">
