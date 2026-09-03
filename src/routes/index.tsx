@@ -346,7 +346,7 @@ function HomeV2Screen() {
                       <p className="shrink-0 text-sm font-extrabold text-num md:hidden">
                         {mask(h.amount)}
                       </p>
-                    </article>
+                    </Link>
                   );
                 })}
               </div>
