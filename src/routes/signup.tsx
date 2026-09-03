@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Apple, Phone, X } from "lucide-react";
+import { Phone, X } from "lucide-react";
 import { useState } from "react";
 import { AuthShell, GhostButton } from "@/components/kipit/AuthShell";
 import {
