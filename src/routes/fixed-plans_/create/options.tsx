@@ -383,7 +383,7 @@ function PlanOptionsScreen() {
               type="button"
               disabled={!giftValid}
               className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
-                giftValid ? "" : "opacity-40 shadow-none"
+                giftValid ? "k-glow" : "opacity-40 shadow-none"
               }`}
             >
               Review plan
