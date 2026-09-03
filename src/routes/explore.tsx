@@ -76,7 +76,7 @@ function ExploreScreen() {
     <AppShell title="Explore" navVariant="elevated">
       <div className="pb-2">
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
@@ -95,7 +95,7 @@ function ExploreScreen() {
             </p>
 
             {/* Search */}
-            <div className="mt-6 flex items-center gap-2.5 rounded-2xl border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-md">
+            <div className="mt-6 flex items-center gap-2.5 rounded-xl border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-md">
               <Search className="size-4 shrink-0 text-primary-foreground/70" />
               <input
                 value={query}
@@ -142,7 +142,7 @@ function ExploreScreen() {
                       onClick={() => setCategory(active ? null : c.id)}
                       aria-pressed={active}
                       style={{ ["--d" as string]: `${i * 80}ms` }}
-                      className={`k-rise relative flex flex-col justify-between overflow-hidden rounded-2xl p-4 text-left press md:rounded-2xl md:p-5 ${
+                      className={`k-rise relative flex flex-col justify-between overflow-hidden rounded-xl p-4 text-left press md:rounded-xl md:p-5 ${
                         active
                           ? "bg-brand-gradient text-primary-foreground shadow-float"
                           : "border border-border bg-card"
@@ -156,7 +156,7 @@ function ExploreScreen() {
                       />
                       <div className="relative flex items-start justify-between">
                         <span
-                          className={`inline-flex size-10 items-center justify-center rounded-2xl ${
+                          className={`inline-flex size-10 items-center justify-center rounded-xl ${
                             active
                               ? "bg-gold text-gold-foreground"
                               : "bg-secondary text-foreground"
@@ -227,7 +227,7 @@ function ExploreScreen() {
               </div>
 
               {results.length === 0 ? (
-                <div className="mt-3 rounded-2xl border border-dashed border-border p-6 text-center">
+                <div className="mt-3 rounded-xl border border-dashed border-border p-6 text-center">
                   <p className="text-[13px] font-bold">No matching products</p>
                   <p className="mt-1 text-[12px] text-muted-foreground">
                     Try a different search or category.
@@ -376,7 +376,7 @@ function FeaturedCarousel({ items }: { items: ExploreProduct[] }) {
                 params={{ productId: p.id }}
                 className="block press"
               >
-              <article className="relative flex min-h-[23rem] flex-col justify-between overflow-hidden rounded-2xl bg-brand-gradient p-5 text-primary-foreground shadow-float md:min-h-[24rem] md:p-6">
+              <article className="relative flex min-h-[23rem] flex-col justify-between overflow-hidden rounded-xl bg-brand-gradient p-5 text-primary-foreground shadow-float md:min-h-[24rem] md:p-6">
                 <span
                   aria-hidden
                   className="pointer-events-none absolute -right-12 -top-20 size-52 rounded-full bg-gold/25 blur-[56px]"
@@ -412,7 +412,7 @@ function FeaturedCarousel({ items }: { items: ExploreProduct[] }) {
                     {p.rate.replace(" p.a.", "")}
                   </p>
 
-                  <div className="mt-4 flex items-center divide-x divide-white/15 rounded-2xl bg-white/10 py-2.5 backdrop-blur-sm">
+                  <div className="mt-4 flex items-center divide-x divide-white/15 rounded-xl bg-white/10 py-2.5 backdrop-blur-sm">
                     <div className="flex-1 px-3 text-center">
                       <p className="text-[9.5px] uppercase tracking-[0.12em] text-primary-foreground/55">
                         Tenor
@@ -492,7 +492,7 @@ function ProductCard({ product: p }: { product: ExploreProduct }) {
         </span>
       </div>
 
-      <div className="mt-3.5 flex divide-x divide-border rounded-xl bg-muted/50 py-2.5">
+      <div className="mt-3.5 flex divide-x divide-border rounded-lg bg-muted/50 py-2.5">
         <Stat label="Rate" value={p.rate} accent />
         <Stat label="Tenor" value={p.tenor} />
         <Stat label="Minimum" value={naira(p.minimum)} />

@@ -112,7 +112,7 @@ function PlanOptionsScreen() {
     <AppShell title="Plan Options" navVariant="elevated">
       <div className="pb-2">
         {/* ── Hero summary ───────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
@@ -166,7 +166,7 @@ function PlanOptionsScreen() {
                       onChange={(e) => setPlanName(e.target.value)}
                       placeholder="e.g. December Detty Fund"
                       maxLength={40}
-                      className="mt-1.5 w-full rounded-2xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
+                      className="mt-1.5 w-full rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
                     />
                   </label>
                   <label className="block">
@@ -176,12 +176,12 @@ function PlanOptionsScreen() {
                       onChange={(e) => setGoal(e.target.value)}
                       placeholder="e.g. School fees"
                       maxLength={60}
-                      className="mt-1.5 w-full rounded-2xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
+                      className="mt-1.5 w-full rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
                     />
                   </label>
                   <label className="block">
                     <span className="text-[12px] font-semibold text-foreground">Target amount</span>
-                    <div className="mt-1.5 flex items-baseline gap-1 rounded-2xl border border-border/70 bg-background px-3.5 py-3 transition-colors focus-within:border-gold/60">
+                    <div className="mt-1.5 flex items-baseline gap-1 rounded-xl border border-border/70 bg-background px-3.5 py-3 transition-colors focus-within:border-gold/60">
                       <span className="text-[13px] font-bold text-muted-foreground">₦</span>
                       <input
                         inputMode="numeric"
@@ -228,7 +228,7 @@ function PlanOptionsScreen() {
                   <div className="k-rise mt-4 space-y-3">
                     <label className="block">
                       <span className="text-[12px] font-semibold text-foreground">Amount</span>
-                      <div className="mt-1.5 flex items-baseline gap-1 rounded-2xl border border-border/70 bg-background px-3.5 py-3 transition-colors focus-within:border-gold/60">
+                      <div className="mt-1.5 flex items-baseline gap-1 rounded-xl border border-border/70 bg-background px-3.5 py-3 transition-colors focus-within:border-gold/60">
                         <span className="text-[13px] font-bold text-muted-foreground">₦</span>
                         <input
                           inputMode="numeric"
@@ -246,7 +246,7 @@ function PlanOptionsScreen() {
                           type="button"
                           onClick={() => setFrequency(f)}
                           aria-pressed={frequency === f}
-                          className={`rounded-2xl border py-2.5 text-[12.5px] font-bold transition-colors press ${
+                          className={`rounded-xl border py-2.5 text-[12.5px] font-bold transition-colors press ${
                             frequency === f
                               ? "border-gold/60 bg-gold/10 text-foreground"
                               : "border-border/70 bg-background text-muted-foreground"
@@ -263,11 +263,11 @@ function PlanOptionsScreen() {
                         value={startDate}
                         min={todayISO}
                         onChange={(e) => setStartDate(e.target.value)}
-                        className="mt-1.5 w-full rounded-2xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium text-foreground outline-none transition-colors focus:border-gold/60"
+                        className="mt-1.5 w-full rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium text-foreground outline-none transition-colors focus:border-gold/60"
                       />
                     </label>
-                    <div className="flex items-center gap-3 rounded-2xl border border-border/70 bg-background px-3.5 py-3">
-                      <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-gold/15 text-gold">
+                    <div className="flex items-center gap-3 rounded-xl border border-border/70 bg-background px-3.5 py-3">
+                      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-gold/15 text-gold">
                         <Wallet className="size-4" strokeWidth={2.4} />
                       </span>
                       <span className="min-w-0 flex-1">
@@ -281,7 +281,7 @@ function PlanOptionsScreen() {
                       <Check className="size-4 shrink-0 text-gold" strokeWidth={3} />
                     </div>
                     {autoAmount && Number(autoAmount) > WALLET && (
-                      <p className="k-shake rounded-2xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
+                      <p className="k-shake rounded-xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
                         Auto-invest amount is above your wallet balance of {naira(WALLET)}.
                       </p>
                     )}
@@ -308,14 +308,14 @@ function PlanOptionsScreen() {
                       type="button"
                       onClick={() => setForWhom(o.id)}
                       aria-pressed={forWhom === o.id}
-                      className={`flex min-w-0 items-center gap-2 rounded-2xl border px-3 py-3 text-left transition-colors press ${
+                      className={`flex min-w-0 items-center gap-2 rounded-xl border px-3 py-3 text-left transition-colors press ${
                         forWhom === o.id
                           ? "border-gold/60 bg-gold/10"
                           : "border-border/70 bg-background hover:bg-muted/40"
                       }`}
                     >
                       <span
-                        className={`grid size-8 shrink-0 place-items-center rounded-xl ${
+                        className={`grid size-8 shrink-0 place-items-center rounded-lg ${
                           forWhom === o.id ? "bg-gold text-gold-foreground" : "bg-primary/[0.06] text-foreground"
                         }`}
                       >
@@ -334,14 +334,14 @@ function PlanOptionsScreen() {
                       placeholder="Recipient name"
                       maxLength={50}
                       aria-label="Recipient name"
-                      className="w-full rounded-2xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
+                      className="w-full rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
                     />
                     <input
                       value={recipientContact}
                       onChange={(e) => setRecipientContact(e.target.value)}
                       placeholder="Recipient email or phone"
                       aria-label="Recipient email or phone"
-                      className="w-full rounded-2xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
+                      className="w-full rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
                     />
                     <textarea
                       value={giftMessage}
@@ -350,10 +350,10 @@ function PlanOptionsScreen() {
                       rows={2}
                       maxLength={140}
                       aria-label="Personal message"
-                      className="w-full resize-none rounded-2xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
+                      className="w-full resize-none rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
                     />
                     {!giftValid && (recipient || recipientContact) && (
-                      <p className="k-shake rounded-2xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
+                      <p className="k-shake rounded-xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
                         Add the recipient's name and email or phone to gift this plan.
                       </p>
                     )}
@@ -377,7 +377,7 @@ function PlanOptionsScreen() {
                         type="button"
                         onClick={() => setMaturity(o.id)}
                         aria-pressed={active}
-                        className={`flex w-full items-center gap-3 rounded-2xl border px-3.5 py-3 text-left transition-colors press ${
+                        className={`flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-colors press ${
                           active
                             ? "border-gold/60 bg-gold/[0.07]"
                             : "border-border/70 bg-background hover:bg-muted/40"
@@ -425,7 +425,7 @@ function PlanOptionsScreen() {
                 gift: forWhom === "gift" ? recipient.trim() : "",
               }}
               disabled={!giftValid}
-              className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
+              className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
                 giftValid ? "k-glow" : "pointer-events-none opacity-40 shadow-none"
               }`}
             >

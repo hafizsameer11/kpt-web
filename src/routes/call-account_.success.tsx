@@ -39,7 +39,7 @@ function SuccessScreen() {
   return (
     <AppShell title="Successful" navVariant="elevated">
       <div className="pb-2">
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-16 pt-10 text-center text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-16 pt-10 text-center text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/20 blur-[64px]"
@@ -126,13 +126,13 @@ function SuccessScreen() {
           <div className="mt-5 flex flex-col gap-2.5 md:flex-row">
             <Link
               to="/call-account"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
             >
               View Call Account <ArrowRight className="size-4" strokeWidth={2.6} />
             </Link>
             <Link
               to="/"
-              className="inline-flex w-full items-center justify-center rounded-2xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press md:w-auto md:px-8"
+              className="inline-flex w-full items-center justify-center rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press md:w-auto md:px-8"
             >
               Back to home
             </Link>

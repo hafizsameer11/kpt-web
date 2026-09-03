@@ -202,7 +202,7 @@ function PlanReviewScreen() {
     <AppShell title="Review Plan" navVariant="elevated">
       <div className="pb-2">
         {/* Hero */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
@@ -338,7 +338,7 @@ function PlanReviewScreen() {
               type="button"
               disabled={!valid}
               onClick={() => setOpen(true)}
-              className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
+              className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
                 valid ? "k-glow" : "opacity-40 shadow-none"
               }`}
             >
@@ -382,7 +382,7 @@ function PlanReviewScreen() {
             }
           }}
         >
-          <DialogContent className="max-w-sm rounded-2xl">
+          <DialogContent className="max-w-sm rounded-xl">
             <DialogHeader>
               <DialogTitle className="sr-only">Authorize investment</DialogTitle>
             </DialogHeader>
@@ -412,7 +412,7 @@ function Key({
     <button
       type="button"
       onClick={onClick}
-      className="h-12 rounded-xl border border-border bg-card font-display text-[17px] font-extrabold text-foreground press disabled:opacity-40"
+      className="h-12 rounded-lg border border-border bg-card font-display text-[17px] font-extrabold text-foreground press disabled:opacity-40"
       {...rest}
     >
       {children}

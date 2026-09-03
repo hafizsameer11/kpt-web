@@ -155,12 +155,12 @@ function NotificationsScreen() {
               >
                   <Link
                     to={item.to}
-                    className={`flex items-start gap-4 rounded-2xl border p-4 shadow-card transition-colors hover:border-gold/50 ${
+                    className={`flex items-start gap-4 rounded-xl border p-4 shadow-card transition-colors hover:border-gold/50 ${
                       item.unread ? "border-gold/40 bg-accent/40" : "border-border bg-surface"
                     }`}
                   >
                     <span
-                      className={`grid size-11 shrink-0 place-items-center rounded-2xl ${TONES[item.tone]}`}
+                      className={`grid size-11 shrink-0 place-items-center rounded-xl ${TONES[item.tone]}`}
                     >
                       <Icon className="size-5" />
                     </span>

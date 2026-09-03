@@ -30,7 +30,7 @@ export function ForYouCovers() {
         {FEED.map((item, i) => (
           <article
             key={item.title}
-            className="relative h-[19rem] w-[72vw] max-w-[16rem] shrink-0 snap-start overflow-hidden rounded-2xl shadow-card press hover:-translate-y-0.5 hover:shadow-float md:h-[21rem] md:w-auto md:max-w-none"
+            className="relative h-[19rem] w-[72vw] max-w-[16rem] shrink-0 snap-start overflow-hidden rounded-xl shadow-card press hover:-translate-y-0.5 hover:shadow-float md:h-[21rem] md:w-auto md:max-w-none"
           >
             <img
               src={feedArt(i)}
@@ -80,7 +80,7 @@ export function ForYouList() {
             key={item.title}
             className="card-surface flex items-center gap-3.5 p-3 press hover:-translate-y-0.5 hover:shadow-float md:flex-col md:items-start md:gap-3 md:p-4"
           >
-            <div className="relative size-20 shrink-0 overflow-hidden rounded-2xl md:h-28 md:w-full">
+            <div className="relative size-20 shrink-0 overflow-hidden rounded-xl md:h-28 md:w-full">
               <img
                 src={feedArt(i)}
                 alt=""
@@ -124,7 +124,7 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
       <SectionHead />
       <div className="mt-3 grid gap-2.5 md:mt-4 md:grid-cols-[1.4fr_1fr] md:gap-4">
         {lead && (
-          <article className="relative overflow-hidden rounded-2xl bg-brand-gradient p-5 text-primary-foreground shadow-card press hover:-translate-y-0.5 hover:shadow-float md:p-6">
+          <article className="relative overflow-hidden rounded-xl bg-brand-gradient p-5 text-primary-foreground shadow-card press hover:-translate-y-0.5 hover:shadow-float md:p-6">
             <span
               aria-hidden
               className="pointer-events-none absolute -right-14 -top-16 size-48 rounded-full bg-gold/25 blur-3xl"
@@ -135,7 +135,7 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
                 alt=""
                 aria-hidden="true"
                 loading="lazy"
-                className="mb-4 h-32 w-full rounded-2xl object-cover md:h-40"
+                className="mb-4 h-32 w-full rounded-xl object-cover md:h-40"
               />
               <span className="inline-block rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.16em] text-primary-foreground/85">
                 {lead.tag}
@@ -196,7 +196,7 @@ export function ForYouBento({ className = "" }: { className?: string }) {
         {cards.map((item, i) => (
           <article
             key={item.title}
-            className="card-surface relative flex flex-col justify-between overflow-hidden rounded-xl p-3 press hover:-translate-y-0.5 hover:shadow-float md:rounded-2xl md:p-4"
+            className="card-surface relative flex flex-col justify-between overflow-hidden rounded-lg p-3 press hover:-translate-y-0.5 hover:shadow-float md:rounded-xl md:p-4"
           >
             <div className="relative -mx-3 -mt-3 h-24 overflow-hidden md:-mx-4 md:-mt-4 md:h-32">
               <img
