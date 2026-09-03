@@ -178,14 +178,17 @@ function PortfolioScreen() {
         </section>
 
         {/* ── Sheet ────────────────────────────────────────────── */}
-        <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
+        <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-auto md:mt-6 md:max-w-[1200px] md:rounded-none md:bg-transparent md:px-0 md:pt-0">
           <span
             aria-hidden
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
+          <div className="lg:grid lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start lg:gap-6">
+          <div className="min-w-0">
           {/* Allocation */}
           <section className="k-rise card-surface p-4 md:p-6">
+
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-display text-base font-extrabold">Allocation</h2>
               <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground">
