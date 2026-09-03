@@ -130,7 +130,7 @@ function ExploreScreen() {
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Categories
               </p>
-              <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0">
+              <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
                 {EXPLORE_CATEGORIES.map((c) => {
                   const Icon = CATEGORY_ICON[c.id as keyof typeof CATEGORY_ICON];
                   const active = category === c.id;
@@ -140,7 +140,7 @@ function ExploreScreen() {
                       type="button"
                       onClick={() => setCategory(active ? null : c.id)}
                       aria-pressed={active}
-                      className={`min-w-[9.5rem] shrink-0 snap-start rounded-2xl border p-3.5 text-left press md:min-w-0 ${
+                      className={`rounded-2xl border p-3.5 text-left press ${
                         active
                           ? "border-transparent bg-brand-gradient text-primary-foreground shadow-float"
                           : "border-border bg-card text-foreground"
@@ -179,11 +179,11 @@ function ExploreScreen() {
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   Featured this week
                 </p>
-                <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0">
+                <div className="mt-3 grid gap-3 md:grid-cols-2">
                   {featured.map((p) => (
                     <article
                       key={p.id}
-                      className="relative w-[85%] shrink-0 snap-start overflow-hidden rounded-[1.6rem] bg-brand-gradient p-5 text-primary-foreground shadow-float md:w-auto"
+                      className="relative overflow-hidden rounded-[1.6rem] bg-brand-gradient p-5 text-primary-foreground shadow-float"
                     >
                       <span
                         aria-hidden
