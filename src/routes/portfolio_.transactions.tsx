@@ -331,6 +331,33 @@ function FilterPanel({
       </div>
 
       <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
+        {/* Search */}
+        <div>
+          <p className="mb-2.5 text-[11px] font-extrabold uppercase tracking-wide text-muted-foreground">
+            Search
+          </p>
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5">
+            <Search className="size-4 shrink-0 text-muted-foreground" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Label, reference, source..."
+              className="min-w-0 flex-1 bg-transparent text-[13px] font-bold placeholder:text-muted-foreground/70 focus:outline-none"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+                className="grid size-6 shrink-0 place-items-center rounded-full bg-secondary text-muted-foreground"
+              >
+                <X className="size-3" />
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Type */}
         <div>
           <p className="mb-2.5 text-[11px] font-extrabold uppercase tracking-wide text-muted-foreground">
