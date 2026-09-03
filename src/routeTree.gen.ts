@@ -39,6 +39,7 @@ import { Route as FixedPlansCreateProcessingRouteImport } from './routes/fixed-p
 import { Route as FixedPlansCreateReviewRouteImport } from './routes/fixed-plans_/create/review'
 import { Route as FixedPlansCreateSuccessRouteImport } from './routes/fixed-plans_/create/success'
 import { Route as FixedPlansCreateTenorRouteImport } from './routes/fixed-plans_/create/tenor'
+import { Route as PortfolioTransactionsTxnIdRouteImport } from './routes/portfolio_.transactions_.$txnId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -195,6 +196,12 @@ const FixedPlansCreateTenorRoute = FixedPlansCreateTenorRouteImport.update({
   path: '/tenor',
   getParentRoute: () => FixedPlansCreateRoute,
 } as any)
+const PortfolioTransactionsTxnIdRoute =
+  PortfolioTransactionsTxnIdRouteImport.update({
+    id: '/portfolio_/transactions_/$txnId',
+    path: '/portfolio/transactions/$txnId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -226,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/fixed-plans/create/review': typeof FixedPlansCreateReviewRoute
   '/fixed-plans/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
+  '/portfolio/transactions/$txnId': typeof PortfolioTransactionsTxnIdRoute
   '/fixed-plans/create/': typeof FixedPlansCreateIndexRoute
 }
 export interface FileRoutesByTo {
@@ -257,6 +265,7 @@ export interface FileRoutesByTo {
   '/fixed-plans/create/review': typeof FixedPlansCreateReviewRoute
   '/fixed-plans/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
+  '/portfolio/transactions/$txnId': typeof PortfolioTransactionsTxnIdRoute
   '/fixed-plans/create': typeof FixedPlansCreateIndexRoute
 }
 export interface FileRoutesById {
@@ -290,6 +299,7 @@ export interface FileRoutesById {
   '/fixed-plans_/create/review': typeof FixedPlansCreateReviewRoute
   '/fixed-plans_/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans_/create/tenor': typeof FixedPlansCreateTenorRoute
+  '/portfolio_/transactions_/$txnId': typeof PortfolioTransactionsTxnIdRoute
   '/fixed-plans_/create/': typeof FixedPlansCreateIndexRoute
 }
 export interface FileRouteTypes {
@@ -324,6 +334,7 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/review'
     | '/fixed-plans/create/success'
     | '/fixed-plans/create/tenor'
+    | '/portfolio/transactions/$txnId'
     | '/fixed-plans/create/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -355,6 +366,7 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/review'
     | '/fixed-plans/create/success'
     | '/fixed-plans/create/tenor'
+    | '/portfolio/transactions/$txnId'
     | '/fixed-plans/create'
   id:
     | '__root__'
@@ -387,6 +399,7 @@ export interface FileRouteTypes {
     | '/fixed-plans_/create/review'
     | '/fixed-plans_/create/success'
     | '/fixed-plans_/create/tenor'
+    | '/portfolio_/transactions_/$txnId'
     | '/fixed-plans_/create/'
   fileRoutesById: FileRoutesById
 }
@@ -415,6 +428,7 @@ export interface RootRouteChildren {
   ExploreProductIdSubscribeRoute: typeof ExploreProductIdSubscribeRoute
   ExploreProductIdSuccessRoute: typeof ExploreProductIdSuccessRoute
   ExploreProductIdUnavailableRoute: typeof ExploreProductIdUnavailableRoute
+  PortfolioTransactionsTxnIdRoute: typeof PortfolioTransactionsTxnIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -629,6 +643,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FixedPlansCreateTenorRouteImport
       parentRoute: typeof FixedPlansCreateRoute
     }
+    '/portfolio_/transactions_/$txnId': {
+      id: '/portfolio_/transactions_/$txnId'
+      path: '/portfolio/transactions/$txnId'
+      fullPath: '/portfolio/transactions/$txnId'
+      preLoaderRoute: typeof PortfolioTransactionsTxnIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -678,6 +699,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreProductIdSubscribeRoute: ExploreProductIdSubscribeRoute,
   ExploreProductIdSuccessRoute: ExploreProductIdSuccessRoute,
   ExploreProductIdUnavailableRoute: ExploreProductIdUnavailableRoute,
+  PortfolioTransactionsTxnIdRoute: PortfolioTransactionsTxnIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
