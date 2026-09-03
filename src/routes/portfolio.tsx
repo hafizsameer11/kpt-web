@@ -525,9 +525,11 @@ function PortfolioScreen() {
               ))}
             </ul>
           </section>
-
+          </aside>
+          </div>
 
           <DisclosureStrip variant="marketplace" />
+
         </div>
       </div>
     </AppShell>
