@@ -60,7 +60,139 @@ function TransactionDetailScreen() {
 
   return (
     <AppShell title="Transaction" navVariant="elevated">
-      <div className="pb-2">
+      {/* ── Desktop (md+) ───────────────────────────────────────── */}
+      <div className="hidden md:block">
+        <div className="mx-auto w-full max-w-[1080px] space-y-6 pb-10">
+          <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-8 text-primary-foreground shadow-float">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -right-24 -top-32 size-80 rounded-full bg-gold/15 blur-[70px]"
+            />
+            <div className="relative flex flex-wrap items-end justify-between gap-8">
+              <div className="min-w-0">
+                <Link
+                  to="/portfolio/transactions"
+                  className="press inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[12px] font-bold hover:bg-white/15"
+                >
+                  <ArrowLeft className="size-4" /> Transactions
+                </Link>
+                <div className="mt-6 flex items-center gap-3">
+                  <span className="grid size-12 place-items-center rounded-xl bg-white/10">
+                    {txn.direction === "in" ? (
+                      <ArrowDownLeft className="size-5 text-gold" strokeWidth={2.4} />
+                    ) : (
+                      <ArrowUpRight className="size-5" strokeWidth={2.4} />
+                    )}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                      {txn.type}
+                    </p>
+                    <p className="truncate text-[14px] font-bold">{txn.label}</p>
+                  </div>
+                </div>
+                <p className="mt-4 font-display text-[46px] font-extrabold leading-none tracking-[-0.035em] text-num">
+                  {txn.direction === "in" ? "+" : "−"}
+                  {naira(txn.amount)}
+                </p>
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <span
+                    className={`rounded-full px-3 py-1.5 text-[11.5px] font-extrabold ${statusTone[txn.status]}`}
+                  >
+                    {txn.status}
+                  </span>
+                  <span className="rounded-full bg-white/10 px-3 py-1.5 text-[11.5px] font-bold">
+                    {txn.date} · {txn.time}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setReceiptOpen(true)}
+                className="press inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-[13px] font-extrabold text-brand shadow-float"
+              >
+                <Receipt className="size-4" strokeWidth={2.4} /> View receipt
+              </button>
+            </div>
+          </section>
+
+          <div className="grid grid-cols-[minmax(0,1fr)_320px] items-start gap-6">
+            <section className="overflow-hidden rounded-2xl border border-border bg-card">
+              <div className="border-b border-border px-6 py-4">
+                <h2 className="font-display text-[17px] font-extrabold">Transaction details</h2>
+              </div>
+              <dl className="grid grid-cols-2 gap-x-8 gap-y-5 px-6 py-5">
+                {[
+                  { label: "Reference", value: txn.reference },
+                  { label: "Date & time", value: `${txn.date} · ${txn.time}` },
+                  { label: "Type", value: txn.type },
+                  { label: "Status", value: txn.status },
+                  { label: "Source", value: txn.source },
+                  { label: "Destination", value: txn.destination },
+                ].map((row) => (
+                  <div key={row.label}>
+                    <dt className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
+                      {row.label}
+                    </dt>
+                    <dd className="mt-1 break-words text-[13.5px] font-bold">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              {txn.note && (
+                <p className="border-t border-border/60 px-6 py-4 text-[12px] leading-[1.6] text-muted-foreground">
+                  {txn.note}
+                </p>
+              )}
+            </section>
+
+            <div className="space-y-6">
+              {txn.related && (
+                <section className="rounded-2xl border border-border bg-card p-5">
+                  <h2 className="font-display text-[15px] font-extrabold">Related investment</h2>
+                  {txn.related.holdingId ? (
+                    <Link
+                      to="/portfolio/$holdingId"
+                      params={{ holdingId: txn.related.holdingId }}
+                      className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-border px-4 py-3.5 transition-colors hover:bg-secondary/50"
+                    >
+                      <span className="truncate text-[13px] font-bold">{txn.related.name}</span>
+                      <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                    </Link>
+                  ) : (
+                    <p className="mt-3 rounded-xl border border-border px-4 py-3.5 text-[13px] font-bold">
+                      {txn.related.name}
+                    </p>
+                  )}
+                </section>
+              )}
+
+              <section className="rounded-2xl border border-border bg-card p-5">
+                <h2 className="font-display text-[15px] font-extrabold">Need something else?</h2>
+                <div className="mt-3 space-y-2">
+                  <Link
+                    to="/settings/statements"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-border px-4 py-3 transition-colors hover:bg-secondary/50"
+                  >
+                    <span className="text-[12.5px] font-bold">Download statements</span>
+                    <ChevronRight className="size-4 text-muted-foreground" />
+                  </Link>
+                  <Link
+                    to="/settings/support"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-border px-4 py-3 transition-colors hover:bg-secondary/50"
+                  >
+                    <span className="text-[12.5px] font-bold">Report an issue</span>
+                    <ChevronRight className="size-4 text-muted-foreground" />
+                  </Link>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+        <ReceiptDialog txn={txn} open={receiptOpen} onOpenChange={setReceiptOpen} />
+      </div>
+
+      <div className="pb-2 md:hidden">
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pt-8 md:shadow-float">
           <span
             aria-hidden
@@ -159,15 +291,6 @@ function TransactionDetailScreen() {
             <Receipt className="size-4" strokeWidth={2.4} /> View receipt
           </Link>
 
-          {/* Desktop: receipt popup */}
-          <button
-            type="button"
-            onClick={() => setReceiptOpen(true)}
-            className="mt-5 hidden items-center justify-center gap-2 rounded-xl bg-brand-gradient px-10 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:inline-flex"
-          >
-            <Receipt className="size-4" strokeWidth={2.4} /> View receipt
-          </button>
-          <ReceiptDialog txn={txn} open={receiptOpen} onOpenChange={setReceiptOpen} />
         </div>
       </div>
     </AppShell>
