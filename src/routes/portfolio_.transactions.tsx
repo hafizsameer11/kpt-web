@@ -185,7 +185,27 @@ function TransactionHistoryScreen() {
             </button>
           </div>
 
-
+          {/* Search */}
+          <div className="mt-3 flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 shadow-sm">
+            <Search className="size-4 shrink-0 text-muted-foreground" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search label, reference, source..."
+              className="min-w-0 flex-1 bg-transparent text-[13px] font-bold placeholder:text-muted-foreground/70 focus:outline-none"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+                className="grid size-6 shrink-0 place-items-center rounded-full bg-secondary text-muted-foreground"
+              >
+                <X className="size-3" />
+              </button>
+            )}
+          </div>
 
           {/* List */}
           <ul className="mt-4 card-surface divide-y divide-border/60 overflow-hidden">
