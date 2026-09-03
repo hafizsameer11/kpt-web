@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Logo } from "@/components/kipit/Logo";
+import { AnimatedLogo } from "@/components/kipit/AnimatedLogo";
 
 export const Route = createFileRoute("/splash")({
   head: () => ({
