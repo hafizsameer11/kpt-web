@@ -169,26 +169,6 @@ function TransactionHistoryScreen() {
             </button>
           </div>
 
-          {/* Type filter — segmented track */}
-          <div className="-mx-4 mt-3 overflow-x-auto px-4 pb-1 no-scrollbar">
-            <div className="inline-flex min-w-full gap-1 rounded-xl bg-secondary p-1">
-              {(["All", ...TXN_TYPES] as const).map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setType(t)}
-                  aria-pressed={type === t}
-                  className={`shrink-0 rounded-lg px-3.5 py-2 text-[12px] font-bold transition-all press ${
-                    type === t
-                      ? "bg-brand text-brand-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-brand"
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* List */}
           <ul className="mt-4 card-surface divide-y divide-border/60 overflow-hidden">
