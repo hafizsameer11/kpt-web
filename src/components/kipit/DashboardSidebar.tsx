@@ -81,7 +81,7 @@ export function DashboardSidebar({
         })}
       </nav>
 
-      <div className="m-4 overflow-hidden rounded-[1.35rem] bg-brand-gradient p-5 text-primary-foreground">
+      <div className="m-4 overflow-hidden rounded-xl bg-brand-gradient p-5 text-primary-foreground">
         <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary-foreground/55">
           Wallet
         </p>
