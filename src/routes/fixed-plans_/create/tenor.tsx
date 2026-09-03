@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, CalendarClock, Check, Info, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, CalendarClock, Check, ChevronRight, Info, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
@@ -31,6 +31,14 @@ export const Route = createFileRoute("/fixed-plans_/create/tenor")({
 });
 
 const DAY_MS = 86_400_000;
+
+/** Short category label shown above each fixed tenor. */
+const TERM_LABELS: Record<string, string> = {
+  "30 days": "Short Term",
+  "90 days": "Popular",
+  "180 days": "Mid Term",
+  "365 days": "Long Term",
+};
 
 /** Rate for any tenor length, from the configured bands (MOB-068). */
 function rateForDays(days: number): number {
