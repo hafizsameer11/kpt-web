@@ -39,9 +39,129 @@ function TransferDetails() {
     window.setTimeout(() => setCopied(null), 1600);
   }
 
+  const steps = [
+    "Open your bank app and add the account above as a beneficiary.",
+    `Send exactly ${naira(amount)} from an account in your own name.`,
+    "Your Kipit wallet is credited automatically — usually in seconds.",
+  ];
+
   return (
     <AppShell title="Bank Transfer" navVariant="elevated">
-      <div className="pb-2">
+      {/* ── Desktop (md+) ───────────────────────────────────────── */}
+      <div className="hidden md:block">
+        <div className="mx-auto w-full max-w-[1080px] space-y-6 pb-10">
+          <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-8 text-primary-foreground shadow-float">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -right-24 -top-32 size-80 rounded-full bg-gold/15 blur-[70px]"
+            />
+            <div className="relative flex flex-wrap items-end justify-between gap-8">
+              <div>
+                <Link
+                  to="/wallet/add-money"
+                  className="press inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[12px] font-bold hover:bg-white/15"
+                >
+                  <ArrowLeft className="size-4" /> Add money
+                </Link>
+                <p className="mt-6 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                  Transfer this amount
+                </p>
+                <p className="mt-2 font-display text-[52px] font-extrabold leading-none tracking-[-0.035em] text-num">
+                  {naira(amount)}
+                </p>
+                <p className="mt-3 flex items-center gap-1.5 text-[12.5px] text-primary-foreground/65">
+                  <ShieldCheck className="size-4" /> This account belongs only to you — reuse
+                  it any time.
+                </p>
+              </div>
+              <span className="inline-flex items-center gap-2 rounded-full bg-gold/15 px-4 py-2 text-[12.5px] font-extrabold text-gold">
+                <Building2 className="size-4" /> {VIRTUAL_ACCOUNT.bank}
+              </span>
+            </div>
+          </section>
+
+          <div className="grid grid-cols-[minmax(0,1fr)_360px] items-start gap-6">
+            <section className="rounded-2xl border border-border bg-card p-6">
+              <div className="flex items-center gap-3">
+                <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <Building2 className="size-5" strokeWidth={2.2} />
+                </span>
+                <div>
+                  <h2 className="text-[15px] font-extrabold text-foreground">
+                    Your dedicated account
+                  </h2>
+                  <p className="text-[12.5px] text-muted-foreground">{VIRTUAL_ACCOUNT.bank}</p>
+                </div>
+              </div>
+              <div className="mt-5 space-y-3">
+                <CopyRow
+                  label="Account number"
+                  value={VIRTUAL_ACCOUNT.accountNumber}
+                  copied={copied === "Account number"}
+                  onCopy={() => copy("Account number", VIRTUAL_ACCOUNT.accountNumber)}
+                  mono
+                />
+                <CopyRow
+                  label="Account name"
+                  value={VIRTUAL_ACCOUNT.accountName}
+                  copied={copied === "Account name"}
+                  onCopy={() => copy("Account name", VIRTUAL_ACCOUNT.accountName)}
+                />
+                <CopyRow
+                  label="Bank"
+                  value={VIRTUAL_ACCOUNT.bank}
+                  copied={copied === "Bank"}
+                  onCopy={() => copy("Bank", VIRTUAL_ACCOUNT.bank)}
+                />
+              </div>
+            </section>
+
+            <div className="sticky top-6 space-y-4">
+              <section className="rounded-2xl border border-border bg-card p-5">
+                <h2 className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-muted-foreground">
+                  How it works
+                </h2>
+                <ol className="mt-3 space-y-3 text-[13px] text-foreground">
+                  {steps.map((step, i) => (
+                    <li key={step} className="flex gap-3">
+                      <span className="grid size-6 shrink-0 place-items-center rounded-full bg-gold/15 text-[11px] font-extrabold text-gold">
+                        {i + 1}
+                      </span>
+                      <span className="leading-snug">{step}</span>
+                    </li>
+                  ))}
+                </ol>
+                <p className="mt-4 flex items-center gap-1.5 rounded-xl bg-secondary px-3 py-2.5 text-[11.5px] text-muted-foreground">
+                  <Clock className="size-3.5 shrink-0" /> Transfers from third-party accounts
+                  are returned for compliance reasons.
+                </p>
+              </section>
+              <div className="space-y-2.5">
+                <button
+                  type="button"
+                  onClick={() =>
+                    void navigate({
+                      to: "/wallet/processing",
+                      search: { amount, method: "transfer" },
+                    })
+                  }
+                  className="press inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float"
+                >
+                  I've sent the transfer
+                </button>
+                <Link
+                  to="/"
+                  className="press inline-flex w-full items-center justify-center rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground hover:border-primary/40"
+                >
+                  Do this later
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="pb-2 md:hidden">
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pt-8 md:shadow-float">
           <span
             aria-hidden
