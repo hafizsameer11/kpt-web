@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { Rise } from "@/components/kipit/motion";
-import { feedArt } from "@/components/kipit/art";
+import { articleArt } from "@/components/kipit/art";
 import {
   LEARN_ARTICLES,
   LEARN_CATEGORIES,
@@ -156,7 +156,7 @@ function LearnScreen() {
                   >
                     <div className="relative md:flex md:items-center md:gap-6">
                       <img
-                        src={feedArt(0)}
+                        src={articleArt(lead.id, 0)}
                         alt=""
                         aria-hidden="true"
                         loading="lazy"
@@ -190,7 +190,7 @@ function LearnScreen() {
                   >
                     <div className="relative size-20 shrink-0 overflow-hidden rounded-xl md:size-24">
                       <img
-                        src={feedArt(i + 1)}
+                        src={articleArt(a.id, i + 1)}
                         alt=""
                         aria-hidden="true"
                         loading="lazy"
