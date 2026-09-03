@@ -80,6 +80,7 @@ export type QuickAction = {
   to:
     | "/call-account/add-money"
     | "/call-account"
+    | "/withdraw"
     | "/fixed-plans/create"
     | "/portfolio/transactions";
 };
