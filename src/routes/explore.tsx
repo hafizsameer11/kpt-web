@@ -937,3 +937,63 @@ function DesktopExplore() {
     </div>
   );
 }
+
+function DesktopProductRow({ product: p }: { product: ExploreProduct }) {
+  const tone =
+    p.availability === "open"
+      ? "bg-emerald-500/10 text-emerald-600"
+      : p.availability === "closing"
+        ? "bg-gold/15 text-gold"
+        : "bg-muted text-muted-foreground";
+
+  return (
+    <Link
+      to="/explore/$productId"
+      params={{ productId: p.id }}
+      className="group flex items-center gap-5 bg-card px-5 py-4 transition-colors hover:bg-accent/40"
+    >
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <h3 className="truncate text-[14px] font-extrabold leading-tight">
+            {p.name}
+          </h3>
+          <span
+            className={`shrink-0 rounded-full px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-[0.1em] ${tone}`}
+          >
+            {AVAILABILITY_LABEL[p.availability]}
+          </span>
+        </div>
+        <p className="mt-1 truncate text-[11.5px] text-muted-foreground">
+          {p.issuer} &middot; {p.category}
+        </p>
+        <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10.5px] font-semibold text-muted-foreground">
+          <Clock3 className="size-3" /> {p.closes}
+        </p>
+      </div>
+
+      <div className="hidden w-28 shrink-0 text-right lg:block">
+        <p className="text-[9.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          Tenor
+        </p>
+        <p className="mt-0.5 text-[12.5px] font-bold">{p.tenor}</p>
+      </div>
+      <div className="hidden w-28 shrink-0 text-right lg:block">
+        <p className="text-[9.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          Minimum
+        </p>
+        <p className="mt-0.5 text-[12.5px] font-bold text-num">
+          {naira(p.minimum)}
+        </p>
+      </div>
+      <div className="w-24 shrink-0 text-right">
+        <p className="text-[9.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          Rate p.a.
+        </p>
+        <p className="mt-0.5 font-display text-[19px] font-extrabold leading-none tracking-[-0.02em] text-gold text-num">
+          {p.rate.replace(" p.a.", "")}
+        </p>
+      </div>
+      <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+    </Link>
+  );
+}
