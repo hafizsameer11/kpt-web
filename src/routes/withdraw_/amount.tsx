@@ -272,3 +272,178 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
     </div>
   );
 }
+
+function DesktopAmount({
+  setRaw,
+  amount,
+  belowMin,
+  overWallet,
+  overLimit,
+  valid,
+  accountId,
+  accountName,
+  bank,
+  accountNumber,
+}: AmountProps) {
+  const navigate = useNavigate();
+
+  return (
+    <AppShell title="Withdrawal Amount">
+      <div className="mx-auto w-full max-w-[1100px] space-y-6 pb-10">
+        <section className="relative overflow-hidden rounded-3xl bg-brand-gradient px-10 py-10 text-primary-foreground shadow-float">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-24 -top-36 size-96 rounded-full bg-gold/15 blur-[80px]"
+          />
+          <div className="relative">
+            <div className="flex items-center justify-between gap-4">
+              <Link
+                to="/withdraw/accounts"
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 text-[11px] font-bold text-primary-foreground press"
+              >
+                <ArrowLeft className="size-3.5" /> Change account
+              </Link>
+              <span className="shrink-0 rounded-full bg-gold/15 px-3 py-1 text-[11px] font-extrabold text-gold">
+                Withdraw &middot; Step 2 of 3 &middot; ₦0 fee
+              </span>
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-end justify-between gap-8">
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                  Amount to withdraw
+                </p>
+                <div className="mt-2 flex items-baseline gap-2">
+                  <span className="font-display text-[52px] font-extrabold leading-none text-primary-foreground/60">
+                    ₦
+                  </span>
+                  <input
+                    inputMode="numeric"
+                    autoComplete="off"
+                    aria-label="Amount to withdraw"
+                    placeholder="0"
+                    value={amount ? amount.toLocaleString("en-NG") : ""}
+                    onChange={(e) => setRaw(e.target.value)}
+                    className="w-full max-w-[420px] bg-transparent font-display text-[52px] font-extrabold leading-none tracking-[-0.035em] text-num text-primary-foreground outline-none placeholder:text-primary-foreground/25"
+                  />
+                </div>
+                <p className="mt-3 flex items-center gap-1.5 text-[13px] font-medium text-primary-foreground/60">
+                  <ShieldCheck className="size-4 text-primary-foreground/70" />
+                  Wallet balance {naira(WALLET)} &middot; min {naira(MIN_WITHDRAWAL)}
+                </p>
+              </div>
+
+              <div className="flex shrink-0 flex-wrap gap-2">
+                {QUICK.map((q) => (
+                  <button
+                    key={q}
+                    type="button"
+                    onClick={() => setRaw(String(q))}
+                    className={`rounded-full border px-5 py-2.5 text-[12.5px] font-bold transition-transform duration-150 press ${
+                      amount === q
+                        ? "border-gold bg-gold text-gold-foreground"
+                        : "border-white/15 bg-white/10 text-primary-foreground/90"
+                    }`}
+                  >
+                    {naira(q)}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setRaw(String(Math.min(WALLET, TIER.singleLimit)))}
+                  className="rounded-full border border-white/15 bg-white/10 px-5 py-2.5 text-[12.5px] font-bold text-primary-foreground/90 press"
+                >
+                  Max
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="grid grid-cols-[minmax(0,1fr)_340px] items-start gap-6">
+          <div className="min-w-0 space-y-4">
+            <section className="card-surface p-6">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Paying into
+              </p>
+              <div className="mt-4 flex items-center gap-4">
+                <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <Landmark className="size-5" strokeWidth={2.2} />
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate text-[15px] font-bold text-foreground">
+                    {accountName}
+                  </p>
+                  <p className="truncate text-[12.5px] text-muted-foreground">
+                    {bank} &middot; {maskAccount(accountNumber)}
+                  </p>
+                </div>
+                <span className="ml-auto flex items-center gap-1.5 text-[12px] text-muted-foreground">
+                  <Clock className="size-3.5 shrink-0" /> {payoutEta}
+                </span>
+              </div>
+
+              {(belowMin || overWallet || overLimit) && (
+                <p className="k-shake mt-4 rounded-xl bg-destructive/10 px-3.5 py-3 text-[13px] font-semibold text-destructive">
+                  {overWallet
+                    ? `Amount exceeds your wallet balance. Shortfall ${naira(amount - WALLET)}.`
+                    : overLimit
+                      ? `Single transaction limit is ${naira(TIER.singleLimit)}.`
+                      : `Minimum withdrawal is ${naira(MIN_WITHDRAWAL)}.`}
+                </p>
+              )}
+            </section>
+
+            <section className="rounded-2xl border border-border bg-muted/40 p-5">
+              <p className="flex items-center gap-2 text-[12px] font-bold text-foreground">
+                <ShieldCheck className="size-4 text-primary" /> Instant name check
+              </p>
+              <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
+                The payout account above was verified against your Kipit name
+                when it was added.
+              </p>
+            </section>
+          </div>
+
+          <aside className="sticky top-6 min-w-0">
+            <section className="card-surface p-6">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Payout summary
+              </p>
+              <dl className="mt-4 divide-y divide-border text-[13.5px]">
+                <Row label="Amount">{naira(amount)}</Row>
+                <Row label="Transfer fee">
+                  {WITHDRAWAL_FEE === 0 ? "₦0" : naira(WITHDRAWAL_FEE)}
+                </Row>
+                <Row label="You receive">
+                  <span className="text-gold">
+                    {naira(Math.max(amount - WITHDRAWAL_FEE, 0))}
+                  </span>
+                </Row>
+                <Row label="Wallet after">
+                  {naira(Math.max(WALLET - amount, 0))}
+                </Row>
+              </dl>
+              <p className="mt-4 flex items-center gap-1.5 text-[12px] text-muted-foreground">
+                <Clock className="size-3.5 shrink-0" /> {payoutEta}
+              </p>
+              <button
+                type="button"
+                disabled={!valid}
+                onClick={() =>
+                  void navigate({
+                    to: "/withdraw/review",
+                    search: { acct: accountId, amount },
+                  })
+                }
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40 disabled:shadow-none"
+              >
+                Continue <ArrowRight className="size-4" strokeWidth={2.6} />
+              </button>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </AppShell>
+  );
+}
