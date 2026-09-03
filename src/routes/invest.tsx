@@ -514,8 +514,8 @@ function DesktopInvest() {
             <table className="mt-4 w-full table-fixed text-left">
               <thead>
                 <tr className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                  <th className="pb-2 font-bold">Plan</th>
-                  <th className="pb-2 font-bold">Rate</th>
+                  <th className="w-[38%] pb-2 font-bold">Plan</th>
+                  <th className="w-[14%] pb-2 font-bold">Rate</th>
                   <th className="pb-2 font-bold">Progress</th>
                   <th className="pb-2 text-right font-bold">Value</th>
                 </tr>
@@ -566,7 +566,7 @@ function DesktopInvest() {
         <div className="grid min-w-0 grid-cols-1 gap-4">
           <section className="card-surface p-6">
             <h2 className="font-display text-base font-extrabold">Invest tools</h2>
-            <div className="mt-4 grid gap-2">
+            <div className="mt-4 grid grid-cols-1 gap-2">
               {DESKTOP_TOOLS.map((t) => (
                 <Link
                   key={t.label}
