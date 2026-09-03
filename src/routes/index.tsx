@@ -650,8 +650,30 @@ function DesktopHome() {
         </div>
       </div>
 
-      {/* Row 2 — maturity + weekly interest */}
+      {/* Row 2 — interest this week + next maturity */}
       <div className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+        <section className="card-surface p-6">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                Interest this week
+              </p>
+              <p className="mt-1.5 font-display text-2xl font-extrabold text-num">
+                {mask(WEEK_EARNINGS)}
+              </p>
+            </div>
+            <Link
+              to="/call-account"
+              className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
+            >
+              Details <ChevronRight className="size-3.5" />
+            </Link>
+          </div>
+          <div className="mt-4">
+            <DesktopWeekChart hidden={hidden} />
+          </div>
+        </section>
+
         <Link
           to="/portfolio/$holdingId"
           params={{ holdingId: "f1" }}
@@ -695,28 +717,6 @@ function DesktopHome() {
             <span className="font-bold">Payout {mask(NEXT_MATURITY.expectedPayout)}</span>
           </div>
         </Link>
-
-        <section className="card-surface p-6">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                Interest this week
-              </p>
-              <p className="mt-1.5 font-display text-2xl font-extrabold text-num">
-                {mask(WEEK_EARNINGS)}
-              </p>
-            </div>
-            <Link
-              to="/call-account"
-              className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
-            >
-              Details <ChevronRight className="size-3.5" />
-            </Link>
-          </div>
-          <div className="mt-4">
-            <DesktopWeekChart hidden={hidden} />
-          </div>
-        </section>
       </div>
 
       {/* Row 3 — plans table + payout timeline */}
