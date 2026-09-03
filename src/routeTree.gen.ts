@@ -61,6 +61,7 @@ import { Route as FixedPlansCreateReviewRouteImport } from './routes/fixed-plans
 import { Route as FixedPlansCreateSuccessRouteImport } from './routes/fixed-plans_/create/success'
 import { Route as FixedPlansCreateTenorRouteImport } from './routes/fixed-plans_/create/tenor'
 import { Route as PortfolioTransactionsTxnIdRouteImport } from './routes/portfolio_.transactions_.$txnId'
+import { Route as SettingsHelpTicketRouteImport } from './routes/settings_/help_/ticket'
 import { Route as SettingsSecurityChangePinRouteImport } from './routes/settings_/security_/change-pin'
 import { Route as SettingsSecurityResetPinRouteImport } from './routes/settings_/security_/reset-pin'
 import { Route as SettingsSecuritySessionsRouteImport } from './routes/settings_/security_/sessions'
@@ -333,6 +334,11 @@ const PortfolioTransactionsTxnIdRoute =
     path: '/portfolio/transactions/$txnId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const SettingsHelpTicketRoute = SettingsHelpTicketRouteImport.update({
+  id: '/settings_/help_/ticket',
+  path: '/settings/help/ticket',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsSecurityChangePinRoute =
   SettingsSecurityChangePinRouteImport.update({
     id: '/settings_/security_/change-pin',
@@ -416,6 +422,7 @@ export interface FileRoutesByFullPath {
   '/fixed-plans/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
   '/portfolio/transactions/$txnId': typeof PortfolioTransactionsTxnIdRoute
+  '/settings/help/ticket': typeof SettingsHelpTicketRoute
   '/settings/security/change-pin': typeof SettingsSecurityChangePinRoute
   '/settings/security/reset-pin': typeof SettingsSecurityResetPinRoute
   '/settings/security/sessions': typeof SettingsSecuritySessionsRoute
@@ -474,6 +481,7 @@ export interface FileRoutesByTo {
   '/fixed-plans/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
   '/portfolio/transactions/$txnId': typeof PortfolioTransactionsTxnIdRoute
+  '/settings/help/ticket': typeof SettingsHelpTicketRoute
   '/settings/security/change-pin': typeof SettingsSecurityChangePinRoute
   '/settings/security/reset-pin': typeof SettingsSecurityResetPinRoute
   '/settings/security/sessions': typeof SettingsSecuritySessionsRoute
@@ -534,6 +542,7 @@ export interface FileRoutesById {
   '/fixed-plans_/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans_/create/tenor': typeof FixedPlansCreateTenorRoute
   '/portfolio_/transactions_/$txnId': typeof PortfolioTransactionsTxnIdRoute
+  '/settings_/help_/ticket': typeof SettingsHelpTicketRoute
   '/settings_/security_/change-pin': typeof SettingsSecurityChangePinRoute
   '/settings_/security_/reset-pin': typeof SettingsSecurityResetPinRoute
   '/settings_/security_/sessions': typeof SettingsSecuritySessionsRoute
@@ -595,6 +604,7 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/success'
     | '/fixed-plans/create/tenor'
     | '/portfolio/transactions/$txnId'
+    | '/settings/help/ticket'
     | '/settings/security/change-pin'
     | '/settings/security/reset-pin'
     | '/settings/security/sessions'
@@ -653,6 +663,7 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/success'
     | '/fixed-plans/create/tenor'
     | '/portfolio/transactions/$txnId'
+    | '/settings/help/ticket'
     | '/settings/security/change-pin'
     | '/settings/security/reset-pin'
     | '/settings/security/sessions'
@@ -712,6 +723,7 @@ export interface FileRouteTypes {
     | '/fixed-plans_/create/success'
     | '/fixed-plans_/create/tenor'
     | '/portfolio_/transactions_/$txnId'
+    | '/settings_/help_/ticket'
     | '/settings_/security_/change-pin'
     | '/settings_/security_/reset-pin'
     | '/settings_/security_/sessions'
@@ -767,6 +779,7 @@ export interface RootRouteChildren {
   ExploreProductIdSuccessRoute: typeof ExploreProductIdSuccessRoute
   ExploreProductIdUnavailableRoute: typeof ExploreProductIdUnavailableRoute
   PortfolioTransactionsTxnIdRoute: typeof PortfolioTransactionsTxnIdRoute
+  SettingsHelpTicketRoute: typeof SettingsHelpTicketRoute
   SettingsSecurityChangePinRoute: typeof SettingsSecurityChangePinRoute
   SettingsSecurityResetPinRoute: typeof SettingsSecurityResetPinRoute
   SettingsSecuritySessionsRoute: typeof SettingsSecuritySessionsRoute
@@ -1140,6 +1153,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioTransactionsTxnIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings_/help_/ticket': {
+      id: '/settings_/help_/ticket'
+      path: '/settings/help/ticket'
+      fullPath: '/settings/help/ticket'
+      preLoaderRoute: typeof SettingsHelpTicketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings_/security_/change-pin': {
       id: '/settings_/security_/change-pin'
       path: '/settings/security/change-pin'
@@ -1246,6 +1266,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreProductIdSuccessRoute: ExploreProductIdSuccessRoute,
   ExploreProductIdUnavailableRoute: ExploreProductIdUnavailableRoute,
   PortfolioTransactionsTxnIdRoute: PortfolioTransactionsTxnIdRoute,
+  SettingsHelpTicketRoute: SettingsHelpTicketRoute,
   SettingsSecurityChangePinRoute: SettingsSecurityChangePinRoute,
   SettingsSecurityResetPinRoute: SettingsSecurityResetPinRoute,
   SettingsSecuritySessionsRoute: SettingsSecuritySessionsRoute,
