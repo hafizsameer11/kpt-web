@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, BadgeCheck } from "lucide-react";
+import { useEffect } from "react";
+import { setKycTier } from "@/lib/kyc-state";
 import { AppShell } from "@/components/kipit/AppShell";
 import { TIERS } from "@/lib/kyc-data";
 
@@ -24,6 +26,8 @@ export const Route = createFileRoute("/verification_/approved")({
 const tier2 = TIERS[1]!;
 
 function KycApproved() {
+  useEffect(() => setKycTier(2), []);
+
   return (
     <AppShell title="Verified" navVariant="elevated">
       <div className="pb-2">
