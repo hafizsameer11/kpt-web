@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   ArrowRight,
@@ -360,6 +361,7 @@ function ProductDetailScreen() {
                   <button
                     key={d.name}
                     type="button"
+                    onClick={() => toast.success(`${d.name} downloaded`)}
                     className="group flex w-full items-center gap-4 p-4 text-left transition-colors duration-300 press hover:bg-secondary/60"
                   >
                     <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-gold/10 text-gold">

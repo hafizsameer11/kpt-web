@@ -34,6 +34,9 @@ function LegalScreen() {
           <li key={d.title} style={{ ["--d" as string]: `${i * 50}ms` }} className="k-rise md:bg-card">
             <button
               type="button"
+              onClick={() =>
+                toast.info(`${d.title} ${d.version}`, { description: d.desc })
+              }
               className="group relative flex w-full items-center gap-3.5 px-4 py-4 text-left press transition-colors hover:bg-secondary/50"
             >
               <span
