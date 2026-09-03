@@ -9,7 +9,6 @@ import {
   RefreshCw,
   Repeat,
 } from "lucide-react";
-import { toast } from "sonner";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
