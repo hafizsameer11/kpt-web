@@ -59,7 +59,7 @@ export function AppShell({
                   <Link
                     to={tab.to}
                     aria-label={tab.label}
-                    className="flex flex-col items-center gap-0 press"
+                    className="flex flex-col items-center gap-0 pt-0.5 press"
                   >
                     <span
                       className={`grid size-8 place-items-center rounded-lg transition-all duration-300 ${
@@ -97,7 +97,7 @@ export function AppShell({
                 <li key={tab.to}>
                   <Link
                     to={tab.to}
-                    className="flex flex-col items-center gap-0 text-[11px] font-bold text-muted-foreground"
+                    className="flex flex-col items-center gap-0 pt-0.5 text-[11px] font-bold text-muted-foreground"
                   >
                     <span
                       className={`grid size-8 place-items-center rounded-xl transition-all duration-300 ${
@@ -126,7 +126,7 @@ export function AppShell({
                 <li key={tab.to}>
                   <Link
                     to={tab.to}
-                    className="flex flex-col items-center gap-0 rounded-xl py-1 text-[11px] font-semibold text-primary-foreground/60"
+                    className="flex flex-col items-center gap-0 rounded-xl pt-1.5 pb-1 text-[11px] font-semibold text-primary-foreground/60"
                   >
                     <span
                       className={`h-0.5 w-5 rounded-full transition-colors ${
@@ -158,7 +158,7 @@ export function AppShell({
                   <Link
                     to={tab.to}
                     aria-label={tab.label}
-                    className={`flex items-center justify-center gap-1.5 rounded-full py-1.5 text-xs font-semibold transition-all duration-300 ${
+                    className={`flex items-center justify-center gap-1.5 rounded-full pt-2 pb-1.5 text-xs font-semibold transition-all duration-300 ${
                       active
                         ? "bg-brand-gradient px-3 text-primary-foreground shadow-float"
                         : "px-3 text-muted-foreground"
@@ -183,7 +183,7 @@ export function AppShell({
                 <li key={tab.to}>
                   <Link
                     to={tab.to}
-                    className={`flex flex-col items-center gap-0 rounded-full py-1 text-[10px] font-bold transition-colors ${
+                    className={`flex flex-col items-center gap-0 rounded-full pt-1.5 pb-1 text-[10px] font-bold transition-colors ${
                       active
                         ? "bg-gold-gradient text-gold-foreground"
                         : "text-muted-foreground"
@@ -207,7 +207,7 @@ export function AppShell({
                 <li key={tab.to}>
                   <Link
                     to={tab.to}
-                    className={`flex flex-col items-center gap-0 py-1.5 text-[11px] font-semibold press ${
+                    className={`flex flex-col items-center gap-0 pt-2 pb-1.5 text-[11px] font-semibold press ${
                       active ? "text-foreground" : "text-muted-foreground"
                     }`}
                   >
