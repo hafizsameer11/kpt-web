@@ -90,6 +90,32 @@ export const REFERRALS = {
   rewards: 45_000,
 } as const;
 
+export type ReferralStatus = "rewarded" | "pending" | "expired";
+
+export type ReferralEntry = {
+  id: string;
+  name: string;
+  joined: string;
+  status: ReferralStatus;
+  reward: number;
+  note: string;
+};
+
+export const REFERRAL_LIST: ReferralEntry[] = [
+  { id: "r1", name: "Chidi O.", joined: "28 Aug 2026", status: "rewarded", reward: 5_000, note: "Funded a 90-day plan" },
+  { id: "r2", name: "Ngozi A.", joined: "24 Aug 2026", status: "rewarded", reward: 5_000, note: "Funded Call Account" },
+  { id: "r3", name: "Tunde B.", joined: "21 Aug 2026", status: "pending", reward: 5_000, note: "Signed up, not funded yet" },
+  { id: "r4", name: "Amaka N.", joined: "17 Aug 2026", status: "rewarded", reward: 5_000, note: "Funded a 180-day plan" },
+  { id: "r5", name: "Segun T.", joined: "09 Aug 2026", status: "pending", reward: 5_000, note: "Verification in progress" },
+  { id: "r6", name: "Halima Y.", joined: "02 Aug 2026", status: "expired", reward: 0, note: "Invite expired after 30 days" },
+];
+
+export const REFERRAL_STATUS_META: Record<ReferralStatus, { label: string; className: string }> = {
+  rewarded: { label: "Reward earned", className: "bg-emerald-50 text-emerald-700 ring-emerald-600/20" },
+  pending: { label: "Pending funding", className: "bg-amber-50 text-amber-700 ring-amber-600/20" },
+  expired: { label: "Expired", className: "bg-muted text-muted-foreground ring-border" },
+};
+
 export type ToggleItem = { id: string; label: string; desc: string; on: boolean };
 
 export const PUSH_TOGGLES: ToggleItem[] = [
