@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, ChevronRight, History } from "lucide-react";
 import { useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
