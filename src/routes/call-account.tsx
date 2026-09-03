@@ -562,10 +562,13 @@ function CallAccountScreen() {
                   <li
                     key={item.id}
                     style={{ ["--d" as string]: `${i * 70}ms` }}
-                    className={`k-rise flex items-center gap-3.5 px-4 py-3.5 ${
-                      i > 0 ? "border-t border-border/50" : ""
-                    }`}
+                    className={`k-rise ${i > 0 ? "border-t border-border/50" : ""}`}
                   >
+                    <Link
+                      to="/portfolio/transactions/$txnId"
+                      params={{ txnId: callActivityTxnId(item.id) }}
+                      className="flex items-center gap-3.5 px-4 py-3.5 transition-colors hover:bg-secondary/60 active:bg-secondary"
+                    >
                     <span
                       className={`grid size-10 shrink-0 place-items-center rounded-xl ${
                         failed
@@ -600,6 +603,8 @@ function CallAccountScreen() {
                       {credit ? "+" : "−"}
                       {mask(item.amount)}
                     </span>
+                      <ChevronRight className="size-4 shrink-0 text-muted-foreground/70" />
+                    </Link>
                   </li>
                 );
               })}
