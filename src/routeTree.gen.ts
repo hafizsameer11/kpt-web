@@ -33,6 +33,7 @@ import { Route as PortfolioTransactionsRouteImport } from './routes/portfolio_.t
 import { Route as WithdrawAccountsRouteImport } from './routes/withdraw_/accounts'
 import { Route as WithdrawAddAccountRouteImport } from './routes/withdraw_/add-account'
 import { Route as WithdrawAmountRouteImport } from './routes/withdraw_/amount'
+import { Route as WithdrawDeclinedRouteImport } from './routes/withdraw_/declined'
 import { Route as WithdrawProcessingRouteImport } from './routes/withdraw_/processing'
 import { Route as WithdrawRestrictedRouteImport } from './routes/withdraw_/restricted'
 import { Route as WithdrawReviewRouteImport } from './routes/withdraw_/review'
@@ -174,6 +175,11 @@ const WithdrawAmountRoute = WithdrawAmountRouteImport.update({
   path: '/withdraw/amount',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WithdrawDeclinedRoute = WithdrawDeclinedRouteImport.update({
+  id: '/withdraw_/declined',
+  path: '/withdraw/declined',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WithdrawProcessingRoute = WithdrawProcessingRouteImport.update({
   id: '/withdraw_/processing',
   path: '/withdraw/processing',
@@ -307,6 +313,7 @@ export interface FileRoutesByFullPath {
   '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/add-account': typeof WithdrawAddAccountRoute
   '/withdraw/amount': typeof WithdrawAmountRoute
+  '/withdraw/declined': typeof WithdrawDeclinedRoute
   '/withdraw/processing': typeof WithdrawProcessingRoute
   '/withdraw/restricted': typeof WithdrawRestrictedRoute
   '/withdraw/review': typeof WithdrawReviewRoute
@@ -352,6 +359,7 @@ export interface FileRoutesByTo {
   '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/add-account': typeof WithdrawAddAccountRoute
   '/withdraw/amount': typeof WithdrawAmountRoute
+  '/withdraw/declined': typeof WithdrawDeclinedRoute
   '/withdraw/processing': typeof WithdrawProcessingRoute
   '/withdraw/restricted': typeof WithdrawRestrictedRoute
   '/withdraw/review': typeof WithdrawReviewRoute
@@ -399,6 +407,7 @@ export interface FileRoutesById {
   '/withdraw_/accounts': typeof WithdrawAccountsRoute
   '/withdraw_/add-account': typeof WithdrawAddAccountRoute
   '/withdraw_/amount': typeof WithdrawAmountRoute
+  '/withdraw_/declined': typeof WithdrawDeclinedRoute
   '/withdraw_/processing': typeof WithdrawProcessingRoute
   '/withdraw_/restricted': typeof WithdrawRestrictedRoute
   '/withdraw_/review': typeof WithdrawReviewRoute
@@ -447,6 +456,7 @@ export interface FileRouteTypes {
     | '/withdraw/accounts'
     | '/withdraw/add-account'
     | '/withdraw/amount'
+    | '/withdraw/declined'
     | '/withdraw/processing'
     | '/withdraw/restricted'
     | '/withdraw/review'
@@ -492,6 +502,7 @@ export interface FileRouteTypes {
     | '/withdraw/accounts'
     | '/withdraw/add-account'
     | '/withdraw/amount'
+    | '/withdraw/declined'
     | '/withdraw/processing'
     | '/withdraw/restricted'
     | '/withdraw/review'
@@ -538,6 +549,7 @@ export interface FileRouteTypes {
     | '/withdraw_/accounts'
     | '/withdraw_/add-account'
     | '/withdraw_/amount'
+    | '/withdraw_/declined'
     | '/withdraw_/processing'
     | '/withdraw_/restricted'
     | '/withdraw_/review'
@@ -585,6 +597,7 @@ export interface RootRouteChildren {
   WithdrawAccountsRoute: typeof WithdrawAccountsRoute
   WithdrawAddAccountRoute: typeof WithdrawAddAccountRoute
   WithdrawAmountRoute: typeof WithdrawAmountRoute
+  WithdrawDeclinedRoute: typeof WithdrawDeclinedRoute
   WithdrawProcessingRoute: typeof WithdrawProcessingRoute
   WithdrawRestrictedRoute: typeof WithdrawRestrictedRoute
   WithdrawReviewRoute: typeof WithdrawReviewRoute
@@ -769,6 +782,13 @@ declare module '@tanstack/react-router' {
       path: '/withdraw/amount'
       fullPath: '/withdraw/amount'
       preLoaderRoute: typeof WithdrawAmountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/withdraw_/declined': {
+      id: '/withdraw_/declined'
+      path: '/withdraw/declined'
+      fullPath: '/withdraw/declined'
+      preLoaderRoute: typeof WithdrawDeclinedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/withdraw_/processing': {
@@ -960,6 +980,7 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawAccountsRoute: WithdrawAccountsRoute,
   WithdrawAddAccountRoute: WithdrawAddAccountRoute,
   WithdrawAmountRoute: WithdrawAmountRoute,
+  WithdrawDeclinedRoute: WithdrawDeclinedRoute,
   WithdrawProcessingRoute: WithdrawProcessingRoute,
   WithdrawRestrictedRoute: WithdrawRestrictedRoute,
   WithdrawReviewRoute: WithdrawReviewRoute,
