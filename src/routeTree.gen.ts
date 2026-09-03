@@ -57,6 +57,11 @@ import { Route as SignupPhoneRouteImport } from './routes/signup_/phone'
 import { Route as SignupPinRouteImport } from './routes/signup_/pin'
 import { Route as SignupSuccessRouteImport } from './routes/signup_/success'
 import { Route as WalletAddMoneyRouteImport } from './routes/wallet_/add-money'
+import { Route as WalletCardRouteImport } from './routes/wallet_/card'
+import { Route as WalletFailedRouteImport } from './routes/wallet_/failed'
+import { Route as WalletProcessingRouteImport } from './routes/wallet_/processing'
+import { Route as WalletSuccessRouteImport } from './routes/wallet_/success'
+import { Route as WalletTransferRouteImport } from './routes/wallet_/transfer'
 import { Route as WithdrawAccountsRouteImport } from './routes/withdraw_/accounts'
 import { Route as WithdrawAddAccountRouteImport } from './routes/withdraw_/add-account'
 import { Route as WithdrawAmountRouteImport } from './routes/withdraw_/amount'
@@ -327,6 +332,31 @@ const WalletAddMoneyRoute = WalletAddMoneyRouteImport.update({
   path: '/wallet/add-money',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WalletCardRoute = WalletCardRouteImport.update({
+  id: '/wallet_/card',
+  path: '/wallet/card',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WalletFailedRoute = WalletFailedRouteImport.update({
+  id: '/wallet_/failed',
+  path: '/wallet/failed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WalletProcessingRoute = WalletProcessingRouteImport.update({
+  id: '/wallet_/processing',
+  path: '/wallet/processing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WalletSuccessRoute = WalletSuccessRouteImport.update({
+  id: '/wallet_/success',
+  path: '/wallet/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WalletTransferRoute = WalletTransferRouteImport.update({
+  id: '/wallet_/transfer',
+  path: '/wallet/transfer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WithdrawAccountsRoute = WithdrawAccountsRouteImport.update({
   id: '/withdraw_/accounts',
   path: '/withdraw/accounts',
@@ -533,6 +563,11 @@ export interface FileRoutesByFullPath {
   '/signup/pin': typeof SignupPinRoute
   '/signup/success': typeof SignupSuccessRoute
   '/wallet/add-money': typeof WalletAddMoneyRoute
+  '/wallet/card': typeof WalletCardRoute
+  '/wallet/failed': typeof WalletFailedRoute
+  '/wallet/processing': typeof WalletProcessingRoute
+  '/wallet/success': typeof WalletSuccessRoute
+  '/wallet/transfer': typeof WalletTransferRoute
   '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/add-account': typeof WithdrawAddAccountRoute
   '/withdraw/amount': typeof WithdrawAmountRoute
@@ -611,6 +646,11 @@ export interface FileRoutesByTo {
   '/signup/pin': typeof SignupPinRoute
   '/signup/success': typeof SignupSuccessRoute
   '/wallet/add-money': typeof WalletAddMoneyRoute
+  '/wallet/card': typeof WalletCardRoute
+  '/wallet/failed': typeof WalletFailedRoute
+  '/wallet/processing': typeof WalletProcessingRoute
+  '/wallet/success': typeof WalletSuccessRoute
+  '/wallet/transfer': typeof WalletTransferRoute
   '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/add-account': typeof WithdrawAddAccountRoute
   '/withdraw/amount': typeof WithdrawAmountRoute
@@ -691,6 +731,11 @@ export interface FileRoutesById {
   '/signup_/pin': typeof SignupPinRoute
   '/signup_/success': typeof SignupSuccessRoute
   '/wallet_/add-money': typeof WalletAddMoneyRoute
+  '/wallet_/card': typeof WalletCardRoute
+  '/wallet_/failed': typeof WalletFailedRoute
+  '/wallet_/processing': typeof WalletProcessingRoute
+  '/wallet_/success': typeof WalletSuccessRoute
+  '/wallet_/transfer': typeof WalletTransferRoute
   '/withdraw_/accounts': typeof WithdrawAccountsRoute
   '/withdraw_/add-account': typeof WithdrawAddAccountRoute
   '/withdraw_/amount': typeof WithdrawAmountRoute
@@ -772,6 +817,11 @@ export interface FileRouteTypes {
     | '/signup/pin'
     | '/signup/success'
     | '/wallet/add-money'
+    | '/wallet/card'
+    | '/wallet/failed'
+    | '/wallet/processing'
+    | '/wallet/success'
+    | '/wallet/transfer'
     | '/withdraw/accounts'
     | '/withdraw/add-account'
     | '/withdraw/amount'
@@ -850,6 +900,11 @@ export interface FileRouteTypes {
     | '/signup/pin'
     | '/signup/success'
     | '/wallet/add-money'
+    | '/wallet/card'
+    | '/wallet/failed'
+    | '/wallet/processing'
+    | '/wallet/success'
+    | '/wallet/transfer'
     | '/withdraw/accounts'
     | '/withdraw/add-account'
     | '/withdraw/amount'
@@ -929,6 +984,11 @@ export interface FileRouteTypes {
     | '/signup_/pin'
     | '/signup_/success'
     | '/wallet_/add-money'
+    | '/wallet_/card'
+    | '/wallet_/failed'
+    | '/wallet_/processing'
+    | '/wallet_/success'
+    | '/wallet_/transfer'
     | '/withdraw_/accounts'
     | '/withdraw_/add-account'
     | '/withdraw_/amount'
@@ -1009,6 +1069,11 @@ export interface RootRouteChildren {
   SignupPinRoute: typeof SignupPinRoute
   SignupSuccessRoute: typeof SignupSuccessRoute
   WalletAddMoneyRoute: typeof WalletAddMoneyRoute
+  WalletCardRoute: typeof WalletCardRoute
+  WalletFailedRoute: typeof WalletFailedRoute
+  WalletProcessingRoute: typeof WalletProcessingRoute
+  WalletSuccessRoute: typeof WalletSuccessRoute
+  WalletTransferRoute: typeof WalletTransferRoute
   WithdrawAccountsRoute: typeof WithdrawAccountsRoute
   WithdrawAddAccountRoute: typeof WithdrawAddAccountRoute
   WithdrawAmountRoute: typeof WithdrawAmountRoute
@@ -1372,6 +1437,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WalletAddMoneyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wallet_/card': {
+      id: '/wallet_/card'
+      path: '/wallet/card'
+      fullPath: '/wallet/card'
+      preLoaderRoute: typeof WalletCardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wallet_/failed': {
+      id: '/wallet_/failed'
+      path: '/wallet/failed'
+      fullPath: '/wallet/failed'
+      preLoaderRoute: typeof WalletFailedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wallet_/processing': {
+      id: '/wallet_/processing'
+      path: '/wallet/processing'
+      fullPath: '/wallet/processing'
+      preLoaderRoute: typeof WalletProcessingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wallet_/success': {
+      id: '/wallet_/success'
+      path: '/wallet/success'
+      fullPath: '/wallet/success'
+      preLoaderRoute: typeof WalletSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wallet_/transfer': {
+      id: '/wallet_/transfer'
+      path: '/wallet/transfer'
+      fullPath: '/wallet/transfer'
+      preLoaderRoute: typeof WalletTransferRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/withdraw_/accounts': {
       id: '/withdraw_/accounts'
       path: '/withdraw/accounts'
@@ -1648,6 +1748,11 @@ const rootRouteChildren: RootRouteChildren = {
   SignupPinRoute: SignupPinRoute,
   SignupSuccessRoute: SignupSuccessRoute,
   WalletAddMoneyRoute: WalletAddMoneyRoute,
+  WalletCardRoute: WalletCardRoute,
+  WalletFailedRoute: WalletFailedRoute,
+  WalletProcessingRoute: WalletProcessingRoute,
+  WalletSuccessRoute: WalletSuccessRoute,
+  WalletTransferRoute: WalletTransferRoute,
   WithdrawAccountsRoute: WithdrawAccountsRoute,
   WithdrawAddAccountRoute: WithdrawAddAccountRoute,
   WithdrawAmountRoute: WithdrawAmountRoute,
