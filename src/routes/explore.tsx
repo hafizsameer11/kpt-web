@@ -320,12 +320,7 @@ function ExploreScreen() {
             </section>
           </Rise>
 
-          <p className="mt-6 flex items-start gap-2 text-[11px] leading-relaxed text-muted-foreground">
-            <ShieldCheck className="mt-px size-3.5 shrink-0" />
-            Marketplace products are offered by third-party issuers through
-            Kipit&rsquo;s SEC-licensed partner. Rates are indicative and subject to
-            availability at the time of subscription.
-          </p>
+          <DisclosureStrip variant="marketplace" />
         </div>
       </div>
     </AppShell>
