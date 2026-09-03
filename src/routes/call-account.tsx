@@ -3,6 +3,7 @@ import {
   ArrowDownLeft,
   ArrowLeft,
   ArrowUpRight,
+  ChevronRight,
   Eye,
   EyeOff,
   Info,
@@ -36,6 +37,7 @@ import {
   CALL_ACCOUNT_FACTS,
   CALL_ACTIVITY,
 } from "@/lib/invest-data";
+import { callActivityTxnId } from "@/lib/portfolio-data";
 
 export const Route = createFileRoute("/call-account")({
   head: () => ({
@@ -538,7 +540,7 @@ function CallAccountScreen() {
           <section id="activity" className="mt-7 scroll-mt-20">
             <div className="mb-3 flex items-center justify-between px-1">
               <h2 className="font-display text-base font-extrabold">Activity</h2>
-              <Link to="/portfolio" className="text-xs font-bold text-brand">
+              <Link to="/portfolio/transactions" className="text-xs font-bold text-brand">
                 View all
               </Link>
             </div>
@@ -562,10 +564,13 @@ function CallAccountScreen() {
                   <li
                     key={item.id}
                     style={{ ["--d" as string]: `${i * 70}ms` }}
-                    className={`k-rise flex items-center gap-3.5 px-4 py-3.5 ${
-                      i > 0 ? "border-t border-border/50" : ""
-                    }`}
+                    className={`k-rise ${i > 0 ? "border-t border-border/50" : ""}`}
                   >
+                    <Link
+                      to="/portfolio/transactions/$txnId"
+                      params={{ txnId: callActivityTxnId(item.id) }}
+                      className="flex items-center gap-3.5 px-4 py-3.5 transition-colors hover:bg-secondary/60 active:bg-secondary"
+                    >
                     <span
                       className={`grid size-10 shrink-0 place-items-center rounded-xl ${
                         failed
@@ -600,6 +605,8 @@ function CallAccountScreen() {
                       {credit ? "+" : "−"}
                       {mask(item.amount)}
                     </span>
+                      <ChevronRight className="size-4 shrink-0 text-muted-foreground/70" />
+                    </Link>
                   </li>
                 );
               })}
