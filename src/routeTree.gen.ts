@@ -30,6 +30,15 @@ import { Route as PortfolioHoldingIdRouteImport } from './routes/portfolio_.$hol
 import { Route as PortfolioHistoryRouteImport } from './routes/portfolio_.history'
 import { Route as PortfolioMaturitiesRouteImport } from './routes/portfolio_.maturities'
 import { Route as PortfolioTransactionsRouteImport } from './routes/portfolio_.transactions'
+import { Route as SettingsAddressRouteImport } from './routes/settings_/address'
+import { Route as SettingsCardsRouteImport } from './routes/settings_/cards'
+import { Route as SettingsHelpRouteImport } from './routes/settings_/help'
+import { Route as SettingsLegalRouteImport } from './routes/settings_/legal'
+import { Route as SettingsNotificationsRouteImport } from './routes/settings_/notifications'
+import { Route as SettingsProfileRouteImport } from './routes/settings_/profile'
+import { Route as SettingsReferralsRouteImport } from './routes/settings_/referrals'
+import { Route as SettingsSecurityRouteImport } from './routes/settings_/security'
+import { Route as SettingsStatementsRouteImport } from './routes/settings_/statements'
 import { Route as WithdrawAccountsRouteImport } from './routes/withdraw_/accounts'
 import { Route as WithdrawAddAccountRouteImport } from './routes/withdraw_/add-account'
 import { Route as WithdrawAmountRouteImport } from './routes/withdraw_/amount'
@@ -53,6 +62,11 @@ import { Route as FixedPlansCreateReviewRouteImport } from './routes/fixed-plans
 import { Route as FixedPlansCreateSuccessRouteImport } from './routes/fixed-plans_/create/success'
 import { Route as FixedPlansCreateTenorRouteImport } from './routes/fixed-plans_/create/tenor'
 import { Route as PortfolioTransactionsTxnIdRouteImport } from './routes/portfolio_.transactions_.$txnId'
+import { Route as SettingsHelpTicketRouteImport } from './routes/settings_/help_/ticket'
+import { Route as SettingsSecurityChangePinRouteImport } from './routes/settings_/security_/change-pin'
+import { Route as SettingsSecurityResetPinRouteImport } from './routes/settings_/security_/reset-pin'
+import { Route as SettingsSecuritySessionsRouteImport } from './routes/settings_/security_/sessions'
+import { Route as SettingsStatementsGeneratedRouteImport } from './routes/settings_/statements_/generated'
 import { Route as PortfolioTransactionsTxnIdReceiptRouteImport } from './routes/portfolio_.transactions_.$txnId_.receipt'
 
 const IndexRoute = IndexRouteImport.update({
@@ -158,6 +172,51 @@ const PortfolioMaturitiesRoute = PortfolioMaturitiesRouteImport.update({
 const PortfolioTransactionsRoute = PortfolioTransactionsRouteImport.update({
   id: '/portfolio_/transactions',
   path: '/portfolio/transactions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsAddressRoute = SettingsAddressRouteImport.update({
+  id: '/settings_/address',
+  path: '/settings/address',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsCardsRoute = SettingsCardsRouteImport.update({
+  id: '/settings_/cards',
+  path: '/settings/cards',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsHelpRoute = SettingsHelpRouteImport.update({
+  id: '/settings_/help',
+  path: '/settings/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsLegalRoute = SettingsLegalRouteImport.update({
+  id: '/settings_/legal',
+  path: '/settings/legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
+  id: '/settings_/notifications',
+  path: '/settings/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsProfileRoute = SettingsProfileRouteImport.update({
+  id: '/settings_/profile',
+  path: '/settings/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsReferralsRoute = SettingsReferralsRouteImport.update({
+  id: '/settings_/referrals',
+  path: '/settings/referrals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsSecurityRoute = SettingsSecurityRouteImport.update({
+  id: '/settings_/security',
+  path: '/settings/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsStatementsRoute = SettingsStatementsRouteImport.update({
+  id: '/settings_/statements',
+  path: '/settings/statements',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WithdrawAccountsRoute = WithdrawAccountsRouteImport.update({
@@ -281,6 +340,35 @@ const PortfolioTransactionsTxnIdRoute =
     path: '/portfolio/transactions/$txnId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const SettingsHelpTicketRoute = SettingsHelpTicketRouteImport.update({
+  id: '/settings_/help_/ticket',
+  path: '/settings/help/ticket',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsSecurityChangePinRoute =
+  SettingsSecurityChangePinRouteImport.update({
+    id: '/settings_/security_/change-pin',
+    path: '/settings/security/change-pin',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SettingsSecurityResetPinRoute =
+  SettingsSecurityResetPinRouteImport.update({
+    id: '/settings_/security_/reset-pin',
+    path: '/settings/security/reset-pin',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SettingsSecuritySessionsRoute =
+  SettingsSecuritySessionsRouteImport.update({
+    id: '/settings_/security_/sessions',
+    path: '/settings/security/sessions',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SettingsStatementsGeneratedRoute =
+  SettingsStatementsGeneratedRouteImport.update({
+    id: '/settings_/statements_/generated',
+    path: '/settings/statements/generated',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const PortfolioTransactionsTxnIdReceiptRoute =
   PortfolioTransactionsTxnIdReceiptRouteImport.update({
     id: '/portfolio_/transactions_/$txnId_/receipt',
@@ -310,6 +398,15 @@ export interface FileRoutesByFullPath {
   '/portfolio/history': typeof PortfolioHistoryRoute
   '/portfolio/maturities': typeof PortfolioMaturitiesRoute
   '/portfolio/transactions': typeof PortfolioTransactionsRoute
+  '/settings/address': typeof SettingsAddressRoute
+  '/settings/cards': typeof SettingsCardsRoute
+  '/settings/help': typeof SettingsHelpRoute
+  '/settings/legal': typeof SettingsLegalRoute
+  '/settings/notifications': typeof SettingsNotificationsRoute
+  '/settings/profile': typeof SettingsProfileRoute
+  '/settings/referrals': typeof SettingsReferralsRoute
+  '/settings/security': typeof SettingsSecurityRoute
+  '/settings/statements': typeof SettingsStatementsRoute
   '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/add-account': typeof WithdrawAddAccountRoute
   '/withdraw/amount': typeof WithdrawAmountRoute
@@ -332,6 +429,11 @@ export interface FileRoutesByFullPath {
   '/fixed-plans/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
   '/portfolio/transactions/$txnId': typeof PortfolioTransactionsTxnIdRoute
+  '/settings/help/ticket': typeof SettingsHelpTicketRoute
+  '/settings/security/change-pin': typeof SettingsSecurityChangePinRoute
+  '/settings/security/reset-pin': typeof SettingsSecurityResetPinRoute
+  '/settings/security/sessions': typeof SettingsSecuritySessionsRoute
+  '/settings/statements/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans/create/': typeof FixedPlansCreateIndexRoute
   '/portfolio/transactions/$txnId/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
 }
@@ -356,6 +458,15 @@ export interface FileRoutesByTo {
   '/portfolio/history': typeof PortfolioHistoryRoute
   '/portfolio/maturities': typeof PortfolioMaturitiesRoute
   '/portfolio/transactions': typeof PortfolioTransactionsRoute
+  '/settings/address': typeof SettingsAddressRoute
+  '/settings/cards': typeof SettingsCardsRoute
+  '/settings/help': typeof SettingsHelpRoute
+  '/settings/legal': typeof SettingsLegalRoute
+  '/settings/notifications': typeof SettingsNotificationsRoute
+  '/settings/profile': typeof SettingsProfileRoute
+  '/settings/referrals': typeof SettingsReferralsRoute
+  '/settings/security': typeof SettingsSecurityRoute
+  '/settings/statements': typeof SettingsStatementsRoute
   '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/add-account': typeof WithdrawAddAccountRoute
   '/withdraw/amount': typeof WithdrawAmountRoute
@@ -378,6 +489,11 @@ export interface FileRoutesByTo {
   '/fixed-plans/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
   '/portfolio/transactions/$txnId': typeof PortfolioTransactionsTxnIdRoute
+  '/settings/help/ticket': typeof SettingsHelpTicketRoute
+  '/settings/security/change-pin': typeof SettingsSecurityChangePinRoute
+  '/settings/security/reset-pin': typeof SettingsSecurityResetPinRoute
+  '/settings/security/sessions': typeof SettingsSecuritySessionsRoute
+  '/settings/statements/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans/create': typeof FixedPlansCreateIndexRoute
   '/portfolio/transactions/$txnId/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
 }
@@ -404,6 +520,15 @@ export interface FileRoutesById {
   '/portfolio_/history': typeof PortfolioHistoryRoute
   '/portfolio_/maturities': typeof PortfolioMaturitiesRoute
   '/portfolio_/transactions': typeof PortfolioTransactionsRoute
+  '/settings_/address': typeof SettingsAddressRoute
+  '/settings_/cards': typeof SettingsCardsRoute
+  '/settings_/help': typeof SettingsHelpRoute
+  '/settings_/legal': typeof SettingsLegalRoute
+  '/settings_/notifications': typeof SettingsNotificationsRoute
+  '/settings_/profile': typeof SettingsProfileRoute
+  '/settings_/referrals': typeof SettingsReferralsRoute
+  '/settings_/security': typeof SettingsSecurityRoute
+  '/settings_/statements': typeof SettingsStatementsRoute
   '/withdraw_/accounts': typeof WithdrawAccountsRoute
   '/withdraw_/add-account': typeof WithdrawAddAccountRoute
   '/withdraw_/amount': typeof WithdrawAmountRoute
@@ -426,6 +551,11 @@ export interface FileRoutesById {
   '/fixed-plans_/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans_/create/tenor': typeof FixedPlansCreateTenorRoute
   '/portfolio_/transactions_/$txnId': typeof PortfolioTransactionsTxnIdRoute
+  '/settings_/help_/ticket': typeof SettingsHelpTicketRoute
+  '/settings_/security_/change-pin': typeof SettingsSecurityChangePinRoute
+  '/settings_/security_/reset-pin': typeof SettingsSecurityResetPinRoute
+  '/settings_/security_/sessions': typeof SettingsSecuritySessionsRoute
+  '/settings_/statements_/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans_/create/': typeof FixedPlansCreateIndexRoute
   '/portfolio_/transactions_/$txnId_/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
 }
@@ -453,6 +583,15 @@ export interface FileRouteTypes {
     | '/portfolio/history'
     | '/portfolio/maturities'
     | '/portfolio/transactions'
+    | '/settings/address'
+    | '/settings/cards'
+    | '/settings/help'
+    | '/settings/legal'
+    | '/settings/notifications'
+    | '/settings/profile'
+    | '/settings/referrals'
+    | '/settings/security'
+    | '/settings/statements'
     | '/withdraw/accounts'
     | '/withdraw/add-account'
     | '/withdraw/amount'
@@ -475,6 +614,11 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/success'
     | '/fixed-plans/create/tenor'
     | '/portfolio/transactions/$txnId'
+    | '/settings/help/ticket'
+    | '/settings/security/change-pin'
+    | '/settings/security/reset-pin'
+    | '/settings/security/sessions'
+    | '/settings/statements/generated'
     | '/fixed-plans/create/'
     | '/portfolio/transactions/$txnId/receipt'
   fileRoutesByTo: FileRoutesByTo
@@ -499,6 +643,15 @@ export interface FileRouteTypes {
     | '/portfolio/history'
     | '/portfolio/maturities'
     | '/portfolio/transactions'
+    | '/settings/address'
+    | '/settings/cards'
+    | '/settings/help'
+    | '/settings/legal'
+    | '/settings/notifications'
+    | '/settings/profile'
+    | '/settings/referrals'
+    | '/settings/security'
+    | '/settings/statements'
     | '/withdraw/accounts'
     | '/withdraw/add-account'
     | '/withdraw/amount'
@@ -521,6 +674,11 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/success'
     | '/fixed-plans/create/tenor'
     | '/portfolio/transactions/$txnId'
+    | '/settings/help/ticket'
+    | '/settings/security/change-pin'
+    | '/settings/security/reset-pin'
+    | '/settings/security/sessions'
+    | '/settings/statements/generated'
     | '/fixed-plans/create'
     | '/portfolio/transactions/$txnId/receipt'
   id:
@@ -546,6 +704,15 @@ export interface FileRouteTypes {
     | '/portfolio_/history'
     | '/portfolio_/maturities'
     | '/portfolio_/transactions'
+    | '/settings_/address'
+    | '/settings_/cards'
+    | '/settings_/help'
+    | '/settings_/legal'
+    | '/settings_/notifications'
+    | '/settings_/profile'
+    | '/settings_/referrals'
+    | '/settings_/security'
+    | '/settings_/statements'
     | '/withdraw_/accounts'
     | '/withdraw_/add-account'
     | '/withdraw_/amount'
@@ -568,6 +735,11 @@ export interface FileRouteTypes {
     | '/fixed-plans_/create/success'
     | '/fixed-plans_/create/tenor'
     | '/portfolio_/transactions_/$txnId'
+    | '/settings_/help_/ticket'
+    | '/settings_/security_/change-pin'
+    | '/settings_/security_/reset-pin'
+    | '/settings_/security_/sessions'
+    | '/settings_/statements_/generated'
     | '/fixed-plans_/create/'
     | '/portfolio_/transactions_/$txnId_/receipt'
   fileRoutesById: FileRoutesById
@@ -594,6 +766,15 @@ export interface RootRouteChildren {
   PortfolioHistoryRoute: typeof PortfolioHistoryRoute
   PortfolioMaturitiesRoute: typeof PortfolioMaturitiesRoute
   PortfolioTransactionsRoute: typeof PortfolioTransactionsRoute
+  SettingsAddressRoute: typeof SettingsAddressRoute
+  SettingsCardsRoute: typeof SettingsCardsRoute
+  SettingsHelpRoute: typeof SettingsHelpRoute
+  SettingsLegalRoute: typeof SettingsLegalRoute
+  SettingsNotificationsRoute: typeof SettingsNotificationsRoute
+  SettingsProfileRoute: typeof SettingsProfileRoute
+  SettingsReferralsRoute: typeof SettingsReferralsRoute
+  SettingsSecurityRoute: typeof SettingsSecurityRoute
+  SettingsStatementsRoute: typeof SettingsStatementsRoute
   WithdrawAccountsRoute: typeof WithdrawAccountsRoute
   WithdrawAddAccountRoute: typeof WithdrawAddAccountRoute
   WithdrawAmountRoute: typeof WithdrawAmountRoute
@@ -611,6 +792,11 @@ export interface RootRouteChildren {
   ExploreProductIdSuccessRoute: typeof ExploreProductIdSuccessRoute
   ExploreProductIdUnavailableRoute: typeof ExploreProductIdUnavailableRoute
   PortfolioTransactionsTxnIdRoute: typeof PortfolioTransactionsTxnIdRoute
+  SettingsHelpTicketRoute: typeof SettingsHelpTicketRoute
+  SettingsSecurityChangePinRoute: typeof SettingsSecurityChangePinRoute
+  SettingsSecurityResetPinRoute: typeof SettingsSecurityResetPinRoute
+  SettingsSecuritySessionsRoute: typeof SettingsSecuritySessionsRoute
+  SettingsStatementsGeneratedRoute: typeof SettingsStatementsGeneratedRoute
   PortfolioTransactionsTxnIdReceiptRoute: typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 
@@ -761,6 +947,69 @@ declare module '@tanstack/react-router' {
       path: '/portfolio/transactions'
       fullPath: '/portfolio/transactions'
       preLoaderRoute: typeof PortfolioTransactionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/address': {
+      id: '/settings_/address'
+      path: '/settings/address'
+      fullPath: '/settings/address'
+      preLoaderRoute: typeof SettingsAddressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/cards': {
+      id: '/settings_/cards'
+      path: '/settings/cards'
+      fullPath: '/settings/cards'
+      preLoaderRoute: typeof SettingsCardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/help': {
+      id: '/settings_/help'
+      path: '/settings/help'
+      fullPath: '/settings/help'
+      preLoaderRoute: typeof SettingsHelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/legal': {
+      id: '/settings_/legal'
+      path: '/settings/legal'
+      fullPath: '/settings/legal'
+      preLoaderRoute: typeof SettingsLegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/notifications': {
+      id: '/settings_/notifications'
+      path: '/settings/notifications'
+      fullPath: '/settings/notifications'
+      preLoaderRoute: typeof SettingsNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/profile': {
+      id: '/settings_/profile'
+      path: '/settings/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof SettingsProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/referrals': {
+      id: '/settings_/referrals'
+      path: '/settings/referrals'
+      fullPath: '/settings/referrals'
+      preLoaderRoute: typeof SettingsReferralsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/security': {
+      id: '/settings_/security'
+      path: '/settings/security'
+      fullPath: '/settings/security'
+      preLoaderRoute: typeof SettingsSecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/statements': {
+      id: '/settings_/statements'
+      path: '/settings/statements'
+      fullPath: '/settings/statements'
+      preLoaderRoute: typeof SettingsStatementsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/withdraw_/accounts': {
@@ -924,6 +1173,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioTransactionsTxnIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings_/help_/ticket': {
+      id: '/settings_/help_/ticket'
+      path: '/settings/help/ticket'
+      fullPath: '/settings/help/ticket'
+      preLoaderRoute: typeof SettingsHelpTicketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/security_/change-pin': {
+      id: '/settings_/security_/change-pin'
+      path: '/settings/security/change-pin'
+      fullPath: '/settings/security/change-pin'
+      preLoaderRoute: typeof SettingsSecurityChangePinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/security_/reset-pin': {
+      id: '/settings_/security_/reset-pin'
+      path: '/settings/security/reset-pin'
+      fullPath: '/settings/security/reset-pin'
+      preLoaderRoute: typeof SettingsSecurityResetPinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/security_/sessions': {
+      id: '/settings_/security_/sessions'
+      path: '/settings/security/sessions'
+      fullPath: '/settings/security/sessions'
+      preLoaderRoute: typeof SettingsSecuritySessionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/statements_/generated': {
+      id: '/settings_/statements_/generated'
+      path: '/settings/statements/generated'
+      fullPath: '/settings/statements/generated'
+      preLoaderRoute: typeof SettingsStatementsGeneratedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio_/transactions_/$txnId_/receipt': {
       id: '/portfolio_/transactions_/$txnId_/receipt'
       path: '/portfolio/transactions/$txnId/receipt'
@@ -977,6 +1261,15 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioHistoryRoute: PortfolioHistoryRoute,
   PortfolioMaturitiesRoute: PortfolioMaturitiesRoute,
   PortfolioTransactionsRoute: PortfolioTransactionsRoute,
+  SettingsAddressRoute: SettingsAddressRoute,
+  SettingsCardsRoute: SettingsCardsRoute,
+  SettingsHelpRoute: SettingsHelpRoute,
+  SettingsLegalRoute: SettingsLegalRoute,
+  SettingsNotificationsRoute: SettingsNotificationsRoute,
+  SettingsProfileRoute: SettingsProfileRoute,
+  SettingsReferralsRoute: SettingsReferralsRoute,
+  SettingsSecurityRoute: SettingsSecurityRoute,
+  SettingsStatementsRoute: SettingsStatementsRoute,
   WithdrawAccountsRoute: WithdrawAccountsRoute,
   WithdrawAddAccountRoute: WithdrawAddAccountRoute,
   WithdrawAmountRoute: WithdrawAmountRoute,
@@ -994,6 +1287,11 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreProductIdSuccessRoute: ExploreProductIdSuccessRoute,
   ExploreProductIdUnavailableRoute: ExploreProductIdUnavailableRoute,
   PortfolioTransactionsTxnIdRoute: PortfolioTransactionsTxnIdRoute,
+  SettingsHelpTicketRoute: SettingsHelpTicketRoute,
+  SettingsSecurityChangePinRoute: SettingsSecurityChangePinRoute,
+  SettingsSecurityResetPinRoute: SettingsSecurityResetPinRoute,
+  SettingsSecuritySessionsRoute: SettingsSecuritySessionsRoute,
+  SettingsStatementsGeneratedRoute: SettingsStatementsGeneratedRoute,
   PortfolioTransactionsTxnIdReceiptRoute:
     PortfolioTransactionsTxnIdReceiptRoute,
 }
