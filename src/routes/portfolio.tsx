@@ -111,7 +111,7 @@ function PortfolioScreen() {
     <AppShell title="Portfolio" navVariant="elevated">
       <div className="pb-2">
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-auto md:max-w-[1200px] md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
@@ -178,14 +178,17 @@ function PortfolioScreen() {
         </section>
 
         {/* ── Sheet ────────────────────────────────────────────── */}
-        <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
+        <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-auto md:mt-6 md:max-w-[1200px] md:rounded-none md:bg-transparent md:px-0 md:pt-0">
           <span
             aria-hidden
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
+          <div className="lg:grid lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start lg:gap-6">
+          <div className="min-w-0">
           {/* Allocation */}
           <section className="k-rise card-surface p-4 md:p-6">
+
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-display text-base font-extrabold">Allocation</h2>
               <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground">
@@ -406,9 +409,12 @@ function PortfolioScreen() {
               })}
             </ul>
           </section>
+          </div>
 
+          <aside className="min-w-0 lg:sticky lg:top-6">
           {/* Upcoming maturities */}
-          <section className="mt-7">
+          <section className="mt-7 lg:mt-0">
+
             <div className="mb-3 flex items-center justify-between px-1">
               <h2 className="font-display text-base font-extrabold">Upcoming maturities</h2>
               <Link
@@ -453,7 +459,7 @@ function PortfolioScreen() {
               </span>
             </div>
 
-            <ul className="card-surface divide-y divide-border/60 overflow-hidden md:grid md:grid-cols-2 md:divide-y-0 md:gap-px md:bg-border/60">
+            <ul className="card-surface divide-y divide-border/60 overflow-hidden md:grid md:grid-cols-2 md:divide-y-0 md:gap-px md:bg-border/60 lg:grid-cols-1 lg:gap-0 lg:divide-y">
               {(
                 [
                   {
@@ -519,9 +525,11 @@ function PortfolioScreen() {
               ))}
             </ul>
           </section>
-
+          </aside>
+          </div>
 
           <DisclosureStrip variant="marketplace" />
+
         </div>
       </div>
     </AppShell>
