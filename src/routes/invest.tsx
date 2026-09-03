@@ -241,38 +241,40 @@ function MobileInvest() {
                   Math.max(6, Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)),
                 );
                 return (
-                  <li
-                    key={h.name}
-                    style={{ ["--d" as string]: `${i * 90}ms` }}
-                    className="k-rise card-surface relative overflow-hidden p-4 transition-shadow hover:shadow-md"
-                  >
-                    <span className="absolute inset-y-0 left-0 w-1 bg-accent" aria-hidden />
-                    <div className="flex items-start justify-between gap-3 pl-2">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-bold">{h.name}</p>
-                        <p className="mt-1 text-[11px] text-muted-foreground">
-                          Matures {h.date}
-                        </p>
+                  <li key={h.id} style={{ ["--d" as string]: `${i * 90}ms` }}>
+                    <Link
+                      to="/portfolio/$holdingId"
+                      params={{ holdingId: h.id }}
+                      className="k-rise card-surface relative block overflow-hidden p-4 transition-shadow hover:shadow-md"
+                    >
+                      <span className="absolute inset-y-0 left-0 w-1 bg-accent" aria-hidden />
+                      <div className="flex items-start justify-between gap-3 pl-2">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-bold">{h.name}</p>
+                          <p className="mt-1 text-[11px] text-muted-foreground">
+                            Matures {h.date}
+                          </p>
+                        </div>
+                        <div className="shrink-0 text-right">
+                          <p className="text-base font-extrabold text-num">{mask(h.amount)}</p>
+                          <span className="mt-1 inline-flex rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-brand">
+                            {h.rate}
+                          </span>
+                        </div>
                       </div>
-                      <div className="shrink-0 text-right">
-                        <p className="text-base font-extrabold text-num">{mask(h.amount)}</p>
-                        <span className="mt-1 inline-flex rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-brand">
-                          {h.rate}
-                        </span>
+                      <div className="mt-3 pl-2">
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="k-fill h-full rounded-full bg-brand"
+                            style={{ width: `${progress}%`, ["--d" as string]: `${150 + i * 90}ms` }}
+                          />
+                        </div>
+                        <div className="mt-1.5 flex items-center justify-between text-[10px] font-semibold text-muted-foreground">
+                          <span>{progress}% of tenor</span>
+                          <span>{h.daysLeft} days left</span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="mt-3 pl-2">
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="k-fill h-full rounded-full bg-brand"
-                          style={{ width: `${progress}%`, ["--d" as string]: `${150 + i * 90}ms` }}
-                        />
-                      </div>
-                      <div className="mt-1.5 flex items-center justify-between text-[10px] font-semibold text-muted-foreground">
-                        <span>{progress}% of tenor</span>
-                        <span>{h.daysLeft} days left</span>
-                      </div>
-                    </div>
+                    </Link>
                   </li>
                 );
               })}
