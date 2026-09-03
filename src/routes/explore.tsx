@@ -197,76 +197,8 @@ function ExploreScreen() {
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   Featured this week
                 </p>
-                <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0">
-                  {featured.map((p, i) => (
-                    <article
-                      key={p.id}
-                      style={{ ["--d" as string]: `${i * 90}ms` }}
-                      className="k-rise relative flex min-h-[23rem] w-[78%] min-w-[78%] shrink-0 snap-center flex-col justify-between overflow-hidden rounded-[1.9rem] bg-brand-gradient p-5 text-primary-foreground shadow-float md:min-h-[24rem] md:w-auto md:min-w-0 md:p-6"
-                    >
-                      <span
-                        aria-hidden
-                        className="pointer-events-none absolute -right-12 -top-20 size-52 rounded-full bg-gold/25 blur-[56px]"
-                      />
-                      <span
-                        aria-hidden
-                        className="pointer-events-none absolute -bottom-24 -left-16 size-48 rounded-full bg-white/10 blur-[56px]"
-                      />
+                <FeaturedCarousel items={featured} />
 
-                      <div className="relative">
-                        <div className="flex items-start justify-between gap-3">
-                          <span className="rounded-full bg-white/12 px-2.5 py-1 text-[9.5px] font-extrabold uppercase tracking-[0.14em] text-primary-foreground/80">
-                            {p.category}
-                          </span>
-                          <span className="inline-flex items-center gap-1 rounded-full bg-gold-gradient px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-widest text-gold-foreground">
-                            Featured
-                          </span>
-                        </div>
-                        <h3 className="mt-5 font-display text-[22px] font-extrabold leading-[1.1] tracking-[-0.03em] md:text-[24px]">
-                          {p.name}
-                        </h3>
-                        <p className="mt-1.5 text-[12px] text-primary-foreground/65">
-                          {p.issuer}
-                        </p>
-                        <p className="mt-4 text-[12px] leading-relaxed text-primary-foreground/70">
-                          {p.blurb}
-                        </p>
-                      </div>
-
-                      <div className="relative">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/55">
-                          Rate p.a.
-                        </p>
-                        <p className="font-display text-[34px] font-extrabold leading-none tracking-[-0.03em] text-gold text-num">
-                          {p.rate.replace(" p.a.", "")}
-                        </p>
-
-                        <div className="mt-4 flex items-center divide-x divide-white/15 rounded-2xl bg-white/10 py-2.5 backdrop-blur-sm">
-                          <div className="flex-1 px-3 text-center">
-                            <p className="text-[9.5px] uppercase tracking-[0.12em] text-primary-foreground/55">
-                              Tenor
-                            </p>
-                            <p className="mt-0.5 text-[12px] font-extrabold">
-                              {p.tenor}
-                            </p>
-                          </div>
-                          <div className="flex-1 px-3 text-center">
-                            <p className="text-[9.5px] uppercase tracking-[0.12em] text-primary-foreground/55">
-                              Minimum
-                            </p>
-                            <p className="mt-0.5 text-[12px] font-extrabold">
-                              {naira(p.minimum)}
-                            </p>
-                          </div>
-                        </div>
-
-                        <p className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-semibold text-gold">
-                          <Clock3 className="size-3.5" /> {p.closes}
-                        </p>
-                      </div>
-                    </article>
-                  ))}
-                </div>
 
 
               </section>
