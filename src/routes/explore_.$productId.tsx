@@ -10,6 +10,7 @@ import {
   Plus,
   ShieldCheck,
   Wallet,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
