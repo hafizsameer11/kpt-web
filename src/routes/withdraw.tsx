@@ -48,6 +48,19 @@ export const Route = createFileRoute("/withdraw")({
 });
 
 function WithdrawEntry() {
+  return (
+    <>
+      <div className="md:hidden">
+        <MobileWithdraw />
+      </div>
+      <div className="hidden md:block">
+        <DesktopWithdraw />
+      </div>
+    </>
+  );
+}
+
+function MobileWithdraw() {
   const eligible = TIER.eligible;
 
   return (
