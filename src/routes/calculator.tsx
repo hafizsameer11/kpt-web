@@ -72,7 +72,7 @@ function CalculatorScreen() {
   const [optionId, setOptionId] = useState<string>("90 days");
 
   const amount = Number(input.replace(/[^0-9]/g, "")) || 0;
-  const option = OPTIONS.find((o) => o.id === optionId) ?? OPTIONS[0];
+  const option = OPTIONS.find((o) => o.id === optionId) ?? (OPTIONS[0] as Option);
 
   const { interest, payout, perDay } = useMemo(() => {
     const gross = Math.round(amount * (option.rate / 100) * (option.days / 365));

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as CallAccountRouteImport } from './routes/call-account'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as FixedPlansRouteImport } from './routes/fixed-plans'
@@ -113,6 +114,11 @@ import { Route as PortfolioTransactionsTxnIdReceiptRouteImport } from './routes/
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CalculatorRoute = CalculatorRouteImport.update({
+  id: '/calculator',
+  path: '/calculator',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CallAccountRoute = CallAccountRouteImport.update({
@@ -627,6 +633,7 @@ const PortfolioTransactionsTxnIdReceiptRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
@@ -729,6 +736,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
@@ -831,6 +839,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
@@ -935,6 +944,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/calculator'
     | '/call-account'
     | '/explore'
     | '/fixed-plans'
@@ -1037,6 +1047,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/calculator'
     | '/call-account'
     | '/explore'
     | '/fixed-plans'
@@ -1138,6 +1149,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/calculator'
     | '/call-account'
     | '/explore'
     | '/fixed-plans'
@@ -1241,6 +1253,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CalculatorRoute: typeof CalculatorRoute
   CallAccountRoute: typeof CallAccountRoute
   ExploreRoute: typeof ExploreRoute
   FixedPlansRoute: typeof FixedPlansRoute
@@ -1343,6 +1356,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calculator': {
+      id: '/calculator'
+      path: '/calculator'
+      fullPath: '/calculator'
+      preLoaderRoute: typeof CalculatorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/call-account': {
@@ -2064,6 +2084,7 @@ const FixedPlansCreateRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CalculatorRoute: CalculatorRoute,
   CallAccountRoute: CallAccountRoute,
   ExploreRoute: ExploreRoute,
   FixedPlansRoute: FixedPlansRoute,
