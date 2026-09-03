@@ -30,47 +30,80 @@ export function AuthShell({
       <div className="pointer-events-none absolute -top-24 -left-16 size-72 rounded-full bg-gold/20 blur-3xl" />
       <div className="pointer-events-none absolute -right-20 top-40 size-80 rounded-full bg-white/10 blur-3xl" />
 
-      <div className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 pb-8 pt-6 md:max-w-lg md:justify-center">
-        <div className="flex items-center justify-between">
-          {back ? (
-            <Link
-              to={back}
-              className="inline-flex size-10 items-center justify-center rounded-full bg-white/10 text-brand-foreground transition hover:bg-white/20"
-              aria-label="Go back"
-            >
-              <ArrowLeft className="size-5" />
-            </Link>
-          ) : (
-            <span className="size-10" />
-          )}
-          <Logo tone="light" className="text-xl" />
-          <span className="size-10" />
-        </div>
-
-        {steps ? (
-          <div className="mt-6 flex gap-1.5" aria-label={`Step ${step} of ${steps}`}>
-            {Array.from({ length: steps }).map((_, i) => (
-              <span
-                key={i}
-                className={`h-1 flex-1 rounded-full transition ${
-                  i < (step ?? 0) ? "bg-gold" : "bg-white/20"
-                }`}
-              />
+      <div className="relative mx-auto grid min-h-dvh w-full max-w-md lg:max-w-6xl lg:grid-cols-2 lg:items-center lg:gap-14 lg:px-10">
+        {/* WEB-001 — desktop brand / illustration panel */}
+        <aside className="hidden lg:flex lg:flex-col lg:gap-8 lg:py-16">
+          <Logo tone="light" className="text-3xl" />
+          <div>
+            <p className="inline-flex items-center rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-gold">
+              Wealth, simplified
+            </p>
+            <h2 className="mt-5 max-w-md text-4xl font-semibold leading-tight tracking-tight">
+              Your money, working every day.
+            </h2>
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-brand-foreground/70">
+              Save, invest in fixed-return plans, and track everything in one simple account.
+            </p>
+          </div>
+          <div className="grid max-w-md gap-3">
+            {[
+              ["Up to 22% p.a.", "Fixed-return plans with clear tenors"],
+              ["Daily interest", "Call Account interest accrues every day"],
+              ["SEC-licensed partners", "Regulated custody and product issuers"],
+            ].map(([t, d]) => (
+              <div
+                key={t}
+                className="rounded-2xl border border-white/12 bg-white/8 px-4 py-3 backdrop-blur-sm"
+              >
+                <p className="text-sm font-semibold">{t}</p>
+                <p className="mt-0.5 text-xs text-brand-foreground/65">{d}</p>
+              </div>
             ))}
           </div>
-        ) : null}
+        </aside>
 
-        <div className="mt-8 flex-1 md:flex-none">
-          {title ? (
-            <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{title}</h1>
+        <div className="flex min-h-dvh w-full flex-col px-5 pb-8 pt-6 lg:min-h-0 lg:justify-center lg:rounded-3xl lg:border lg:border-white/12 lg:bg-white/6 lg:px-8 lg:py-10 lg:backdrop-blur-sm">
+          <div className="flex items-center justify-between">
+            {back ? (
+              <Link
+                to={back}
+                className="inline-flex size-10 items-center justify-center rounded-full bg-white/10 text-brand-foreground transition hover:bg-white/20"
+                aria-label="Go back"
+              >
+                <ArrowLeft className="size-5" />
+              </Link>
+            ) : (
+              <span className="size-10" />
+            )}
+            <Logo tone="light" className="text-xl lg:hidden" />
+            <span className="size-10" />
+          </div>
+
+          {steps ? (
+            <div className="mt-6 flex gap-1.5" aria-label={`Step ${step} of ${steps}`}>
+              {Array.from({ length: steps }).map((_, i) => (
+                <span
+                  key={i}
+                  className={`h-1 flex-1 rounded-full transition ${
+                    i < (step ?? 0) ? "bg-gold" : "bg-white/20"
+                  }`}
+                />
+              ))}
+            </div>
           ) : null}
-          {subtitle ? (
-            <p className="mt-2 text-sm leading-relaxed text-brand-foreground/70">{subtitle}</p>
-          ) : null}
-          <div className="mt-7">{children}</div>
+
+          <div className="mt-8 flex-1 lg:mt-4 lg:flex-none">
+            {title ? (
+              <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{title}</h1>
+            ) : null}
+            {subtitle ? (
+              <p className="mt-2 text-sm leading-relaxed text-brand-foreground/70">{subtitle}</p>
+            ) : null}
+            <div className="mt-7">{children}</div>
+          </div>
+
+          {footer ? <div className="pt-6">{footer}</div> : null}
         </div>
-
-        {footer ? <div className="pt-6">{footer}</div> : null}
       </div>
     </div>
   );
