@@ -58,8 +58,8 @@ function SubscribeScreen() {
   const valid =
     amount > 0 && !belowMin && !closed && (!walletShort || source !== "wallet");
 
-  const ratePct = Number(product.rate.replace(/[^0-9.]/g, "")) || 0;
-  const days = Number(product.tenor.replace(/[^0-9]/g, "")) || 365;
+  const ratePct = Number(product.rate.match(/[\d.]+/)?.[0]) || 0;
+  const days = Number(product.tenor.match(/\d+/)?.[0]) || 365;
   const interest = Math.round((amount * (ratePct / 100) * days) / 365);
   const expected = useCountUp(amount + interest, 500);
   const earn = useCountUp(interest, 500);
