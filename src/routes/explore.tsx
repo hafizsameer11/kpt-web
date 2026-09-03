@@ -131,8 +131,8 @@ function ExploreScreen() {
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Categories
               </p>
-              <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
-                {EXPLORE_CATEGORIES.map((c) => {
+              <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+                {EXPLORE_CATEGORIES.map((c, i) => {
                   const Icon = CATEGORY_ICON[c.id as keyof typeof CATEGORY_ICON];
                   const active = category === c.id;
                   return (
@@ -141,42 +141,52 @@ function ExploreScreen() {
                       type="button"
                       onClick={() => setCategory(active ? null : c.id)}
                       aria-pressed={active}
-                      className={`relative rounded-2xl border p-4 text-left press transition-all ${
+                      style={{ ["--d" as string]: `${i * 80}ms` }}
+                      className={`k-rise relative flex flex-col justify-between overflow-hidden rounded-[1.5rem] p-4 text-left press md:rounded-[2rem] md:p-5 ${
                         active
-                          ? "border-gold bg-primary text-primary-foreground shadow-lg ring-1 ring-gold/20"
-                          : "border-border bg-card text-foreground hover:border-border/80"
+                          ? "bg-brand-gradient text-primary-foreground shadow-float"
+                          : "border border-border bg-card"
                       }`}
                     >
-                      {active && (
-                        <span className="absolute right-3 top-3 inline-flex size-4 items-center justify-center rounded-full bg-gold text-gold-foreground">
-                          <Check className="size-2.5" strokeWidth={3} />
-                        </span>
-                      )}
                       <span
-                        className={`inline-flex size-10 items-center justify-center rounded-xl ${
-                          active
-                            ? "bg-gold text-gold-foreground"
-                            : "bg-muted text-foreground"
+                        aria-hidden
+                        className={`pointer-events-none absolute -right-10 -top-10 size-28 rounded-full ${
+                          active ? "bg-gold/20" : "bg-accent/60"
                         }`}
-                      >
-                        <Icon className="size-5" />
-                      </span>
-                      <p className="mt-5 text-[15px] font-semibold leading-tight">
-                        {c.name}
-                      </p>
-                      <p
-                        className={`mt-1 text-[11px] font-medium uppercase tracking-[0.08em] ${
-                          active
-                            ? "text-gold"
-                            : "text-muted-foreground"
-                        }`}
-                      >
-                        {c.count} products
-                      </p>
+                      />
+                      <div className="relative flex items-start justify-between">
+                        <span
+                          className={`inline-flex size-10 items-center justify-center rounded-2xl ${
+                            active
+                              ? "bg-gold text-gold-foreground"
+                              : "bg-secondary text-foreground"
+                          }`}
+                        >
+                          <Icon className="size-5" />
+                        </span>
+                        {active && (
+                          <span className="inline-flex size-5 items-center justify-center rounded-full bg-gold text-gold-foreground">
+                            <Check className="size-3" strokeWidth={3} />
+                          </span>
+                        )}
+                      </div>
+                      <div className="relative mt-5">
+                        <h3 className="font-display text-[13px] font-extrabold leading-tight md:text-base">
+                          {c.name}
+                        </h3>
+                        <p
+                          className={`mt-1 text-[10px] font-semibold uppercase tracking-[0.1em] ${
+                            active ? "text-gold" : "text-muted-foreground"
+                          }`}
+                        >
+                          {c.count} products
+                        </p>
+                      </div>
                     </button>
                   );
                 })}
               </div>
+
             </section>
           </Rise>
 
