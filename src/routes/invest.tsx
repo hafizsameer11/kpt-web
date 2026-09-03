@@ -302,7 +302,7 @@ function InvestScreen() {
                     </span>
                   </span>
                   <ChevronRight className="size-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
-                </Comp>
+                </Link>
                 );
               })}
             </div>
