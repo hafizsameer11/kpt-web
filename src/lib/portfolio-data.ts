@@ -282,7 +282,7 @@ export type InvestmentRecord = {
 };
 
 export const INVESTMENT_HISTORY: InvestmentRecord[] = [
-  ...HOLDING_DETAILS.map((h, i) => ({
+  ...HOLDING_DETAILS.map((h) => ({
     id: `ih-${h.id}`,
     name: h.name,
     kind: h.kind,
@@ -293,8 +293,7 @@ export const INVESTMENT_HISTORY: InvestmentRecord[] = [
     endDate: h.maturityDate,
     interest: accruedInterest(h),
     holdingId: h.id,
-    _i: i,
-  })).map(({ _i, ...rest }) => rest),
+  })),
   {
     id: "ih-m1",
     name: "Kipit Fixed Income",
