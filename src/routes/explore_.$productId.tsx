@@ -79,7 +79,7 @@ function ProductDetailScreen() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const closed = p.availability === "closed";
-  const ratePct = Number(p.rate.replace(/[^0-9.]/g, "")) || 0;
+  const ratePct = Number(p.rate.match(/[\d.]+/)?.[0]) || 0;
   const days = Number(p.tenor.replace(/[^0-9]/g, "")) || 365;
   const estimate = Math.round((amount * (ratePct / 100) * days) / 365);
   const belowMin = amount < p.minimum;
