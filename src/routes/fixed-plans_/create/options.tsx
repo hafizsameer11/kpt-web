@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
-import { Rise } from "@/components/kipit/motion";
+import { AmountCounter, Rise } from "@/components/kipit/motion";
 import { naira, WALLET } from "@/lib/home-data";
 import { TENOR_BANDS } from "@/lib/invest-data";
 
@@ -116,13 +116,19 @@ function PlanOptionsScreen() {
             >
               <ArrowLeft className="size-3.5" /> Tenor
             </Link>
-            <p className="mt-6 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+            <p className="k-rise mt-6 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
               Almost there
             </p>
-            <p className="mt-1 font-display text-[34px] font-extrabold leading-none tracking-[-0.03em] text-num md:text-[40px]">
-              {naira(amount)}
+            <p
+              className="k-rise mt-1 font-display text-[34px] font-extrabold leading-none tracking-[-0.03em] text-num md:text-[40px]"
+              style={{ "--d": "80ms" } as React.CSSProperties}
+            >
+              <AmountCounter value={amount} hidden={false} mask={(v) => naira(v)} />
             </p>
-            <p className="mt-3 text-[12px] font-medium text-primary-foreground/60">
+            <p
+              className="k-rise mt-3 text-[12px] font-medium text-primary-foreground/60"
+              style={{ "--d": "160ms" } as React.CSSProperties}
+            >
               {days} days at {rate} p.a.
               {maturityDate ? ` · matures ${maturityDate}` : ""}
             </p>
@@ -347,7 +353,13 @@ function PlanOptionsScreen() {
                             active ? "border-gold bg-gold" : "border-muted-foreground/30"
                           }`}
                         >
-                          {active && <Check className="size-3 text-gold-foreground" strokeWidth={4} />}
+                          {active && (
+                            <Check
+                              key={o.id}
+                              className="k-pop size-3 text-gold-foreground"
+                              strokeWidth={4}
+                            />
+                          )}
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="block text-[13px] font-bold text-foreground">{o.name}</span>
@@ -371,7 +383,7 @@ function PlanOptionsScreen() {
               type="button"
               disabled={!giftValid}
               className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
-                giftValid ? "" : "opacity-40 shadow-none"
+                giftValid ? "k-glow" : "opacity-40 shadow-none"
               }`}
             >
               Review plan
