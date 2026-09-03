@@ -275,14 +275,23 @@ function InvestScreen() {
               {[
                 { icon: Calculator, label: "Calculator", note: "Model your payout before you commit", to: "/calculator" as const },
                 { icon: Repeat, label: "Auto-invest", note: "Fund your plans on a schedule" },
-                { icon: Gift, label: "Gift invest", note: "Send a plan to someone" },
-                { icon: RefreshCw, label: "Roll over", note: "Reinvest automatically at maturity" },
+                { icon: Gift, label: "Gift invest", note: "Send a plan to someone", to: "/gifts" as const },
+                { icon: RefreshCw, label: "Roll over", note: "Reinvest automatically at maturity", to: "/portfolio/maturities" as const },
               ].map((t, i) => {
                 const Comp = ("to" in t && t.to ? Link : "button") as React.ElementType;
                 return (
                 <Comp
                   key={t.label}
-                  {...("to" in t && t.to ? { to: t.to } : { type: "button" as const })}
+                  {...("to" in t && t.to
+                    ? { to: t.to }
+                    : {
+                        type: "button" as const,
+                        onClick: () =>
+                          toast("Auto-invest is coming soon", {
+                            description: "You'll be able to schedule recurring funding for your plans.",
+                          }),
+                      })}
+
                   style={{ ["--d" as string]: `${i * 70}ms` }}
                   className={`k-rise group flex w-full items-center gap-3.5 px-4 py-4 text-left transition-colors hover:bg-muted/50 ${
                     i > 0 ? "border-t border-border/50 md:border-t-0" : ""
