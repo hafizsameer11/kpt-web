@@ -22,3 +22,23 @@ export const PRODUCT_ART: Record<string, string> = {
 export const feedArt = (index: number) => FEED_ART[index % FEED_ART.length];
 
 export const productArt = (name: string) => PRODUCT_ART[name] ?? productVault;
+
+import learnSameDay from "@/assets/learn-same-day-settlement.jpg";
+import learnTenor from "@/assets/learn-tenor-and-yield.jpg";
+import learnTier2 from "@/assets/learn-instant-tier-2.jpg";
+import learnCall from "@/assets/learn-call-account.jpg";
+import learnLadder from "@/assets/learn-building-a-ladder.jpg";
+import learnGifting from "@/assets/learn-gifting-investments.jpg";
+
+/** Photographic cover art for Learn articles, keyed by article id. */
+export const LEARN_ART: Record<string, string> = {
+  "same-day-settlement": learnSameDay,
+  "tenor-and-yield": learnTenor,
+  "instant-tier-2": learnTier2,
+  "call-account-explained": learnCall,
+  "building-a-ladder": learnLadder,
+  "gifting-investments": learnGifting,
+};
+
+export const articleArt = (id: string, index = 0) =>
+  LEARN_ART[id] ?? feedArt(index);
