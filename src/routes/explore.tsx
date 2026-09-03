@@ -371,6 +371,11 @@ function FeaturedCarousel({ items }: { items: ExploreProduct[] }) {
         >
           {items.map((p) => (
             <div key={p.id} className="w-full shrink-0 snap-center px-4 md:px-0">
+              <Link
+                to="/explore/$productId"
+                params={{ productId: p.id }}
+                className="block press"
+              >
               <article className="relative flex min-h-[23rem] flex-col justify-between overflow-hidden rounded-[1.9rem] bg-brand-gradient p-5 text-primary-foreground shadow-float md:min-h-[24rem] md:p-6">
                 <span
                   aria-hidden
@@ -427,6 +432,7 @@ function FeaturedCarousel({ items }: { items: ExploreProduct[] }) {
                   </p>
                 </div>
               </article>
+              </Link>
             </div>
           ))}
         </div>
@@ -462,7 +468,11 @@ function ProductCard({ product: p }: { product: ExploreProduct }) {
         : "bg-muted text-muted-foreground";
 
   return (
-    <article className="card-surface p-4">
+    <Link
+      to="/explore/$productId"
+      params={{ productId: p.id }}
+      className="block card-surface p-4 press"
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
@@ -494,7 +504,7 @@ function ProductCard({ product: p }: { product: ExploreProduct }) {
       <p className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
         <Clock3 className="size-3.5" /> {p.closes}
       </p>
-    </article>
+    </Link>
   );
 }
 
