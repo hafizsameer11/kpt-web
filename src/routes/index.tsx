@@ -403,7 +403,7 @@ function HomeV2Screen() {
             </section>
 
             {/* Payout timeline */}
-            <section className="card-surface mt-5 p-4 md:p-6">
+            <section className="card-surface mt-3 p-4 md:p-6 lg:mt-0">
               <div className="flex items-center justify-between">
                 <h2 className="font-display text-base font-extrabold">Coming up</h2>
                 <Link
