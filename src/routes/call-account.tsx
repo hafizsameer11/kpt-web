@@ -3,6 +3,7 @@ import {
   ArrowDownLeft,
   ArrowLeft,
   ArrowUpRight,
+  ChevronRight,
   Eye,
   EyeOff,
   Info,
@@ -36,6 +37,7 @@ import {
   CALL_ACCOUNT_FACTS,
   CALL_ACTIVITY,
 } from "@/lib/invest-data";
+import { callActivityTxnId } from "@/lib/portfolio-data";
 
 export const Route = createFileRoute("/call-account")({
   head: () => ({
