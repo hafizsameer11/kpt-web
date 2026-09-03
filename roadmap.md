@@ -9,15 +9,11 @@
 - Portfolio, holdings, maturities, history, transactions, receipt, gifts, reports (MOB-120–129)
 - Settings section (MOB-140–154)
 - Wallet funding: add money, bank transfer, processing, success, card payment, failed (MOB-030–035)
+- KYC / Verification centre, Tier 1 BVN flow, Tier 2 NIN/selfie/address/occupation, review, pending, approved, rejected (MOB-040–057)
 - Onboarding & auth: splash, welcome, sign-up, OTP, PIN, biometrics, login, password reset (MOB-001–017)
 
 ## Left to build
-### 1. KYC / Verification (MOB-040–057) — 18 screens
-Verification Centre, Tier 1 intro, BVN entry, BVN processing, BVN match, BVN failed,
-Tier 1 verified, Tier 2 intro, NIN entry, Liveness intro, Selfie capture, Address info,
-Address doc upload, Occupation & source of funds, KYC review & submit, Pending, Approved, Rejected.
-
-### 2. Gaps in built flows — 4 screens
+### 1. Gaps in built flows — 4 screens
 - MOB-068 Custom tenor
 - MOB-069 Investment calculator
 - MOB-081 Explore category
