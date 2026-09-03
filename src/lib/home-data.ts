@@ -97,7 +97,7 @@ export const QUICK_ACTIONS: QuickAction[] = [
 ];
 
 /** Content feed — product updates, education, announcements. */
-export const FEED = LEARN_ARTICLES.slice(0, 4).map((a) => ({
+export const FEED = LEARN_ARTICLES.slice(0, 3).map((a) => ({
   id: a.id,
   tag: a.tag,
   title: a.title,
