@@ -6,10 +6,11 @@ import {
   Check,
   ChevronRight,
   Filter,
+  Search,
   SlidersHorizontal,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
