@@ -206,10 +206,10 @@ function MobileAmount({
                 </span>
                 <div className="min-w-0">
                   <p className="truncate text-[13.5px] font-bold text-foreground">
-                    {account.accountName}
+                    {accountName}
                   </p>
                   <p className="truncate text-[12px] text-muted-foreground">
-                    {account.bank} · {maskAccount(account.accountNumber)}
+                    {bank} · {maskAccount(accountNumber)}
                   </p>
                 </div>
               </div>
@@ -250,7 +250,7 @@ function MobileAmount({
               onClick={() =>
                 void navigate({
                   to: "/withdraw/review",
-                  search: { acct: account.id, amount },
+                  search: { acct: accountId, amount },
                 })
               }
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40 disabled:shadow-none md:w-auto md:px-10"
