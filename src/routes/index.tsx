@@ -306,8 +306,10 @@ function HomeV2Screen() {
                   );
                   const rail = i === 0 ? "bg-gold" : i === 1 ? "bg-brand" : "bg-teal";
                   return (
-                    <article
+                    <Link
                       key={h.name}
+                      to="/portfolio/$holdingId"
+                      params={{ holdingId: `f${i + 1}` }}
                       style={{ ["--d" as string]: `${150 + i * 90}ms` }}
                       className="k-rise card-surface flex items-center gap-3 p-4 press md:block md:p-5 md:transition-all md:hover:-translate-y-0.5 md:hover:shadow-float"
                     >
