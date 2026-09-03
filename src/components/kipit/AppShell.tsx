@@ -50,7 +50,7 @@ export function AppShell({
       {navVariant === "orbit" ? (
         /* Orbit dock: deep navy glass bar, active tab orbits into a gold squircle */
         <nav className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden">
-          <ul className="grid grid-cols-5 items-end gap-0.5 rounded-xl bg-brand-gradient px-2 pb-2 pt-2 shadow-float ring-1 ring-white/10">
+          <ul className="grid grid-cols-5 items-end gap-0.5 rounded-xl bg-brand-gradient px-2 pb-1.5 pt-1.5 shadow-float ring-1 ring-white/10">
             {TABS.map((tab) => {
               const active = isActive(tab.to);
               const Icon = tab.icon;
@@ -59,12 +59,12 @@ export function AppShell({
                   <Link
                     to={tab.to}
                     aria-label={tab.label}
-                    className="flex flex-col items-center gap-1 press"
+                    className="flex flex-col items-center gap-0 press"
                   >
                     <span
-                      className={`grid size-9 place-items-center rounded-lg transition-all duration-300 ${
+                      className={`grid size-8 place-items-center rounded-lg transition-all duration-300 ${
                         active
-                          ? "-translate-y-2 bg-gold-gradient text-gold-foreground shadow-float"
+                          ? "-translate-y-1.5 bg-gold-gradient text-gold-foreground shadow-float"
                           : "text-primary-foreground/55"
                       }`}
                     >
@@ -73,7 +73,7 @@ export function AppShell({
                     <span
                       className={`text-[10px] font-bold tracking-tight transition-colors ${
                         active
-                          ? "-mt-1 text-primary-foreground"
+                          ? "-mt-1.5 text-primary-foreground"
                           : "text-primary-foreground/45"
                       }`}
                     >
@@ -89,7 +89,7 @@ export function AppShell({
 
         /* Elevated dock: white card, active tab lifts into a navy squircle */
         <nav className="fixed inset-x-4 bottom-4 z-40 md:hidden">
-          <ul className="grid grid-cols-5 items-end rounded-xl border border-border bg-surface/95 px-2 py-1.5 shadow-float backdrop-blur">
+          <ul className="grid grid-cols-5 items-end rounded-xl border border-border bg-surface/95 px-2 py-1 shadow-float backdrop-blur">
             {TABS.map((tab) => {
               const active = isActive(tab.to);
               const Icon = tab.icon;
@@ -97,18 +97,18 @@ export function AppShell({
                 <li key={tab.to}>
                   <Link
                     to={tab.to}
-                    className="flex flex-col items-center gap-0.5 text-[11px] font-bold text-muted-foreground"
+                    className="flex flex-col items-center gap-0 text-[11px] font-bold text-muted-foreground"
                   >
                     <span
-                      className={`grid size-9 place-items-center rounded-xl transition-all duration-300 ${
+                      className={`grid size-8 place-items-center rounded-xl transition-all duration-300 ${
                         active
-                          ? "-translate-y-1.5 bg-brand-gradient text-primary-foreground shadow-float"
+                          ? "-translate-y-1 bg-brand-gradient text-primary-foreground shadow-float"
                           : ""
                       }`}
                     >
                       <Icon className="size-[18px]" strokeWidth={active ? 2.4 : 1.8} />
                     </span>
-                    <span className={active ? "-mt-0.5 text-brand" : ""}>{tab.label}</span>
+                    <span className={active ? "-mt-1 text-brand" : ""}>{tab.label}</span>
                   </Link>
                 </li>
               );
@@ -118,7 +118,7 @@ export function AppShell({
       ) : navVariant === "aurora" ? (
         /* Aurora dock: dark glass bar, gold indicator rail above the active tab */
         <nav className="fixed inset-x-3 bottom-3 z-40 md:hidden">
-          <ul className="grid grid-cols-5 gap-1 rounded-xl bg-brand-gradient p-1.5 shadow-float">
+          <ul className="grid grid-cols-5 gap-1 rounded-xl bg-brand-gradient p-1 shadow-float">
             {TABS.map((tab) => {
               const active = isActive(tab.to);
               const Icon = tab.icon;
@@ -126,7 +126,7 @@ export function AppShell({
                 <li key={tab.to}>
                   <Link
                     to={tab.to}
-                    className="flex flex-col items-center gap-0.5 rounded-xl py-1.5 text-[11px] font-semibold text-primary-foreground/60"
+                    className="flex flex-col items-center gap-0 rounded-xl py-1 text-[11px] font-semibold text-primary-foreground/60"
                   >
                     <span
                       className={`h-0.5 w-5 rounded-full transition-colors ${
@@ -148,7 +148,7 @@ export function AppShell({
         </nav>
       ) : navVariant === "morph" ? (
         /* Morphing bar: the active tab expands into a navy pill with its label */
-        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur md:hidden">
+        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur md:hidden">
           <ul className="flex items-center justify-between gap-1">
             {TABS.map((tab) => {
               const active = isActive(tab.to);
@@ -158,7 +158,7 @@ export function AppShell({
                   <Link
                     to={tab.to}
                     aria-label={tab.label}
-                    className={`flex items-center justify-center gap-2 rounded-full py-2 text-xs font-semibold transition-all duration-300 ${
+                    className={`flex items-center justify-center gap-1.5 rounded-full py-1.5 text-xs font-semibold transition-all duration-300 ${
                       active
                         ? "bg-brand-gradient px-3 text-primary-foreground shadow-float"
                         : "px-3 text-muted-foreground"
@@ -183,7 +183,7 @@ export function AppShell({
                 <li key={tab.to}>
                   <Link
                     to={tab.to}
-                    className={`flex flex-col items-center gap-0.5 rounded-full py-1.5 text-[10px] font-bold transition-colors ${
+                    className={`flex flex-col items-center gap-0 rounded-full py-1 text-[10px] font-bold transition-colors ${
                       active
                         ? "bg-gold-gradient text-gold-foreground"
                         : "text-muted-foreground"
@@ -207,12 +207,12 @@ export function AppShell({
                 <li key={tab.to}>
                   <Link
                     to={tab.to}
-                    className={`flex flex-col items-center gap-0.5 py-2 text-[11px] font-semibold press ${
+                    className={`flex flex-col items-center gap-0 py-1.5 text-[11px] font-semibold press ${
                       active ? "text-foreground" : "text-muted-foreground"
                     }`}
                   >
                     <span
-                      className={`relative grid size-8 place-items-center rounded-xl transition-colors ${
+                      className={`relative grid size-7 place-items-center rounded-xl transition-colors ${
                         active ? "bg-brand text-brand-foreground" : ""
                       }`}
                     >
