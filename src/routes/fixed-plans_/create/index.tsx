@@ -114,7 +114,7 @@ function CreatePlanAmountScreen() {
 
             {/* Quick amounts */}
             <div className="mt-5 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-              {QUICK.map((q) => (
+              {quickAmounts(MINIMUM).map((q) => (
                 <button
                   key={q}
                   type="button"
