@@ -326,17 +326,18 @@ function CreatePlanTenorScreen() {
             </section>
           )}
 
-          {/* CTA — plan options & review (MOB-070/075) is the next screen */}
+          {/* CTA — plan options (MOB-070) is the next screen */}
           <div className="mt-5">
-            <button
-              type="button"
-              disabled={!valid}
+            <Link
+              to="/fixed-plans/create/options"
+              search={{ amount, days }}
+              aria-disabled={!valid}
               className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
-                valid ? "" : "opacity-40 shadow-none"
+                valid ? "" : "pointer-events-none opacity-40 shadow-none"
               }`}
             >
               Continue
-            </button>
+            </Link>
             <p className="mt-2.5 text-center text-[11.5px] text-muted-foreground md:text-left">
               Next: plan options and a full review before you confirm.
             </p>
