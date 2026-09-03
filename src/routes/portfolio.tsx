@@ -459,7 +459,7 @@ function PortfolioScreen() {
               </span>
             </div>
 
-            <ul className="card-surface divide-y divide-border/60 overflow-hidden md:grid md:grid-cols-2 md:divide-y-0 md:gap-px md:bg-border/60">
+            <ul className="card-surface divide-y divide-border/60 overflow-hidden md:grid md:grid-cols-2 md:divide-y-0 md:gap-px md:bg-border/60 lg:grid-cols-1 lg:gap-0 lg:divide-y">
               {(
                 [
                   {
