@@ -8,7 +8,10 @@ import { naira } from "@/lib/home-data";
 import { TENOR_BANDS } from "@/lib/invest-data";
 
 export const Route = createFileRoute("/fixed-plans_/create/tenor")({
-  validateSearch: z.object({ amount: z.number().catch(0) }),
+  validateSearch: z.object({
+    amount: z.number().catch(0),
+    plan: z.string().optional().catch(undefined),
+  }),
   head: () => ({
     meta: [
       { title: "Choose a Tenor | Kipit" },
@@ -57,8 +60,10 @@ function maturityLabel(days: number) {
 }
 
 function CreatePlanTenorScreen() {
-  const { amount } = Route.useSearch();
-  const [selected, setSelected] = useState<string | null>(null);
+  const { amount, plan } = Route.useSearch();
+  const [selected, setSelected] = useState<string | null>(
+    TENOR_BANDS.some((b) => b.days === plan) ? (plan as string) : null,
+  );
   const [customDays, setCustomDays] = useState("");
 
   const days = useMemo(() => {
@@ -89,6 +94,7 @@ function CreatePlanTenorScreen() {
           <div className="relative md:max-w-3xl">
             <Link
               to="/fixed-plans/create"
+              search={{ plan }}
               className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground press"
             >
               <ArrowLeft className="size-3.5" /> Amount
