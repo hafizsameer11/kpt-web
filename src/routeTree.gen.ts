@@ -21,6 +21,7 @@ import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
 import { Route as FixedPlansCreateRouteImport } from './routes/fixed-plans_.create'
+import { Route as FixedPlansCreateRouteImport } from './routes/fixed-plans_/create'
 import { Route as FixedPlansCreateTenorRouteImport } from './routes/fixed-plans_/create/tenor'
 
 const IndexRoute = IndexRouteImport.update({
@@ -76,6 +77,11 @@ const CallAccountReviewRoute = CallAccountReviewRouteImport.update({
 const CallAccountSuccessRoute = CallAccountSuccessRouteImport.update({
   id: '/call-account_/success',
   path: '/call-account/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FixedPlansCreateRoute = FixedPlansCreateRouteImport.update({
+  id: '/fixed-plans_/create',
+  path: '/fixed-plans/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FixedPlansCreateRoute = FixedPlansCreateRouteImport.update({
@@ -195,6 +201,7 @@ export interface RootRouteChildren {
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
   CallAccountReviewRoute: typeof CallAccountReviewRoute
   CallAccountSuccessRoute: typeof CallAccountSuccessRoute
+  FixedPlansCreateRoute: typeof FixedPlansCreateRoute
   FixedPlansCreateRoute: typeof FixedPlansCreateRouteWithChildren
 }
 
@@ -284,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FixedPlansCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fixed-plans_/create': {
+      id: '/fixed-plans_/create'
+      path: '/fixed-plans/create'
+      fullPath: '/fixed-plans/create'
+      preLoaderRoute: typeof FixedPlansCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/fixed-plans_/create/tenor': {
       id: '/fixed-plans_/create/tenor'
       path: '/tenor'
@@ -317,6 +331,7 @@ const rootRouteChildren: RootRouteChildren = {
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
   CallAccountReviewRoute: CallAccountReviewRoute,
   CallAccountSuccessRoute: CallAccountSuccessRoute,
+  FixedPlansCreateRoute: FixedPlansCreateRoute,
   FixedPlansCreateRoute: FixedPlansCreateRouteWithChildren,
 }
 export const routeTree = rootRouteImport
