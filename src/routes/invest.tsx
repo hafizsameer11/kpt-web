@@ -511,7 +511,7 @@ function DesktopInvest() {
                 Portfolio <ChevronRight className="size-3.5" />
               </Link>
             </div>
-            <table className="mt-4 w-full text-left">
+            <table className="mt-4 w-full table-fixed text-left">
               <thead>
                 <tr className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
                   <th className="pb-2 font-bold">Plan</th>
