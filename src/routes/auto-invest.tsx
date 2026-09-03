@@ -263,13 +263,13 @@ function NewRuleForm({
   onCreate: (rule: AutoInvestRule) => void;
   isMobile: boolean;
 }) {
-  const [destination, setDestination] = useState(AUTO_INVEST_DESTINATIONS[0].name);
+  const [destination, setDestination] = useState(AUTO_INVEST_DESTINATIONS[0]!.name);
   const [frequency, setFrequency] = useState<AutoInvestFrequency>("Monthly");
   const [raw, setRaw] = useState("");
 
   const dest =
     AUTO_INVEST_DESTINATIONS.find((d) => d.name === destination) ??
-    AUTO_INVEST_DESTINATIONS[0];
+    AUTO_INVEST_DESTINATIONS[0]!;
   const amount = Number(raw.replace(/[^0-9]/g, "")) || 0;
   const belowMin = amount > 0 && amount < dest.minimum;
   const valid = amount > 0 && !belowMin;
