@@ -34,7 +34,7 @@ function ReferralsScreen() {
 
   const stats = [
     { label: "Total referrals", value: String(REFERRALS.total) },
-    { label: "Successful", value: String(REFERRALS.successful) },
+    { label: "Successful referrals", value: String(REFERRALS.successful) },
     { label: "Rewards earned", value: naira(REFERRALS.rewards) },
   ];
 
