@@ -304,11 +304,7 @@ function InvestScreen() {
 
 
 
-          <p className="mt-4 flex items-start gap-2 px-1 text-[11px] leading-relaxed text-muted-foreground">
-            <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
-            Rates are indicative per annum and confirmed at the point of investment. Fixed plans are
-            locked for the selected tenor; early liquidation terms apply.
-          </p>
+          <DisclosureStrip variant="fixed" />
         </div>
       </div>
     </AppShell>
