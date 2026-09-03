@@ -190,7 +190,7 @@ function DayDetail({ day, onClose }: { day: number; onClose: () => void }) {
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-sm overflow-hidden rounded-3xl border-0 bg-card p-0 shadow-2xl">
+      <DialogContent className="max-w-sm overflow-hidden rounded-2xl border-0 bg-card p-0 shadow-2xl">
         <DialogTitle className="sr-only">Interest details</DialogTitle>
         <DialogDescription className="sr-only">
           Detailed interest information for {fullDate(day, CALL_ACCRUAL_TREND.length)}
@@ -224,7 +224,7 @@ function CallAccountScreen() {
     <AppShell title="Call Account" navVariant="elevated">
       <div className="pb-2">
         {/* ── Hero ───────────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-[2rem] md:px-8 md:pb-14 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-2xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
@@ -399,11 +399,11 @@ function CallAccountScreen() {
 
 
           {/* Product explanation */}
-          <section className="group relative mt-4 overflow-hidden rounded-[2rem] border border-gold/20 bg-brand p-5 shadow-float md:p-6">
+          <section className="group relative mt-4 overflow-hidden rounded-2xl border border-gold/20 bg-brand p-5 shadow-float md:p-6">
             {/* Outer glow */}
             <span
               aria-hidden
-              className="pointer-events-none absolute -inset-1 rounded-[2.25rem] bg-gradient-to-r from-gold/20 to-gold-foreground/20 opacity-50 blur-xl transition duration-1000 group-hover:opacity-75"
+              className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-gold/20 to-gold-foreground/20 opacity-50 blur-xl transition duration-1000 group-hover:opacity-75"
             />
             {/* Background accents */}
             <span
@@ -467,7 +467,7 @@ function CallAccountScreen() {
           </section>
 
           {/* Wallet + projected earnings — unified card */}
-          <section className="mt-4 overflow-hidden rounded-3xl border border-border bg-card">
+          <section className="mt-4 overflow-hidden rounded-2xl border border-border bg-card">
             {/* Top: wallet available */}
             <div className="p-4 md:p-5">
               <div className="flex items-start gap-3">
@@ -542,7 +542,7 @@ function CallAccountScreen() {
                 View all
               </Link>
             </div>
-            <ul className="overflow-hidden rounded-3xl border border-border/60 bg-card">
+            <ul className="overflow-hidden rounded-2xl border border-border/60 bg-card">
               {CALL_ACTIVITY.map((item, i) => {
                 const credit = item.kind !== "withdrawal";
                 const failed = item.status === "failed";

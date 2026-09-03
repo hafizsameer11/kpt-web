@@ -50,7 +50,7 @@ export function AppShell({
       {navVariant === "orbit" ? (
         /* Orbit dock: deep navy glass bar, active tab orbits into a gold squircle */
         <nav className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden">
-          <ul className="grid grid-cols-5 items-end gap-0.5 rounded-[1.9rem] bg-brand-gradient px-2 pb-2.5 pt-3 shadow-float ring-1 ring-white/10">
+          <ul className="grid grid-cols-5 items-end gap-0.5 rounded-2xl bg-brand-gradient px-2 pb-2.5 pt-3 shadow-float ring-1 ring-white/10">
             {TABS.map((tab) => {
               const active = isActive(tab.to);
               const Icon = tab.icon;
@@ -62,7 +62,7 @@ export function AppShell({
                     className="flex flex-col items-center gap-1.5 press"
                   >
                     <span
-                      className={`grid size-10 place-items-center rounded-[1rem] transition-all duration-300 ${
+                      className={`grid size-10 place-items-center rounded-xl transition-all duration-300 ${
                         active
                           ? "-translate-y-2.5 bg-gold-gradient text-gold-foreground shadow-float"
                           : "text-primary-foreground/55"
@@ -89,7 +89,7 @@ export function AppShell({
 
         /* Elevated dock: white card, active tab lifts into a navy squircle */
         <nav className="fixed inset-x-4 bottom-4 z-40 md:hidden">
-          <ul className="grid grid-cols-5 items-end rounded-[1.6rem] border border-border bg-surface/95 px-2 py-2 shadow-float backdrop-blur">
+          <ul className="grid grid-cols-5 items-end rounded-2xl border border-border bg-surface/95 px-2 py-2 shadow-float backdrop-blur">
             {TABS.map((tab) => {
               const active = isActive(tab.to);
               const Icon = tab.icon;
@@ -118,7 +118,7 @@ export function AppShell({
       ) : navVariant === "aurora" ? (
         /* Aurora dock: dark glass bar, gold indicator rail above the active tab */
         <nav className="fixed inset-x-3 bottom-3 z-40 md:hidden">
-          <ul className="grid grid-cols-5 gap-1 rounded-[1.75rem] bg-brand-gradient p-2 shadow-float">
+          <ul className="grid grid-cols-5 gap-1 rounded-2xl bg-brand-gradient p-2 shadow-float">
             {TABS.map((tab) => {
               const active = isActive(tab.to);
               const Icon = tab.icon;
@@ -126,7 +126,7 @@ export function AppShell({
                 <li key={tab.to}>
                   <Link
                     to={tab.to}
-                    className="flex flex-col items-center gap-1 rounded-3xl py-2 text-[11px] font-semibold text-primary-foreground/60"
+                    className="flex flex-col items-center gap-1 rounded-2xl py-2 text-[11px] font-semibold text-primary-foreground/60"
                   >
                     <span
                       className={`h-0.5 w-6 rounded-full transition-colors ${
