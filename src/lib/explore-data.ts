@@ -11,9 +11,9 @@ export type ExploreCategory = {
 };
 
 export const EXPLORE_CATEGORIES: ExploreCategory[] = [
-  { id: "tbills", name: "Treasury Bills", short: "T-Bills", count: 6 },
-  { id: "cp", name: "Commercial Papers", short: "Commercial", count: 4 },
-  { id: "notes", name: "Private & Structured Notes", short: "Notes", count: 3 },
+  { id: "tbills", name: "Treasury Bills", short: "T-Bills", count: 4 },
+  { id: "cp", name: "Commercial Papers", short: "Commercial", count: 3 },
+  { id: "notes", name: "Private & Structured Notes", short: "Notes", count: 2 },
   { id: "portfolios", name: "Managed Portfolios", short: "Portfolios", count: 2 },
 ];
 
