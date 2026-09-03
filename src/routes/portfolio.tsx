@@ -22,6 +22,7 @@ import {
   PORTFOLIO_MONTH_CHANGE_PCT,
   PORTFOLIO_TOTAL,
   UPCOMING_MATURITIES,
+  WALLET_TOTAL,
   naira,
   pctOf,
 } from "@/lib/portfolio-data";
@@ -196,7 +197,7 @@ function PortfolioScreen() {
                     Invested
                   </p>
                   <p className="text-sm font-extrabold text-num">
-                    {pctOf(PORTFOLIO_TOTAL - ALLOCATION[3].value)}%
+                    {pctOf(PORTFOLIO_TOTAL - WALLET_TOTAL)}%
                   </p>
                 </div>
               </div>
@@ -400,7 +401,7 @@ function PortfolioScreen() {
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-[13px] font-bold">
-                {mask(ALLOCATION[3].value)} sitting in your wallet
+                {mask(WALLET_TOTAL)} sitting in your wallet
               </p>
               <p className="text-[11px] text-muted-foreground">
                 Move it to the Call Account and start earning {CALL_ACCOUNT.rate}.
