@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowUpRight, Clock3 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { Rise } from "@/components/kipit/motion";
-import { feedArt } from "@/components/kipit/art";
+import { articleArt } from "@/components/kipit/art";
 import { LEARN_ARTICLES, getLearnArticle } from "@/lib/learn-data";
 
 export const Route = createFileRoute("/learn_/$articleId")({
@@ -81,11 +81,11 @@ function ArticleScreen() {
         <Rise>
           <div className="relative -mt-20 overflow-hidden rounded-3xl bg-[#0B1A30] shadow-float md:-mt-28 md:h-80 h-52">
             <img
-              src={feedArt(Math.max(index, 0))}
+              src={articleArt(article.id, Math.max(index, 0))}
               alt=""
               aria-hidden="true"
               loading="lazy"
-              className="absolute inset-0 size-full object-cover opacity-40"
+              className="absolute inset-0 size-full object-cover opacity-80"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0B1A30] via-[#0B1A30]/60 to-transparent" />
             <svg
