@@ -388,7 +388,7 @@ function ProductDetailScreen() {
           <div className="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom)+0.75rem)] z-30 mt-5 md:static md:bottom-auto">
             <Link
               to="/explore/$productId/subscribe"
-              params={{ productId: product.id }}
+              params={{ productId: p.id }}
               aria-disabled={closed || belowMin || overWallet}
 
               className={`flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
