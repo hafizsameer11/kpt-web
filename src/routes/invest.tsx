@@ -126,13 +126,14 @@ function InvestScreen() {
 
             <div className="mb-4 flex items-center justify-between gap-3">
               <h2 className="font-display text-base font-extrabold">Fixed plans</h2>
-              <button
-                type="button"
+              <Link
+                to="/fixed-plans"
                 className="inline-flex shrink-0 items-center gap-0.5 text-xs font-bold text-brand"
               >
-                New plan <ChevronRight className="size-3.5" />
-              </button>
+                All plans <ChevronRight className="size-3.5" />
+              </Link>
             </div>
+
 
             {/* Fixed plans grid */}
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">

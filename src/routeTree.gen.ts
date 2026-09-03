@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CallAccountRouteImport } from './routes/call-account'
 import { Route as ExploreRouteImport } from './routes/explore'
+import { Route as FixedPlansRouteImport } from './routes/fixed-plans'
 import { Route as InvestRouteImport } from './routes/invest'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
@@ -33,6 +34,11 @@ const CallAccountRoute = CallAccountRouteImport.update({
 const ExploreRoute = ExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FixedPlansRoute = FixedPlansRouteImport.update({
+  id: '/fixed-plans',
+  path: '/fixed-plans',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvestRoute = InvestRouteImport.update({
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
+  '/fixed-plans': typeof FixedPlansRoute
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
+  '/fixed-plans': typeof FixedPlansRoute
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/call-account': typeof CallAccountRoute
   '/explore': typeof ExploreRoute
+  '/fixed-plans': typeof FixedPlansRoute
   '/invest': typeof InvestRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/'
     | '/call-account'
     | '/explore'
+    | '/fixed-plans'
     | '/invest'
     | '/notifications'
     | '/portfolio'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/'
     | '/call-account'
     | '/explore'
+    | '/fixed-plans'
     | '/invest'
     | '/notifications'
     | '/portfolio'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/call-account'
     | '/explore'
+    | '/fixed-plans'
     | '/invest'
     | '/notifications'
     | '/portfolio'
@@ -151,6 +163,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CallAccountRoute: typeof CallAccountRoute
   ExploreRoute: typeof ExploreRoute
+  FixedPlansRoute: typeof FixedPlansRoute
   InvestRoute: typeof InvestRoute
   NotificationsRoute: typeof NotificationsRoute
   PortfolioRoute: typeof PortfolioRoute
@@ -181,6 +194,13 @@ declare module '@tanstack/react-router' {
       path: '/explore'
       fullPath: '/explore'
       preLoaderRoute: typeof ExploreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fixed-plans': {
+      id: '/fixed-plans'
+      path: '/fixed-plans'
+      fullPath: '/fixed-plans'
+      preLoaderRoute: typeof FixedPlansRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/invest': {
@@ -239,6 +259,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CallAccountRoute: CallAccountRoute,
   ExploreRoute: ExploreRoute,
+  FixedPlansRoute: FixedPlansRoute,
   InvestRoute: InvestRoute,
   NotificationsRoute: NotificationsRoute,
   PortfolioRoute: PortfolioRoute,
