@@ -200,11 +200,15 @@ function CreatePlanAmountScreen() {
                 {naira(bestYearly)}
               </p>
               <p className="mt-1 text-[12px] text-muted-foreground">
-                per year at our best rate of {BEST_RATE}% p.a.
+                {band
+                  ? `per year on ${band.name} at ${BEST_RATE}% p.a.`
+                  : `per year at our best rate of ${BEST_RATE}% p.a.`}
               </p>
               <p className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
                 <Info className="size-3.5 shrink-0" />
-                Your exact rate depends on the tenor you choose next.
+                {band
+                  ? `${band.name} is fixed for ${band.days} — confirm it on the next screen.`
+                  : "Your exact rate depends on the tenor you choose next."}
               </p>
             </section>
           </div>
@@ -213,7 +217,7 @@ function CreatePlanAmountScreen() {
           <div className="mt-5">
             <Link
               to="/fixed-plans/create/tenor"
-              search={{ amount }}
+              search={{ amount, plan }}
               aria-disabled={!valid}
               className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
                 valid ? "" : "pointer-events-none opacity-40 shadow-none"
