@@ -80,18 +80,21 @@ function ReferralsScreen() {
         </button>
       </section>
 
-      <div className="mt-4 grid grid-cols-3 gap-3">
-        {stats.map((s) => (
-          <div key={s.label} className="card-surface p-3.5 text-center">
-            <p className="font-display text-[17px] font-extrabold tracking-[-0.02em] text-num">
-              {s.value}
-            </p>
-            <p className="mt-1 text-[10.5px] font-semibold leading-tight text-muted-foreground">
-              {s.label}
-            </p>
-          </div>
-        ))}
-      </div>
+      <section className="card-surface mt-4 overflow-hidden p-0">
+        <div className="grid grid-cols-3 divide-x divide-border/70">
+          {stats.map((s) => (
+            <div key={s.label} className="min-w-0 px-3 py-4 text-center">
+              <p className="text-[9.5px] font-bold uppercase tracking-[0.1em] text-muted-foreground/80">
+                {s.label}
+              </p>
+              <p className="mt-1.5 truncate font-display text-[18px] font-extrabold tracking-[-0.03em] text-foreground text-num">
+                {s.value}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
 
       <section className="card-surface mt-4 flex items-start gap-3 p-4">
         <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25">
