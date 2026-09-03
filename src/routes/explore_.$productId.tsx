@@ -416,22 +416,47 @@ function ProductDetailScreen() {
 
           {/* Sticky CTA */}
           <div className="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom)+0.75rem)] z-30 mt-5 md:static md:bottom-auto">
-            <Link
-              to="/explore/$productId/subscribe"
-              params={{ productId: p.id }}
-              search={{ amount }}
-              aria-disabled={closed || belowMin || overWallet}
-
-              className={`flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
-                closed || belowMin || overWallet
-                  ? "pointer-events-none opacity-40 shadow-none"
-                  : ""
-              }`}
-            >
-              {closed ? "Fully subscribed" : `Invest ${naira(amount)}`}
-              {!closed && <ArrowRight className="size-4" strokeWidth={2.6} />}
-            </Link>
+            {closed ? (
+              <Link
+                to="/explore/$productId/unavailable"
+                params={{ productId: p.id }}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-extrabold text-foreground press md:w-auto md:px-10"
+              >
+                Fully subscribed — notify me
+                <ArrowRight className="size-4" strokeWidth={2.6} />
+              </Link>
+            ) : largeTicket ? (
+              <Link
+                to="/explore/$productId/request"
+                params={{ productId: p.id }}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
+              >
+                Request adviser engagement
+                <ArrowRight className="size-4" strokeWidth={2.6} />
+              </Link>
+            ) : (
+              <Link
+                to="/explore/$productId/subscribe"
+                params={{ productId: p.id }}
+                search={{ amount }}
+                aria-disabled={belowMin || overWallet}
+                className={`flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
+                  belowMin || overWallet
+                    ? "pointer-events-none opacity-40 shadow-none"
+                    : ""
+                }`}
+              >
+                {`Invest ${naira(amount)}`}
+                <ArrowRight className="size-4" strokeWidth={2.6} />
+              </Link>
+            )}
+            {largeTicket && !closed && (
+              <p className="mt-2 text-center text-[11px] text-muted-foreground md:text-left">
+                This product is arranged with a licensed adviser.
+              </p>
+            )}
           </div>
+
         </div>
       </div>
     </AppShell>
