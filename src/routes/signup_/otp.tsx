@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AuthShell, OtpInput, PrimaryButton } from "@/components/kipit/AuthShell";
 import { DEMO_OTP, signupDraft } from "@/lib/auth-data";
 
@@ -22,11 +22,6 @@ function SignupOtp() {
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<"idle" | "validating" | "invalid" | "expired">("idle");
   const [seconds, setSeconds] = useState(45);
-  const secondsRef = useRef(seconds);
-
-  useEffect(() => {
-    secondsRef.current = seconds;
-  }, [seconds]);
 
   useEffect(() => {
     if (seconds <= 0) return;
@@ -36,19 +31,19 @@ function SignupOtp() {
 
   const verifyCode = useCallback((value: string) => {
     if (value.length !== 6) return;
-    setStatus("validating");
-    const t = setTimeout(() => {
-      if (value === DEMO_OTP) navigate({ to: "/signup/details" });
-      else if (secondsRef.current <= 0) setStatus("expired");
-      else setStatus("invalid");
-    }, 700);
-    return () => clearTimeout(t);
-  }, [navigate]);
+    if (value === DEMO_OTP) {
+      setStatus("validating");
+      navigate({ to: "/signup/details" });
+      return;
+    }
+    setStatus(seconds <= 0 ? "expired" : "invalid");
+  }, [navigate, seconds]);
 
-  useEffect(() => {
-    if (code.length !== 6) return;
-    return verifyCode(code);
-  }, [code, verifyCode]);
+  const updateCode = (value: string) => {
+    setCode(value);
+    setStatus("idle");
+    if (value.length === 6) verifyCode(value);
+  };
 
   const masked = signupDraft.phone
     ? `${signupDraft.dial} ${signupDraft.phone.replace(/^(\d{3})\d+(\d{2})$/, "$1••••$2")}`
@@ -62,7 +57,7 @@ function SignupOtp() {
       title="Enter your code"
       subtitle={`We sent a six-digit code to ${masked}.`}
     >
-      <OtpInput value={code} onChange={(v) => { setCode(v); setStatus("idle"); }} invalid={status === "invalid" || status === "expired"} />
+      <OtpInput value={code} onChange={updateCode} invalid={status === "invalid" || status === "expired"} />
 
       <p className="mt-4 min-h-5 text-center text-xs">
         {status === "validating" ? (
