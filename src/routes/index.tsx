@@ -228,7 +228,11 @@ function HomeV2Screen() {
 
             <div className="grid gap-3 md:gap-4 lg:grid-cols-3">
               {/* Maturity countdown */}
-              <article className="card-surface p-4 md:p-6 lg:col-span-2">
+              <Link
+                to="/portfolio/$holdingId"
+                params={{ holdingId: "f1" }}
+                className="card-surface block p-4 press md:p-6 lg:col-span-2"
+              >
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
                   <div className="min-w-0">
                     <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
