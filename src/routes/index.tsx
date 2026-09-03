@@ -140,7 +140,7 @@ function HomeV2Screen() {
               </div>
             </header>
 
-            <div className="relative md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] md:items-center md:gap-10">
+            <div className="relative md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] md:items-end md:gap-10">
               <div className="min-w-0">
                 {/* Lens switcher — one balance surface, three views */}
                 <div className="mt-5 inline-flex rounded-full border border-white/15 bg-white/10 p-1 md:mt-0">
