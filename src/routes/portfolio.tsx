@@ -110,123 +110,82 @@ function PortfolioScreen() {
   return (
     <AppShell title="Portfolio" navVariant="elevated">
       <div className="pb-2">
-        {/* ── Hero + upcoming maturities (desktop side-by-side) ── */}
-        <div className="md:mx-auto md:max-w-[1200px] lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-stretch lg:gap-6">
-          <section className="relative -mx-4 flex h-full flex-col overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
-            <span
-              aria-hidden
-              className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
-            />
-            <span
-              aria-hidden
-              className="pointer-events-none absolute -bottom-28 -left-24 size-64 rounded-full bg-white/10 blur-[56px]"
-            />
+        {/* ── Hero ─────────────────────────────────────────────── */}
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-9 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-12 md:shadow-float">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -bottom-28 -left-24 size-64 rounded-full bg-white/10 blur-[56px]"
+          />
 
-            <div className="relative">
-              <div className="k-rise flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary-foreground/60">
-                    Portfolio total
-                  </p>
-                  <h1 className="mt-1 font-display text-[34px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[44px]">
-                    <AmountCounter value={PORTFOLIO_TOTAL} hidden={hidden} mask={mask} />
-                  </h1>
-                </div>
-                <button
-                  type="button"
-                  onClick={toggle}
-                  aria-label={hidden ? "Show balances" : "Hide balances"}
-                  className="grid size-9 shrink-0 place-items-center rounded-full border border-white/15 bg-white/10 press"
-                >
-                  {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
+          <div className="relative md:max-w-3xl">
+            <div className="k-rise flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary-foreground/60">
+                  Portfolio total
+                </p>
+                <h1 className="mt-1 font-display text-[34px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[44px]">
+                  <AmountCounter value={PORTFOLIO_TOTAL} hidden={hidden} mask={mask} />
+                </h1>
               </div>
-
-              <div
-                className="k-rise mt-3 flex flex-wrap items-center gap-2"
-                style={{ ["--d" as string]: "60ms" }}
+              <button
+                type="button"
+                onClick={toggle}
+                aria-label={hidden ? "Show balances" : "Hide balances"}
+                className="grid size-9 shrink-0 place-items-center rounded-full border border-white/15 bg-white/10 press"
               >
-                <span className="inline-flex items-center gap-1 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
-                  <ArrowUpRight className="size-3.5" strokeWidth={2.6} />
-                  {mask(PORTFOLIO_MONTH_CHANGE)} · {PORTFOLIO_MONTH_CHANGE_PCT}%
-                </span>
-                <span className="text-[11px] text-primary-foreground/60">past 30 days</span>
-              </div>
-
-              <div
-                className="k-rise mt-6 flex items-stretch gap-4 rounded-xl border border-white/12 bg-white/8 p-4 backdrop-blur-md"
-                style={{ ["--d" as string]: "120ms" }}
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="text-[11px] uppercase tracking-[0.08em] text-primary-foreground/55">
-                    Interest earned
-                  </p>
-                  <p className="mt-1 text-[17px] font-extrabold text-num text-gold">
-                    <AmountCounter value={INTEREST_EARNED_YTD} hidden={hidden} mask={mask} />
-                  </p>
-                </div>
-                <span aria-hidden className="w-px bg-white/12" />
-                <div className="min-w-0 flex-1">
-                  <p className="text-[11px] uppercase tracking-[0.08em] text-primary-foreground/55">
-                    Next maturity
-                  </p>
-                  <p className="mt-1 truncate text-[17px] font-extrabold">
-                    {next ? `${next.daysLeft} days` : "—"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Upcoming maturities — desktop beside total */}
-          <section className="hidden h-full flex-col lg:flex">
-            <div className="mb-3 flex items-center justify-between px-1">
-              <h2 className="font-display text-base font-extrabold">Upcoming maturities</h2>
-              <Link
-                to="/portfolio/maturities"
-                className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand"
-              >
-                <CalendarClock className="size-3.5" /> Calendar
-                <ChevronRight className="size-3.5" />
-              </Link>
+                {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              </button>
             </div>
 
-            <ul className="card-surface flex flex-1 flex-col divide-y divide-border/60 overflow-hidden">
-              {UPCOMING_MATURITIES.slice(0, 4).map((m, i) => (
-                <li
-                  key={`top-${m.name}-${m.date}`}
-                  style={{ ["--d" as string]: `${i * 60}ms` }}
-                  className="k-rise flex flex-1 items-center gap-3 px-4 py-3.5"
-                >
-                  <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-extrabold text-brand text-num">
-                    {m.daysLeft}d
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-bold">{m.name}</p>
-                    <p className="text-[11px] text-muted-foreground">
-                      {m.kind} · {m.date}
-                    </p>
-                  </div>
-                  <p className="shrink-0 text-[13px] font-extrabold text-num">{mask(m.amount)}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        </div>
+            <div
+              className="k-rise mt-3 flex flex-wrap items-center gap-2"
+              style={{ ["--d" as string]: "60ms" }}
+            >
+              <span className="inline-flex items-center gap-1 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
+                <ArrowUpRight className="size-3.5" strokeWidth={2.6} />
+                {mask(PORTFOLIO_MONTH_CHANGE)} · {PORTFOLIO_MONTH_CHANGE_PCT}%
+              </span>
+              <span className="text-[11px] text-primary-foreground/60">past 30 days</span>
+            </div>
 
+            <div
+              className="k-rise mt-6 flex items-stretch gap-4 rounded-xl border border-white/12 bg-white/8 p-4 backdrop-blur-md"
+              style={{ ["--d" as string]: "120ms" }}
+            >
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] uppercase tracking-[0.08em] text-primary-foreground/55">
+                  Interest earned
+                </p>
+                <p className="mt-1 text-[17px] font-extrabold text-num text-gold">
+                  <AmountCounter value={INTEREST_EARNED_YTD} hidden={hidden} mask={mask} />
+                </p>
+              </div>
+              <span aria-hidden className="w-px bg-white/12" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] uppercase tracking-[0.08em] text-primary-foreground/55">
+                  Next maturity
+                </p>
+                <p className="mt-1 truncate text-[17px] font-extrabold">
+                  {next ? `${next.daysLeft} days` : "—"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* ── Sheet ────────────────────────────────────────────── */}
-        <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-auto md:mt-6 md:max-w-[1200px] md:rounded-none md:bg-transparent md:px-0 md:pt-0">
+        <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
           <span
             aria-hidden
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          <div className="lg:grid lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:items-start lg:gap-6">
-          <div className="min-w-0">
           {/* Allocation */}
           <section className="k-rise card-surface p-4 md:p-6">
-
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-display text-base font-extrabold">Allocation</h2>
               <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground">
@@ -286,10 +245,9 @@ function PortfolioScreen() {
               </span>
             </div>
 
-            {/* Call account — brand card, matching the Home idle-cash design */}
-            <div className="mb-3 lg:mb-4">
-              <div className="k-rise">
-
+            <ul className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
+              {/* Call account — brand card, matching the Home idle-cash design */}
+              <li className="k-rise md:col-span-2">
                 <section className="relative overflow-hidden rounded-xl bg-brand p-5 text-brand-foreground shadow-card md:p-6">
                   <span
                     aria-hidden
@@ -341,12 +299,10 @@ function PortfolioScreen() {
                     </div>
                   </div>
                 </section>
-              </div>
-            </div>
+              </li>
 
-            <ul className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0 lg:hidden">
+
               {/* Fixed plans */}
-
               {HOLDINGS.map((h, i) => {
                 const progress = Math.min(
                   100,
@@ -449,91 +405,10 @@ function PortfolioScreen() {
                 );
               })}
             </ul>
-
-            {/* Desktop: dense table view */}
-            <div className="hidden overflow-hidden card-surface lg:block">
-              <div className="grid grid-cols-[minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)_1.25rem] items-center gap-4 border-b border-border/60 bg-secondary/40 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                <span>Holding</span>
-                <span className="text-right">Amount</span>
-                <span>Progress</span>
-                <span className="text-right">Payout</span>
-                <span />
-              </div>
-              <ul className="divide-y divide-border/60">
-                {[
-                  ...HOLDINGS.map((h, i) => ({
-                    id: `f${i + 1}`,
-                    name: h.name,
-                    sub: `Fixed plan · matures ${h.date}`,
-                    amount: h.amount,
-                    rate: h.rate,
-                    payout: h.expectedPayout,
-                    left: `${h.daysLeft} days left`,
-                    progress: Math.min(
-                      100,
-                      Math.max(6, Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)),
-                    ),
-                    accent: "bg-gold",
-                  })),
-                  ...EXPLORE_HOLDINGS.map((h) => ({
-                    id: `e-${h.id}`,
-                    name: h.name,
-                    sub: `${h.issuer} · matures ${h.date}`,
-                    amount: h.amount,
-                    rate: h.rate,
-                    payout: h.expectedPayout,
-                    left: `${h.daysLeft} days left`,
-                    progress: Math.min(
-                      100,
-                      Math.max(6, Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)),
-                    ),
-                    accent: "bg-brand/60",
-                  })),
-                ].map((row, i) => (
-                  <li key={row.id} style={{ ["--d" as string]: `${i * 50}ms` }} className="k-rise">
-                    <Link
-                      to="/portfolio/$holdingId"
-                      params={{ holdingId: row.id }}
-                      className="group grid grid-cols-[minmax(0,2.4fr)_minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)_1.25rem] items-center gap-4 px-5 py-3.5 transition-colors hover:bg-secondary/50"
-                    >
-                      <div className="min-w-0">
-                        <p className="truncate text-[13.5px] font-bold">{row.name}</p>
-                        <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
-                          {row.sub}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[13.5px] font-extrabold text-num">{mask(row.amount)}</p>
-                        <span className="mt-0.5 inline-flex rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-brand">
-                          {row.rate}
-                        </span>
-                      </div>
-                      <div className="min-w-0">
-                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                          <div
-                            className={`k-fill h-full rounded-full ${row.accent}`}
-                            style={{ width: `${row.progress}%`, ["--d" as string]: "200ms" }}
-                          />
-                        </div>
-                        <p className="mt-1.5 text-[11px] text-muted-foreground">{row.left}</p>
-                      </div>
-                      <p className="text-right text-[13px] font-extrabold text-num">
-                        {mask(row.payout)}
-                      </p>
-                      <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-brand" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </section>
 
-          </div>
-
-          <aside className="min-w-0 lg:sticky lg:top-6">
           {/* Upcoming maturities */}
-          <section className="mt-7 lg:mt-0 lg:hidden">
-
+          <section className="mt-7">
             <div className="mb-3 flex items-center justify-between px-1">
               <h2 className="font-display text-base font-extrabold">Upcoming maturities</h2>
               <Link
@@ -578,7 +453,7 @@ function PortfolioScreen() {
               </span>
             </div>
 
-            <ul className="card-surface divide-y divide-border/60 overflow-hidden md:grid md:grid-cols-2 md:divide-y-0 md:gap-px md:bg-border/60 lg:grid-cols-1 lg:gap-0 lg:divide-y">
+            <ul className="card-surface divide-y divide-border/60 overflow-hidden md:grid md:grid-cols-2 md:divide-y-0 md:gap-px md:bg-border/60">
               {(
                 [
                   {
@@ -644,11 +519,9 @@ function PortfolioScreen() {
               ))}
             </ul>
           </section>
-          </aside>
-          </div>
+
 
           <DisclosureStrip variant="marketplace" />
-
         </div>
       </div>
     </AppShell>
