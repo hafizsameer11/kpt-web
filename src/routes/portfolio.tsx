@@ -286,9 +286,10 @@ function PortfolioScreen() {
               </span>
             </div>
 
-            <ul className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
-              {/* Call account — brand card, matching the Home idle-cash design */}
-              <li className="k-rise md:col-span-2">
+            {/* Call account — brand card, matching the Home idle-cash design */}
+            <div className="mb-3 lg:mb-4">
+              <div className="k-rise">
+
                 <section className="relative overflow-hidden rounded-xl bg-brand p-5 text-brand-foreground shadow-card md:p-6">
                   <span
                     aria-hidden
