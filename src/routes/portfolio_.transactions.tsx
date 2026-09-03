@@ -6,10 +6,11 @@ import {
   Check,
   ChevronRight,
   Filter,
+  Search,
   SlidersHorizontal,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
@@ -79,17 +80,35 @@ function TransactionHistoryScreen() {
   const [type, setType] = useState<TxnType | "All">("All");
   const [status, setStatus] = useState<TxnStatus | "All">("All");
   const [period, setPeriod] = useState<(typeof PERIODS)[number]>("All time");
+  const [query, setQuery] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const list = TRANSACTIONS.filter((t) => {
-    if (type !== "All" && t.type !== type) return false;
-    if (status !== "All" && t.status !== status) return false;
-    if (period !== "All time") {
-      const days = period === "Last 30 days" ? 30 : 90;
-      if (NOW - parse(t.date) > days * 864e5) return false;
-    }
-    return true;
-  });
+  const list = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return TRANSACTIONS.filter((t) => {
+      if (type !== "All" && t.type !== type) return false;
+      if (status !== "All" && t.status !== status) return false;
+      if (period !== "All time") {
+        const days = period === "Last 30 days" ? 30 : 90;
+        if (NOW - parse(t.date) > days * 864e5) return false;
+      }
+      if (q) {
+        const haystack = [
+          t.label,
+          t.reference,
+          t.source,
+          t.destination,
+          t.related?.name,
+          t.note,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [type, status, period, query]);
 
   const inflow = list
     .filter((t) => t.direction === "in" && t.status !== "Failed")
@@ -166,7 +185,27 @@ function TransactionHistoryScreen() {
             </button>
           </div>
 
-
+          {/* Search */}
+          <div className="mt-3 flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 shadow-sm">
+            <Search className="size-4 shrink-0 text-muted-foreground" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search label, reference, source..."
+              className="min-w-0 flex-1 bg-transparent text-[13px] font-bold placeholder:text-muted-foreground/70 focus:outline-none"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+                className="grid size-6 shrink-0 place-items-center rounded-full bg-secondary text-muted-foreground"
+              >
+                <X className="size-3" />
+              </button>
+            )}
+          </div>
 
           {/* List */}
           <ul className="mt-4 card-surface divide-y divide-border/60 overflow-hidden">
@@ -235,6 +274,8 @@ function TransactionHistoryScreen() {
         setStatus={setStatus}
         period={period}
         setPeriod={setPeriod}
+        query={query}
+        setQuery={setQuery}
         results={list.length}
       />
     </AppShell>
@@ -251,6 +292,8 @@ function FilterPanel({
   setStatus,
   period,
   setPeriod,
+  query,
+  setQuery,
   results,
 }: {
   open: boolean;
@@ -262,12 +305,15 @@ function FilterPanel({
   setStatus: (s: TxnStatus | "All") => void;
   period: (typeof PERIODS)[number];
   setPeriod: (p: (typeof PERIODS)[number]) => void;
+  query: string;
+  setQuery: (q: string) => void;
   results: number;
 }) {
   const reset = () => {
     setType("All");
     setStatus("All");
     setPeriod("All time");
+    setQuery("");
   };
 
   const content = (
@@ -285,6 +331,33 @@ function FilterPanel({
       </div>
 
       <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
+        {/* Search */}
+        <div>
+          <p className="mb-2.5 text-[11px] font-extrabold uppercase tracking-wide text-muted-foreground">
+            Search
+          </p>
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5">
+            <Search className="size-4 shrink-0 text-muted-foreground" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Label, reference, source..."
+              className="min-w-0 flex-1 bg-transparent text-[13px] font-bold placeholder:text-muted-foreground/70 focus:outline-none"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+                className="grid size-6 shrink-0 place-items-center rounded-full bg-secondary text-muted-foreground"
+              >
+                <X className="size-3" />
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Type */}
         <div>
           <p className="mb-2.5 text-[11px] font-extrabold uppercase tracking-wide text-muted-foreground">
@@ -392,7 +465,7 @@ function FilterPanel({
       <DrawerContent className="max-h-[92svh] rounded-t-[2rem] bg-card px-0 pb-0 pt-2">
         <DrawerTitle className="sr-only">Filters</DrawerTitle>
         <DrawerDescription className="sr-only">
-          Filter transactions by type, period and status.
+          Filter transactions by search, type, period and status.
         </DrawerDescription>
         {content}
       </DrawerContent>
