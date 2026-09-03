@@ -32,6 +32,7 @@ import { Route as PortfolioMaturitiesRouteImport } from './routes/portfolio_.mat
 import { Route as PortfolioTransactionsRouteImport } from './routes/portfolio_.transactions'
 import { Route as SettingsAddressRouteImport } from './routes/settings_/address'
 import { Route as SettingsProfileRouteImport } from './routes/settings_/profile'
+import { Route as SettingsSecurityRouteImport } from './routes/settings_/security'
 import { Route as WithdrawAccountsRouteImport } from './routes/withdraw_/accounts'
 import { Route as WithdrawAddAccountRouteImport } from './routes/withdraw_/add-account'
 import { Route as WithdrawAmountRouteImport } from './routes/withdraw_/amount'
@@ -170,6 +171,11 @@ const SettingsAddressRoute = SettingsAddressRouteImport.update({
 const SettingsProfileRoute = SettingsProfileRouteImport.update({
   id: '/settings_/profile',
   path: '/settings/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsSecurityRoute = SettingsSecurityRouteImport.update({
+  id: '/settings_/security',
+  path: '/settings/security',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WithdrawAccountsRoute = WithdrawAccountsRouteImport.update({
@@ -324,6 +330,7 @@ export interface FileRoutesByFullPath {
   '/portfolio/transactions': typeof PortfolioTransactionsRoute
   '/settings/address': typeof SettingsAddressRoute
   '/settings/profile': typeof SettingsProfileRoute
+  '/settings/security': typeof SettingsSecurityRoute
   '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/add-account': typeof WithdrawAddAccountRoute
   '/withdraw/amount': typeof WithdrawAmountRoute
@@ -372,6 +379,7 @@ export interface FileRoutesByTo {
   '/portfolio/transactions': typeof PortfolioTransactionsRoute
   '/settings/address': typeof SettingsAddressRoute
   '/settings/profile': typeof SettingsProfileRoute
+  '/settings/security': typeof SettingsSecurityRoute
   '/withdraw/accounts': typeof WithdrawAccountsRoute
   '/withdraw/add-account': typeof WithdrawAddAccountRoute
   '/withdraw/amount': typeof WithdrawAmountRoute
@@ -422,6 +430,7 @@ export interface FileRoutesById {
   '/portfolio_/transactions': typeof PortfolioTransactionsRoute
   '/settings_/address': typeof SettingsAddressRoute
   '/settings_/profile': typeof SettingsProfileRoute
+  '/settings_/security': typeof SettingsSecurityRoute
   '/withdraw_/accounts': typeof WithdrawAccountsRoute
   '/withdraw_/add-account': typeof WithdrawAddAccountRoute
   '/withdraw_/amount': typeof WithdrawAmountRoute
@@ -473,6 +482,7 @@ export interface FileRouteTypes {
     | '/portfolio/transactions'
     | '/settings/address'
     | '/settings/profile'
+    | '/settings/security'
     | '/withdraw/accounts'
     | '/withdraw/add-account'
     | '/withdraw/amount'
@@ -521,6 +531,7 @@ export interface FileRouteTypes {
     | '/portfolio/transactions'
     | '/settings/address'
     | '/settings/profile'
+    | '/settings/security'
     | '/withdraw/accounts'
     | '/withdraw/add-account'
     | '/withdraw/amount'
@@ -570,6 +581,7 @@ export interface FileRouteTypes {
     | '/portfolio_/transactions'
     | '/settings_/address'
     | '/settings_/profile'
+    | '/settings_/security'
     | '/withdraw_/accounts'
     | '/withdraw_/add-account'
     | '/withdraw_/amount'
@@ -620,6 +632,7 @@ export interface RootRouteChildren {
   PortfolioTransactionsRoute: typeof PortfolioTransactionsRoute
   SettingsAddressRoute: typeof SettingsAddressRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
+  SettingsSecurityRoute: typeof SettingsSecurityRoute
   WithdrawAccountsRoute: typeof WithdrawAccountsRoute
   WithdrawAddAccountRoute: typeof WithdrawAddAccountRoute
   WithdrawAmountRoute: typeof WithdrawAmountRoute
@@ -801,6 +814,13 @@ declare module '@tanstack/react-router' {
       path: '/settings/profile'
       fullPath: '/settings/profile'
       preLoaderRoute: typeof SettingsProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/security': {
+      id: '/settings_/security'
+      path: '/settings/security'
+      fullPath: '/settings/security'
+      preLoaderRoute: typeof SettingsSecurityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/withdraw_/accounts': {
@@ -1019,6 +1039,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioTransactionsRoute: PortfolioTransactionsRoute,
   SettingsAddressRoute: SettingsAddressRoute,
   SettingsProfileRoute: SettingsProfileRoute,
+  SettingsSecurityRoute: SettingsSecurityRoute,
   WithdrawAccountsRoute: WithdrawAccountsRoute,
   WithdrawAddAccountRoute: WithdrawAddAccountRoute,
   WithdrawAmountRoute: WithdrawAmountRoute,
