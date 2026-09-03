@@ -366,7 +366,7 @@ function ProductDetailScreen() {
           <DisclosureStrip variant="marketplace" />
 
           {/* Sticky CTA */}
-          <div className="sticky bottom-[5.5rem] z-30 mt-5 md:static md:bottom-auto">
+          <div className="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom)+0.75rem)] z-30 mt-5 md:static md:bottom-auto">
             <Link
               to="/fixed-plans/create"
               aria-disabled={closed || belowMin || overWallet}
