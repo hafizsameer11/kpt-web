@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import {
   ArrowLeft,
   ArrowRight,
-  ChevronRight,
+  Download,
   Clock3,
   FileText,
   Info,
@@ -331,12 +331,12 @@ function ProductDetailScreen() {
                         {d.meta}
                       </span>
                     </span>
-                    <ChevronRight className="size-5 shrink-0 text-gold transition-transform duration-300 group-hover:translate-x-1" />
+                    <Download className="size-5 shrink-0 text-gold transition-transform duration-300 group-hover:translate-y-0.5" />
                   </button>
                 ))}
               </div>
               <p className="mt-4 text-center text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                Tap to preview or download
+                Tap to download PDF
               </p>
             </section>
           </Rise>
