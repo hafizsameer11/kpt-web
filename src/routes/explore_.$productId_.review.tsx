@@ -87,6 +87,8 @@ function SubscriptionReviewScreen() {
   const [error, setError] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const termsVersion = productTermsVersion(product.id);
 
   const ratePct = Number(product.rate.match(/[\d.]+/)?.[0]) || 0;
   const days = Number(product.tenor.match(/\d+/)?.[0]) || 365;
