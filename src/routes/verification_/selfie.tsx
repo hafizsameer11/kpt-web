@@ -44,6 +44,32 @@ function SelfieCapture() {
           ? "Looks good — your photo passed the liveness check."
           : "Hold still while we scan. Keep your face inside the circle."
       }
+      aside={
+        <>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">A good selfie</p>
+            <ul className="mt-2 space-y-2">
+              {[
+                "Face fully inside the frame, eyes open.",
+                "Even lighting with no strong shadows.",
+                "Plain background and a steady hand.",
+              ].map((t) => (
+                <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </section>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">What we compare</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+              Your selfie is matched against the photo on your NIN record. A clear image means a
+              faster approval.
+            </p>
+          </section>
+        </>
+      }
       step={2}
       totalSteps={4}
     >

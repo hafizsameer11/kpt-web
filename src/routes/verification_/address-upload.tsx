@@ -36,6 +36,32 @@ function AddressUpload() {
       eyebrow="Tier 2"
       title="Upload proof of address"
       subtitle="The document must show your full name and the address you entered, dated within the last 3 months."
+      aside={
+        <>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Document checklist</p>
+            <ul className="mt-2 space-y-2">
+              {[
+                "Issued within the last 3 months.",
+                "Shows your full name and address.",
+                "All four corners visible, no glare.",
+              ].map((t) => (
+                <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </section>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Review time</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+              Uploads are usually reviewed within one business day. We'll notify you as soon as the
+              result is in.
+            </p>
+          </section>
+        </>
+      }
       step={3}
       totalSteps={4}
     >
