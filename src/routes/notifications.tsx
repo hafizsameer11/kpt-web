@@ -11,6 +11,7 @@ import {
   XCircle,
   type LucideIcon,
 } from "lucide-react";
+import { useState } from "react";
 import { DashboardSidebar, DashboardTopBar } from "@/components/kipit/DashboardSidebar";
 
 export const Route = createFileRoute("/notifications")({
@@ -128,13 +129,54 @@ const TONES: Record<Item["tone"], string> = {
   danger: "bg-destructive/10 text-destructive",
 };
 
+function NotificationCard({ item, readAll }: { item: Item; readAll: boolean }) {
+  const Icon = item.icon;
+  const unread = item.unread && !readAll;
+  return (
+    <Link
+      to={item.to}
+      className={`flex items-start gap-4 rounded-xl border p-4 shadow-card transition-colors hover:border-gold/50 md:items-center ${
+        unread ? "border-gold/40 bg-accent/40" : "border-border bg-surface"
+      }`}
+    >
+      <span
+        className={`grid size-11 shrink-0 place-items-center rounded-xl ${TONES[item.tone]}`}
+      >
+        <Icon className="size-5" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-2">
+          <span className="truncate text-sm font-bold">{item.title}</span>
+          {unread && (
+            <span className="k-glow size-2 shrink-0 rounded-full bg-gold" />
+          )}
+        </span>
+        <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
+          {item.body}
+        </span>
+        <span className="mt-1 block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground md:hidden">
+          {item.time}
+        </span>
+      </span>
+      <span className="hidden shrink-0 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground md:block">
+        {item.time}
+      </span>
+    </Link>
+  );
+}
+
 function NotificationsScreen() {
+  const [readAll, setReadAll] = useState(false);
+  const unreadCount = readAll ? 0 : ITEMS.filter((i) => i.unread).length;
+  const today = ITEMS.filter((i) => i.time.startsWith("Today"));
+  const earlier = ITEMS.filter((i) => !i.time.startsWith("Today"));
+
   return (
     <div className="min-h-screen bg-background">
       <DashboardSidebar />
-      <div className="md:pl-64">
+      <div className="md:pl-[17rem]">
         <DashboardTopBar title="Notifications" />
-        <main className="mx-auto w-full max-w-2xl px-4 pb-24 pt-5 md:max-w-3xl md:px-8 md:pb-16">
+        <main className="mx-auto w-full max-w-2xl px-4 pb-24 pt-5 md:max-w-5xl md:px-10 md:pt-8 md:pb-16">
           <div className="flex items-center justify-between md:hidden">
             <h1 className="flex items-center gap-2 text-xl font-extrabold tracking-tight">
               <Bell className="size-5 text-gold" /> Notifications
@@ -144,45 +186,71 @@ function NotificationsScreen() {
             </Link>
           </div>
 
-          <ul className="mt-4 space-y-2 md:mt-0">
-            {ITEMS.map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <li
+          {/* ── Mobile list ─────────────────────────────────── */}
+          <ul className="mt-4 space-y-2 md:hidden">
+            {ITEMS.map((item, i) => (
+              <li
                 key={item.title + item.time}
                 className="k-rise"
                 style={{ ["--d" as string]: `${i * 60}ms` }}
               >
-                  <Link
-                    to={item.to}
-                    className={`flex items-start gap-4 rounded-xl border p-4 shadow-card transition-colors hover:border-gold/50 ${
-                      item.unread ? "border-gold/40 bg-accent/40" : "border-border bg-surface"
-                    }`}
-                  >
-                    <span
-                      className={`grid size-11 shrink-0 place-items-center rounded-xl ${TONES[item.tone]}`}
-                    >
-                      <Icon className="size-5" />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-2">
-                        <span className="truncate text-sm font-bold">{item.title}</span>
-                        {item.unread && (
-                          <span className="k-glow size-2 shrink-0 rounded-full bg-gold" />
-                        )}
-                      </span>
-                      <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
-                        {item.body}
-                      </span>
-                      <span className="mt-1 block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                        {item.time}
-                      </span>
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
+                <NotificationCard item={item} readAll={readAll} />
+              </li>
+            ))}
           </ul>
+
+          {/* ── Desktop grouped layout ──────────────────────── */}
+          <div className="hidden md:block">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h1 className="font-display text-[28px] font-extrabold tracking-tight">
+                  Notifications
+                </h1>
+                <p className="mt-1 text-[13px] text-muted-foreground">
+                  {unreadCount > 0
+                    ? `${unreadCount} unread update${unreadCount === 1 ? "" : "s"} on your account`
+                    : "You're all caught up"}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setReadAll(true)}
+                disabled={unreadCount === 0}
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-[12px] font-bold text-foreground press hover:border-gold/50 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <CheckCircle2 className="size-4 text-gold" /> Mark all as read
+              </button>
+            </div>
+
+            {[
+              { label: "Today", items: today },
+              { label: "Earlier", items: earlier },
+            ].map(
+              (group) =>
+                group.items.length > 0 && (
+                  <section key={group.label} className="mt-7">
+                    <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">
+                      {group.label}
+                    </p>
+                    <ul className="mt-3 space-y-2.5">
+                      {group.items.map((item, i) => (
+                        <li
+                          key={item.title + item.time}
+                          className="k-rise"
+                          style={{ ["--d" as string]: `${i * 60}ms` }}
+                        >
+                          <NotificationCard item={item} readAll={readAll} />
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                ),
+            )}
+
+            <p className="mt-8 text-center text-[11.5px] text-muted-foreground">
+              Notifications link through to the related wallet, investment or settings page.
+            </p>
+          </div>
         </main>
       </div>
     </div>
