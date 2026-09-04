@@ -118,6 +118,7 @@ import { Route as SettingsSecurityResetPinRouteImport } from './routes/settings_
 import { Route as SettingsSecuritySessionsRouteImport } from './routes/settings_/security_/sessions'
 import { Route as SettingsStatementsGeneratedRouteImport } from './routes/settings_/statements_/generated'
 import { Route as AdminUsersUserIdIndexRouteImport } from './routes/admin_.users_.$userId.index'
+import { Route as AdminUsersUserIdAuditRouteImport } from './routes/admin_.users_.$userId.audit'
 import { Route as AdminUsersUserIdBalancesRouteImport } from './routes/admin_.users_.$userId.balances'
 import { Route as AdminUsersUserIdInvestmentsRouteImport } from './routes/admin_.users_.$userId.investments'
 import { Route as AdminUsersUserIdKycRouteImport } from './routes/admin_.users_.$userId.kyc'
@@ -686,6 +687,11 @@ const AdminUsersUserIdIndexRoute = AdminUsersUserIdIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminUsersUserIdRoute,
 } as any)
+const AdminUsersUserIdAuditRoute = AdminUsersUserIdAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AdminUsersUserIdRoute,
+} as any)
 const AdminUsersUserIdBalancesRoute =
   AdminUsersUserIdBalancesRouteImport.update({
     id: '/balances',
@@ -836,6 +842,7 @@ export interface FileRoutesByFullPath {
   '/settings/security/sessions': typeof SettingsSecuritySessionsRoute
   '/settings/statements/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans/create/': typeof FixedPlansCreateIndexRoute
+  '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
   '/admin/users/$userId/kyc': typeof AdminUsersUserIdKycRoute
@@ -952,6 +959,7 @@ export interface FileRoutesByTo {
   '/settings/security/sessions': typeof SettingsSecuritySessionsRoute
   '/settings/statements/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans/create': typeof FixedPlansCreateIndexRoute
+  '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
   '/admin/users/$userId/kyc': typeof AdminUsersUserIdKycRoute
@@ -1071,6 +1079,7 @@ export interface FileRoutesById {
   '/settings_/security_/sessions': typeof SettingsSecuritySessionsRoute
   '/settings_/statements_/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans_/create/': typeof FixedPlansCreateIndexRoute
+  '/admin_/users_/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin_/users_/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin_/users_/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
   '/admin_/users_/$userId/kyc': typeof AdminUsersUserIdKycRoute
@@ -1191,6 +1200,7 @@ export interface FileRouteTypes {
     | '/settings/security/sessions'
     | '/settings/statements/generated'
     | '/fixed-plans/create/'
+    | '/admin/users/$userId/audit'
     | '/admin/users/$userId/balances'
     | '/admin/users/$userId/investments'
     | '/admin/users/$userId/kyc'
@@ -1307,6 +1317,7 @@ export interface FileRouteTypes {
     | '/settings/security/sessions'
     | '/settings/statements/generated'
     | '/fixed-plans/create'
+    | '/admin/users/$userId/audit'
     | '/admin/users/$userId/balances'
     | '/admin/users/$userId/investments'
     | '/admin/users/$userId/kyc'
@@ -1425,6 +1436,7 @@ export interface FileRouteTypes {
     | '/settings_/security_/sessions'
     | '/settings_/statements_/generated'
     | '/fixed-plans_/create/'
+    | '/admin_/users_/$userId/audit'
     | '/admin_/users_/$userId/balances'
     | '/admin_/users_/$userId/investments'
     | '/admin_/users_/$userId/kyc'
@@ -2306,6 +2318,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersUserIdIndexRouteImport
       parentRoute: typeof AdminUsersUserIdRoute
     }
+    '/admin_/users_/$userId/audit': {
+      id: '/admin_/users_/$userId/audit'
+      path: '/audit'
+      fullPath: '/admin/users/$userId/audit'
+      preLoaderRoute: typeof AdminUsersUserIdAuditRouteImport
+      parentRoute: typeof AdminUsersUserIdRoute
+    }
     '/admin_/users_/$userId/balances': {
       id: '/admin_/users_/$userId/balances'
       path: '/balances'
@@ -2380,6 +2399,7 @@ const FixedPlansCreateRouteWithChildren =
   FixedPlansCreateRoute._addFileChildren(FixedPlansCreateRouteChildren)
 
 interface AdminUsersUserIdRouteChildren {
+  AdminUsersUserIdAuditRoute: typeof AdminUsersUserIdAuditRoute
   AdminUsersUserIdBalancesRoute: typeof AdminUsersUserIdBalancesRoute
   AdminUsersUserIdInvestmentsRoute: typeof AdminUsersUserIdInvestmentsRoute
   AdminUsersUserIdKycRoute: typeof AdminUsersUserIdKycRoute
@@ -2390,6 +2410,7 @@ interface AdminUsersUserIdRouteChildren {
 }
 
 const AdminUsersUserIdRouteChildren: AdminUsersUserIdRouteChildren = {
+  AdminUsersUserIdAuditRoute: AdminUsersUserIdAuditRoute,
   AdminUsersUserIdBalancesRoute: AdminUsersUserIdBalancesRoute,
   AdminUsersUserIdInvestmentsRoute: AdminUsersUserIdInvestmentsRoute,
   AdminUsersUserIdKycRoute: AdminUsersUserIdKycRoute,
