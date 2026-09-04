@@ -32,8 +32,19 @@ export function AuthShell({
 
       <div className="relative mx-auto grid min-h-dvh w-full max-w-md lg:max-w-none lg:grid-cols-2 lg:items-stretch lg:gap-0 lg:px-0">
         {/* WEB-001 — desktop brand / illustration panel (split screen, left half) */}
-        <aside className="hidden lg:flex lg:flex-col lg:justify-center lg:gap-8 lg:px-16 lg:py-16">
-          <Logo tone="light" className="text-3xl" />
+        <aside className="relative hidden overflow-hidden lg:flex lg:flex-col lg:justify-center lg:gap-8 lg:px-16 lg:py-16">
+          <img
+            src={authBrandArt}
+            alt=""
+            aria-hidden="true"
+            width={1024}
+            height={1536}
+            className="pointer-events-none absolute inset-0 size-full object-cover opacity-80"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,color-mix(in_oklab,var(--brand)_88%,transparent)_20%,color-mix(in_oklab,var(--brand)_55%,transparent)_100%)]" />
+          <div className="relative">
+            <Logo tone="light" className="text-3xl" />
+          </div>
           <div>
             <p className="inline-flex items-center rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-gold">
               Wealth, simplified
