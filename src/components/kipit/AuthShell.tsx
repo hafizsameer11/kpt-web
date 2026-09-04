@@ -3,6 +3,7 @@ import { ArrowLeft, Delete } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { Logo } from "@/components/kipit/Logo";
+import authBrandArt from "@/assets/auth-brand.jpg";
 
 /**
  * Full-screen navy shell used by every onboarding / auth screen (MOB-001–017).
@@ -32,9 +33,20 @@ export function AuthShell({
 
       <div className="relative mx-auto grid min-h-dvh w-full max-w-md lg:max-w-none lg:grid-cols-2 lg:items-stretch lg:gap-0 lg:px-0">
         {/* WEB-001 — desktop brand / illustration panel (split screen, left half) */}
-        <aside className="hidden lg:flex lg:flex-col lg:justify-center lg:gap-8 lg:px-16 lg:py-16">
-          <Logo tone="light" className="text-3xl" />
-          <div>
+        <aside className="relative hidden overflow-hidden lg:flex lg:flex-col lg:justify-center lg:gap-8 lg:px-16 lg:py-16">
+          <img
+            src={authBrandArt}
+            alt=""
+            aria-hidden="true"
+            width={1024}
+            height={1536}
+            className="pointer-events-none absolute inset-0 size-full object-cover opacity-80"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,color-mix(in_oklab,var(--brand)_88%,transparent)_20%,color-mix(in_oklab,var(--brand)_55%,transparent)_100%)]" />
+          <div className="relative">
+            <Logo tone="light" className="text-3xl" />
+          </div>
+          <div className="relative">
             <p className="inline-flex items-center rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-gold">
               Wealth, simplified
             </p>
@@ -45,7 +57,7 @@ export function AuthShell({
               Save, invest in fixed-return plans, and track everything in one simple account.
             </p>
           </div>
-          <div className="grid max-w-md gap-3">
+          <div className="relative grid max-w-md gap-3">
             {[
               ["Up to 22% p.a.", "Fixed-return plans with clear tenors"],
               ["Daily interest", "Call Account interest accrues every day"],
@@ -60,7 +72,7 @@ export function AuthShell({
               </div>
             ))}
           </div>
-          <p className="max-w-md text-[11.5px] leading-relaxed text-brand-foreground/50">
+          <p className="relative max-w-md text-[11.5px] leading-relaxed text-brand-foreground/50">
             Kipit works with SEC-licensed partners. Returns shown are indicative and subject to
             issuer terms.
           </p>
