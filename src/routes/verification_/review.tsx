@@ -35,7 +35,36 @@ function KycReview() {
       eyebrow="Tier 2"
       title="Review and submit"
       subtitle="Make sure everything is correct — changes after submission need a support request."
+      aside={
+        <>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">What happens next</p>
+            <ol className="mt-2 space-y-2">
+              {[
+                "We verify your identity against NIMC and NIBSS records.",
+                "Your address document is reviewed by our compliance team.",
+                "You'll get a notification once Tier 2 is approved.",
+              ].map((t, i) => (
+                <li key={t} className="flex gap-2.5 text-[12px] leading-relaxed text-muted-foreground">
+                  <span className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full bg-gold/15 text-[10px] font-extrabold text-gold">
+                    {i + 1}
+                  </span>
+                  {t}
+                </li>
+              ))}
+            </ol>
+          </section>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Tier 2 unlocks</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+              Withdrawals to your bank, adding payout accounts and higher transaction limits.
+              Reviews usually complete within one business day.
+            </p>
+          </section>
+        </>
+      }
     >
+
       <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
         <section className="card-surface p-4 md:p-5">
           <div className="flex items-center justify-between gap-3">
