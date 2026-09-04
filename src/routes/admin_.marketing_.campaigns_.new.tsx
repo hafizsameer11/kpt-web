@@ -40,15 +40,15 @@ function CreateCampaignPage() {
   const navigate = useNavigate();
   const [channel, setChannel] = useState<CampaignChannel>("push");
   const [name, setName] = useState("");
-  const [segmentId, setSegmentId] = useState(SEGMENTS[1].id);
+  const [segmentId, setSegmentId] = useState(SEGMENTS[1]?.id ?? "seg-all");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [cta, setCta] = useState("View rates");
-  const [deepLink, setDeepLink] = useState(DEEP_LINKS[0]);
+  const [deepLink, setDeepLink] = useState(DEEP_LINKS[0] ?? "/invest");
   const [touched, setTouched] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const segment = SEGMENTS.find((s) => s.id === segmentId)!;
+  const segment = SEGMENTS.find((s) => s.id === segmentId) ?? SEGMENTS[0]!;
   const valid = name.trim() && title.trim() && content.trim();
 
   return (
@@ -96,7 +96,7 @@ function CreateCampaignPage() {
           </Panel>
 
           <Panel title="Campaign details">
-            <Field label="Campaign name" error={touched && !name.trim() ? "Required" : undefined}>
+            <Field label="Campaign name" error={touched && !name.trim()}>
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -125,7 +125,7 @@ function CreateCampaignPage() {
               </Link>
             </Field>
 
-            <Field label="Title" error={touched && !title.trim() ? "Required" : undefined}>
+            <Field label="Title" error={touched && !title.trim()}>
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -134,7 +134,7 @@ function CreateCampaignPage() {
               />
             </Field>
 
-            <Field label="Content" error={touched && !content.trim() ? "Required" : undefined}>
+            <Field label="Content" error={touched && !content.trim()}>
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
@@ -262,7 +262,7 @@ function Field({
   children,
 }: {
   label: string;
-  error?: string;
+  error?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -272,7 +272,7 @@ function Field({
       </p>
       {children}
       {error ? (
-        <p className="mt-1 text-[11.5px] font-semibold text-destructive">{error}</p>
+        <p className="mt-1 text-[11.5px] font-semibold text-destructive">This field is required.</p>
       ) : null}
     </div>
   );
