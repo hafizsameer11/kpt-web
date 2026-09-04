@@ -9,17 +9,37 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { AdminShell } from "@/components/kipit/AdminShell";
 import {
   ALERTS,
+  FLOW_TREND,
   FUM,
   FUM_BREAKDOWN,
   FUM_CHANGE_PCT,
-  FUM_LABELS,
   FUM_SERIES,
+  FUM_TREND,
   INTEREST_ACCRUED,
   INTEREST_PAYABLE,
+  INTEREST_TREND,
   MATURITIES,
+  MATURITY_SCHEDULE,
+  METRIC_SPARKS,
   PRIMARY_METRICS,
   PRINCIPAL_BY_PRODUCT,
   PRINCIPAL_BY_TENOR,
@@ -28,6 +48,34 @@ import {
   compactNaira,
   naira,
 } from "@/lib/admin-data";
+
+const SLICE_FILLS = ["var(--brand)", "var(--gold)", "var(--chart-4)", "var(--chart-5)"];
+
+const tooltipStyle = {
+  borderRadius: 12,
+  border: "1px solid var(--border)",
+  background: "var(--card)",
+  color: "var(--foreground)",
+  fontSize: 12,
+  fontWeight: 600,
+  boxShadow: "0 12px 30px rgba(15,23,42,0.14)",
+} as const;
+
+const axisTick = { fill: "var(--muted-foreground)", fontSize: 10, fontWeight: 600 } as const;
+
+const LABELS: Record<string, string> = {
+  fixed: "Fixed plans",
+  explore: "Explore products",
+  call: "Call money",
+  wallet: "Wallet balances",
+  deposits: "Deposits",
+  withdrawals: "Withdrawals",
+  accrued: "Accrued",
+  paid: "Paid out",
+};
+
+const labelOf = (key: string) => LABELS[key] ?? key;
+
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
