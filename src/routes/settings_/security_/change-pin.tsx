@@ -146,7 +146,40 @@ function ChangePinScreen() {
             </button>
           </section>
         )}
+        </div>
+
+        <aside className="hidden space-y-4 md:block">
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Choosing a strong PIN</p>
+            <ul className="mt-2 space-y-2">
+              {[
+                "Avoid 1234, 0000 or repeated digits.",
+                "Don't reuse your bank card or phone unlock PIN.",
+                "Never share it — Kipit will never ask for your PIN.",
+              ].map((t) => (
+                <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </section>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Forgot your current PIN?</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+              Reset it with an identity check instead — you'll confirm your date of birth and a
+              one-time code.
+            </p>
+            <Link
+              to="/settings/security/reset-pin"
+              className="mt-3 inline-flex items-center rounded-xl border border-border bg-background px-4 py-2.5 text-[12.5px] font-bold text-foreground press"
+            >
+              Reset PIN
+            </Link>
+          </section>
+        </aside>
       </div>
     </SettingsPage>
+
   );
 }
