@@ -29,7 +29,7 @@ function ProfileScreen() {
       eyebrow="MOB-141"
       subtitle="Your identity on Kipit. Fields confirmed during verification are locked and can only be changed by support."
     >
-      <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+      <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_300px] lg:gap-5">
         <FieldCard label="Identity">
           <Field label="First name" value={PROFILE.firstName} locked />
           <Field label="Middle name" value={PROFILE.middleName} />
@@ -86,6 +86,51 @@ function ProfileScreen() {
             <ShieldCheck className="size-4" /> Manage security settings
           </Link>
         </div>
+
+        {/* Desktop-only status rail */}
+        <aside className="hidden lg:block">
+          <div className="sticky top-6 space-y-4">
+            <section className="card-surface overflow-hidden">
+              <div className="bg-brand-gradient px-5 py-4">
+                <p className="text-[10.5px] font-black uppercase tracking-[0.16em] text-gold">
+                  Account status
+                </p>
+                <p className="mt-1 text-[15px] font-extrabold text-primary-foreground">
+                  Identity verified
+                </p>
+              </div>
+              <ul className="divide-y divide-border">
+                {[
+                  { label: "Legal name", state: "Verified" },
+                  { label: "Date of birth", state: "Verified" },
+                  { label: "Email address", state: "Confirmed" },
+                  { label: "Phone number", state: "Confirmed" },
+                ].map((row) => (
+                  <li key={row.label} className="flex items-center justify-between px-5 py-3">
+                    <span className="text-[12.5px] font-semibold text-foreground">{row.label}</span>
+                    <span className="inline-flex items-center gap-1 text-[11.5px] font-bold text-brand">
+                      <ShieldCheck className="size-3.5" strokeWidth={2.6} /> {row.state}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <section className="card-surface p-5">
+              <p className="text-[12.5px] font-extrabold text-foreground">Need a correction?</p>
+              <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+                Locked fields come from your KYC records. Raise a ticket with a valid
+                government-issued ID and support will update them for you.
+              </p>
+              <Link
+                to="/settings/help/ticket"
+                className="mt-3 inline-flex items-center gap-2 text-[12.5px] font-bold text-brand"
+              >
+                Contact support
+              </Link>
+            </section>
+          </div>
+        </aside>
       </div>
     </SettingsPage>
   );
