@@ -61,6 +61,11 @@ const DOC_BODY: Record<string, string[]> = {
 
 function LegalScreen() {
   const [openDoc, setOpenDoc] = useState<(typeof LEGAL_DOCS)[number] | null>(null);
+  const [accepted, setAccepted] = useState<TermsAcceptance[]>([]);
+
+  useEffect(() => {
+    setAccepted(listTermsAcceptances());
+  }, []);
 
   return (
     <SettingsPage
