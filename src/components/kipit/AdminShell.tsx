@@ -87,7 +87,11 @@ export function AdminShell({
               </p>
               <ul className="space-y-0.5">
                 {group.items.map((item) => {
-                  const active = !item.soon && pathname === item.to;
+                  const active =
+                    !item.soon &&
+                    (pathname === item.to ||
+                      (item.to !== "/admin" && pathname.startsWith(`${item.to}/`)));
+
                   const Icon = item.icon;
                   return (
                     <li key={item.label}>
