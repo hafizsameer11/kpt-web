@@ -25,11 +25,15 @@ export function SettingsPage({
 }: Props) {
   return (
     <AppShell title={title} navVariant="elevated">
-      <div className="pb-2">
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pt-8 md:shadow-float">
+      <div className="pb-2 md:mx-auto md:w-full md:max-w-5xl md:pb-10">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-2xl md:px-9 md:pb-9 md:pt-9 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -bottom-28 -left-20 hidden size-64 rounded-full bg-white/10 blur-[56px] md:block"
           />
           <div className="relative md:max-w-3xl">
             <Link
@@ -45,7 +49,7 @@ export function SettingsPage({
               {title}
             </h1>
             {subtitle ? (
-              <p className="k-rise mt-2 max-w-md text-[12.5px] leading-relaxed text-primary-foreground/70">
+              <p className="k-rise mt-2 max-w-md text-[12.5px] leading-relaxed text-primary-foreground/70 md:max-w-2xl md:text-[13.5px]">
                 {subtitle}
               </p>
             ) : null}
@@ -97,7 +101,7 @@ export function Field({
   hint?: string;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 px-4 py-3.5">
+    <div className="flex items-start justify-between gap-4 px-4 py-3.5 md:px-5 md:py-4">
       <div className="min-w-0">
         <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
           {label}
