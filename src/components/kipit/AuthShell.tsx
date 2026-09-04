@@ -67,7 +67,7 @@ export function AuthShell({
         </aside>
 
         <div className="flex min-h-dvh w-full flex-col px-5 pb-8 pt-6 lg:mx-auto lg:min-h-dvh lg:w-full lg:max-w-none lg:justify-center lg:border-l lg:border-white/10 lg:bg-white/[0.06] lg:px-16 lg:py-16 lg:backdrop-blur-md lg:[&>*]:mx-auto lg:[&>*]:w-full lg:[&>*]:max-w-md">
-          <div className="flex items-center justify-between lg:hidden">
+          <div className={`flex items-center justify-between ${back ? "" : "lg:hidden"}`}>
             {back ? (
               <Link
                 to={back}
