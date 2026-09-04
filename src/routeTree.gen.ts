@@ -111,6 +111,7 @@ import { Route as AdminComplianceQueueRouteImport } from './routes/admin_.compli
 import { Route as AdminComplianceReportingRouteImport } from './routes/admin_.compliance_.reporting'
 import { Route as AdminMarketingAudienceRouteImport } from './routes/admin_.marketing_.audience'
 import { Route as AdminMarketingCampaignsRouteImport } from './routes/admin_.marketing_.campaigns'
+import { Route as AdminMarketingDigestRouteImport } from './routes/admin_.marketing_.digest'
 import { Route as AdminMarketingFeedRouteImport } from './routes/admin_.marketing_.feed'
 import { Route as AdminProductsProductIdRouteImport } from './routes/admin_.products_.$productId'
 import { Route as AdminProductsNewRouteImport } from './routes/admin_.products_.new'
@@ -146,6 +147,7 @@ import { Route as AdminComplianceAmlAlertIdRouteImport } from './routes/admin_.c
 import { Route as AdminComplianceQueueCaseIdRouteImport } from './routes/admin_.compliance_.queue_.$caseId'
 import { Route as AdminMarketingCampaignsCampaignIdRouteImport } from './routes/admin_.marketing_.campaigns_.$campaignId'
 import { Route as AdminMarketingCampaignsNewRouteImport } from './routes/admin_.marketing_.campaigns_.new'
+import { Route as AdminMarketingFeedNewRouteImport } from './routes/admin_.marketing_.feed_.new'
 import { Route as AdminRatesApprovalsRequestIdRouteImport } from './routes/admin_.rates_.approvals_.$requestId'
 import { Route as AdminReconciliationRecordsRecordIdRouteImport } from './routes/admin_.reconciliation_.records_.$recordId'
 import { Route as AdminUsersUserIdIndexRouteImport } from './routes/admin_.users_.$userId.index'
@@ -674,6 +676,11 @@ const AdminMarketingCampaignsRoute = AdminMarketingCampaignsRouteImport.update({
   path: '/admin/marketing/campaigns',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMarketingDigestRoute = AdminMarketingDigestRouteImport.update({
+  id: '/admin_/marketing_/digest',
+  path: '/admin/marketing/digest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminMarketingFeedRoute = AdminMarketingFeedRouteImport.update({
   id: '/admin_/marketing_/feed',
   path: '/admin/marketing/feed',
@@ -867,6 +874,11 @@ const AdminMarketingCampaignsNewRoute =
     path: '/admin/marketing/campaigns/new',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminMarketingFeedNewRoute = AdminMarketingFeedNewRouteImport.update({
+  id: '/admin_/marketing_/feed_/new',
+  path: '/admin/marketing/feed/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRatesApprovalsRequestIdRoute =
   AdminRatesApprovalsRequestIdRouteImport.update({
     id: '/admin_/rates_/approvals_/$requestId',
@@ -1033,6 +1045,7 @@ export interface FileRoutesByFullPath {
   '/admin/compliance/reporting': typeof AdminComplianceReportingRoute
   '/admin/marketing/audience': typeof AdminMarketingAudienceRoute
   '/admin/marketing/campaigns': typeof AdminMarketingCampaignsRoute
+  '/admin/marketing/digest': typeof AdminMarketingDigestRoute
   '/admin/marketing/feed': typeof AdminMarketingFeedRoute
   '/admin/products/$productId': typeof AdminProductsProductIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
@@ -1068,6 +1081,7 @@ export interface FileRoutesByFullPath {
   '/admin/compliance/queue/$caseId': typeof AdminComplianceQueueCaseIdRoute
   '/admin/marketing/campaigns/$campaignId': typeof AdminMarketingCampaignsCampaignIdRoute
   '/admin/marketing/campaigns/new': typeof AdminMarketingCampaignsNewRoute
+  '/admin/marketing/feed/new': typeof AdminMarketingFeedNewRoute
   '/admin/rates/approvals/$requestId': typeof AdminRatesApprovalsRequestIdRoute
   '/admin/reconciliation/records/$recordId': typeof AdminReconciliationRecordsRecordIdRoute
   '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
@@ -1182,6 +1196,7 @@ export interface FileRoutesByTo {
   '/admin/compliance/reporting': typeof AdminComplianceReportingRoute
   '/admin/marketing/audience': typeof AdminMarketingAudienceRoute
   '/admin/marketing/campaigns': typeof AdminMarketingCampaignsRoute
+  '/admin/marketing/digest': typeof AdminMarketingDigestRoute
   '/admin/marketing/feed': typeof AdminMarketingFeedRoute
   '/admin/products/$productId': typeof AdminProductsProductIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
@@ -1216,6 +1231,7 @@ export interface FileRoutesByTo {
   '/admin/compliance/queue/$caseId': typeof AdminComplianceQueueCaseIdRoute
   '/admin/marketing/campaigns/$campaignId': typeof AdminMarketingCampaignsCampaignIdRoute
   '/admin/marketing/campaigns/new': typeof AdminMarketingCampaignsNewRoute
+  '/admin/marketing/feed/new': typeof AdminMarketingFeedNewRoute
   '/admin/rates/approvals/$requestId': typeof AdminRatesApprovalsRequestIdRoute
   '/admin/reconciliation/records/$recordId': typeof AdminReconciliationRecordsRecordIdRoute
   '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
@@ -1332,6 +1348,7 @@ export interface FileRoutesById {
   '/admin_/compliance_/reporting': typeof AdminComplianceReportingRoute
   '/admin_/marketing_/audience': typeof AdminMarketingAudienceRoute
   '/admin_/marketing_/campaigns': typeof AdminMarketingCampaignsRoute
+  '/admin_/marketing_/digest': typeof AdminMarketingDigestRoute
   '/admin_/marketing_/feed': typeof AdminMarketingFeedRoute
   '/admin_/products_/$productId': typeof AdminProductsProductIdRoute
   '/admin_/products_/new': typeof AdminProductsNewRoute
@@ -1367,6 +1384,7 @@ export interface FileRoutesById {
   '/admin_/compliance_/queue_/$caseId': typeof AdminComplianceQueueCaseIdRoute
   '/admin_/marketing_/campaigns_/$campaignId': typeof AdminMarketingCampaignsCampaignIdRoute
   '/admin_/marketing_/campaigns_/new': typeof AdminMarketingCampaignsNewRoute
+  '/admin_/marketing_/feed_/new': typeof AdminMarketingFeedNewRoute
   '/admin_/rates_/approvals_/$requestId': typeof AdminRatesApprovalsRequestIdRoute
   '/admin_/reconciliation_/records_/$recordId': typeof AdminReconciliationRecordsRecordIdRoute
   '/admin_/users_/$userId/audit': typeof AdminUsersUserIdAuditRoute
@@ -1484,6 +1502,7 @@ export interface FileRouteTypes {
     | '/admin/compliance/reporting'
     | '/admin/marketing/audience'
     | '/admin/marketing/campaigns'
+    | '/admin/marketing/digest'
     | '/admin/marketing/feed'
     | '/admin/products/$productId'
     | '/admin/products/new'
@@ -1519,6 +1538,7 @@ export interface FileRouteTypes {
     | '/admin/compliance/queue/$caseId'
     | '/admin/marketing/campaigns/$campaignId'
     | '/admin/marketing/campaigns/new'
+    | '/admin/marketing/feed/new'
     | '/admin/rates/approvals/$requestId'
     | '/admin/reconciliation/records/$recordId'
     | '/admin/users/$userId/audit'
@@ -1633,6 +1653,7 @@ export interface FileRouteTypes {
     | '/admin/compliance/reporting'
     | '/admin/marketing/audience'
     | '/admin/marketing/campaigns'
+    | '/admin/marketing/digest'
     | '/admin/marketing/feed'
     | '/admin/products/$productId'
     | '/admin/products/new'
@@ -1667,6 +1688,7 @@ export interface FileRouteTypes {
     | '/admin/compliance/queue/$caseId'
     | '/admin/marketing/campaigns/$campaignId'
     | '/admin/marketing/campaigns/new'
+    | '/admin/marketing/feed/new'
     | '/admin/rates/approvals/$requestId'
     | '/admin/reconciliation/records/$recordId'
     | '/admin/users/$userId/audit'
@@ -1782,6 +1804,7 @@ export interface FileRouteTypes {
     | '/admin_/compliance_/reporting'
     | '/admin_/marketing_/audience'
     | '/admin_/marketing_/campaigns'
+    | '/admin_/marketing_/digest'
     | '/admin_/marketing_/feed'
     | '/admin_/products_/$productId'
     | '/admin_/products_/new'
@@ -1817,6 +1840,7 @@ export interface FileRouteTypes {
     | '/admin_/compliance_/queue_/$caseId'
     | '/admin_/marketing_/campaigns_/$campaignId'
     | '/admin_/marketing_/campaigns_/new'
+    | '/admin_/marketing_/feed_/new'
     | '/admin_/rates_/approvals_/$requestId'
     | '/admin_/reconciliation_/records_/$recordId'
     | '/admin_/users_/$userId/audit'
@@ -1933,6 +1957,7 @@ export interface RootRouteChildren {
   AdminComplianceReportingRoute: typeof AdminComplianceReportingRoute
   AdminMarketingAudienceRoute: typeof AdminMarketingAudienceRoute
   AdminMarketingCampaignsRoute: typeof AdminMarketingCampaignsRoute
+  AdminMarketingDigestRoute: typeof AdminMarketingDigestRoute
   AdminMarketingFeedRoute: typeof AdminMarketingFeedRoute
   AdminProductsProductIdRoute: typeof AdminProductsProductIdRoute
   AdminProductsNewRoute: typeof AdminProductsNewRoute
@@ -1962,6 +1987,7 @@ export interface RootRouteChildren {
   AdminComplianceQueueCaseIdRoute: typeof AdminComplianceQueueCaseIdRoute
   AdminMarketingCampaignsCampaignIdRoute: typeof AdminMarketingCampaignsCampaignIdRoute
   AdminMarketingCampaignsNewRoute: typeof AdminMarketingCampaignsNewRoute
+  AdminMarketingFeedNewRoute: typeof AdminMarketingFeedNewRoute
   AdminRatesApprovalsRequestIdRoute: typeof AdminRatesApprovalsRequestIdRoute
   AdminReconciliationRecordsRecordIdRoute: typeof AdminReconciliationRecordsRecordIdRoute
   PortfolioTransactionsTxnIdReceiptRoute: typeof PortfolioTransactionsTxnIdReceiptRoute
@@ -2683,6 +2709,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMarketingCampaignsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/marketing_/digest': {
+      id: '/admin_/marketing_/digest'
+      path: '/admin/marketing/digest'
+      fullPath: '/admin/marketing/digest'
+      preLoaderRoute: typeof AdminMarketingDigestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/marketing_/feed': {
       id: '/admin_/marketing_/feed'
       path: '/admin/marketing/feed'
@@ -2928,6 +2961,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMarketingCampaignsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/marketing_/feed_/new': {
+      id: '/admin_/marketing_/feed_/new'
+      path: '/admin/marketing/feed/new'
+      fullPath: '/admin/marketing/feed/new'
+      preLoaderRoute: typeof AdminMarketingFeedNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/rates_/approvals_/$requestId': {
       id: '/admin_/rates_/approvals_/$requestId'
       path: '/admin/rates/approvals/$requestId'
@@ -3157,6 +3197,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminComplianceReportingRoute: AdminComplianceReportingRoute,
   AdminMarketingAudienceRoute: AdminMarketingAudienceRoute,
   AdminMarketingCampaignsRoute: AdminMarketingCampaignsRoute,
+  AdminMarketingDigestRoute: AdminMarketingDigestRoute,
   AdminMarketingFeedRoute: AdminMarketingFeedRoute,
   AdminProductsProductIdRoute: AdminProductsProductIdRoute,
   AdminProductsNewRoute: AdminProductsNewRoute,
@@ -3187,6 +3228,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminMarketingCampaignsCampaignIdRoute:
     AdminMarketingCampaignsCampaignIdRoute,
   AdminMarketingCampaignsNewRoute: AdminMarketingCampaignsNewRoute,
+  AdminMarketingFeedNewRoute: AdminMarketingFeedNewRoute,
   AdminRatesApprovalsRequestIdRoute: AdminRatesApprovalsRequestIdRoute,
   AdminReconciliationRecordsRecordIdRoute:
     AdminReconciliationRecordsRecordIdRoute,
