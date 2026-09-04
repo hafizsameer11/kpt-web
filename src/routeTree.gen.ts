@@ -33,6 +33,7 @@ import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as AdminAccessHelpRouteImport } from './routes/admin_.access-help'
 import { Route as AdminAdjustmentsRouteImport } from './routes/admin_.adjustments'
+import { Route as AdminAiChatRouteImport } from './routes/admin_.ai-chat'
 import { Route as AdminAuditRouteImport } from './routes/admin_.audit'
 import { Route as AdminComplianceRouteImport } from './routes/admin_.compliance'
 import { Route as AdminLockedRouteImport } from './routes/admin_.locked'
@@ -290,6 +291,11 @@ const AdminAccessHelpRoute = AdminAccessHelpRouteImport.update({
 const AdminAdjustmentsRoute = AdminAdjustmentsRouteImport.update({
   id: '/admin_/adjustments',
   path: '/admin/adjustments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAiChatRoute = AdminAiChatRouteImport.update({
+  id: '/admin_/ai-chat',
+  path: '/admin/ai-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAuditRoute = AdminAuditRouteImport.update({
@@ -1039,6 +1045,7 @@ export interface FileRoutesByFullPath {
   '/withdraw': typeof WithdrawRoute
   '/admin/access-help': typeof AdminAccessHelpRoute
   '/admin/adjustments': typeof AdminAdjustmentsRoute
+  '/admin/ai-chat': typeof AdminAiChatRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/locked': typeof AdminLockedRoute
@@ -1203,6 +1210,7 @@ export interface FileRoutesByTo {
   '/withdraw': typeof WithdrawRoute
   '/admin/access-help': typeof AdminAccessHelpRoute
   '/admin/adjustments': typeof AdminAdjustmentsRoute
+  '/admin/ai-chat': typeof AdminAiChatRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/locked': typeof AdminLockedRoute
@@ -1366,6 +1374,7 @@ export interface FileRoutesById {
   '/withdraw': typeof WithdrawRoute
   '/admin_/access-help': typeof AdminAccessHelpRoute
   '/admin_/adjustments': typeof AdminAdjustmentsRoute
+  '/admin_/ai-chat': typeof AdminAiChatRoute
   '/admin_/audit': typeof AdminAuditRoute
   '/admin_/compliance': typeof AdminComplianceRoute
   '/admin_/locked': typeof AdminLockedRoute
@@ -1532,6 +1541,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin/access-help'
     | '/admin/adjustments'
+    | '/admin/ai-chat'
     | '/admin/audit'
     | '/admin/compliance'
     | '/admin/locked'
@@ -1696,6 +1706,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin/access-help'
     | '/admin/adjustments'
+    | '/admin/ai-chat'
     | '/admin/audit'
     | '/admin/compliance'
     | '/admin/locked'
@@ -1858,6 +1869,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin_/access-help'
     | '/admin_/adjustments'
+    | '/admin_/ai-chat'
     | '/admin_/audit'
     | '/admin_/compliance'
     | '/admin_/locked'
@@ -2023,6 +2035,7 @@ export interface RootRouteChildren {
   WithdrawRoute: typeof WithdrawRoute
   AdminAccessHelpRoute: typeof AdminAccessHelpRoute
   AdminAdjustmentsRoute: typeof AdminAdjustmentsRoute
+  AdminAiChatRoute: typeof AdminAiChatRoute
   AdminAuditRoute: typeof AdminAuditRoute
   AdminComplianceRoute: typeof AdminComplianceRoute
   AdminLockedRoute: typeof AdminLockedRoute
@@ -2317,6 +2330,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/adjustments'
       fullPath: '/admin/adjustments'
       preLoaderRoute: typeof AdminAdjustmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/ai-chat': {
+      id: '/admin_/ai-chat'
+      path: '/admin/ai-chat'
+      fullPath: '/admin/ai-chat'
+      preLoaderRoute: typeof AdminAiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/audit': {
@@ -3359,6 +3379,7 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawRoute: WithdrawRoute,
   AdminAccessHelpRoute: AdminAccessHelpRoute,
   AdminAdjustmentsRoute: AdminAdjustmentsRoute,
+  AdminAiChatRoute: AdminAiChatRoute,
   AdminAuditRoute: AdminAuditRoute,
   AdminComplianceRoute: AdminComplianceRoute,
   AdminLockedRoute: AdminLockedRoute,
