@@ -58,7 +58,8 @@ function Welcome() {
         }}
       />
 
-      <div className="relative mx-auto flex w-full max-w-md flex-1 flex-col px-6 pb-10 pt-14 md:max-w-lg md:justify-center">
+      <div className="relative mx-auto flex w-full max-w-md flex-1 flex-col px-6 pb-10 pt-14 md:max-w-lg md:justify-center lg:max-w-6xl lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center lg:gap-16 lg:px-10 lg:pb-14 lg:pt-14">
+        <div className="contents lg:block">
         <div className="animate-rise" style={{ animationDelay: "40ms" }}>
           <AnimatedLogo tone="light" className="text-3xl" />
         </div>
@@ -72,7 +73,7 @@ function Welcome() {
         </span>
 
         <h1
-          className="animate-rise mt-5 text-[2.1rem] font-semibold leading-[1.1] tracking-tight sm:text-[2.35rem] md:text-[2.6rem]"
+          className="animate-rise mt-5 text-[2.1rem] font-semibold leading-[1.1] tracking-tight sm:text-[2.35rem] md:text-[2.6rem] lg:text-[3.2rem]"
           style={{ animationDelay: "240ms" }}
         >
           Your money,
@@ -82,13 +83,13 @@ function Welcome() {
           </span>
         </h1>
         <p
-          className="animate-rise mt-4 line-clamp-2 max-w-[19rem] text-sm leading-snug text-brand-foreground/70 sm:max-w-sm sm:leading-relaxed"
+          className="animate-rise mt-4 line-clamp-2 max-w-[19rem] text-sm leading-snug text-brand-foreground/70 sm:max-w-sm sm:leading-relaxed lg:max-w-md lg:text-base"
           style={{ animationDelay: "320ms" }}
         >
           Save, invest in fixed-return plans, and track everything in one simple account.
         </p>
 
-        <ul className="mt-9 space-y-2.5">
+        <ul className="mt-9 space-y-2.5 lg:mt-10 lg:max-w-lg">
           {highlights.map(({ icon: Icon, label, detail }, i) => (
             <li
               key={label}
@@ -106,10 +107,18 @@ function Welcome() {
           ))}
         </ul>
 
+        </div>
+
         <div
-          className="animate-rise mt-auto space-y-3 pt-12"
+          className="animate-rise mt-auto space-y-3 pt-12 lg:mt-0 lg:rounded-[28px] lg:border lg:border-white/12 lg:bg-white/[0.07] lg:p-8 lg:pt-8 lg:shadow-[0_30px_80px_-40px_rgba(0,0,0,0.85)] lg:backdrop-blur-md"
           style={{ animationDelay: "700ms" }}
         >
+          <div className="hidden lg:block lg:pb-2">
+            <h2 className="text-xl font-semibold tracking-tight">Get started in minutes</h2>
+            <p className="mt-1.5 text-[13px] leading-relaxed text-brand-foreground/65">
+              Open an account with just your email. No documents needed to look around.
+            </p>
+          </div>
           <Link
             to="/signup"
             className="group flex w-full items-center justify-center gap-2 rounded-2xl bg-gold px-5 py-4 text-center text-sm font-semibold text-gold-foreground shadow-[0_16px_40px_-16px_oklch(0.82_0.15_88_/_0.8)] transition active:scale-[0.99] hover:brightness-105"
