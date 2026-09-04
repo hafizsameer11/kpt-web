@@ -93,27 +93,51 @@ function SecurityScreen() {
           </ul>
         </section>
 
-        <section className="card-surface overflow-hidden">
-          <p className="border-b border-border/60 px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
-            Biometrics
-          </p>
-          <ul className="divide-y divide-border/60">
-            <Toggle
-              icon={ScanFace}
-              title="Biometric login"
-              sub="Sign in with Face ID or fingerprint"
-              on={bioLogin}
-              onChange={setBioLogin}
-            />
-            <Toggle
-              icon={Fingerprint}
-              title="Biometric transaction authorization"
-              sub="Approve payouts and investments without typing your PIN"
-              on={bioAuth}
-              onChange={setBioAuth}
-            />
-          </ul>
-        </section>
+        <div className="space-y-4">
+          <section className="card-surface overflow-hidden">
+            <p className="border-b border-border/60 px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
+              Biometrics
+            </p>
+            <ul className="divide-y divide-border/60">
+              <Toggle
+                icon={ScanFace}
+                title="Biometric login"
+                sub="Sign in with Face ID or fingerprint"
+                on={bioLogin}
+                onChange={setBioLogin}
+              />
+              <Toggle
+                icon={Fingerprint}
+                title="Biometric transaction authorization"
+                sub="Approve payouts and investments without typing your PIN"
+                on={bioAuth}
+                onChange={setBioAuth}
+              />
+            </ul>
+          </section>
+
+          {/* Desktop-only guidance */}
+          <section className="hidden card-surface p-5 md:block">
+            <div className="flex items-center gap-2.5">
+              <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25">
+                <ShieldCheck className="size-[18px]" strokeWidth={2} />
+              </span>
+              <h2 className="font-display text-[14px] font-extrabold">Keep your account safe</h2>
+            </div>
+            <ul className="mt-3 space-y-2.5">
+              {[
+                "Kipit will never ask for your PIN, password or OTP — not by call, SMS or email.",
+                "Use a password you do not reuse anywhere else, and change it every few months.",
+                "Sign out of any session you do not recognise from Active sessions.",
+              ].map((tip) => (
+                <li key={tip} className="flex gap-2.5 text-[12.5px] leading-relaxed text-muted-foreground">
+                  <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                  {tip}
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
       </div>
     </SettingsPage>
   );
