@@ -132,9 +132,9 @@ function AddMoneyScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+          <div className="space-y-4 md:grid md:grid-cols-[minmax(0,1fr)_340px] md:items-start md:gap-6 md:space-y-0">
             {/* Funding source */}
-            <section className="card-surface p-4 md:p-5">
+            <section className="card-surface p-4 md:p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Funding source
               </p>
@@ -160,7 +160,7 @@ function AddMoneyScreen() {
             </section>
 
             {/* What you'll earn */}
-            <section className="card-surface p-4 md:p-5">
+            <section className="card-surface p-4 md:sticky md:top-6 md:p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 What this earns
               </p>
