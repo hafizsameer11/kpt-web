@@ -104,6 +104,7 @@ import { Route as AdminComplianceMonitoringRouteImport } from './routes/admin_.c
 import { Route as AdminComplianceQueueRouteImport } from './routes/admin_.compliance_.queue'
 import { Route as AdminComplianceReportingRouteImport } from './routes/admin_.compliance_.reporting'
 import { Route as AdminProductsNewRouteImport } from './routes/admin_.products_.new'
+import { Route as AdminProductsPublishedRouteImport } from './routes/admin_.products_.published'
 import { Route as AdminTransactionsTxnIdRouteImport } from './routes/admin_.transactions_.$txnId'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin_.users_.$userId'
 import { Route as AdminWithdrawalsWithdrawalIdRouteImport } from './routes/admin_.withdrawals_.$withdrawalId'
@@ -620,6 +621,11 @@ const AdminProductsNewRoute = AdminProductsNewRouteImport.update({
   path: '/admin/products/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminProductsPublishedRoute = AdminProductsPublishedRouteImport.update({
+  id: '/admin_/products_/published',
+  path: '/admin/products/published',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminTransactionsTxnIdRoute = AdminTransactionsTxnIdRouteImport.update({
   id: '/admin_/transactions_/$txnId',
   path: '/admin/transactions/$txnId',
@@ -912,6 +918,7 @@ export interface FileRoutesByFullPath {
   '/admin/compliance/queue': typeof AdminComplianceQueueRoute
   '/admin/compliance/reporting': typeof AdminComplianceReportingRoute
   '/admin/products/new': typeof AdminProductsNewRoute
+  '/admin/products/published': typeof AdminProductsPublishedRoute
   '/admin/transactions/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/admin/withdrawals/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
@@ -1043,6 +1050,7 @@ export interface FileRoutesByTo {
   '/admin/compliance/queue': typeof AdminComplianceQueueRoute
   '/admin/compliance/reporting': typeof AdminComplianceReportingRoute
   '/admin/products/new': typeof AdminProductsNewRoute
+  '/admin/products/published': typeof AdminProductsPublishedRoute
   '/admin/transactions/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin/withdrawals/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
   '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
@@ -1175,6 +1183,7 @@ export interface FileRoutesById {
   '/admin_/compliance_/queue': typeof AdminComplianceQueueRoute
   '/admin_/compliance_/reporting': typeof AdminComplianceReportingRoute
   '/admin_/products_/new': typeof AdminProductsNewRoute
+  '/admin_/products_/published': typeof AdminProductsPublishedRoute
   '/admin_/transactions_/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin_/users_/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/admin_/withdrawals_/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
@@ -1309,6 +1318,7 @@ export interface FileRouteTypes {
     | '/admin/compliance/queue'
     | '/admin/compliance/reporting'
     | '/admin/products/new'
+    | '/admin/products/published'
     | '/admin/transactions/$txnId'
     | '/admin/users/$userId'
     | '/admin/withdrawals/$withdrawalId'
@@ -1440,6 +1450,7 @@ export interface FileRouteTypes {
     | '/admin/compliance/queue'
     | '/admin/compliance/reporting'
     | '/admin/products/new'
+    | '/admin/products/published'
     | '/admin/transactions/$txnId'
     | '/admin/withdrawals/$withdrawalId'
     | '/explore/$productId/calculator'
@@ -1571,6 +1582,7 @@ export interface FileRouteTypes {
     | '/admin_/compliance_/queue'
     | '/admin_/compliance_/reporting'
     | '/admin_/products_/new'
+    | '/admin_/products_/published'
     | '/admin_/transactions_/$txnId'
     | '/admin_/users_/$userId'
     | '/admin_/withdrawals_/$withdrawalId'
@@ -1704,6 +1716,7 @@ export interface RootRouteChildren {
   AdminComplianceQueueRoute: typeof AdminComplianceQueueRoute
   AdminComplianceReportingRoute: typeof AdminComplianceReportingRoute
   AdminProductsNewRoute: typeof AdminProductsNewRoute
+  AdminProductsPublishedRoute: typeof AdminProductsPublishedRoute
   AdminTransactionsTxnIdRoute: typeof AdminTransactionsTxnIdRoute
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRouteWithChildren
   AdminWithdrawalsWithdrawalIdRoute: typeof AdminWithdrawalsWithdrawalIdRoute
@@ -2394,6 +2407,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/products_/published': {
+      id: '/admin_/products_/published'
+      path: '/admin/products/published'
+      fullPath: '/admin/products/published'
+      preLoaderRoute: typeof AdminProductsPublishedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/transactions_/$txnId': {
       id: '/admin_/transactions_/$txnId'
       path: '/admin/transactions/$txnId'
@@ -2784,6 +2804,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminComplianceQueueRoute: AdminComplianceQueueRoute,
   AdminComplianceReportingRoute: AdminComplianceReportingRoute,
   AdminProductsNewRoute: AdminProductsNewRoute,
+  AdminProductsPublishedRoute: AdminProductsPublishedRoute,
   AdminTransactionsTxnIdRoute: AdminTransactionsTxnIdRoute,
   AdminUsersUserIdRoute: AdminUsersUserIdRouteWithChildren,
   AdminWithdrawalsWithdrawalIdRoute: AdminWithdrawalsWithdrawalIdRoute,

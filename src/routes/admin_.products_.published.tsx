@@ -4,7 +4,7 @@ import { CheckCircle2, Layers, Plus } from "lucide-react";
 import { AdminShell } from "@/components/kipit/AdminShell";
 import { Panel } from "@/components/kipit/AdminBits";
 
-type PublishedSearch = { name?: string; rate?: string; tenor?: string };
+type PublishedSearch = { name?: string | undefined; rate?: string | undefined; tenor?: string | undefined };
 
 export const Route = createFileRoute("/admin_/products_/published")({
   validateSearch: (search: Record<string, unknown>): PublishedSearch => ({
