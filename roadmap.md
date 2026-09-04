@@ -17,9 +17,10 @@
 
 - WEB-001 Web login (desktop split brand/auth layout)
 - ADM-010 Executive dashboard (+ ADM-011 FUM breakdown, ADM-012 maturity tracker, ADM-013 operational alerts)
+- ADM-020–025 User management: directory, profile (Overview, Balances, Investments, Transactions, KYC, Sessions, Support, Audit), freeze dialog
 
 ## Left to build
 - WEB-002–013 desktop refinements (dashboard side panel, holdings/transaction tables, plan builder two-column, web withdrawal step flow)
-- Admin console: ADM-001–003 auth, ADM-020–025 users, ADM-030–035 compliance, ADM-040–041 transactions, ADM-050–052 withdrawals, ADM-060–064 products, ADM-070–073 rates, ADM-080–081 adjustments, ADM-090–092 reconciliation, ADM-100–105 marketing, ADM-110+ support
+- Admin console: ADM-001–003 auth, ADM-030–035 compliance, ADM-040–041 transactions, ADM-050–052 withdrawals, ADM-060–064 products, ADM-070–073 rates, ADM-080–081 adjustments, ADM-090–092 reconciliation, ADM-100–105 marketing, ADM-110+ support
 - ADM-120–122 admin users & permissions, ADM-130 audit log
 - Chat-to-Trade CHAT-xxx surfaces
