@@ -30,9 +30,9 @@ export function AuthShell({
       <div className="pointer-events-none absolute -top-24 -left-16 size-72 rounded-full bg-gold/20 blur-3xl" />
       <div className="pointer-events-none absolute -right-20 top-40 size-80 rounded-full bg-white/10 blur-3xl" />
 
-      <div className="relative mx-auto grid min-h-dvh w-full max-w-md lg:max-w-6xl lg:grid-cols-[minmax(0,1fr)_460px] lg:items-center lg:gap-16 lg:px-10">
-        {/* WEB-001 — desktop brand / illustration panel */}
-        <aside className="hidden lg:flex lg:flex-col lg:gap-8 lg:py-16">
+      <div className="relative mx-auto grid min-h-dvh w-full max-w-md lg:max-w-none lg:grid-cols-2 lg:items-stretch lg:gap-0 lg:px-0">
+        {/* WEB-001 — desktop brand / illustration panel (split screen, left half) */}
+        <aside className="hidden lg:flex lg:flex-col lg:justify-center lg:gap-8 lg:px-16 lg:py-16">
           <Logo tone="light" className="text-3xl" />
           <div>
             <p className="inline-flex items-center rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-gold">
