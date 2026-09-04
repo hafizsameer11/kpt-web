@@ -56,7 +56,7 @@ import {
 
 const ACTIVITY_TONE = {
   kyc: { icon: ShieldCheck, wrap: "bg-brand/10 text-brand", chip: "bg-brand/10 text-brand" },
-  payout: { icon: Send, wrap: "bg-gold/15 text-gold-ink", chip: "bg-gold/15 text-gold-ink" },
+  payout: { icon: Send, wrap: "bg-gold/20 text-gold-foreground", chip: "bg-gold/20 text-gold-foreground" },
   rate: { icon: Percent, wrap: "bg-brand/10 text-brand", chip: "bg-brand/10 text-brand" },
   content: { icon: Megaphone, wrap: "bg-muted text-foreground/70", chip: "bg-muted text-foreground/70" },
   decline: {
@@ -254,7 +254,7 @@ function AdminDashboard() {
                   <div className="flex items-center gap-2.5">
                     <span
                       className={`grid size-8 place-items-center rounded-lg ${
-                        f.up ? "bg-brand/10 text-brand" : "bg-gold/15 text-gold-foreground"
+                        f.up ? "bg-brand/10 text-brand" : "bg-gold/20 text-gold-foreground"
                       }`}
                     >
                       {f.up ? (
