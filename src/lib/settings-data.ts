@@ -124,6 +124,8 @@ export const PUSH_TOGGLES: ToggleItem[] = [
   { id: "p-inv", label: "Investments", desc: "New plans and subscriptions", on: true },
   { id: "p-mat", label: "Maturities", desc: "Upcoming and completed maturities", on: true },
   { id: "p-prd", label: "Product updates", desc: "New products on the marketplace", on: false },
+  { id: "p-sec", label: "Security alerts", desc: "New device sign-ins and PIN changes", on: true },
+  { id: "p-kyc", label: "Verification updates", desc: "When your KYC is approved or needs attention", on: true },
 ];
 
 export const EMAIL_TOGGLES: ToggleItem[] = [

@@ -79,7 +79,7 @@ const MODULES = [
     label: "Referral rules",
     helper: "Reward amounts and qualification rules",
     icon: Gift,
-    to: "/admin/marketing/audience" as const,
+    to: "/admin/marketing/referrals" as const,
   },
 ];
 
