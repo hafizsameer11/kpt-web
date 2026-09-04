@@ -111,6 +111,8 @@ function LargeTicketRequestScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
+          <div className="md:grid md:grid-cols-[minmax(0,1fr)_360px] md:items-start md:gap-5">
+            <div className="min-w-0">
           <Rise>
             <section className="card-surface p-4 md:p-5">
               <label
@@ -205,24 +207,57 @@ function LargeTicketRequestScreen() {
           </Rise>
 
           <DisclosureStrip variant="marketplace" />
+            </div>
 
-          <div className="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom)+0.75rem)] z-30 mt-5 md:static md:bottom-auto">
-            <button
-              type="button"
-              onClick={submit}
-              disabled={!valid}
-              className={`flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
-                valid ? "" : "pointer-events-none opacity-40 shadow-none"
-              }`}
-            >
-              Submit request <ArrowRight className="size-4" strokeWidth={2.6} />
-            </button>
-            <p className="mt-2 text-center text-[11px] text-muted-foreground md:text-left">
-              A licensed adviser responds within one business day.
-            </p>
+            {/* Desktop rail — product recap + submit */}
+            <aside className="min-w-0 md:sticky md:top-6 md:space-y-4">
+              <section className="card-surface hidden p-6 md:block">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Your request
+                </p>
+                <dl className="mt-3 divide-y divide-border text-[13.5px]">
+                  <RailRow label="Product">{product.name}</RailRow>
+                  <RailRow label="Rate">{product.rate}</RailRow>
+                  <RailRow label="Tenor">{product.tenor}</RailRow>
+                  <RailRow label="Amount">
+                    <span className={belowMin ? "text-destructive" : ""}>
+                      {amount > 0 ? naira(amount) : "—"}
+                    </span>
+                  </RailRow>
+                  <RailRow label="Contact via">
+                    {CONTACT_METHODS.find((m) => m.id === contact)?.label}
+                  </RailRow>
+                </dl>
+              </section>
+
+              <div className="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom)+0.75rem)] z-30 mt-5 md:static md:bottom-auto md:mt-0">
+                <button
+                  type="button"
+                  onClick={submit}
+                  disabled={!valid}
+                  className={`flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press ${
+                    valid ? "" : "pointer-events-none opacity-40 shadow-none"
+                  }`}
+                >
+                  Submit request <ArrowRight className="size-4" strokeWidth={2.6} />
+                </button>
+                <p className="mt-2 text-center text-[11px] text-muted-foreground md:text-left">
+                  A licensed adviser responds within one business day.
+                </p>
+              </div>
+            </aside>
           </div>
         </div>
       </div>
     </AppShell>
+  );
+}
+
+function RailRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-3 py-2.5">
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="text-right font-bold text-foreground">{children}</dd>
+    </div>
   );
 }
