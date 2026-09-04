@@ -72,15 +72,221 @@ const MATURITY_LABEL = {
 } as const;
 
 function PlanReviewScreen() {
+  const isMobile = useIsMobile();
+  return (
+    <>
+      <div className="md:hidden">
+        <PlanReviewMobile />
+      </div>
+      <div className="hidden md:block">
+        <PlanReviewDesktop />
+      </div>
+      <ReviewAuthGate isMobile={isMobile} />
+    </>
+  );
+}
+
+// Shared review state + auth sheet/dialog so mobile and desktop stay in sync.
+const ReviewCtx = React.createContext<{
+  amount: number;
+  days: number;
+  rateLabel: string;
+  open: boolean;
+  setOpen: (o: boolean) => void;
+  valid: boolean;
+} | null>(null);
+
+function useReviewState() {
+  const ctx = React.useContext(ReviewCtx);
+  if (!ctx) throw new Error("Review context missing");
+  return ctx;
+}
+
+function ReviewAuthGate({ isMobile }: { isMobile: boolean }) {
   const { amount, days, name, maturity, auto, gift } = Route.useSearch();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
 
   const [open, setOpen] = useState(false);
   const [pin, setPin] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [busy, setBusy] = useState(false);
+
+  const band = TENOR_BANDS.find(
+    (b) => Number(b.days.replace(/\D/g, "")) === days,
+  );
+  const ratePct = band ? Number(band.rate.replace(/[^0-9.]/g, "")) : 14;
+  const rateLabel = band ? band.rate : `${ratePct}%`;
+
+  const locked = attempts >= MAX_ATTEMPTS;
+  const valid = amount > 0 && days > 0 && amount <= WALLET;
+
+  function press(key: string) {
+    if (locked || busy) return;
+    setError(null);
+    if (key === "del") {
+      setPin((p) => p.slice(0, -1));
+      return;
+    }
+    setPin((p) => {
+      const next = (p + key).slice(0, PIN_LENGTH);
+      if (next.length === PIN_LENGTH) {
+        setBusy(true);
+        window.setTimeout(() => {
+          setBusy(false);
+          if (next === CORRECT_PIN) {
+            setOpen(false);
+            setPin("");
+            void navigate({
+              to: "/fixed-plans/create/processing",
+              search: { amount, days, name, maturity },
+            });
+          } else {
+            const n = attempts + 1;
+            setAttempts(n);
+            setPin("");
+            setError(
+              n >= MAX_ATTEMPTS
+                ? "Too many attempts. Try again in 30 minutes or reset your PIN."
+                : `Incorrect PIN. ${MAX_ATTEMPTS - n} attempt${MAX_ATTEMPTS - n === 1 ? "" : "s"} left.`,
+            );
+          }
+        }, 650);
+      }
+      return next;
+    });
+  }
+
+  function biometrics() {
+    if (locked || busy) return;
+    setBusy(true);
+    setError(null);
+    window.setTimeout(() => {
+      setBusy(false);
+      setError("Biometric authentication failed. Enter your PIN instead.");
+    }, 900);
+  }
+
+  const authPad = (
+    <>
+      <p className="mt-3 text-center text-[16px] font-extrabold">
+        Authorize investment
+      </p>
+      <p className="-mt-0.5 text-center text-[12px] text-muted-foreground">
+        {naira(amount)} · {days} days at {rateLabel}
+      </p>
+
+      <div className={`mt-4 flex justify-center gap-3 ${error ? "k-shake" : ""}`}>
+        {Array.from({ length: PIN_LENGTH }).map((_, i) => (
+          <span
+            key={i}
+            className={`size-3.5 rounded-full ${
+              i < pin.length ? "k-pop bg-gold" : "bg-border"
+            }`}
+          />
+        ))}
+      </div>
+
+      {error && (
+        <p className="mt-3 text-center text-[12px] font-semibold text-destructive">
+          {error}
+        </p>
+      )}
+      {busy && !error && (
+        <p className="mt-3 text-center text-[12px] font-semibold text-muted-foreground">
+          Verifying…
+        </p>
+      )}
+
+      <div className="mx-auto mt-5 grid w-full max-w-sm auto-rows-max grid-cols-3 gap-x-3 gap-y-2.5">
+        {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((k) => (
+          <Key key={k} onClick={() => press(k)} disabled={locked}>
+            {k}
+          </Key>
+        ))}
+        <Key onClick={biometrics} aria-label="Use biometrics" disabled={locked}>
+          <Fingerprint className="mx-auto size-5 text-gold" />
+        </Key>
+        <Key onClick={() => press("0")} disabled={locked}>
+          0
+        </Key>
+        <Key onClick={() => press("del")} aria-label="Delete" disabled={locked}>
+          <Delete className="mx-auto size-5" />
+        </Key>
+      </div>
+
+      <p className="mt-4 text-center text-[11px] text-muted-foreground">
+        Use PIN <span className="font-bold text-foreground">1234</span> in this prototype.
+      </p>
+    </>
+  );
+
+  return (
+    <ReviewCtx.Provider value={{ amount, days, rateLabel, open, setOpen, valid }}>
+      {isMobile ? (
+        <Drawer
+          open={open}
+          onOpenChange={(o) => {
+            setOpen(o);
+            if (!o) {
+              setPin("");
+              setError(null);
+            }
+          }}
+        >
+          <DrawerContent className="max-h-[92svh] rounded-t-[2rem] bg-card px-6 pb-8 pt-2">
+            <DrawerTitle className="sr-only">Authorize investment</DrawerTitle>
+            <DrawerDescription className="sr-only">
+              Enter your transaction PIN to confirm {naira(amount)}
+            </DrawerDescription>
+            {authPad}
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Dialog
+          open={open}
+          onOpenChange={(o) => {
+            setOpen(o);
+            if (!o) {
+              setPin("");
+              setError(null);
+            }
+          }}
+        >
+          <DialogContent className="max-w-sm rounded-xl">
+            <DialogHeader>
+              <DialogTitle className="sr-only">Authorize investment</DialogTitle>
+            </DialogHeader>
+            {authPad}
+          </DialogContent>
+        </Dialog>
+      )}
+      {/* Render children layouts inside provider via portals below */}
+      <ReviewRenderer auto={auto} gift={gift} name={name} maturity={maturity} isMobile={isMobile} />
+    </ReviewCtx.Provider>
+  );
+}
+
+function ReviewRenderer({
+  auto,
+  gift,
+  name,
+  maturity,
+  isMobile,
+}: {
+  auto: string;
+  gift: string;
+  name: string;
+  maturity: "wallet" | "rollover" | "call";
+  isMobile: boolean;
+}) {
+  const { amount, days } = useReviewState();
+  return null;
+}
+
+function PlanReviewMobile() {
+  const { amount, days, name, maturity, auto, gift } = Route.useSearch();
+  const { setOpen, valid } = useReviewState();
 
   const band = TENOR_BANDS.find(
     (b) => Number(b.days.replace(/\D/g, "")) === days,
@@ -94,8 +300,6 @@ function PlanReviewScreen() {
     { day: "2-digit", month: "short", year: "numeric" },
   );
 
-  const locked = attempts >= MAX_ATTEMPTS;
-  const valid = amount > 0 && days > 0 && amount <= WALLET;
   const MaturityIcon = MATURITY_LABEL[maturity].icon;
 
   function press(key: string) {
