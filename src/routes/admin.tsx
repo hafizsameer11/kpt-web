@@ -311,10 +311,10 @@ function AdminDashboard() {
             <p className="mt-1 text-[12px] text-muted-foreground">Last 7 days, ₦ millions.</p>
             <div className="mt-4 h-[190px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={FLOW_TREND} margin={{ top: 4, right: 4, bottom: 0, left: -18 }}>
+                <BarChart data={FLOW_TREND} margin={{ top: 4, right: 4, bottom: 0, left: -12 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                   <XAxis dataKey="day" tickLine={false} axisLine={false} tick={axisTick} />
-                  <YAxis tickLine={false} axisLine={false} tick={axisTick} width={38} />
+                  <YAxis tickLine={false} axisLine={false} tick={axisTick} width={46} />
                   <Tooltip
                     cursor={{ fill: "var(--muted)" }}
                     contentStyle={tooltipStyle}
@@ -334,10 +334,10 @@ function AdminDashboard() {
             <p className="mt-1 text-[12px] text-muted-foreground">Monthly, ₦ millions.</p>
             <div className="mt-4 h-[190px]">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={INTEREST_TREND} margin={{ top: 4, right: 4, bottom: 0, left: -18 }}>
+                <LineChart data={INTEREST_TREND} margin={{ top: 4, right: 4, bottom: 0, left: -12 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                   <XAxis dataKey="month" tickLine={false} axisLine={false} tick={axisTick} />
-                  <YAxis tickLine={false} axisLine={false} tick={axisTick} width={38} />
+                  <YAxis tickLine={false} axisLine={false} tick={axisTick} width={46} />
                   <Tooltip
                     contentStyle={tooltipStyle}
                     formatter={(v: number, n: string) => [`₦${v}m`, labelOf(n)]}
@@ -369,10 +369,10 @@ function AdminDashboard() {
             <p className="mt-1 text-[12px] text-muted-foreground">Next six weeks, ₦ millions.</p>
             <div className="mt-4 h-[190px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={MATURITY_SCHEDULE} margin={{ top: 4, right: 4, bottom: 0, left: -18 }}>
+                <BarChart data={MATURITY_SCHEDULE} margin={{ top: 4, right: 4, bottom: 0, left: -12 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                   <XAxis dataKey="week" tickLine={false} axisLine={false} tick={axisTick} />
-                  <YAxis tickLine={false} axisLine={false} tick={axisTick} width={38} />
+                  <YAxis tickLine={false} axisLine={false} tick={axisTick} width={46} />
                   <Tooltip
                     cursor={{ fill: "var(--muted)" }}
                     contentStyle={tooltipStyle}
