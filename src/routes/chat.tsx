@@ -163,7 +163,7 @@ function ChatScreen() {
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
             {SUGGESTED_PROMPTS.map((prompt, i) => {
-              const Icon = promptIcons[i % promptIcons.length];
+              const Icon = promptIcons[i % promptIcons.length] ?? PieChart;
               return (
                 <button
                   key={prompt}
