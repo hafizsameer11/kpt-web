@@ -42,13 +42,13 @@ import {
 export const Route = createFileRoute("/chat")({
   head: () => ({
     meta: [
-      { title: "Chat to Trade — Kipit" },
+      { title: "Ask AI — Kipit" },
       {
         name: "description",
         content:
           "Ask Kipit about your balance, maturities and transactions, get product matches, then authorize every investment in the secure flow.",
       },
-      { property: "og:title", content: "Chat to Trade — Kipit" },
+      { property: "og:title", content: "Ask AI — Kipit" },
       {
         property: "og:description",
         content:
@@ -107,7 +107,7 @@ function ChatScreen() {
   const showPrompts = messages.length === 1;
 
   return (
-    <AppShell title="Chat to Trade">
+    <AppShell title="Ask AI">
       <div className="md:grid md:grid-cols-[minmax(0,1fr)_20rem] md:gap-6">
         <section className="flex min-h-[calc(100vh-9rem)] flex-col md:min-h-[calc(100vh-8rem)] md:rounded-2xl md:border md:border-border md:bg-surface">
           {/* Mobile header */}
