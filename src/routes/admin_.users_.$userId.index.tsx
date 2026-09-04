@@ -450,8 +450,8 @@ function GlanceRow({
   icon: typeof Wallet;
   label: string;
   value: string;
-  helper?: string;
-  alert?: boolean;
+  helper?: string | undefined;
+  alert?: boolean | undefined;
 }) {
   return (
     <li>
