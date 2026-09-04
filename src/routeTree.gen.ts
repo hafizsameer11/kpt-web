@@ -122,6 +122,7 @@ import { Route as AdminAdjustmentsRequestIdRouteImport } from './routes/admin_.a
 import { Route as AdminAdjustmentsNewRouteImport } from './routes/admin_.adjustments_.new'
 import { Route as AdminAiChatSessionIdRouteImport } from './routes/admin_.ai-chat_.$sessionId'
 import { Route as AdminComplianceAmlRouteImport } from './routes/admin_.compliance_.aml'
+import { Route as AdminComplianceFrozenRouteImport } from './routes/admin_.compliance_.frozen'
 import { Route as AdminComplianceMonitoringRouteImport } from './routes/admin_.compliance_.monitoring'
 import { Route as AdminComplianceQueueRouteImport } from './routes/admin_.compliance_.queue'
 import { Route as AdminComplianceReportingRouteImport } from './routes/admin_.compliance_.reporting'
@@ -749,6 +750,11 @@ const AdminComplianceAmlRoute = AdminComplianceAmlRouteImport.update({
   path: '/admin/compliance/aml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminComplianceFrozenRoute = AdminComplianceFrozenRouteImport.update({
+  id: '/admin_/compliance_/frozen',
+  path: '/admin/compliance/frozen',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminComplianceMonitoringRoute =
   AdminComplianceMonitoringRouteImport.update({
     id: '/admin_/compliance_/monitoring',
@@ -1176,6 +1182,7 @@ export interface FileRoutesByFullPath {
   '/admin/adjustments/new': typeof AdminAdjustmentsNewRoute
   '/admin/ai-chat/$sessionId': typeof AdminAiChatSessionIdRoute
   '/admin/compliance/aml': typeof AdminComplianceAmlRoute
+  '/admin/compliance/frozen': typeof AdminComplianceFrozenRoute
   '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin/compliance/queue': typeof AdminComplianceQueueRoute
   '/admin/compliance/reporting': typeof AdminComplianceReportingRoute
@@ -1347,6 +1354,7 @@ export interface FileRoutesByTo {
   '/admin/adjustments/new': typeof AdminAdjustmentsNewRoute
   '/admin/ai-chat/$sessionId': typeof AdminAiChatSessionIdRoute
   '/admin/compliance/aml': typeof AdminComplianceAmlRoute
+  '/admin/compliance/frozen': typeof AdminComplianceFrozenRoute
   '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin/compliance/queue': typeof AdminComplianceQueueRoute
   '/admin/compliance/reporting': typeof AdminComplianceReportingRoute
@@ -1519,6 +1527,7 @@ export interface FileRoutesById {
   '/admin_/adjustments_/new': typeof AdminAdjustmentsNewRoute
   '/admin_/ai-chat_/$sessionId': typeof AdminAiChatSessionIdRoute
   '/admin_/compliance_/aml': typeof AdminComplianceAmlRoute
+  '/admin_/compliance_/frozen': typeof AdminComplianceFrozenRoute
   '/admin_/compliance_/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin_/compliance_/queue': typeof AdminComplianceQueueRoute
   '/admin_/compliance_/reporting': typeof AdminComplianceReportingRoute
@@ -1693,6 +1702,7 @@ export interface FileRouteTypes {
     | '/admin/adjustments/new'
     | '/admin/ai-chat/$sessionId'
     | '/admin/compliance/aml'
+    | '/admin/compliance/frozen'
     | '/admin/compliance/monitoring'
     | '/admin/compliance/queue'
     | '/admin/compliance/reporting'
@@ -1864,6 +1874,7 @@ export interface FileRouteTypes {
     | '/admin/adjustments/new'
     | '/admin/ai-chat/$sessionId'
     | '/admin/compliance/aml'
+    | '/admin/compliance/frozen'
     | '/admin/compliance/monitoring'
     | '/admin/compliance/queue'
     | '/admin/compliance/reporting'
@@ -2035,6 +2046,7 @@ export interface FileRouteTypes {
     | '/admin_/adjustments_/new'
     | '/admin_/ai-chat_/$sessionId'
     | '/admin_/compliance_/aml'
+    | '/admin_/compliance_/frozen'
     | '/admin_/compliance_/monitoring'
     | '/admin_/compliance_/queue'
     | '/admin_/compliance_/reporting'
@@ -2208,6 +2220,7 @@ export interface RootRouteChildren {
   AdminAdjustmentsNewRoute: typeof AdminAdjustmentsNewRoute
   AdminAiChatSessionIdRoute: typeof AdminAiChatSessionIdRoute
   AdminComplianceAmlRoute: typeof AdminComplianceAmlRoute
+  AdminComplianceFrozenRoute: typeof AdminComplianceFrozenRoute
   AdminComplianceMonitoringRoute: typeof AdminComplianceMonitoringRoute
   AdminComplianceQueueRoute: typeof AdminComplianceQueueRoute
   AdminComplianceReportingRoute: typeof AdminComplianceReportingRoute
@@ -3046,6 +3059,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminComplianceAmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/compliance_/frozen': {
+      id: '/admin_/compliance_/frozen'
+      path: '/admin/compliance/frozen'
+      fullPath: '/admin/compliance/frozen'
+      preLoaderRoute: typeof AdminComplianceFrozenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/compliance_/monitoring': {
       id: '/admin_/compliance_/monitoring'
       path: '/admin/compliance/monitoring'
@@ -3608,6 +3628,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAdjustmentsNewRoute: AdminAdjustmentsNewRoute,
   AdminAiChatSessionIdRoute: AdminAiChatSessionIdRoute,
   AdminComplianceAmlRoute: AdminComplianceAmlRoute,
+  AdminComplianceFrozenRoute: AdminComplianceFrozenRoute,
   AdminComplianceMonitoringRoute: AdminComplianceMonitoringRoute,
   AdminComplianceQueueRoute: AdminComplianceQueueRoute,
   AdminComplianceReportingRoute: AdminComplianceReportingRoute,
