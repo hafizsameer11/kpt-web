@@ -102,7 +102,7 @@ function TrackerScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+          <div className="space-y-4 md:grid md:grid-cols-[minmax(0,1fr)_360px] md:items-start md:gap-6 md:space-y-0">
             <section className="card-surface p-4 md:p-5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Status timeline
