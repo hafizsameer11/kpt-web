@@ -119,6 +119,7 @@ import { Route as SettingsSecurityChangePinRouteImport } from './routes/settings
 import { Route as SettingsSecurityResetPinRouteImport } from './routes/settings_/security_/reset-pin'
 import { Route as SettingsSecuritySessionsRouteImport } from './routes/settings_/security_/sessions'
 import { Route as SettingsStatementsGeneratedRouteImport } from './routes/settings_/statements_/generated'
+import { Route as AdminComplianceQueueCaseIdRouteImport } from './routes/admin_.compliance_.queue_.$caseId'
 import { Route as AdminUsersUserIdIndexRouteImport } from './routes/admin_.users_.$userId.index'
 import { Route as AdminUsersUserIdAuditRouteImport } from './routes/admin_.users_.$userId.audit'
 import { Route as AdminUsersUserIdBalancesRouteImport } from './routes/admin_.users_.$userId.balances'
@@ -694,6 +695,12 @@ const SettingsStatementsGeneratedRoute =
     path: '/settings/statements/generated',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminComplianceQueueCaseIdRoute =
+  AdminComplianceQueueCaseIdRouteImport.update({
+    id: '/admin_/compliance_/queue_/$caseId',
+    path: '/admin/compliance/queue/$caseId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminUsersUserIdIndexRoute = AdminUsersUserIdIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -856,6 +863,7 @@ export interface FileRoutesByFullPath {
   '/settings/security/sessions': typeof SettingsSecuritySessionsRoute
   '/settings/statements/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans/create/': typeof FixedPlansCreateIndexRoute
+  '/admin/compliance/queue/$caseId': typeof AdminComplianceQueueCaseIdRoute
   '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -975,6 +983,7 @@ export interface FileRoutesByTo {
   '/settings/security/sessions': typeof SettingsSecuritySessionsRoute
   '/settings/statements/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans/create': typeof FixedPlansCreateIndexRoute
+  '/admin/compliance/queue/$caseId': typeof AdminComplianceQueueCaseIdRoute
   '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -1097,6 +1106,7 @@ export interface FileRoutesById {
   '/settings_/security_/sessions': typeof SettingsSecuritySessionsRoute
   '/settings_/statements_/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans_/create/': typeof FixedPlansCreateIndexRoute
+  '/admin_/compliance_/queue_/$caseId': typeof AdminComplianceQueueCaseIdRoute
   '/admin_/users_/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin_/users_/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin_/users_/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -1220,6 +1230,7 @@ export interface FileRouteTypes {
     | '/settings/security/sessions'
     | '/settings/statements/generated'
     | '/fixed-plans/create/'
+    | '/admin/compliance/queue/$caseId'
     | '/admin/users/$userId/audit'
     | '/admin/users/$userId/balances'
     | '/admin/users/$userId/investments'
@@ -1339,6 +1350,7 @@ export interface FileRouteTypes {
     | '/settings/security/sessions'
     | '/settings/statements/generated'
     | '/fixed-plans/create'
+    | '/admin/compliance/queue/$caseId'
     | '/admin/users/$userId/audit'
     | '/admin/users/$userId/balances'
     | '/admin/users/$userId/investments'
@@ -1460,6 +1472,7 @@ export interface FileRouteTypes {
     | '/settings_/security_/sessions'
     | '/settings_/statements_/generated'
     | '/fixed-plans_/create/'
+    | '/admin_/compliance_/queue_/$caseId'
     | '/admin_/users_/$userId/audit'
     | '/admin_/users_/$userId/balances'
     | '/admin_/users_/$userId/investments'
@@ -1576,6 +1589,7 @@ export interface RootRouteChildren {
   SettingsSecurityResetPinRoute: typeof SettingsSecurityResetPinRoute
   SettingsSecuritySessionsRoute: typeof SettingsSecuritySessionsRoute
   SettingsStatementsGeneratedRoute: typeof SettingsStatementsGeneratedRoute
+  AdminComplianceQueueCaseIdRoute: typeof AdminComplianceQueueCaseIdRoute
   PortfolioTransactionsTxnIdReceiptRoute: typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 
@@ -2351,6 +2365,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsStatementsGeneratedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/compliance_/queue_/$caseId': {
+      id: '/admin_/compliance_/queue_/$caseId'
+      path: '/admin/compliance/queue/$caseId'
+      fullPath: '/admin/compliance/queue/$caseId'
+      preLoaderRoute: typeof AdminComplianceQueueCaseIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/users_/$userId/': {
       id: '/admin_/users_/$userId/'
       path: '/'
@@ -2568,6 +2589,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsSecurityResetPinRoute: SettingsSecurityResetPinRoute,
   SettingsSecuritySessionsRoute: SettingsSecuritySessionsRoute,
   SettingsStatementsGeneratedRoute: SettingsStatementsGeneratedRoute,
+  AdminComplianceQueueCaseIdRoute: AdminComplianceQueueCaseIdRoute,
   PortfolioTransactionsTxnIdReceiptRoute:
     PortfolioTransactionsTxnIdReceiptRoute,
 }
