@@ -20,6 +20,7 @@
 - ADM-020–025 User management: directory, profile (Overview, Balances, Investments, Transactions, KYC, Sessions, Support, Audit), freeze dialog
 - ADM-030–035 Compliance & KYC (hub, queue, case review, AML, monitoring, reporting)
 - ADM-040–041 Global transaction view + transaction detail
+- ADM-050–052 Withdrawal queue, review, decline flow
 
 ## Left to build
 - WEB-002–013 desktop refinements (dashboard side panel, holdings/transaction tables, plan builder two-column, web withdrawal step flow)
