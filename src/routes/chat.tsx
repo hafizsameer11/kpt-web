@@ -151,6 +151,7 @@ function ChatScreen() {
     }, 550);
   };
 
+  console.log("KRENDER", messages.length, thinking);
   const showPrompts = messages.length === 1;
 
   const promptIcons = [PieChart, Wallet, CalendarClock, LifeBuoy, BookOpen, Landmark];
