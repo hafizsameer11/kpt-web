@@ -50,8 +50,8 @@ function VerificationCentre() {
 
   return (
     <AppShell title="Verification" navVariant="elevated">
-      <div className="pb-2">
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-8 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:shadow-float">
+      <div className="pb-2 md:mx-auto md:w-full md:max-w-6xl md:pb-10">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-8 text-primary-foreground md:mx-0 md:rounded-2xl md:px-9 md:pb-9 md:pt-9 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
@@ -86,7 +86,8 @@ function VerificationCentre() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+          <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start lg:gap-6">
+          <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0 lg:grid-cols-1">
             {TIERS.map((tier) => (
               <section key={tier.id} className="card-surface p-4 md:p-5">
                 <div className="flex items-center justify-between gap-3">
@@ -142,7 +143,7 @@ function VerificationCentre() {
             ))}
           </div>
 
-          <section className="mt-5">
+          <section className="mt-5 lg:mt-0">
             <h2 className="mb-2.5 px-1 font-display text-[13px] font-extrabold uppercase tracking-[0.12em] text-muted-foreground">
               Your checks
             </h2>
@@ -202,6 +203,7 @@ function VerificationCentre() {
               </div>
             </div>
           </section>
+          </div>
         </div>
       </div>
     </AppShell>
