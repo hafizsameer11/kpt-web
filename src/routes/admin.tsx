@@ -282,16 +282,40 @@ function AdminDashboard() {
               Where customer money currently sits.
             </p>
 
-            <div className="mt-4 flex h-3 overflow-hidden rounded-full">
-              {FUM_BREAKDOWN.map((s) => (
-                <div
-                  key={s.id}
-                  className={s.tone}
-                  style={{ width: `${(s.value / FUM) * 100}%` }}
-                  title={s.label}
-                />
-              ))}
-            </div>
+            <div className="mt-4 grid items-center gap-4 sm:grid-cols-[minmax(0,170px)_minmax(0,1fr)]">
+              <div className="relative h-[170px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={FUM_BREAKDOWN}
+                      dataKey="value"
+                      nameKey="label"
+                      innerRadius={52}
+                      outerRadius={78}
+                      paddingAngle={2}
+                      stroke="none"
+                    >
+                      {FUM_BREAKDOWN.map((s, i) => (
+                        <Cell key={s.id} fill={SLICE_FILLS[i % SLICE_FILLS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={tooltipStyle}
+                      formatter={(v: number, n: string) => [compactNaira(v), n]}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="pointer-events-none absolute inset-0 grid place-items-center">
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      FUM
+                    </p>
+                    <p className="font-display text-[16px] font-extrabold">{compactNaira(FUM)}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="min-w-0">
+
             <ul className="mt-4 space-y-2.5">
               {FUM_BREAKDOWN.map((s) => (
                 <li key={s.id} className="flex items-center justify-between gap-3">
