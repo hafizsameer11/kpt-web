@@ -30,7 +30,7 @@ export function AuthShell({
       <div className="pointer-events-none absolute -top-24 -left-16 size-72 rounded-full bg-gold/20 blur-3xl" />
       <div className="pointer-events-none absolute -right-20 top-40 size-80 rounded-full bg-white/10 blur-3xl" />
 
-      <div className="relative mx-auto grid min-h-dvh w-full max-w-md lg:max-w-6xl lg:grid-cols-2 lg:items-center lg:gap-14 lg:px-10">
+      <div className="relative mx-auto grid min-h-dvh w-full max-w-md lg:max-w-6xl lg:grid-cols-[minmax(0,1fr)_460px] lg:items-center lg:gap-16 lg:px-10">
         {/* WEB-001 — desktop brand / illustration panel */}
         <aside className="hidden lg:flex lg:flex-col lg:gap-8 lg:py-16">
           <Logo tone="light" className="text-3xl" />
@@ -60,9 +60,13 @@ export function AuthShell({
               </div>
             ))}
           </div>
+          <p className="max-w-md text-[11.5px] leading-relaxed text-brand-foreground/50">
+            Kipit works with SEC-licensed partners. Returns shown are indicative and subject to
+            issuer terms.
+          </p>
         </aside>
 
-        <div className="flex min-h-dvh w-full flex-col px-5 pb-8 pt-6 lg:min-h-0 lg:justify-center lg:rounded-3xl lg:border lg:border-white/12 lg:bg-white/6 lg:px-8 lg:py-10 lg:backdrop-blur-sm">
+        <div className="flex min-h-dvh w-full flex-col px-5 pb-8 pt-6 lg:min-h-0 lg:justify-center lg:rounded-[28px] lg:border lg:border-white/12 lg:bg-white/8 lg:px-10 lg:py-11 lg:shadow-[0_30px_80px_-40px_rgba(0,0,0,0.85)] lg:backdrop-blur-md">
           <div className="flex items-center justify-between">
             {back ? (
               <Link
@@ -94,10 +98,14 @@ export function AuthShell({
 
           <div className="mt-8 flex-1 lg:mt-4 lg:flex-none">
             {title ? (
-              <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{title}</h1>
+              <h1 className="text-2xl font-semibold tracking-tight md:text-3xl lg:text-[28px]">
+                {title}
+              </h1>
             ) : null}
             {subtitle ? (
-              <p className="mt-2 text-sm leading-relaxed text-brand-foreground/70">{subtitle}</p>
+              <p className="mt-2 max-w-md text-sm leading-relaxed text-brand-foreground/70">
+                {subtitle}
+              </p>
             ) : null}
             <div className="mt-7">{children}</div>
           </div>
