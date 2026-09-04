@@ -123,7 +123,7 @@ function ProfileScreen() {
                 government-issued ID and support will update them for you.
               </p>
               <Link
-                to="/settings/support-ticket"
+                to="/settings/help/ticket"
                 className="mt-3 inline-flex items-center gap-2 text-[12.5px] font-bold text-brand"
               >
                 Contact support
