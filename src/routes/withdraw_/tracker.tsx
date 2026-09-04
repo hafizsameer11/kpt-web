@@ -163,6 +163,25 @@ function TrackerScreen() {
                 amount is returned to your Kipit wallet automatically.
               </p>
             </section>
+
+            {/* Desktop rail extras */}
+            <section className="card-surface hidden p-5 md:block">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                What happens next
+              </p>
+              <ul className="mt-3 space-y-2.5">
+                {[
+                  "You'll get a notification the moment it settles",
+                  "The receipt is saved to your transaction history",
+                  "Delays? Funds return to your wallet automatically",
+                ].map((t) => (
+                  <li key={t} className="flex items-start gap-2.5 text-[12.5px] text-foreground">
+                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </section>
           </div>
 
           <div className="mt-5 flex flex-col gap-2.5 md:flex-row">
