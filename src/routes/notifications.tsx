@@ -11,6 +11,7 @@ import {
   XCircle,
   type LucideIcon,
 } from "lucide-react";
+import { useState } from "react";
 import { DashboardSidebar, DashboardTopBar } from "@/components/kipit/DashboardSidebar";
 
 export const Route = createFileRoute("/notifications")({
