@@ -97,6 +97,7 @@ import { Route as WithdrawReviewRouteImport } from './routes/withdraw_/review'
 import { Route as WithdrawSuccessRouteImport } from './routes/withdraw_/success'
 import { Route as WithdrawTrackerRouteImport } from './routes/withdraw_/tracker'
 import { Route as AdminComplianceAmlRouteImport } from './routes/admin_.compliance_.aml'
+import { Route as AdminComplianceMonitoringRouteImport } from './routes/admin_.compliance_.monitoring'
 import { Route as AdminComplianceQueueRouteImport } from './routes/admin_.compliance_.queue'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin_.users_.$userId'
 import { Route as ExploreProductIdCalculatorRouteImport } from './routes/explore_.$productId_.calculator'
@@ -575,6 +576,12 @@ const AdminComplianceAmlRoute = AdminComplianceAmlRouteImport.update({
   path: '/admin/compliance/aml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminComplianceMonitoringRoute =
+  AdminComplianceMonitoringRouteImport.update({
+    id: '/admin_/compliance_/monitoring',
+    path: '/admin/compliance/monitoring',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminComplianceQueueRoute = AdminComplianceQueueRouteImport.update({
   id: '/admin_/compliance_/queue',
   path: '/admin/compliance/queue',
@@ -854,6 +861,7 @@ export interface FileRoutesByFullPath {
   '/withdraw/success': typeof WithdrawSuccessRoute
   '/withdraw/tracker': typeof WithdrawTrackerRoute
   '/admin/compliance/aml': typeof AdminComplianceAmlRoute
+  '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin/compliance/queue': typeof AdminComplianceQueueRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
@@ -977,6 +985,7 @@ export interface FileRoutesByTo {
   '/withdraw/success': typeof WithdrawSuccessRoute
   '/withdraw/tracker': typeof WithdrawTrackerRoute
   '/admin/compliance/aml': typeof AdminComplianceAmlRoute
+  '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin/compliance/queue': typeof AdminComplianceQueueRoute
   '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
@@ -1101,6 +1110,7 @@ export interface FileRoutesById {
   '/withdraw_/success': typeof WithdrawSuccessRoute
   '/withdraw_/tracker': typeof WithdrawTrackerRoute
   '/admin_/compliance_/aml': typeof AdminComplianceAmlRoute
+  '/admin_/compliance_/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin_/compliance_/queue': typeof AdminComplianceQueueRoute
   '/admin_/users_/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/explore_/$productId_/calculator': typeof ExploreProductIdCalculatorRoute
@@ -1227,6 +1237,7 @@ export interface FileRouteTypes {
     | '/withdraw/success'
     | '/withdraw/tracker'
     | '/admin/compliance/aml'
+    | '/admin/compliance/monitoring'
     | '/admin/compliance/queue'
     | '/admin/users/$userId'
     | '/explore/$productId/calculator'
@@ -1350,6 +1361,7 @@ export interface FileRouteTypes {
     | '/withdraw/success'
     | '/withdraw/tracker'
     | '/admin/compliance/aml'
+    | '/admin/compliance/monitoring'
     | '/admin/compliance/queue'
     | '/explore/$productId/calculator'
     | '/explore/$productId/processing'
@@ -1473,6 +1485,7 @@ export interface FileRouteTypes {
     | '/withdraw_/success'
     | '/withdraw_/tracker'
     | '/admin_/compliance_/aml'
+    | '/admin_/compliance_/monitoring'
     | '/admin_/compliance_/queue'
     | '/admin_/users_/$userId'
     | '/explore_/$productId_/calculator'
@@ -1598,6 +1611,7 @@ export interface RootRouteChildren {
   WithdrawSuccessRoute: typeof WithdrawSuccessRoute
   WithdrawTrackerRoute: typeof WithdrawTrackerRoute
   AdminComplianceAmlRoute: typeof AdminComplianceAmlRoute
+  AdminComplianceMonitoringRoute: typeof AdminComplianceMonitoringRoute
   AdminComplianceQueueRoute: typeof AdminComplianceQueueRoute
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRouteWithChildren
   ExploreProductIdCalculatorRoute: typeof ExploreProductIdCalculatorRoute
@@ -2238,6 +2252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminComplianceAmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/compliance_/monitoring': {
+      id: '/admin_/compliance_/monitoring'
+      path: '/admin/compliance/monitoring'
+      fullPath: '/admin/compliance/monitoring'
+      preLoaderRoute: typeof AdminComplianceMonitoringRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/compliance_/queue': {
       id: '/admin_/compliance_/queue'
       path: '/admin/compliance/queue'
@@ -2614,6 +2635,7 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawSuccessRoute: WithdrawSuccessRoute,
   WithdrawTrackerRoute: WithdrawTrackerRoute,
   AdminComplianceAmlRoute: AdminComplianceAmlRoute,
+  AdminComplianceMonitoringRoute: AdminComplianceMonitoringRoute,
   AdminComplianceQueueRoute: AdminComplianceQueueRoute,
   AdminUsersUserIdRoute: AdminUsersUserIdRouteWithChildren,
   ExploreProductIdCalculatorRoute: ExploreProductIdCalculatorRoute,
