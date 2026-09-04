@@ -134,6 +134,7 @@ function ChatScreen() {
 
   const send = (raw: string, display?: string) => {
     const value = raw.trim();
+    console.log("KSEND", value, thinking);
     if (!value || thinking) return;
     const parsed = parseAmount(value);
     if (parsed) amountRef.current = parsed;
