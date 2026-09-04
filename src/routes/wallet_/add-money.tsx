@@ -12,7 +12,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
-import { naira, WALLET } from "@/lib/home-data";
+import { naira } from "@/lib/home-data";
+import { useWalletBalance } from "@/lib/wallet-balance";
 import {
   cardFee,
   MAX_CARD_DEPOSIT,
@@ -47,6 +48,7 @@ export const Route = createFileRoute("/wallet_/add-money")({
 });
 
 function WalletAddMoney() {
+  const WALLET = useWalletBalance();
   const navigate = useNavigate();
   const [raw, setRaw] = useState("");
   const [method, setMethod] = useState<DepositMethod>("transfer");

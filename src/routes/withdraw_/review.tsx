@@ -25,7 +25,8 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { naira, WALLET } from "@/lib/home-data";
+import { naira } from "@/lib/home-data";
+import { useWalletBalance } from "@/lib/wallet-balance";
 import {
   findAccount,
   maskAccount,
@@ -63,6 +64,7 @@ const PIN_LENGTH = 4;
 const CORRECT_PIN = "1234";
 
 function ReviewWithdrawal() {
+  const WALLET = useWalletBalance();
   const { acct, amount } = Route.useSearch();
   const account = findAccount(acct);
   const navigate = useNavigate();
@@ -241,6 +243,7 @@ function MobileReview({
   setOpen: (v: boolean) => void;
   pinPad: React.ReactNode;
 }) {
+  const WALLET = useWalletBalance();
   return (
     <div className="pb-2">
       <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground">
@@ -342,6 +345,7 @@ function DesktopReview({
   setOpen: (v: boolean) => void;
   pinPad: React.ReactNode;
 }) {
+  const WALLET = useWalletBalance();
   return (
     <div className="mx-auto w-full max-w-[1100px] space-y-6 pb-10">
       <section className="relative overflow-hidden rounded-3xl bg-brand-gradient px-10 py-10 text-primary-foreground shadow-float">
