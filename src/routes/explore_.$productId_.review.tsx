@@ -29,6 +29,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { naira, WALLET } from "@/lib/home-data";
 import { getExploreProduct } from "@/lib/explore-data";
+import { productTermsVersion, recordTermsAcceptance } from "@/lib/terms-acceptance";
 
 export const Route = createFileRoute("/explore_/$productId_/review")({
   head: () => ({
