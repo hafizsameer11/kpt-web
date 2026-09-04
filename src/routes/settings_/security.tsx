@@ -1,5 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Fingerprint, KeyRound, Monitor, RotateCcw, ScanFace } from "lucide-react";
+import {
+  ChevronRight,
+  Fingerprint,
+  KeyRound,
+  Monitor,
+  RotateCcw,
+  ScanFace,
+  ShieldCheck,
+} from "lucide-react";
 import { useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
 
