@@ -33,6 +33,187 @@ export const Route = createFileRoute("/learn")({
   component: LearnScreen,
 });
 
+function DesktopLearn({
+  query,
+  setQuery,
+  category,
+  setCategory,
+  results,
+  lead,
+  rest,
+}: {
+  query: string;
+  setQuery: (v: string) => void;
+  category: LearnCategory | null;
+  setCategory: (v: LearnCategory | null) => void;
+  results: typeof LEARN_ARTICLES;
+  lead: (typeof LEARN_ARTICLES)[number] | undefined;
+  rest: typeof LEARN_ARTICLES;
+}) {
+  return (
+    <div className="mx-auto w-full max-w-6xl pb-10">
+      {/* Hero */}
+      <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-8 text-primary-foreground shadow-float">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-24 -top-32 size-80 rounded-full bg-gold/15 blur-[72px]"
+        />
+        <div className="relative flex items-end justify-between gap-8">
+          <div className="min-w-0">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+              For you
+            </p>
+            <h1 className="mt-2 font-display text-[30px] font-extrabold leading-tight tracking-[-0.02em]">
+              Guides, updates and announcements
+            </h1>
+            <p className="mt-2 max-w-md text-[13px] leading-relaxed text-primary-foreground/70">
+              Short, plain-English reads on how your money works on Kipit.
+            </p>
+          </div>
+          <div className="flex w-80 shrink-0 items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-3">
+            <Search className="size-4 shrink-0 text-primary-foreground/70" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search articles"
+              aria-label="Search articles"
+              className="min-w-0 flex-1 bg-transparent text-[13.5px] font-semibold text-primary-foreground outline-none placeholder:font-medium placeholder:text-primary-foreground/50"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+                className="rounded-full bg-white/15 p-1 press"
+              >
+                <X className="size-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Category pills */}
+      <div className="mt-5 flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => setCategory(null)}
+          aria-pressed={category === null}
+          className={`shrink-0 rounded-full border px-4 py-2 text-[12px] font-bold press ${
+            category === null
+              ? "border-transparent bg-primary text-gold shadow-card"
+              : "border-border bg-card text-foreground"
+          }`}
+        >
+          All
+        </button>
+        {LEARN_CATEGORIES.map((c) => (
+          <button
+            key={c}
+            type="button"
+            onClick={() => setCategory(category === c ? null : c)}
+            aria-pressed={category === c}
+            className={`shrink-0 rounded-full border px-4 py-2 text-[12px] font-bold press ${
+              category === c
+                ? "border-transparent bg-primary text-gold shadow-card"
+                : "border-border bg-card text-foreground"
+            }`}
+          >
+            {c}
+          </button>
+        ))}
+      </div>
+
+      {results.length === 0 ? (
+        <div className="mt-6 rounded-2xl border border-dashed border-border p-12 text-center">
+          <BookOpen className="mx-auto size-6 text-muted-foreground" />
+          <p className="mt-2 text-[14px] font-bold">No articles found</p>
+          <p className="mt-1 text-[12.5px] text-muted-foreground">
+            Try a different search or category.
+          </p>
+        </div>
+      ) : (
+        <div className="mt-6 grid grid-cols-3 gap-4">
+          {lead && (
+            <Link
+              to="/learn/$articleId"
+              params={{ articleId: lead.id }}
+              className="group relative col-span-3 flex items-center gap-6 overflow-hidden rounded-2xl bg-brand-gradient p-6 text-primary-foreground shadow-float press"
+            >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -right-20 -top-24 size-64 rounded-full bg-gold/15 blur-[56px]"
+              />
+              <img
+                src={articleArt(lead.id, 0)}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                className="relative h-44 w-72 shrink-0 rounded-xl object-cover"
+              />
+              <div className="relative min-w-0">
+                <span className="inline-block rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.16em]">
+                  {lead.tag}
+                </span>
+                <h2 className="mt-3 font-display text-[24px] font-extrabold leading-snug tracking-[-0.01em]">
+                  {lead.title}
+                </h2>
+                <p className="mt-2 max-w-lg text-[13px] leading-relaxed text-primary-foreground/75">
+                  {lead.standfirst}
+                </p>
+                <span className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-gold-gradient px-5 py-2.5 text-[12px] font-bold text-brand transition-transform group-hover:scale-[1.03]">
+                  Read now <ArrowUpRight className="size-3.5" />
+                </span>
+              </div>
+            </Link>
+          )}
+
+          {rest.map((a, i) => (
+            <Link
+              key={a.id}
+              to="/learn/$articleId"
+              params={{ articleId: a.id }}
+              className="group flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-card transition-all hover:-translate-y-0.5 hover:shadow-float"
+            >
+              <div className="relative h-36 overflow-hidden">
+                <img
+                  src={articleArt(a.id, i + 1)}
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <span
+                  aria-hidden
+                  className="absolute inset-x-0 bottom-0 h-1 bg-gold-gradient"
+                />
+              </div>
+              <div className="flex flex-1 flex-col p-4">
+                <p className="text-[9.5px] font-bold uppercase tracking-[0.16em] text-brand">
+                  {a.tag}
+                </p>
+                <h3 className="mt-1.5 font-display text-[15px] font-bold leading-snug">
+                  {a.title}
+                </h3>
+                <p className="mt-1.5 line-clamp-2 text-[12px] leading-relaxed text-muted-foreground">
+                  {a.standfirst}
+                </p>
+                <p className="mt-auto inline-flex items-center gap-1 pt-3 text-[10.5px] font-semibold text-muted-foreground">
+                  <Clock3 className="size-3" /> {a.readMinutes} min read · {a.date}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-8">
+        <DisclosureStrip />
+      </div>
+    </div>
+  );
+}
+
 function LearnScreen() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<LearnCategory | null>(null);
@@ -54,7 +235,20 @@ function LearnScreen() {
 
   return (
     <AppShell title="Learn" navVariant="elevated">
-      <div className="pb-2">
+      {/* ── Desktop layout ─────────────────────────────────────── */}
+      <div className="hidden md:block">
+        <DesktopLearn
+          query={query}
+          setQuery={setQuery}
+          category={category}
+          setCategory={setCategory}
+          results={results}
+          lead={lead}
+          rest={rest}
+        />
+      </div>
+      {/* ── Mobile layout (unchanged) ──────────────────────────── */}
+      <div className="pb-2 md:hidden">
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
           <span
             aria-hidden
