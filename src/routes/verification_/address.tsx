@@ -38,6 +38,31 @@ function AddressStep() {
       eyebrow="Tier 2"
       title="Where do you live?"
       subtitle="Use your current residential address — a PO Box or office address can't be accepted."
+      aside={
+        <>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Accepted proof</p>
+            <ul className="mt-2 space-y-2">
+              {[
+                "Utility bill issued in the last 3 months.",
+                "Bank statement showing your address.",
+                "Tenancy agreement or government letter.",
+              ].map((t) => (
+                <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </section>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Keep it current</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+              Your address must match the documents you upload, otherwise the review may be delayed.
+            </p>
+          </section>
+        </>
+      }
       step={3}
       totalSteps={4}
     >
