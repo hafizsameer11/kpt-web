@@ -21,7 +21,7 @@ export const SIDEBAR_NAV: SidebarItem[] = [
   { label: "Invest", to: "/invest", icon: TrendingUp },
   { label: "Explore", to: "/explore", icon: Compass },
   { label: "Portfolio", to: "/portfolio", icon: PieChart },
-  { label: "Chat to Trade", to: "/chat", icon: MessageCircle },
+  { label: "Ask AI", to: "/chat", icon: MessageCircle },
   { label: "Settings", to: "/settings", icon: Settings },
 ];
 
