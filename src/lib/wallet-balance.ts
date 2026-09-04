@@ -2,7 +2,7 @@
  * Live wallet balance for the prototype.
  * Persists to localStorage so deposits and withdrawals actually move the balance.
  */
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 const KEY = "kipit:wallet-balance";
 const LEDGER_KEY = "kipit:wallet-ledger";
@@ -92,7 +92,10 @@ function subscribe(listener: () => void) {
 export const subscribeWallet = (listener: (value: number) => void) =>
   subscribe(() => listener(current));
 
-/** Reactive wallet balance for components. */
+/** Reactive wallet balance for components (hydration safe). */
 export function useWalletBalance() {
-  return useSyncExternalStore(subscribe, getWalletBalance, () => STARTING_WALLET);
+  const value = useSyncExternalStore(subscribe, getWalletBalance, () => STARTING_WALLET);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted ? value : STARTING_WALLET;
 }
