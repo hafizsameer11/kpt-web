@@ -78,7 +78,9 @@ function ChangePinScreen() {
       backLabel="Security"
       subtitle="Your transaction PIN authorizes withdrawals, investments and gifts."
     >
-      <div className="mx-auto max-w-md">
+      <div className="mx-auto max-w-md md:max-w-4xl md:grid md:grid-cols-[minmax(0,1fr)_320px] md:items-start md:gap-6">
+        <div className="min-w-0">
+
         {done ? (
           <section className="card-surface flex flex-col items-center p-8 text-center">
             <span className="grid size-16 place-items-center rounded-full bg-emerald-500/12 text-emerald-600">
