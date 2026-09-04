@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   Users,
@@ -13,10 +13,20 @@ import {
   LifeBuoy,
   Bell,
   Search,
+  LockKeyhole,
+  LogOut,
   type LucideIcon,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Logo } from "./Logo";
+import {
+  ADMIN_IDLE_MINUTES,
+  endAdminSession,
+  getAdminSession,
+  lockAdminSession,
+  type AdminSession,
+} from "@/lib/admin-auth";
+
 
 type Item = { label: string; to: string; icon: LucideIcon; soon?: boolean };
 type Group = { heading: string; items: Item[] };
@@ -68,6 +78,47 @@ export function AdminShell({
   subtitle?: string;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const [session, setSession] = useState<AdminSession | null>(null);
+
+  /** ADM-001/003 — no session means back to sign in; a locked session goes to the lock screen. */
+  useEffect(() => {
+    const current = getAdminSession();
+    setSession(current);
+    if (!current) navigate({ to: "/admin/login", replace: true });
+    else if (current.locked) navigate({ to: "/admin/locked", replace: true });
+  }, [navigate, pathname]);
+
+  /** ADM-003 — auto-lock after a period of inactivity. */
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    const reset = () => {
+      clearTimeout(timer);
+      timer = setTimeout(
+        () => {
+          lockAdminSession();
+          navigate({ to: "/admin/locked", replace: true });
+        },
+        ADMIN_IDLE_MINUTES * 60 * 1000,
+      );
+    };
+    const events = ["mousemove", "keydown", "click", "scroll"] as const;
+    events.forEach((e) => window.addEventListener(e, reset, { passive: true }));
+    reset();
+    return () => {
+      clearTimeout(timer);
+      events.forEach((e) => window.removeEventListener(e, reset));
+    };
+  }, [navigate]);
+
+  const initials = (session?.name ?? "Seyi Adeleke")
+    .split(" ")
+    .map((p) => p[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -125,13 +176,39 @@ export function AdminShell({
         <div className="border-t border-white/10 p-4">
           <div className="flex items-center gap-3 rounded-xl bg-white/8 p-3">
             <span className="grid size-9 shrink-0 place-items-center rounded-full bg-gold text-[12px] font-extrabold text-gold-foreground">
-              SA
+              {initials}
             </span>
             <div className="min-w-0">
-              <p className="truncate text-[13px] font-bold">Seyi Adeleke</p>
-              <p className="truncate text-[11px] text-primary-foreground/55">Global Admin</p>
+              <p className="truncate text-[13px] font-bold">{session?.name ?? "Seyi Adeleke"}</p>
+              <p className="truncate text-[11px] text-primary-foreground/55">
+                {session?.role ?? "Global Admin"}
+              </p>
             </div>
           </div>
+
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                lockAdminSession();
+                navigate({ to: "/admin/locked" });
+              }}
+              className="flex items-center justify-center gap-1.5 rounded-lg border border-white/15 px-2 py-2 text-[11px] font-semibold text-primary-foreground/75 transition hover:bg-white/10"
+            >
+              <LockKeyhole className="size-3.5" /> Lock
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                endAdminSession();
+                navigate({ to: "/admin/login", replace: true });
+              }}
+              className="flex items-center justify-center gap-1.5 rounded-lg border border-white/15 px-2 py-2 text-[11px] font-semibold text-primary-foreground/75 transition hover:bg-white/10"
+            >
+              <LogOut className="size-3.5" /> Sign out
+            </button>
+          </div>
+
         </div>
       </aside>
 
