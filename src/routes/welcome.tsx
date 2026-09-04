@@ -110,7 +110,7 @@ function Welcome() {
         </div>
 
         <div
-          className="animate-rise mt-auto space-y-3 pt-12 lg:mt-0 lg:flex lg:flex-col lg:justify-center lg:space-y-3 lg:border-l lg:border-white/10 lg:bg-white/[0.06] lg:px-16 lg:py-16 lg:pt-16 lg:backdrop-blur-md"
+          className="animate-rise mt-auto space-y-3 pt-12 lg:mt-0 lg:flex lg:flex-col lg:justify-center lg:space-y-3 lg:border-l lg:border-white/10 lg:bg-white/[0.06] lg:items-center lg:px-16 lg:py-16 lg:pt-16 lg:backdrop-blur-md lg:*:w-full lg:*:max-w-sm"
           style={{ animationDelay: "700ms" }}
         >
           <div className="hidden lg:block lg:pb-4">
