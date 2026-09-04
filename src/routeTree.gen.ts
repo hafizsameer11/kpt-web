@@ -31,6 +31,7 @@ import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as AdminComplianceRouteImport } from './routes/admin_.compliance'
+import { Route as AdminTransactionsRouteImport } from './routes/admin_.transactions'
 import { Route as AdminUsersRouteImport } from './routes/admin_.users'
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
@@ -100,6 +101,7 @@ import { Route as AdminComplianceAmlRouteImport } from './routes/admin_.complian
 import { Route as AdminComplianceMonitoringRouteImport } from './routes/admin_.compliance_.monitoring'
 import { Route as AdminComplianceQueueRouteImport } from './routes/admin_.compliance_.queue'
 import { Route as AdminComplianceReportingRouteImport } from './routes/admin_.compliance_.reporting'
+import { Route as AdminTransactionsTxnIdRouteImport } from './routes/admin_.transactions_.$txnId'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin_.users_.$userId'
 import { Route as ExploreProductIdCalculatorRouteImport } from './routes/explore_.$productId_.calculator'
 import { Route as ExploreProductIdProcessingRouteImport } from './routes/explore_.$productId_.processing'
@@ -242,6 +244,11 @@ const WithdrawRoute = WithdrawRouteImport.update({
 const AdminComplianceRoute = AdminComplianceRouteImport.update({
   id: '/admin_/compliance',
   path: '/admin/compliance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
+  id: '/admin_/transactions',
+  path: '/admin/transactions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
@@ -594,6 +601,11 @@ const AdminComplianceReportingRoute =
     path: '/admin/compliance/reporting',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminTransactionsTxnIdRoute = AdminTransactionsTxnIdRouteImport.update({
+  id: '/admin_/transactions_/$txnId',
+  path: '/admin/transactions/$txnId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
   id: '/admin_/users_/$userId',
   path: '/admin/users/$userId',
@@ -802,6 +814,7 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
   '/admin/compliance': typeof AdminComplianceRoute
+  '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
@@ -871,6 +884,7 @@ export interface FileRoutesByFullPath {
   '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin/compliance/queue': typeof AdminComplianceQueueRoute
   '/admin/compliance/reporting': typeof AdminComplianceReportingRoute
+  '/admin/transactions/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
@@ -928,6 +942,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
   '/admin/compliance': typeof AdminComplianceRoute
+  '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
@@ -996,6 +1011,7 @@ export interface FileRoutesByTo {
   '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin/compliance/queue': typeof AdminComplianceQueueRoute
   '/admin/compliance/reporting': typeof AdminComplianceReportingRoute
+  '/admin/transactions/$txnId': typeof AdminTransactionsTxnIdRoute
   '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
@@ -1053,6 +1069,7 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
   '/admin_/compliance': typeof AdminComplianceRoute
+  '/admin_/transactions': typeof AdminTransactionsRoute
   '/admin_/users': typeof AdminUsersRoute
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
   '/call-account_/review': typeof CallAccountReviewRoute
@@ -1122,6 +1139,7 @@ export interface FileRoutesById {
   '/admin_/compliance_/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin_/compliance_/queue': typeof AdminComplianceQueueRoute
   '/admin_/compliance_/reporting': typeof AdminComplianceReportingRoute
+  '/admin_/transactions_/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin_/users_/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/explore_/$productId_/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore_/$productId_/processing': typeof ExploreProductIdProcessingRoute
@@ -1181,6 +1199,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/withdraw'
     | '/admin/compliance'
+    | '/admin/transactions'
     | '/admin/users'
     | '/call-account/add-money'
     | '/call-account/review'
@@ -1250,6 +1269,7 @@ export interface FileRouteTypes {
     | '/admin/compliance/monitoring'
     | '/admin/compliance/queue'
     | '/admin/compliance/reporting'
+    | '/admin/transactions/$txnId'
     | '/admin/users/$userId'
     | '/explore/$productId/calculator'
     | '/explore/$productId/processing'
@@ -1307,6 +1327,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/withdraw'
     | '/admin/compliance'
+    | '/admin/transactions'
     | '/admin/users'
     | '/call-account/add-money'
     | '/call-account/review'
@@ -1375,6 +1396,7 @@ export interface FileRouteTypes {
     | '/admin/compliance/monitoring'
     | '/admin/compliance/queue'
     | '/admin/compliance/reporting'
+    | '/admin/transactions/$txnId'
     | '/explore/$productId/calculator'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
@@ -1431,6 +1453,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/withdraw'
     | '/admin_/compliance'
+    | '/admin_/transactions'
     | '/admin_/users'
     | '/call-account_/add-money'
     | '/call-account_/review'
@@ -1500,6 +1523,7 @@ export interface FileRouteTypes {
     | '/admin_/compliance_/monitoring'
     | '/admin_/compliance_/queue'
     | '/admin_/compliance_/reporting'
+    | '/admin_/transactions_/$txnId'
     | '/admin_/users_/$userId'
     | '/explore_/$productId_/calculator'
     | '/explore_/$productId_/processing'
@@ -1558,6 +1582,7 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   WithdrawRoute: typeof WithdrawRoute
   AdminComplianceRoute: typeof AdminComplianceRoute
+  AdminTransactionsRoute: typeof AdminTransactionsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
   CallAccountReviewRoute: typeof CallAccountReviewRoute
@@ -1627,6 +1652,7 @@ export interface RootRouteChildren {
   AdminComplianceMonitoringRoute: typeof AdminComplianceMonitoringRoute
   AdminComplianceQueueRoute: typeof AdminComplianceQueueRoute
   AdminComplianceReportingRoute: typeof AdminComplianceReportingRoute
+  AdminTransactionsTxnIdRoute: typeof AdminTransactionsTxnIdRoute
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRouteWithChildren
   ExploreProductIdCalculatorRoute: typeof ExploreProductIdCalculatorRoute
   ExploreProductIdProcessingRoute: typeof ExploreProductIdProcessingRoute
@@ -1802,6 +1828,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/compliance'
       fullPath: '/admin/compliance'
       preLoaderRoute: typeof AdminComplianceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/transactions': {
+      id: '/admin_/transactions'
+      path: '/admin/transactions'
+      fullPath: '/admin/transactions'
+      preLoaderRoute: typeof AdminTransactionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/users': {
@@ -2287,6 +2320,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminComplianceReportingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/transactions_/$txnId': {
+      id: '/admin_/transactions_/$txnId'
+      path: '/admin/transactions/$txnId'
+      fullPath: '/admin/transactions/$txnId'
+      preLoaderRoute: typeof AdminTransactionsTxnIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/users_/$userId': {
       id: '/admin_/users_/$userId'
       path: '/admin/users/$userId'
@@ -2590,6 +2630,7 @@ const rootRouteChildren: RootRouteChildren = {
   WelcomeRoute: WelcomeRoute,
   WithdrawRoute: WithdrawRoute,
   AdminComplianceRoute: AdminComplianceRoute,
+  AdminTransactionsRoute: AdminTransactionsRoute,
   AdminUsersRoute: AdminUsersRoute,
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
   CallAccountReviewRoute: CallAccountReviewRoute,
@@ -2659,6 +2700,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminComplianceMonitoringRoute: AdminComplianceMonitoringRoute,
   AdminComplianceQueueRoute: AdminComplianceQueueRoute,
   AdminComplianceReportingRoute: AdminComplianceReportingRoute,
+  AdminTransactionsTxnIdRoute: AdminTransactionsTxnIdRoute,
   AdminUsersUserIdRoute: AdminUsersUserIdRouteWithChildren,
   ExploreProductIdCalculatorRoute: ExploreProductIdCalculatorRoute,
   ExploreProductIdProcessingRoute: ExploreProductIdProcessingRoute,
