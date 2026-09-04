@@ -42,7 +42,7 @@ const GROUPS: Group[] = [
     items: [
       { label: "Products", to: "/admin/products", icon: Package },
       { label: "Rate management", to: "/admin/rates", icon: Percent },
-      { label: "Plan adjustments", to: "/admin", icon: SlidersHorizontal, soon: true },
+      { label: "Plan adjustments", to: "/admin/adjustments", icon: SlidersHorizontal },
     ],
   },
   {
