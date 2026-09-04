@@ -464,27 +464,45 @@ function BlockView({
       );
 
     /* CHAT-002 */
-    case "balance":
+    case "balance": {
+      const invested = PORTFOLIO_SNAPSHOT.invested;
+      const total = PORTFOLIO_SNAPSHOT.total || 1;
+      const investedPct = Math.round((invested / total) * 100);
       return (
-        <div className="space-y-2.5">
-          <div className="grid gap-2.5 sm:grid-cols-3">
-            <StatCard icon={Wallet} label="Wallet" value={naira(PORTFOLIO_SNAPSHOT.wallet)} />
-            <StatCard
+        <ResponseCard>
+          <div className="relative overflow-hidden bg-brand-gradient px-4 pb-5 pt-4 text-primary-foreground">
+            <span className="pointer-events-none absolute -right-10 -top-14 size-36 rounded-full bg-gold/20 blur-3xl" />
+            <p className="relative flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wide text-primary-foreground/70">
+              <Landmark className="size-3.5 text-gold" /> Total portfolio
+            </p>
+            <p className="relative mt-1 font-display text-[26px] font-bold leading-none text-num">
+              {naira(PORTFOLIO_SNAPSHOT.total)}
+            </p>
+            <div className="relative mt-3.5 h-1.5 overflow-hidden rounded-full bg-primary-foreground/15">
+              <span
+                className="block h-full rounded-full bg-gold-gradient"
+                style={{ width: `${investedPct}%` }}
+              />
+            </div>
+            <p className="relative mt-1.5 text-[11px] text-primary-foreground/70">
+              {investedPct}% working in investments
+            </p>
+          </div>
+          <div className="grid grid-cols-2 divide-x divide-border">
+            <MiniStat icon={Wallet} label="Wallet" value={naira(PORTFOLIO_SNAPSHOT.wallet)} hint="Ready to invest" />
+            <MiniStat
               icon={PieChart}
-              label="Investments"
+              label="Invested"
               value={naira(PORTFOLIO_SNAPSHOT.invested)}
               hint={`${PORTFOLIO_SNAPSHOT.holdings} active holdings`}
             />
-            <StatCard
-              icon={Landmark}
-              label="Portfolio"
-              value={naira(PORTFOLIO_SNAPSHOT.total)}
-              accent
-            />
           </div>
-          <CtaLink to="/portfolio" label="View Portfolio" />
-        </div>
+          <CardFooter>
+            <CtaLink to="/portfolio" label="View Portfolio" />
+          </CardFooter>
+        </ResponseCard>
       );
+    }
 
     /* CHAT-004 */
     case "products":
