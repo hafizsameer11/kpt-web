@@ -158,8 +158,8 @@
   --border: oklch(0.3 0.032 256);
   --input: oklch(0.3 0.032 256);
   --ring: oklch(0.78 0.145 82);
-  --brand: oklch(0.28 0.075 256);
-  --brand-foreground: oklch(0.97 0.008 250);
+  --brand: oklch(0.6 0.115 252);
+  --brand-foreground: oklch(0.99 0.005 250);
   --gold: oklch(0.82 0.15 84);
   --gold-foreground: oklch(0.18 0.04 258);
   --chart-1: oklch(0.66 0.11 252);
