@@ -30,8 +30,10 @@ import { Route as SplashRouteImport } from './routes/splash'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
+import { Route as AdminAccessHelpRouteImport } from './routes/admin_.access-help'
 import { Route as AdminAdjustmentsRouteImport } from './routes/admin_.adjustments'
 import { Route as AdminComplianceRouteImport } from './routes/admin_.compliance'
+import { Route as AdminLockedRouteImport } from './routes/admin_.locked'
 import { Route as AdminLoginRouteImport } from './routes/admin_.login'
 import { Route as AdminMarketingRouteImport } from './routes/admin_.marketing'
 import { Route as AdminProductsRouteImport } from './routes/admin_.products'
@@ -40,6 +42,7 @@ import { Route as AdminReconciliationRouteImport } from './routes/admin_.reconci
 import { Route as AdminSupportRouteImport } from './routes/admin_.support'
 import { Route as AdminTransactionsRouteImport } from './routes/admin_.transactions'
 import { Route as AdminUsersRouteImport } from './routes/admin_.users'
+import { Route as AdminVerifyRouteImport } from './routes/admin_.verify'
 import { Route as AdminWithdrawalsRouteImport } from './routes/admin_.withdrawals'
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
@@ -268,6 +271,11 @@ const WithdrawRoute = WithdrawRouteImport.update({
   path: '/withdraw',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAccessHelpRoute = AdminAccessHelpRouteImport.update({
+  id: '/admin_/access-help',
+  path: '/admin/access-help',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAdjustmentsRoute = AdminAdjustmentsRouteImport.update({
   id: '/admin_/adjustments',
   path: '/admin/adjustments',
@@ -276,6 +284,11 @@ const AdminAdjustmentsRoute = AdminAdjustmentsRouteImport.update({
 const AdminComplianceRoute = AdminComplianceRouteImport.update({
   id: '/admin_/compliance',
   path: '/admin/compliance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLockedRoute = AdminLockedRouteImport.update({
+  id: '/admin_/locked',
+  path: '/admin/locked',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -316,6 +329,11 @@ const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/admin_/users',
   path: '/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminVerifyRoute = AdminVerifyRouteImport.update({
+  id: '/admin_/verify',
+  path: '/admin/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminWithdrawalsRoute = AdminWithdrawalsRouteImport.update({
@@ -982,8 +1000,10 @@ export interface FileRoutesByFullPath {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin/access-help': typeof AdminAccessHelpRoute
   '/admin/adjustments': typeof AdminAdjustmentsRoute
   '/admin/compliance': typeof AdminComplianceRoute
+  '/admin/locked': typeof AdminLockedRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/marketing': typeof AdminMarketingRoute
   '/admin/products': typeof AdminProductsRoute
@@ -992,6 +1012,7 @@ export interface FileRoutesByFullPath {
   '/admin/support': typeof AdminSupportRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/verify': typeof AdminVerifyRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
@@ -1137,8 +1158,10 @@ export interface FileRoutesByTo {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin/access-help': typeof AdminAccessHelpRoute
   '/admin/adjustments': typeof AdminAdjustmentsRoute
   '/admin/compliance': typeof AdminComplianceRoute
+  '/admin/locked': typeof AdminLockedRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/marketing': typeof AdminMarketingRoute
   '/admin/products': typeof AdminProductsRoute
@@ -1147,6 +1170,7 @@ export interface FileRoutesByTo {
   '/admin/support': typeof AdminSupportRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/verify': typeof AdminVerifyRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
@@ -1291,8 +1315,10 @@ export interface FileRoutesById {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin_/access-help': typeof AdminAccessHelpRoute
   '/admin_/adjustments': typeof AdminAdjustmentsRoute
   '/admin_/compliance': typeof AdminComplianceRoute
+  '/admin_/locked': typeof AdminLockedRoute
   '/admin_/login': typeof AdminLoginRoute
   '/admin_/marketing': typeof AdminMarketingRoute
   '/admin_/products': typeof AdminProductsRoute
@@ -1301,6 +1327,7 @@ export interface FileRoutesById {
   '/admin_/support': typeof AdminSupportRoute
   '/admin_/transactions': typeof AdminTransactionsRoute
   '/admin_/users': typeof AdminUsersRoute
+  '/admin_/verify': typeof AdminVerifyRoute
   '/admin_/withdrawals': typeof AdminWithdrawalsRoute
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
   '/call-account_/review': typeof CallAccountReviewRoute
@@ -1448,8 +1475,10 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
+    | '/admin/access-help'
     | '/admin/adjustments'
     | '/admin/compliance'
+    | '/admin/locked'
     | '/admin/login'
     | '/admin/marketing'
     | '/admin/products'
@@ -1458,6 +1487,7 @@ export interface FileRouteTypes {
     | '/admin/support'
     | '/admin/transactions'
     | '/admin/users'
+    | '/admin/verify'
     | '/admin/withdrawals'
     | '/call-account/add-money'
     | '/call-account/review'
@@ -1603,8 +1633,10 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
+    | '/admin/access-help'
     | '/admin/adjustments'
     | '/admin/compliance'
+    | '/admin/locked'
     | '/admin/login'
     | '/admin/marketing'
     | '/admin/products'
@@ -1613,6 +1645,7 @@ export interface FileRouteTypes {
     | '/admin/support'
     | '/admin/transactions'
     | '/admin/users'
+    | '/admin/verify'
     | '/admin/withdrawals'
     | '/call-account/add-money'
     | '/call-account/review'
@@ -1756,8 +1789,10 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
+    | '/admin_/access-help'
     | '/admin_/adjustments'
     | '/admin_/compliance'
+    | '/admin_/locked'
     | '/admin_/login'
     | '/admin_/marketing'
     | '/admin_/products'
@@ -1766,6 +1801,7 @@ export interface FileRouteTypes {
     | '/admin_/support'
     | '/admin_/transactions'
     | '/admin_/users'
+    | '/admin_/verify'
     | '/admin_/withdrawals'
     | '/call-account_/add-money'
     | '/call-account_/review'
@@ -1912,8 +1948,10 @@ export interface RootRouteChildren {
   VerificationRoute: typeof VerificationRoute
   WelcomeRoute: typeof WelcomeRoute
   WithdrawRoute: typeof WithdrawRoute
+  AdminAccessHelpRoute: typeof AdminAccessHelpRoute
   AdminAdjustmentsRoute: typeof AdminAdjustmentsRoute
   AdminComplianceRoute: typeof AdminComplianceRoute
+  AdminLockedRoute: typeof AdminLockedRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMarketingRoute: typeof AdminMarketingRoute
   AdminProductsRoute: typeof AdminProductsRoute
@@ -1922,6 +1960,7 @@ export interface RootRouteChildren {
   AdminSupportRoute: typeof AdminSupportRoute
   AdminTransactionsRoute: typeof AdminTransactionsRoute
   AdminUsersRoute: typeof AdminUsersRoute
+  AdminVerifyRoute: typeof AdminVerifyRoute
   AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
   CallAccountReviewRoute: typeof CallAccountReviewRoute
@@ -2181,6 +2220,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WithdrawRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/access-help': {
+      id: '/admin_/access-help'
+      path: '/admin/access-help'
+      fullPath: '/admin/access-help'
+      preLoaderRoute: typeof AdminAccessHelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/adjustments': {
       id: '/admin_/adjustments'
       path: '/admin/adjustments'
@@ -2193,6 +2239,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/compliance'
       fullPath: '/admin/compliance'
       preLoaderRoute: typeof AdminComplianceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/locked': {
+      id: '/admin_/locked'
+      path: '/admin/locked'
+      fullPath: '/admin/locked'
+      preLoaderRoute: typeof AdminLockedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/login': {
@@ -2249,6 +2302,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/verify': {
+      id: '/admin_/verify'
+      path: '/admin/verify'
+      fullPath: '/admin/verify'
+      preLoaderRoute: typeof AdminVerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/withdrawals': {
@@ -3176,8 +3236,10 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationRoute: VerificationRoute,
   WelcomeRoute: WelcomeRoute,
   WithdrawRoute: WithdrawRoute,
+  AdminAccessHelpRoute: AdminAccessHelpRoute,
   AdminAdjustmentsRoute: AdminAdjustmentsRoute,
   AdminComplianceRoute: AdminComplianceRoute,
+  AdminLockedRoute: AdminLockedRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMarketingRoute: AdminMarketingRoute,
   AdminProductsRoute: AdminProductsRoute,
@@ -3186,6 +3248,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminSupportRoute: AdminSupportRoute,
   AdminTransactionsRoute: AdminTransactionsRoute,
   AdminUsersRoute: AdminUsersRoute,
+  AdminVerifyRoute: AdminVerifyRoute,
   AdminWithdrawalsRoute: AdminWithdrawalsRoute,
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
   CallAccountReviewRoute: CallAccountReviewRoute,
