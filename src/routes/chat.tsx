@@ -81,16 +81,25 @@ function ChatScreen() {
   const [restored, setRestored] = useState(false);
   const amountRef = useRef<number | undefined>(undefined);
   const endRef = useRef<HTMLDivElement>(null);
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const desktopScrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Restore the conversation after mount so it survives closing the chat.
+  // Restore the conversation after mount so it survives closing the chat,
+  // then open the new session with a fresh greeting + suggested questions.
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const saved = JSON.parse(raw) as { messages?: ChatMessage[]; amount?: number };
         if (Array.isArray(saved.messages) && saved.messages.length > 0) {
-          setMessages(saved.messages);
+          const last = saved.messages[saved.messages.length - 1];
+          const needsGreeting = !(last && last.role === "assistant" && last.screen === "CHAT-001");
+          setMessages(
+            needsGreeting
+              ? [...saved.messages, { ...WELCOME, id: nextId() }]
+              : saved.messages,
+          );
         }
         if (typeof saved.amount === "number") amountRef.current = saved.amount;
       }
@@ -99,6 +108,7 @@ function ChatScreen() {
     }
     setRestored(true);
   }, []);
+
 
   useEffect(() => {
     if (!restored) return;
@@ -123,9 +133,20 @@ function ChatScreen() {
     }
   };
 
+  // Keep the newest message in view in whichever pane is scrolling.
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages, thinking]);
+    const scroll = () => {
+      for (const el of [mobileScrollRef.current, desktopScrollRef.current]) {
+        if (el && el.scrollHeight > el.clientHeight) {
+          el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+        }
+      }
+      endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    };
+    scroll();
+    const t = window.setTimeout(scroll, 120);
+    return () => window.clearTimeout(t);
+  }, [messages, thinking, restored]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -149,7 +170,10 @@ function ChatScreen() {
       inputRef.current?.focus();
     }, 550);
   };
-  const showPrompts = messages.length === 1;
+  const lastMessage = messages[messages.length - 1];
+  const showPrompts =
+    !thinking && lastMessage?.role === "assistant" && lastMessage.screen === "CHAT-001";
+
 
   const promptIcons = [PieChart, Wallet, CalendarClock, LifeBuoy, BookOpen, Landmark];
 
@@ -293,7 +317,11 @@ function ChatScreen() {
           </div>
         </header>
 
-        <div className="flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4">
+        <div
+          ref={mobileScrollRef}
+          className="flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4"
+        >
+
           {transcript}
         </div>
 
@@ -344,7 +372,9 @@ function ChatScreen() {
               </header>
 
 
-              <div className="flex-1 space-y-4 overflow-y-auto px-6 py-5">{transcript}</div>
+              <div ref={desktopScrollRef} className="flex-1 space-y-4 overflow-y-auto px-6 py-5">
+                {transcript}
+              </div>
 
               <form
                 onSubmit={(event) => {
