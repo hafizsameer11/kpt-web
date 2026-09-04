@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, MessageSquareLock, ShieldCheck, UserCheck } from "lucide-react";
 import { useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
@@ -62,7 +62,9 @@ function ResetPinScreen() {
       backLabel="Security"
       subtitle="We verify your identity before a new PIN can be set."
     >
-      <div className="mx-auto max-w-md">
+      <div className="mx-auto max-w-md md:max-w-4xl md:grid md:grid-cols-[minmax(0,1fr)_320px] md:items-start md:gap-6">
+        <div className="min-w-0">
+
         <ol className="mb-4 flex items-center gap-1.5">
           {steps.map((s, i) => (
             <li key={s} className="flex-1">
@@ -158,10 +160,45 @@ function ResetPinScreen() {
             </button>
           ) : null}
         </section>
+        </div>
+
+        <aside className="hidden space-y-4 md:block">
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">How the reset works</p>
+            <ol className="mt-2 space-y-2">
+              {[
+                "Confirm the date of birth on your account.",
+                "Enter the one-time code sent to your phone.",
+                "Choose a new 4-digit PIN — active immediately.",
+              ].map((t, i) => (
+                <li key={t} className="flex gap-2.5 text-[12px] leading-relaxed text-muted-foreground">
+                  <span className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full bg-gold/15 text-[10px] font-extrabold text-gold">
+                    {i + 1}
+                  </span>
+                  {t}
+                </li>
+              ))}
+            </ol>
+          </section>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Keeping you safe</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+              We notify you by email whenever a PIN is reset. If that wasn&apos;t you, contact
+              support straight away.
+            </p>
+            <Link
+              to="/settings/help/ticket"
+              className="mt-3 inline-flex items-center rounded-xl border border-border bg-background px-4 py-2.5 text-[12.5px] font-bold text-foreground press"
+            >
+              Contact support
+            </Link>
+          </section>
+        </aside>
       </div>
     </SettingsPage>
   );
 }
+
 
 function Head({
   icon: Icon,
