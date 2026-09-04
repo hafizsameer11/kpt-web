@@ -32,6 +32,7 @@ import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as AdminComplianceRouteImport } from './routes/admin_.compliance'
 import { Route as AdminProductsRouteImport } from './routes/admin_.products'
+import { Route as AdminRatesRouteImport } from './routes/admin_.rates'
 import { Route as AdminTransactionsRouteImport } from './routes/admin_.transactions'
 import { Route as AdminUsersRouteImport } from './routes/admin_.users'
 import { Route as AdminWithdrawalsRouteImport } from './routes/admin_.withdrawals'
@@ -106,6 +107,8 @@ import { Route as AdminComplianceReportingRouteImport } from './routes/admin_.co
 import { Route as AdminProductsProductIdRouteImport } from './routes/admin_.products_.$productId'
 import { Route as AdminProductsNewRouteImport } from './routes/admin_.products_.new'
 import { Route as AdminProductsPublishedRouteImport } from './routes/admin_.products_.published'
+import { Route as AdminRatesApprovalsRouteImport } from './routes/admin_.rates_.approvals'
+import { Route as AdminRatesProposeRouteImport } from './routes/admin_.rates_.propose'
 import { Route as AdminTransactionsTxnIdRouteImport } from './routes/admin_.transactions_.$txnId'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin_.users_.$userId'
 import { Route as AdminWithdrawalsWithdrawalIdRouteImport } from './routes/admin_.withdrawals_.$withdrawalId'
@@ -132,6 +135,7 @@ import { Route as SettingsSecuritySessionsRouteImport } from './routes/settings_
 import { Route as SettingsStatementsGeneratedRouteImport } from './routes/settings_/statements_/generated'
 import { Route as AdminComplianceAmlAlertIdRouteImport } from './routes/admin_.compliance_.aml_.$alertId'
 import { Route as AdminComplianceQueueCaseIdRouteImport } from './routes/admin_.compliance_.queue_.$caseId'
+import { Route as AdminRatesApprovalsRequestIdRouteImport } from './routes/admin_.rates_.approvals_.$requestId'
 import { Route as AdminUsersUserIdIndexRouteImport } from './routes/admin_.users_.$userId.index'
 import { Route as AdminUsersUserIdAuditRouteImport } from './routes/admin_.users_.$userId.audit'
 import { Route as AdminUsersUserIdBalancesRouteImport } from './routes/admin_.users_.$userId.balances'
@@ -255,6 +259,11 @@ const AdminComplianceRoute = AdminComplianceRouteImport.update({
 const AdminProductsRoute = AdminProductsRouteImport.update({
   id: '/admin_/products',
   path: '/admin/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRatesRoute = AdminRatesRouteImport.update({
+  id: '/admin_/rates',
+  path: '/admin/rates',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
@@ -632,6 +641,16 @@ const AdminProductsPublishedRoute = AdminProductsPublishedRouteImport.update({
   path: '/admin/products/published',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRatesApprovalsRoute = AdminRatesApprovalsRouteImport.update({
+  id: '/admin_/rates_/approvals',
+  path: '/admin/rates/approvals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRatesProposeRoute = AdminRatesProposeRouteImport.update({
+  id: '/admin_/rates_/propose',
+  path: '/admin/rates/propose',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminTransactionsTxnIdRoute = AdminTransactionsTxnIdRouteImport.update({
   id: '/admin_/transactions_/$txnId',
   path: '/admin/transactions/$txnId',
@@ -777,6 +796,12 @@ const AdminComplianceQueueCaseIdRoute =
     path: '/admin/compliance/queue/$caseId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminRatesApprovalsRequestIdRoute =
+  AdminRatesApprovalsRequestIdRouteImport.update({
+    id: '/admin_/rates_/approvals_/$requestId',
+    path: '/admin/rates/approvals/$requestId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminUsersUserIdIndexRoute = AdminUsersUserIdIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -852,6 +877,7 @@ export interface FileRoutesByFullPath {
   '/withdraw': typeof WithdrawRoute
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/rates': typeof AdminRatesRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
@@ -926,6 +952,8 @@ export interface FileRoutesByFullPath {
   '/admin/products/$productId': typeof AdminProductsProductIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/products/published': typeof AdminProductsPublishedRoute
+  '/admin/rates/approvals': typeof AdminRatesApprovalsRoute
+  '/admin/rates/propose': typeof AdminRatesProposeRoute
   '/admin/transactions/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/admin/withdrawals/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
@@ -952,6 +980,7 @@ export interface FileRoutesByFullPath {
   '/fixed-plans/create/': typeof FixedPlansCreateIndexRoute
   '/admin/compliance/aml/$alertId': typeof AdminComplianceAmlAlertIdRoute
   '/admin/compliance/queue/$caseId': typeof AdminComplianceQueueCaseIdRoute
+  '/admin/rates/approvals/$requestId': typeof AdminRatesApprovalsRequestIdRoute
   '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -986,6 +1015,7 @@ export interface FileRoutesByTo {
   '/withdraw': typeof WithdrawRoute
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/rates': typeof AdminRatesRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
@@ -1059,6 +1089,8 @@ export interface FileRoutesByTo {
   '/admin/products/$productId': typeof AdminProductsProductIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/products/published': typeof AdminProductsPublishedRoute
+  '/admin/rates/approvals': typeof AdminRatesApprovalsRoute
+  '/admin/rates/propose': typeof AdminRatesProposeRoute
   '/admin/transactions/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin/withdrawals/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
   '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
@@ -1084,6 +1116,7 @@ export interface FileRoutesByTo {
   '/fixed-plans/create': typeof FixedPlansCreateIndexRoute
   '/admin/compliance/aml/$alertId': typeof AdminComplianceAmlAlertIdRoute
   '/admin/compliance/queue/$caseId': typeof AdminComplianceQueueCaseIdRoute
+  '/admin/rates/approvals/$requestId': typeof AdminRatesApprovalsRequestIdRoute
   '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -1119,6 +1152,7 @@ export interface FileRoutesById {
   '/withdraw': typeof WithdrawRoute
   '/admin_/compliance': typeof AdminComplianceRoute
   '/admin_/products': typeof AdminProductsRoute
+  '/admin_/rates': typeof AdminRatesRoute
   '/admin_/transactions': typeof AdminTransactionsRoute
   '/admin_/users': typeof AdminUsersRoute
   '/admin_/withdrawals': typeof AdminWithdrawalsRoute
@@ -1193,6 +1227,8 @@ export interface FileRoutesById {
   '/admin_/products_/$productId': typeof AdminProductsProductIdRoute
   '/admin_/products_/new': typeof AdminProductsNewRoute
   '/admin_/products_/published': typeof AdminProductsPublishedRoute
+  '/admin_/rates_/approvals': typeof AdminRatesApprovalsRoute
+  '/admin_/rates_/propose': typeof AdminRatesProposeRoute
   '/admin_/transactions_/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin_/users_/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/admin_/withdrawals_/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
@@ -1219,6 +1255,7 @@ export interface FileRoutesById {
   '/fixed-plans_/create/': typeof FixedPlansCreateIndexRoute
   '/admin_/compliance_/aml_/$alertId': typeof AdminComplianceAmlAlertIdRoute
   '/admin_/compliance_/queue_/$caseId': typeof AdminComplianceQueueCaseIdRoute
+  '/admin_/rates_/approvals_/$requestId': typeof AdminRatesApprovalsRequestIdRoute
   '/admin_/users_/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin_/users_/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin_/users_/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -1255,6 +1292,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin/compliance'
     | '/admin/products'
+    | '/admin/rates'
     | '/admin/transactions'
     | '/admin/users'
     | '/admin/withdrawals'
@@ -1329,6 +1367,8 @@ export interface FileRouteTypes {
     | '/admin/products/$productId'
     | '/admin/products/new'
     | '/admin/products/published'
+    | '/admin/rates/approvals'
+    | '/admin/rates/propose'
     | '/admin/transactions/$txnId'
     | '/admin/users/$userId'
     | '/admin/withdrawals/$withdrawalId'
@@ -1355,6 +1395,7 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/'
     | '/admin/compliance/aml/$alertId'
     | '/admin/compliance/queue/$caseId'
+    | '/admin/rates/approvals/$requestId'
     | '/admin/users/$userId/audit'
     | '/admin/users/$userId/balances'
     | '/admin/users/$userId/investments'
@@ -1389,6 +1430,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin/compliance'
     | '/admin/products'
+    | '/admin/rates'
     | '/admin/transactions'
     | '/admin/users'
     | '/admin/withdrawals'
@@ -1462,6 +1504,8 @@ export interface FileRouteTypes {
     | '/admin/products/$productId'
     | '/admin/products/new'
     | '/admin/products/published'
+    | '/admin/rates/approvals'
+    | '/admin/rates/propose'
     | '/admin/transactions/$txnId'
     | '/admin/withdrawals/$withdrawalId'
     | '/explore/$productId/calculator'
@@ -1487,6 +1531,7 @@ export interface FileRouteTypes {
     | '/fixed-plans/create'
     | '/admin/compliance/aml/$alertId'
     | '/admin/compliance/queue/$caseId'
+    | '/admin/rates/approvals/$requestId'
     | '/admin/users/$userId/audit'
     | '/admin/users/$userId/balances'
     | '/admin/users/$userId/investments'
@@ -1521,6 +1566,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin_/compliance'
     | '/admin_/products'
+    | '/admin_/rates'
     | '/admin_/transactions'
     | '/admin_/users'
     | '/admin_/withdrawals'
@@ -1595,6 +1641,8 @@ export interface FileRouteTypes {
     | '/admin_/products_/$productId'
     | '/admin_/products_/new'
     | '/admin_/products_/published'
+    | '/admin_/rates_/approvals'
+    | '/admin_/rates_/propose'
     | '/admin_/transactions_/$txnId'
     | '/admin_/users_/$userId'
     | '/admin_/withdrawals_/$withdrawalId'
@@ -1621,6 +1669,7 @@ export interface FileRouteTypes {
     | '/fixed-plans_/create/'
     | '/admin_/compliance_/aml_/$alertId'
     | '/admin_/compliance_/queue_/$caseId'
+    | '/admin_/rates_/approvals_/$requestId'
     | '/admin_/users_/$userId/audit'
     | '/admin_/users_/$userId/balances'
     | '/admin_/users_/$userId/investments'
@@ -1656,6 +1705,7 @@ export interface RootRouteChildren {
   WithdrawRoute: typeof WithdrawRoute
   AdminComplianceRoute: typeof AdminComplianceRoute
   AdminProductsRoute: typeof AdminProductsRoute
+  AdminRatesRoute: typeof AdminRatesRoute
   AdminTransactionsRoute: typeof AdminTransactionsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
@@ -1730,6 +1780,8 @@ export interface RootRouteChildren {
   AdminProductsProductIdRoute: typeof AdminProductsProductIdRoute
   AdminProductsNewRoute: typeof AdminProductsNewRoute
   AdminProductsPublishedRoute: typeof AdminProductsPublishedRoute
+  AdminRatesApprovalsRoute: typeof AdminRatesApprovalsRoute
+  AdminRatesProposeRoute: typeof AdminRatesProposeRoute
   AdminTransactionsTxnIdRoute: typeof AdminTransactionsTxnIdRoute
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRouteWithChildren
   AdminWithdrawalsWithdrawalIdRoute: typeof AdminWithdrawalsWithdrawalIdRoute
@@ -1750,6 +1802,7 @@ export interface RootRouteChildren {
   SettingsStatementsGeneratedRoute: typeof SettingsStatementsGeneratedRoute
   AdminComplianceAmlAlertIdRoute: typeof AdminComplianceAmlAlertIdRoute
   AdminComplianceQueueCaseIdRoute: typeof AdminComplianceQueueCaseIdRoute
+  AdminRatesApprovalsRequestIdRoute: typeof AdminRatesApprovalsRequestIdRoute
   PortfolioTransactionsTxnIdReceiptRoute: typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 
@@ -1914,6 +1967,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/products'
       fullPath: '/admin/products'
       preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/rates': {
+      id: '/admin_/rates'
+      path: '/admin/rates'
+      fullPath: '/admin/rates'
+      preLoaderRoute: typeof AdminRatesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/transactions': {
@@ -2434,6 +2494,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductsPublishedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/rates_/approvals': {
+      id: '/admin_/rates_/approvals'
+      path: '/admin/rates/approvals'
+      fullPath: '/admin/rates/approvals'
+      preLoaderRoute: typeof AdminRatesApprovalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/rates_/propose': {
+      id: '/admin_/rates_/propose'
+      path: '/admin/rates/propose'
+      fullPath: '/admin/rates/propose'
+      preLoaderRoute: typeof AdminRatesProposeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/transactions_/$txnId': {
       id: '/admin_/transactions_/$txnId'
       path: '/admin/transactions/$txnId'
@@ -2616,6 +2690,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminComplianceQueueCaseIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/rates_/approvals_/$requestId': {
+      id: '/admin_/rates_/approvals_/$requestId'
+      path: '/admin/rates/approvals/$requestId'
+      fullPath: '/admin/rates/approvals/$requestId'
+      preLoaderRoute: typeof AdminRatesApprovalsRequestIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/users_/$userId/': {
       id: '/admin_/users_/$userId/'
       path: '/'
@@ -2752,6 +2833,7 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawRoute: WithdrawRoute,
   AdminComplianceRoute: AdminComplianceRoute,
   AdminProductsRoute: AdminProductsRoute,
+  AdminRatesRoute: AdminRatesRoute,
   AdminTransactionsRoute: AdminTransactionsRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminWithdrawalsRoute: AdminWithdrawalsRoute,
@@ -2826,6 +2908,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminProductsProductIdRoute: AdminProductsProductIdRoute,
   AdminProductsNewRoute: AdminProductsNewRoute,
   AdminProductsPublishedRoute: AdminProductsPublishedRoute,
+  AdminRatesApprovalsRoute: AdminRatesApprovalsRoute,
+  AdminRatesProposeRoute: AdminRatesProposeRoute,
   AdminTransactionsTxnIdRoute: AdminTransactionsTxnIdRoute,
   AdminUsersUserIdRoute: AdminUsersUserIdRouteWithChildren,
   AdminWithdrawalsWithdrawalIdRoute: AdminWithdrawalsWithdrawalIdRoute,
@@ -2846,6 +2930,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsStatementsGeneratedRoute: SettingsStatementsGeneratedRoute,
   AdminComplianceAmlAlertIdRoute: AdminComplianceAmlAlertIdRoute,
   AdminComplianceQueueCaseIdRoute: AdminComplianceQueueCaseIdRoute,
+  AdminRatesApprovalsRequestIdRoute: AdminRatesApprovalsRequestIdRoute,
   PortfolioTransactionsTxnIdReceiptRoute:
     PortfolioTransactionsTxnIdReceiptRoute,
 }

@@ -41,7 +41,7 @@ const GROUPS: Group[] = [
     heading: "Products & rates",
     items: [
       { label: "Products", to: "/admin/products", icon: Package },
-      { label: "Rate management", to: "/admin", icon: Percent, soon: true },
+      { label: "Rate management", to: "/admin/rates", icon: Percent },
       { label: "Plan adjustments", to: "/admin", icon: SlidersHorizontal, soon: true },
     ],
   },
