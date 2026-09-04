@@ -818,30 +818,6 @@ function Cell({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Row({ label, value, copy }: { label: string; value: string; copy?: boolean }) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className="flex items-center gap-2 font-semibold">
-        {value}
-        {copy && (
-          <button
-            type="button"
-            aria-label="Copy account number"
-            onClick={() => {
-              void navigator.clipboard?.writeText(value);
-              toast.success("Account number copied");
-            }}
-            className="grid size-7 place-items-center rounded-full border border-border press hover:bg-secondary"
-          >
-            <Copy className="size-3.5" />
-          </button>
-        )}
-      </dd>
-    </div>
-  );
-}
-
 /** Small helper so every CTA looks identical across response cards. */
 function CtaLink({ to, label }: { to: string; label: string }) {
   return (
