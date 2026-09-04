@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Panel } from "@/components/kipit/AdminBits";
 import { auditFor } from "@/lib/admin-users-data";
 
-export const Route = createFileRoute("/admin/users/$userId/audit")({
+export const Route = createFileRoute("/admin_/users_/$userId/audit")({
   component: Audit,
 });
 
