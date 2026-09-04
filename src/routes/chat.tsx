@@ -818,12 +818,13 @@ function MiniStat({
 
 function Cell({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-secondary px-2.5 py-2">
-      <dt className="text-[10.5px] font-bold uppercase tracking-wide text-muted-foreground">
+    <div className="min-w-0">
+      <dt className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </dt>
-      <dd className="mt-0.5 truncate text-[12.5px] font-bold text-num">{value}</dd>
+      <dd className="mt-0.5 break-words text-[12.5px] font-bold leading-tight text-num">{value}</dd>
     </div>
+
   );
 }
 
