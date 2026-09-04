@@ -754,62 +754,55 @@ function StatusCard({ item }: { item: (typeof CHAT_STATUSES)[number] }) {
   return (
     <Link
       to={item.to}
-      className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-3.5 press hover:bg-secondary"
+      className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-secondary/60"
     >
-      <span className={`grid size-9 shrink-0 place-items-center rounded-full ${tone.cls}`}>
+      <span className={`grid size-9 shrink-0 place-items-center rounded-xl ${tone.cls}`}>
         <Icon className="size-4" />
       </span>
       <div className="min-w-0 flex-1">
         <p className="truncate text-[13px] font-semibold">{item.label}</p>
-        <p className="truncate text-[11.5px] text-muted-foreground">{item.detail}</p>
+        <p className="truncate text-[11.5px] text-muted-foreground">{item.time} · {tone.label}</p>
       </div>
-      <div className="text-right">
-        <p className="text-[12.5px] font-bold text-num">{naira(item.amount)}</p>
-        <p className="text-[11px] text-muted-foreground">{tone.label}</p>
-      </div>
+      <p className="shrink-0 text-[12.5px] font-bold text-num">{naira(item.amount)}</p>
     </Link>
   );
 }
 
-function StatCard({
+/** Shared shell so every rich response reads as one crafted card. */
+function ResponseCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="max-w-[92%] overflow-hidden rounded-2xl rounded-tl-md border border-border bg-surface shadow-card">
+      {children}
+    </div>
+  );
+}
+
+function CardFooter({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 border-t border-border bg-secondary/40 px-4 py-3">
+      {children}
+    </div>
+  );
+}
+
+function MiniStat({
   icon: Icon,
   label,
   value,
   hint,
-  accent,
 }: {
   icon: typeof Wallet;
   label: string;
   value: string;
   hint?: string;
-  accent?: boolean;
 }) {
   return (
-    <div
-      className={`rounded-2xl border p-3.5 ${
-        accent
-          ? "border-transparent bg-brand-gradient text-primary-foreground"
-          : "border-border bg-surface"
-      }`}
-    >
-      <Icon className={`size-4 ${accent ? "text-gold" : "text-brand"}`} />
-      <p
-        className={`mt-2 text-[11px] font-bold uppercase tracking-wide ${
-          accent ? "text-primary-foreground/70" : "text-muted-foreground"
-        }`}
-      >
-        {label}
+    <div className="px-4 py-3.5">
+      <p className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wide text-muted-foreground">
+        <Icon className="size-3.5 text-brand" /> {label}
       </p>
-      <p className="text-[15px] font-bold text-num">{value}</p>
-      {hint && (
-        <p
-          className={`text-[11px] ${
-            accent ? "text-primary-foreground/70" : "text-muted-foreground"
-          }`}
-        >
-          {hint}
-        </p>
-      )}
+      <p className="mt-1 text-[15px] font-bold text-num">{value}</p>
+      {hint && <p className="text-[11px] text-muted-foreground">{hint}</p>}
     </div>
   );
 }
