@@ -41,6 +41,7 @@ import { Route as AdminProductsRouteImport } from './routes/admin_.products'
 import { Route as AdminRatesRouteImport } from './routes/admin_.rates'
 import { Route as AdminReconciliationRouteImport } from './routes/admin_.reconciliation'
 import { Route as AdminSupportRouteImport } from './routes/admin_.support'
+import { Route as AdminTeamRouteImport } from './routes/admin_.team'
 import { Route as AdminTransactionsRouteImport } from './routes/admin_.transactions'
 import { Route as AdminUsersRouteImport } from './routes/admin_.users'
 import { Route as AdminVerifyRouteImport } from './routes/admin_.verify'
@@ -325,6 +326,11 @@ const AdminReconciliationRoute = AdminReconciliationRouteImport.update({
 const AdminSupportRoute = AdminSupportRouteImport.update({
   id: '/admin_/support',
   path: '/admin/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTeamRoute = AdminTeamRouteImport.update({
+  id: '/admin_/team',
+  path: '/admin/team',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
@@ -1017,6 +1023,7 @@ export interface FileRoutesByFullPath {
   '/admin/rates': typeof AdminRatesRoute
   '/admin/reconciliation': typeof AdminReconciliationRoute
   '/admin/support': typeof AdminSupportRoute
+  '/admin/team': typeof AdminTeamRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/verify': typeof AdminVerifyRoute
@@ -1176,6 +1183,7 @@ export interface FileRoutesByTo {
   '/admin/rates': typeof AdminRatesRoute
   '/admin/reconciliation': typeof AdminReconciliationRoute
   '/admin/support': typeof AdminSupportRoute
+  '/admin/team': typeof AdminTeamRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/verify': typeof AdminVerifyRoute
@@ -1334,6 +1342,7 @@ export interface FileRoutesById {
   '/admin_/rates': typeof AdminRatesRoute
   '/admin_/reconciliation': typeof AdminReconciliationRoute
   '/admin_/support': typeof AdminSupportRoute
+  '/admin_/team': typeof AdminTeamRoute
   '/admin_/transactions': typeof AdminTransactionsRoute
   '/admin_/users': typeof AdminUsersRoute
   '/admin_/verify': typeof AdminVerifyRoute
@@ -1495,6 +1504,7 @@ export interface FileRouteTypes {
     | '/admin/rates'
     | '/admin/reconciliation'
     | '/admin/support'
+    | '/admin/team'
     | '/admin/transactions'
     | '/admin/users'
     | '/admin/verify'
@@ -1654,6 +1664,7 @@ export interface FileRouteTypes {
     | '/admin/rates'
     | '/admin/reconciliation'
     | '/admin/support'
+    | '/admin/team'
     | '/admin/transactions'
     | '/admin/users'
     | '/admin/verify'
@@ -1811,6 +1822,7 @@ export interface FileRouteTypes {
     | '/admin_/rates'
     | '/admin_/reconciliation'
     | '/admin_/support'
+    | '/admin_/team'
     | '/admin_/transactions'
     | '/admin_/users'
     | '/admin_/verify'
@@ -1971,6 +1983,7 @@ export interface RootRouteChildren {
   AdminRatesRoute: typeof AdminRatesRoute
   AdminReconciliationRoute: typeof AdminReconciliationRoute
   AdminSupportRoute: typeof AdminSupportRoute
+  AdminTeamRoute: typeof AdminTeamRoute
   AdminTransactionsRoute: typeof AdminTransactionsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminVerifyRoute: typeof AdminVerifyRoute
@@ -2308,6 +2321,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/support'
       fullPath: '/admin/support'
       preLoaderRoute: typeof AdminSupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/team': {
+      id: '/admin_/team'
+      path: '/admin/team'
+      fullPath: '/admin/team'
+      preLoaderRoute: typeof AdminTeamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/transactions': {
@@ -3267,6 +3287,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRatesRoute: AdminRatesRoute,
   AdminReconciliationRoute: AdminReconciliationRoute,
   AdminSupportRoute: AdminSupportRoute,
+  AdminTeamRoute: AdminTeamRoute,
   AdminTransactionsRoute: AdminTransactionsRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminVerifyRoute: AdminVerifyRoute,
