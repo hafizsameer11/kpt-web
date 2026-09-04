@@ -30,6 +30,7 @@ import { Route as SplashRouteImport } from './routes/splash'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
+import { Route as AdminUsersRouteImport } from './routes/admin_.users'
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
@@ -94,6 +95,7 @@ import { Route as WithdrawRestrictedRouteImport } from './routes/withdraw_/restr
 import { Route as WithdrawReviewRouteImport } from './routes/withdraw_/review'
 import { Route as WithdrawSuccessRouteImport } from './routes/withdraw_/success'
 import { Route as WithdrawTrackerRouteImport } from './routes/withdraw_/tracker'
+import { Route as AdminUsersUserIdRouteImport } from './routes/admin_.users_.$userId'
 import { Route as ExploreProductIdCalculatorRouteImport } from './routes/explore_.$productId_.calculator'
 import { Route as ExploreProductIdProcessingRouteImport } from './routes/explore_.$productId_.processing'
 import { Route as ExploreProductIdRequestRouteImport } from './routes/explore_.$productId_.request'
@@ -115,6 +117,13 @@ import { Route as SettingsSecurityChangePinRouteImport } from './routes/settings
 import { Route as SettingsSecurityResetPinRouteImport } from './routes/settings_/security_/reset-pin'
 import { Route as SettingsSecuritySessionsRouteImport } from './routes/settings_/security_/sessions'
 import { Route as SettingsStatementsGeneratedRouteImport } from './routes/settings_/statements_/generated'
+import { Route as AdminUsersUserIdIndexRouteImport } from './routes/admin_.users_.$userId.index'
+import { Route as AdminUsersUserIdBalancesRouteImport } from './routes/admin_.users_.$userId.balances'
+import { Route as AdminUsersUserIdInvestmentsRouteImport } from './routes/admin_.users_.$userId.investments'
+import { Route as AdminUsersUserIdKycRouteImport } from './routes/admin_.users_.$userId.kyc'
+import { Route as AdminUsersUserIdSessionsRouteImport } from './routes/admin_.users_.$userId.sessions'
+import { Route as AdminUsersUserIdSupportRouteImport } from './routes/admin_.users_.$userId.support'
+import { Route as AdminUsersUserIdTransactionsRouteImport } from './routes/admin_.users_.$userId.transactions'
 import { Route as PortfolioTransactionsTxnIdReceiptRouteImport } from './routes/portfolio_.transactions_.$txnId_.receipt'
 
 const IndexRoute = IndexRouteImport.update({
@@ -220,6 +229,11 @@ const WelcomeRoute = WelcomeRouteImport.update({
 const WithdrawRoute = WithdrawRouteImport.update({
   id: '/withdraw',
   path: '/withdraw',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin_/users',
+  path: '/admin/users',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CallAccountAddMoneyRoute = CallAccountAddMoneyRouteImport.update({
@@ -545,6 +559,11 @@ const WithdrawTrackerRoute = WithdrawTrackerRouteImport.update({
   path: '/withdraw/tracker',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
+  id: '/admin_/users_/$userId',
+  path: '/admin/users/$userId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExploreProductIdCalculatorRoute =
   ExploreProductIdCalculatorRouteImport.update({
     id: '/explore_/$productId_/calculator',
@@ -662,6 +681,45 @@ const SettingsStatementsGeneratedRoute =
     path: '/settings/statements/generated',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminUsersUserIdIndexRoute = AdminUsersUserIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminUsersUserIdRoute,
+} as any)
+const AdminUsersUserIdBalancesRoute =
+  AdminUsersUserIdBalancesRouteImport.update({
+    id: '/balances',
+    path: '/balances',
+    getParentRoute: () => AdminUsersUserIdRoute,
+  } as any)
+const AdminUsersUserIdInvestmentsRoute =
+  AdminUsersUserIdInvestmentsRouteImport.update({
+    id: '/investments',
+    path: '/investments',
+    getParentRoute: () => AdminUsersUserIdRoute,
+  } as any)
+const AdminUsersUserIdKycRoute = AdminUsersUserIdKycRouteImport.update({
+  id: '/kyc',
+  path: '/kyc',
+  getParentRoute: () => AdminUsersUserIdRoute,
+} as any)
+const AdminUsersUserIdSessionsRoute =
+  AdminUsersUserIdSessionsRouteImport.update({
+    id: '/sessions',
+    path: '/sessions',
+    getParentRoute: () => AdminUsersUserIdRoute,
+  } as any)
+const AdminUsersUserIdSupportRoute = AdminUsersUserIdSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => AdminUsersUserIdRoute,
+} as any)
+const AdminUsersUserIdTransactionsRoute =
+  AdminUsersUserIdTransactionsRouteImport.update({
+    id: '/transactions',
+    path: '/transactions',
+    getParentRoute: () => AdminUsersUserIdRoute,
+  } as any)
 const PortfolioTransactionsTxnIdReceiptRoute =
   PortfolioTransactionsTxnIdReceiptRouteImport.update({
     id: '/portfolio_/transactions_/$txnId_/receipt',
@@ -691,6 +749,7 @@ export interface FileRoutesByFullPath {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin/users': typeof AdminUsersRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
@@ -755,6 +814,7 @@ export interface FileRoutesByFullPath {
   '/withdraw/review': typeof WithdrawReviewRoute
   '/withdraw/success': typeof WithdrawSuccessRoute
   '/withdraw/tracker': typeof WithdrawTrackerRoute
+  '/admin/users/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
@@ -776,7 +836,14 @@ export interface FileRoutesByFullPath {
   '/settings/security/sessions': typeof SettingsSecuritySessionsRoute
   '/settings/statements/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans/create/': typeof FixedPlansCreateIndexRoute
+  '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
+  '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
+  '/admin/users/$userId/kyc': typeof AdminUsersUserIdKycRoute
+  '/admin/users/$userId/sessions': typeof AdminUsersUserIdSessionsRoute
+  '/admin/users/$userId/support': typeof AdminUsersUserIdSupportRoute
+  '/admin/users/$userId/transactions': typeof AdminUsersUserIdTransactionsRoute
   '/portfolio/transactions/$txnId/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
+  '/admin/users/$userId/': typeof AdminUsersUserIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -800,6 +867,7 @@ export interface FileRoutesByTo {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin/users': typeof AdminUsersRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
@@ -884,7 +952,14 @@ export interface FileRoutesByTo {
   '/settings/security/sessions': typeof SettingsSecuritySessionsRoute
   '/settings/statements/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans/create': typeof FixedPlansCreateIndexRoute
+  '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
+  '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
+  '/admin/users/$userId/kyc': typeof AdminUsersUserIdKycRoute
+  '/admin/users/$userId/sessions': typeof AdminUsersUserIdSessionsRoute
+  '/admin/users/$userId/support': typeof AdminUsersUserIdSupportRoute
+  '/admin/users/$userId/transactions': typeof AdminUsersUserIdTransactionsRoute
   '/portfolio/transactions/$txnId/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
+  '/admin/users/$userId': typeof AdminUsersUserIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -909,6 +984,7 @@ export interface FileRoutesById {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin_/users': typeof AdminUsersRoute
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
   '/call-account_/review': typeof CallAccountReviewRoute
   '/call-account_/success': typeof CallAccountSuccessRoute
@@ -973,6 +1049,7 @@ export interface FileRoutesById {
   '/withdraw_/review': typeof WithdrawReviewRoute
   '/withdraw_/success': typeof WithdrawSuccessRoute
   '/withdraw_/tracker': typeof WithdrawTrackerRoute
+  '/admin_/users_/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/explore_/$productId_/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore_/$productId_/processing': typeof ExploreProductIdProcessingRoute
   '/explore_/$productId_/request': typeof ExploreProductIdRequestRoute
@@ -994,7 +1071,14 @@ export interface FileRoutesById {
   '/settings_/security_/sessions': typeof SettingsSecuritySessionsRoute
   '/settings_/statements_/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans_/create/': typeof FixedPlansCreateIndexRoute
+  '/admin_/users_/$userId/balances': typeof AdminUsersUserIdBalancesRoute
+  '/admin_/users_/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
+  '/admin_/users_/$userId/kyc': typeof AdminUsersUserIdKycRoute
+  '/admin_/users_/$userId/sessions': typeof AdminUsersUserIdSessionsRoute
+  '/admin_/users_/$userId/support': typeof AdminUsersUserIdSupportRoute
+  '/admin_/users_/$userId/transactions': typeof AdminUsersUserIdTransactionsRoute
   '/portfolio_/transactions_/$txnId_/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
+  '/admin_/users_/$userId/': typeof AdminUsersUserIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1020,6 +1104,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
+    | '/admin/users'
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
@@ -1084,6 +1169,7 @@ export interface FileRouteTypes {
     | '/withdraw/review'
     | '/withdraw/success'
     | '/withdraw/tracker'
+    | '/admin/users/$userId'
     | '/explore/$productId/calculator'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
@@ -1105,7 +1191,14 @@ export interface FileRouteTypes {
     | '/settings/security/sessions'
     | '/settings/statements/generated'
     | '/fixed-plans/create/'
+    | '/admin/users/$userId/balances'
+    | '/admin/users/$userId/investments'
+    | '/admin/users/$userId/kyc'
+    | '/admin/users/$userId/sessions'
+    | '/admin/users/$userId/support'
+    | '/admin/users/$userId/transactions'
     | '/portfolio/transactions/$txnId/receipt'
+    | '/admin/users/$userId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1129,6 +1222,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
+    | '/admin/users'
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
@@ -1213,7 +1307,14 @@ export interface FileRouteTypes {
     | '/settings/security/sessions'
     | '/settings/statements/generated'
     | '/fixed-plans/create'
+    | '/admin/users/$userId/balances'
+    | '/admin/users/$userId/investments'
+    | '/admin/users/$userId/kyc'
+    | '/admin/users/$userId/sessions'
+    | '/admin/users/$userId/support'
+    | '/admin/users/$userId/transactions'
     | '/portfolio/transactions/$txnId/receipt'
+    | '/admin/users/$userId'
   id:
     | '__root__'
     | '/'
@@ -1237,6 +1338,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
+    | '/admin_/users'
     | '/call-account_/add-money'
     | '/call-account_/review'
     | '/call-account_/success'
@@ -1301,6 +1403,7 @@ export interface FileRouteTypes {
     | '/withdraw_/review'
     | '/withdraw_/success'
     | '/withdraw_/tracker'
+    | '/admin_/users_/$userId'
     | '/explore_/$productId_/calculator'
     | '/explore_/$productId_/processing'
     | '/explore_/$productId_/request'
@@ -1322,7 +1425,14 @@ export interface FileRouteTypes {
     | '/settings_/security_/sessions'
     | '/settings_/statements_/generated'
     | '/fixed-plans_/create/'
+    | '/admin_/users_/$userId/balances'
+    | '/admin_/users_/$userId/investments'
+    | '/admin_/users_/$userId/kyc'
+    | '/admin_/users_/$userId/sessions'
+    | '/admin_/users_/$userId/support'
+    | '/admin_/users_/$userId/transactions'
     | '/portfolio_/transactions_/$txnId_/receipt'
+    | '/admin_/users_/$userId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1347,6 +1457,7 @@ export interface RootRouteChildren {
   VerificationRoute: typeof VerificationRoute
   WelcomeRoute: typeof WelcomeRoute
   WithdrawRoute: typeof WithdrawRoute
+  AdminUsersRoute: typeof AdminUsersRoute
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
   CallAccountReviewRoute: typeof CallAccountReviewRoute
   CallAccountSuccessRoute: typeof CallAccountSuccessRoute
@@ -1411,6 +1522,7 @@ export interface RootRouteChildren {
   WithdrawReviewRoute: typeof WithdrawReviewRoute
   WithdrawSuccessRoute: typeof WithdrawSuccessRoute
   WithdrawTrackerRoute: typeof WithdrawTrackerRoute
+  AdminUsersUserIdRoute: typeof AdminUsersUserIdRouteWithChildren
   ExploreProductIdCalculatorRoute: typeof ExploreProductIdCalculatorRoute
   ExploreProductIdProcessingRoute: typeof ExploreProductIdProcessingRoute
   ExploreProductIdRequestRoute: typeof ExploreProductIdRequestRoute
@@ -1576,6 +1688,13 @@ declare module '@tanstack/react-router' {
       path: '/withdraw'
       fullPath: '/withdraw'
       preLoaderRoute: typeof WithdrawRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/users': {
+      id: '/admin_/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/call-account_/add-money': {
@@ -2026,6 +2145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WithdrawTrackerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/users_/$userId': {
+      id: '/admin_/users_/$userId'
+      path: '/admin/users/$userId'
+      fullPath: '/admin/users/$userId'
+      preLoaderRoute: typeof AdminUsersUserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore_/$productId_/calculator': {
       id: '/explore_/$productId_/calculator'
       path: '/explore/$productId/calculator'
@@ -2173,6 +2299,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsStatementsGeneratedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/users_/$userId/': {
+      id: '/admin_/users_/$userId/'
+      path: '/'
+      fullPath: '/admin/users/$userId/'
+      preLoaderRoute: typeof AdminUsersUserIdIndexRouteImport
+      parentRoute: typeof AdminUsersUserIdRoute
+    }
+    '/admin_/users_/$userId/balances': {
+      id: '/admin_/users_/$userId/balances'
+      path: '/balances'
+      fullPath: '/admin/users/$userId/balances'
+      preLoaderRoute: typeof AdminUsersUserIdBalancesRouteImport
+      parentRoute: typeof AdminUsersUserIdRoute
+    }
+    '/admin_/users_/$userId/investments': {
+      id: '/admin_/users_/$userId/investments'
+      path: '/investments'
+      fullPath: '/admin/users/$userId/investments'
+      preLoaderRoute: typeof AdminUsersUserIdInvestmentsRouteImport
+      parentRoute: typeof AdminUsersUserIdRoute
+    }
+    '/admin_/users_/$userId/kyc': {
+      id: '/admin_/users_/$userId/kyc'
+      path: '/kyc'
+      fullPath: '/admin/users/$userId/kyc'
+      preLoaderRoute: typeof AdminUsersUserIdKycRouteImport
+      parentRoute: typeof AdminUsersUserIdRoute
+    }
+    '/admin_/users_/$userId/sessions': {
+      id: '/admin_/users_/$userId/sessions'
+      path: '/sessions'
+      fullPath: '/admin/users/$userId/sessions'
+      preLoaderRoute: typeof AdminUsersUserIdSessionsRouteImport
+      parentRoute: typeof AdminUsersUserIdRoute
+    }
+    '/admin_/users_/$userId/support': {
+      id: '/admin_/users_/$userId/support'
+      path: '/support'
+      fullPath: '/admin/users/$userId/support'
+      preLoaderRoute: typeof AdminUsersUserIdSupportRouteImport
+      parentRoute: typeof AdminUsersUserIdRoute
+    }
+    '/admin_/users_/$userId/transactions': {
+      id: '/admin_/users_/$userId/transactions'
+      path: '/transactions'
+      fullPath: '/admin/users/$userId/transactions'
+      preLoaderRoute: typeof AdminUsersUserIdTransactionsRouteImport
+      parentRoute: typeof AdminUsersUserIdRoute
+    }
     '/portfolio_/transactions_/$txnId_/receipt': {
       id: '/portfolio_/transactions_/$txnId_/receipt'
       path: '/portfolio/transactions/$txnId/receipt'
@@ -2204,6 +2379,29 @@ const FixedPlansCreateRouteChildren: FixedPlansCreateRouteChildren = {
 const FixedPlansCreateRouteWithChildren =
   FixedPlansCreateRoute._addFileChildren(FixedPlansCreateRouteChildren)
 
+interface AdminUsersUserIdRouteChildren {
+  AdminUsersUserIdBalancesRoute: typeof AdminUsersUserIdBalancesRoute
+  AdminUsersUserIdInvestmentsRoute: typeof AdminUsersUserIdInvestmentsRoute
+  AdminUsersUserIdKycRoute: typeof AdminUsersUserIdKycRoute
+  AdminUsersUserIdSessionsRoute: typeof AdminUsersUserIdSessionsRoute
+  AdminUsersUserIdSupportRoute: typeof AdminUsersUserIdSupportRoute
+  AdminUsersUserIdTransactionsRoute: typeof AdminUsersUserIdTransactionsRoute
+  AdminUsersUserIdIndexRoute: typeof AdminUsersUserIdIndexRoute
+}
+
+const AdminUsersUserIdRouteChildren: AdminUsersUserIdRouteChildren = {
+  AdminUsersUserIdBalancesRoute: AdminUsersUserIdBalancesRoute,
+  AdminUsersUserIdInvestmentsRoute: AdminUsersUserIdInvestmentsRoute,
+  AdminUsersUserIdKycRoute: AdminUsersUserIdKycRoute,
+  AdminUsersUserIdSessionsRoute: AdminUsersUserIdSessionsRoute,
+  AdminUsersUserIdSupportRoute: AdminUsersUserIdSupportRoute,
+  AdminUsersUserIdTransactionsRoute: AdminUsersUserIdTransactionsRoute,
+  AdminUsersUserIdIndexRoute: AdminUsersUserIdIndexRoute,
+}
+
+const AdminUsersUserIdRouteWithChildren =
+  AdminUsersUserIdRoute._addFileChildren(AdminUsersUserIdRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
@@ -2226,6 +2424,7 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationRoute: VerificationRoute,
   WelcomeRoute: WelcomeRoute,
   WithdrawRoute: WithdrawRoute,
+  AdminUsersRoute: AdminUsersRoute,
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
   CallAccountReviewRoute: CallAccountReviewRoute,
   CallAccountSuccessRoute: CallAccountSuccessRoute,
@@ -2290,6 +2489,7 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawReviewRoute: WithdrawReviewRoute,
   WithdrawSuccessRoute: WithdrawSuccessRoute,
   WithdrawTrackerRoute: WithdrawTrackerRoute,
+  AdminUsersUserIdRoute: AdminUsersUserIdRouteWithChildren,
   ExploreProductIdCalculatorRoute: ExploreProductIdCalculatorRoute,
   ExploreProductIdProcessingRoute: ExploreProductIdProcessingRoute,
   ExploreProductIdRequestRoute: ExploreProductIdRequestRoute,
