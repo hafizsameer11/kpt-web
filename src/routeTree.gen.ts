@@ -34,14 +34,20 @@ import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as AdminAccessHelpRouteImport } from './routes/admin_.access-help'
 import { Route as AdminAdjustmentsRouteImport } from './routes/admin_.adjustments'
 import { Route as AdminAiChatRouteImport } from './routes/admin_.ai-chat'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin_.analytics'
 import { Route as AdminAuditRouteImport } from './routes/admin_.audit'
 import { Route as AdminComplianceRouteImport } from './routes/admin_.compliance'
 import { Route as AdminLockedRouteImport } from './routes/admin_.locked'
 import { Route as AdminLoginRouteImport } from './routes/admin_.login'
 import { Route as AdminMarketingRouteImport } from './routes/admin_.marketing'
+import { Route as AdminNotificationsRouteImport } from './routes/admin_.notifications'
 import { Route as AdminProductsRouteImport } from './routes/admin_.products'
+import { Route as AdminProfileRouteImport } from './routes/admin_.profile'
 import { Route as AdminRatesRouteImport } from './routes/admin_.rates'
 import { Route as AdminReconciliationRouteImport } from './routes/admin_.reconciliation'
+import { Route as AdminReportsRouteImport } from './routes/admin_.reports'
+import { Route as AdminSearchRouteImport } from './routes/admin_.search'
+import { Route as AdminSettingsRouteImport } from './routes/admin_.settings'
 import { Route as AdminSupportRouteImport } from './routes/admin_.support'
 import { Route as AdminTeamRouteImport } from './routes/admin_.team'
 import { Route as AdminTransactionsRouteImport } from './routes/admin_.transactions'
@@ -299,6 +305,11 @@ const AdminAiChatRoute = AdminAiChatRouteImport.update({
   path: '/admin/ai-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/admin_/analytics',
+  path: '/admin/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAuditRoute = AdminAuditRouteImport.update({
   id: '/admin_/audit',
   path: '/admin/audit',
@@ -324,9 +335,19 @@ const AdminMarketingRoute = AdminMarketingRouteImport.update({
   path: '/admin/marketing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminNotificationsRoute = AdminNotificationsRouteImport.update({
+  id: '/admin_/notifications',
+  path: '/admin/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProductsRoute = AdminProductsRouteImport.update({
   id: '/admin_/products',
   path: '/admin/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminProfileRoute = AdminProfileRouteImport.update({
+  id: '/admin_/profile',
+  path: '/admin/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRatesRoute = AdminRatesRouteImport.update({
@@ -337,6 +358,21 @@ const AdminRatesRoute = AdminRatesRouteImport.update({
 const AdminReconciliationRoute = AdminReconciliationRouteImport.update({
   id: '/admin_/reconciliation',
   path: '/admin/reconciliation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/admin_/reports',
+  path: '/admin/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSearchRoute = AdminSearchRouteImport.update({
+  id: '/admin_/search',
+  path: '/admin/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/admin_/settings',
+  path: '/admin/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSupportRoute = AdminSupportRouteImport.update({
@@ -1052,14 +1088,20 @@ export interface FileRoutesByFullPath {
   '/admin/access-help': typeof AdminAccessHelpRoute
   '/admin/adjustments': typeof AdminAdjustmentsRoute
   '/admin/ai-chat': typeof AdminAiChatRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/locked': typeof AdminLockedRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/marketing': typeof AdminMarketingRoute
+  '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/profile': typeof AdminProfileRoute
   '/admin/rates': typeof AdminRatesRoute
   '/admin/reconciliation': typeof AdminReconciliationRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/search': typeof AdminSearchRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/support': typeof AdminSupportRoute
   '/admin/team': typeof AdminTeamRoute
   '/admin/transactions': typeof AdminTransactionsRoute
@@ -1218,14 +1260,20 @@ export interface FileRoutesByTo {
   '/admin/access-help': typeof AdminAccessHelpRoute
   '/admin/adjustments': typeof AdminAdjustmentsRoute
   '/admin/ai-chat': typeof AdminAiChatRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/locked': typeof AdminLockedRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/marketing': typeof AdminMarketingRoute
+  '/admin/notifications': typeof AdminNotificationsRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/profile': typeof AdminProfileRoute
   '/admin/rates': typeof AdminRatesRoute
   '/admin/reconciliation': typeof AdminReconciliationRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/search': typeof AdminSearchRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/support': typeof AdminSupportRoute
   '/admin/team': typeof AdminTeamRoute
   '/admin/transactions': typeof AdminTransactionsRoute
@@ -1383,14 +1431,20 @@ export interface FileRoutesById {
   '/admin_/access-help': typeof AdminAccessHelpRoute
   '/admin_/adjustments': typeof AdminAdjustmentsRoute
   '/admin_/ai-chat': typeof AdminAiChatRoute
+  '/admin_/analytics': typeof AdminAnalyticsRoute
   '/admin_/audit': typeof AdminAuditRoute
   '/admin_/compliance': typeof AdminComplianceRoute
   '/admin_/locked': typeof AdminLockedRoute
   '/admin_/login': typeof AdminLoginRoute
   '/admin_/marketing': typeof AdminMarketingRoute
+  '/admin_/notifications': typeof AdminNotificationsRoute
   '/admin_/products': typeof AdminProductsRoute
+  '/admin_/profile': typeof AdminProfileRoute
   '/admin_/rates': typeof AdminRatesRoute
   '/admin_/reconciliation': typeof AdminReconciliationRoute
+  '/admin_/reports': typeof AdminReportsRoute
+  '/admin_/search': typeof AdminSearchRoute
+  '/admin_/settings': typeof AdminSettingsRoute
   '/admin_/support': typeof AdminSupportRoute
   '/admin_/team': typeof AdminTeamRoute
   '/admin_/transactions': typeof AdminTransactionsRoute
@@ -1551,14 +1605,20 @@ export interface FileRouteTypes {
     | '/admin/access-help'
     | '/admin/adjustments'
     | '/admin/ai-chat'
+    | '/admin/analytics'
     | '/admin/audit'
     | '/admin/compliance'
     | '/admin/locked'
     | '/admin/login'
     | '/admin/marketing'
+    | '/admin/notifications'
     | '/admin/products'
+    | '/admin/profile'
     | '/admin/rates'
     | '/admin/reconciliation'
+    | '/admin/reports'
+    | '/admin/search'
+    | '/admin/settings'
     | '/admin/support'
     | '/admin/team'
     | '/admin/transactions'
@@ -1717,14 +1777,20 @@ export interface FileRouteTypes {
     | '/admin/access-help'
     | '/admin/adjustments'
     | '/admin/ai-chat'
+    | '/admin/analytics'
     | '/admin/audit'
     | '/admin/compliance'
     | '/admin/locked'
     | '/admin/login'
     | '/admin/marketing'
+    | '/admin/notifications'
     | '/admin/products'
+    | '/admin/profile'
     | '/admin/rates'
     | '/admin/reconciliation'
+    | '/admin/reports'
+    | '/admin/search'
+    | '/admin/settings'
     | '/admin/support'
     | '/admin/team'
     | '/admin/transactions'
@@ -1881,14 +1947,20 @@ export interface FileRouteTypes {
     | '/admin_/access-help'
     | '/admin_/adjustments'
     | '/admin_/ai-chat'
+    | '/admin_/analytics'
     | '/admin_/audit'
     | '/admin_/compliance'
     | '/admin_/locked'
     | '/admin_/login'
     | '/admin_/marketing'
+    | '/admin_/notifications'
     | '/admin_/products'
+    | '/admin_/profile'
     | '/admin_/rates'
     | '/admin_/reconciliation'
+    | '/admin_/reports'
+    | '/admin_/search'
+    | '/admin_/settings'
     | '/admin_/support'
     | '/admin_/team'
     | '/admin_/transactions'
@@ -2048,14 +2120,20 @@ export interface RootRouteChildren {
   AdminAccessHelpRoute: typeof AdminAccessHelpRoute
   AdminAdjustmentsRoute: typeof AdminAdjustmentsRoute
   AdminAiChatRoute: typeof AdminAiChatRoute
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminAuditRoute: typeof AdminAuditRoute
   AdminComplianceRoute: typeof AdminComplianceRoute
   AdminLockedRoute: typeof AdminLockedRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMarketingRoute: typeof AdminMarketingRoute
+  AdminNotificationsRoute: typeof AdminNotificationsRoute
   AdminProductsRoute: typeof AdminProductsRoute
+  AdminProfileRoute: typeof AdminProfileRoute
   AdminRatesRoute: typeof AdminRatesRoute
   AdminReconciliationRoute: typeof AdminReconciliationRoute
+  AdminReportsRoute: typeof AdminReportsRoute
+  AdminSearchRoute: typeof AdminSearchRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSupportRoute: typeof AdminSupportRoute
   AdminTeamRoute: typeof AdminTeamRoute
   AdminTransactionsRoute: typeof AdminTransactionsRoute
@@ -2352,6 +2430,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/analytics': {
+      id: '/admin_/analytics'
+      path: '/admin/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/audit': {
       id: '/admin_/audit'
       path: '/admin/audit'
@@ -2387,11 +2472,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMarketingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/notifications': {
+      id: '/admin_/notifications'
+      path: '/admin/notifications'
+      fullPath: '/admin/notifications'
+      preLoaderRoute: typeof AdminNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/products': {
       id: '/admin_/products'
       path: '/admin/products'
       fullPath: '/admin/products'
       preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/profile': {
+      id: '/admin_/profile'
+      path: '/admin/profile'
+      fullPath: '/admin/profile'
+      preLoaderRoute: typeof AdminProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/rates': {
@@ -2406,6 +2505,27 @@ declare module '@tanstack/react-router' {
       path: '/admin/reconciliation'
       fullPath: '/admin/reconciliation'
       preLoaderRoute: typeof AdminReconciliationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/reports': {
+      id: '/admin_/reports'
+      path: '/admin/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/search': {
+      id: '/admin_/search'
+      path: '/admin/search'
+      fullPath: '/admin/search'
+      preLoaderRoute: typeof AdminSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/settings': {
+      id: '/admin_/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/support': {
@@ -3400,14 +3520,20 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAccessHelpRoute: AdminAccessHelpRoute,
   AdminAdjustmentsRoute: AdminAdjustmentsRoute,
   AdminAiChatRoute: AdminAiChatRoute,
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminAuditRoute: AdminAuditRoute,
   AdminComplianceRoute: AdminComplianceRoute,
   AdminLockedRoute: AdminLockedRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMarketingRoute: AdminMarketingRoute,
+  AdminNotificationsRoute: AdminNotificationsRoute,
   AdminProductsRoute: AdminProductsRoute,
+  AdminProfileRoute: AdminProfileRoute,
   AdminRatesRoute: AdminRatesRoute,
   AdminReconciliationRoute: AdminReconciliationRoute,
+  AdminReportsRoute: AdminReportsRoute,
+  AdminSearchRoute: AdminSearchRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   AdminSupportRoute: AdminSupportRoute,
   AdminTeamRoute: AdminTeamRoute,
   AdminTransactionsRoute: AdminTransactionsRoute,
