@@ -6,6 +6,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { LEARN_ARTICLES } from "@/lib/learn-data";
+import { getWalletBalance, subscribeWallet } from "@/lib/wallet-balance";
 
 
 /**
