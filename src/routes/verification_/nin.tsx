@@ -35,6 +35,31 @@ function NinEntry() {
       eyebrow="Tier 2"
       title="Enter your NIN"
       subtitle="Dial *346# on any Nigerian line to retrieve your National Identity Number."
+      aside={
+        <>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Why Tier 2 needs your NIN</p>
+            <ul className="mt-2 space-y-2">
+              {[
+                "Required before your first withdrawal.",
+                "Matches your payout bank account name.",
+                "Raises your transaction limits.",
+              ].map((t) => (
+                <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </section>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">What comes next</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+              A quick selfie check, your residential address, then occupation and source of funds.
+            </p>
+          </section>
+        </>
+      }
       step={1}
       totalSteps={4}
     >

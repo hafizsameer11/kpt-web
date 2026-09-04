@@ -17,6 +17,7 @@ export function KycStep({
   backTo,
   backLabel = "Back",
   hero,
+  aside,
   children,
 }: {
   navTitle: string;
@@ -28,6 +29,8 @@ export function KycStep({
   backTo?: "/verification" | "/settings";
   backLabel?: string;
   hero?: ReactNode;
+  /** Desktop-only supporting rail shown beside the step content. */
+  aside?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -93,7 +96,14 @@ export function KycStep({
             aria-hidden
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
-          {children}
+          {aside ? (
+            <div className="md:grid md:grid-cols-[minmax(0,1fr)_300px] md:items-start md:gap-6">
+              <div className="min-w-0">{children}</div>
+              <aside className="hidden md:block md:sticky md:top-6 md:space-y-4">{aside}</aside>
+            </div>
+          ) : (
+            children
+          )}
         </div>
       </div>
     </AppShell>

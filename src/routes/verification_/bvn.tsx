@@ -38,6 +38,32 @@ function BvnEntry() {
       eyebrow="Tier 1"
       title="Enter your BVN"
       subtitle="Dial *565*0# on the phone number linked to your bank account to see your BVN."
+      aside={
+        <>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Why we need your BVN</p>
+            <ul className="mt-2 space-y-2">
+              {[
+                "Confirms your legal identity with NIBSS.",
+                "Unlocks funding and investing on Tier 1.",
+                "Read-only — it never gives us access to your bank.",
+              ].map((t) => (
+                <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </section>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Find your BVN</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+              Dial *565*0# on the phone number linked to your bank account. Verification usually
+              completes in under a minute.
+            </p>
+          </section>
+        </>
+      }
       step={1}
       totalSteps={2}
     >
