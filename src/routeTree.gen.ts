@@ -135,6 +135,7 @@ import { Route as SettingsSecuritySessionsRouteImport } from './routes/settings_
 import { Route as SettingsStatementsGeneratedRouteImport } from './routes/settings_/statements_/generated'
 import { Route as AdminComplianceAmlAlertIdRouteImport } from './routes/admin_.compliance_.aml_.$alertId'
 import { Route as AdminComplianceQueueCaseIdRouteImport } from './routes/admin_.compliance_.queue_.$caseId'
+import { Route as AdminRatesApprovalsRequestIdRouteImport } from './routes/admin_.rates_.approvals_.$requestId'
 import { Route as AdminUsersUserIdIndexRouteImport } from './routes/admin_.users_.$userId.index'
 import { Route as AdminUsersUserIdAuditRouteImport } from './routes/admin_.users_.$userId.audit'
 import { Route as AdminUsersUserIdBalancesRouteImport } from './routes/admin_.users_.$userId.balances'
@@ -795,6 +796,12 @@ const AdminComplianceQueueCaseIdRoute =
     path: '/admin/compliance/queue/$caseId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminRatesApprovalsRequestIdRoute =
+  AdminRatesApprovalsRequestIdRouteImport.update({
+    id: '/admin_/rates_/approvals_/$requestId',
+    path: '/admin/rates/approvals/$requestId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminUsersUserIdIndexRoute = AdminUsersUserIdIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -973,6 +980,7 @@ export interface FileRoutesByFullPath {
   '/fixed-plans/create/': typeof FixedPlansCreateIndexRoute
   '/admin/compliance/aml/$alertId': typeof AdminComplianceAmlAlertIdRoute
   '/admin/compliance/queue/$caseId': typeof AdminComplianceQueueCaseIdRoute
+  '/admin/rates/approvals/$requestId': typeof AdminRatesApprovalsRequestIdRoute
   '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -1108,6 +1116,7 @@ export interface FileRoutesByTo {
   '/fixed-plans/create': typeof FixedPlansCreateIndexRoute
   '/admin/compliance/aml/$alertId': typeof AdminComplianceAmlAlertIdRoute
   '/admin/compliance/queue/$caseId': typeof AdminComplianceQueueCaseIdRoute
+  '/admin/rates/approvals/$requestId': typeof AdminRatesApprovalsRequestIdRoute
   '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -1246,6 +1255,7 @@ export interface FileRoutesById {
   '/fixed-plans_/create/': typeof FixedPlansCreateIndexRoute
   '/admin_/compliance_/aml_/$alertId': typeof AdminComplianceAmlAlertIdRoute
   '/admin_/compliance_/queue_/$caseId': typeof AdminComplianceQueueCaseIdRoute
+  '/admin_/rates_/approvals_/$requestId': typeof AdminRatesApprovalsRequestIdRoute
   '/admin_/users_/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin_/users_/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin_/users_/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -1385,6 +1395,7 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/'
     | '/admin/compliance/aml/$alertId'
     | '/admin/compliance/queue/$caseId'
+    | '/admin/rates/approvals/$requestId'
     | '/admin/users/$userId/audit'
     | '/admin/users/$userId/balances'
     | '/admin/users/$userId/investments'
@@ -1520,6 +1531,7 @@ export interface FileRouteTypes {
     | '/fixed-plans/create'
     | '/admin/compliance/aml/$alertId'
     | '/admin/compliance/queue/$caseId'
+    | '/admin/rates/approvals/$requestId'
     | '/admin/users/$userId/audit'
     | '/admin/users/$userId/balances'
     | '/admin/users/$userId/investments'
@@ -1657,6 +1669,7 @@ export interface FileRouteTypes {
     | '/fixed-plans_/create/'
     | '/admin_/compliance_/aml_/$alertId'
     | '/admin_/compliance_/queue_/$caseId'
+    | '/admin_/rates_/approvals_/$requestId'
     | '/admin_/users_/$userId/audit'
     | '/admin_/users_/$userId/balances'
     | '/admin_/users_/$userId/investments'
@@ -1789,6 +1802,7 @@ export interface RootRouteChildren {
   SettingsStatementsGeneratedRoute: typeof SettingsStatementsGeneratedRoute
   AdminComplianceAmlAlertIdRoute: typeof AdminComplianceAmlAlertIdRoute
   AdminComplianceQueueCaseIdRoute: typeof AdminComplianceQueueCaseIdRoute
+  AdminRatesApprovalsRequestIdRoute: typeof AdminRatesApprovalsRequestIdRoute
   PortfolioTransactionsTxnIdReceiptRoute: typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 
@@ -2676,6 +2690,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminComplianceQueueCaseIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/rates_/approvals_/$requestId': {
+      id: '/admin_/rates_/approvals_/$requestId'
+      path: '/admin/rates/approvals/$requestId'
+      fullPath: '/admin/rates/approvals/$requestId'
+      preLoaderRoute: typeof AdminRatesApprovalsRequestIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/users_/$userId/': {
       id: '/admin_/users_/$userId/'
       path: '/'
@@ -2909,6 +2930,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsStatementsGeneratedRoute: SettingsStatementsGeneratedRoute,
   AdminComplianceAmlAlertIdRoute: AdminComplianceAmlAlertIdRoute,
   AdminComplianceQueueCaseIdRoute: AdminComplianceQueueCaseIdRoute,
+  AdminRatesApprovalsRequestIdRoute: AdminRatesApprovalsRequestIdRoute,
   PortfolioTransactionsTxnIdReceiptRoute:
     PortfolioTransactionsTxnIdReceiptRoute,
 }
