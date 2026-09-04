@@ -277,3 +277,47 @@ export function findCampaign(id: string) {
 export function findFeedCard(id: string) {
   return FEED_CARDS.find((c) => c.id === id);
 }
+
+/** ADM-100 — referral programme rules (maker-checker configurable). */
+export type ReferralRule = {
+  id: string;
+  label: string;
+  helper: string;
+  value: string;
+  kind: "amount" | "days" | "count" | "text";
+};
+
+export const REFERRAL_RULES: ReferralRule[] = [
+  { id: "rr-inviter", label: "Inviter reward", helper: "Paid to the existing customer once the invite qualifies", value: "5000", kind: "amount" },
+  { id: "rr-invitee", label: "Invitee reward", helper: "Welcome bonus credited to the new customer", value: "2500", kind: "amount" },
+  { id: "rr-min", label: "Qualifying funding", helper: "Minimum first deposit before a reward is released", value: "50000", kind: "amount" },
+  { id: "rr-hold", label: "Hold period", helper: "Days the qualifying funds must stay invested", value: "30", kind: "days" },
+  { id: "rr-expiry", label: "Invite expiry", helper: "Days before an unused invite lapses", value: "30", kind: "days" },
+  { id: "rr-cap", label: "Monthly cap per customer", helper: "Maximum rewarded referrals per inviter each month", value: "10", kind: "count" },
+];
+
+export const REFERRAL_PROGRAMME = {
+  enabled: true,
+  requiresKyc: true,
+  payoutDestination: "Kipit wallet",
+  updatedBy: "Seyi Adeleke",
+  updatedAt: "2026-08-28 14:12",
+  invitesSent: 12480,
+  invitesQualified: 4310,
+  rewardsPaid: 21_550_000,
+  pendingApproval: 3,
+};
+
+export const REFERRAL_LEADERS = [
+  { name: "Adaeze Umeh", invites: 42, qualified: 31, rewarded: 155_000 },
+  { name: "Bola Ajayi", invites: 38, qualified: 24, rewarded: 120_000 },
+  { name: "Chinedu Eze", invites: 27, qualified: 19, rewarded: 95_000 },
+  { name: "Fatima Sanni", invites: 21, qualified: 15, rewarded: 75_000 },
+  { name: "Kunle Oyelaran", invites: 18, qualified: 11, rewarded: 55_000 },
+];
+
+export const REFERRAL_CHANGE_LOG = [
+  { at: "2026-08-28 14:12", by: "Seyi Adeleke", change: "Inviter reward raised from ₦3,000 to ₦5,000", status: "Approved" },
+  { at: "2026-07-02 10:40", by: "Ify Nwosu", change: "Qualifying funding raised to ₦50,000", status: "Approved" },
+  { at: "2026-06-11 16:05", by: "Seyi Adeleke", change: "Monthly cap introduced at 10 per inviter", status: "Approved" },
+];
