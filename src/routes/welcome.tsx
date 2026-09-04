@@ -58,8 +58,8 @@ function Welcome() {
         }}
       />
 
-      <div className="relative mx-auto flex w-full max-w-md flex-1 flex-col px-6 pb-10 pt-14 md:max-w-lg md:justify-center lg:max-w-6xl lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center lg:gap-16 lg:px-10 lg:pb-14 lg:pt-14">
-        <div className="contents lg:block">
+      <div className="relative mx-auto flex w-full max-w-md flex-1 flex-col px-6 pb-10 pt-14 md:max-w-lg md:justify-center lg:grid lg:max-w-none lg:grid-cols-2 lg:items-stretch lg:gap-0 lg:px-0 lg:pb-0 lg:pt-0">
+        <div className="contents lg:flex lg:flex-col lg:justify-center lg:px-16 lg:py-16">
         <div className="animate-rise" style={{ animationDelay: "40ms" }}>
           <AnimatedLogo tone="light" className="text-3xl" />
         </div>
@@ -110,12 +110,13 @@ function Welcome() {
         </div>
 
         <div
-          className="animate-rise mt-auto space-y-3 pt-12 lg:mt-0 lg:rounded-[28px] lg:border lg:border-white/12 lg:bg-white/[0.07] lg:p-8 lg:pt-8 lg:shadow-[0_30px_80px_-40px_rgba(0,0,0,0.85)] lg:backdrop-blur-md"
+          className="animate-rise mt-auto space-y-3 pt-12 lg:mt-0 lg:flex lg:flex-col lg:justify-center lg:space-y-0 lg:border-l lg:border-white/10 lg:bg-white/[0.06] lg:px-16 lg:py-16 lg:pt-16 lg:backdrop-blur-md"
           style={{ animationDelay: "700ms" }}
         >
-          <div className="hidden lg:block lg:pb-2">
-            <h2 className="text-xl font-semibold tracking-tight">Get started in minutes</h2>
-            <p className="mt-1.5 text-[13px] leading-relaxed text-brand-foreground/65">
+          <div className="contents lg:mx-auto lg:block lg:w-full lg:max-w-sm lg:space-y-3">
+          <div className="hidden lg:block lg:pb-4">
+            <h2 className="text-2xl font-semibold tracking-tight">Get started in minutes</h2>
+            <p className="mt-2 max-w-sm text-sm leading-relaxed text-brand-foreground/65">
               Open an account with just your email. No documents needed to look around.
             </p>
           </div>
@@ -136,6 +137,7 @@ function Welcome() {
             Investments carry risk. Returns are not guaranteed unless expressly stated in the
             product terms.
           </p>
+          </div>
         </div>
       </div>
 
