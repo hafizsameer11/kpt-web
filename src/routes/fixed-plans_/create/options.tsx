@@ -108,9 +108,376 @@ function PlanOptionsScreen() {
   const giftValid =
     forWhom === "self" || (recipient.trim().length > 1 && recipientContact.trim().length > 3);
 
+  const reviewSearch = {
+    amount,
+    days,
+    name: planName.trim(),
+    maturity,
+    auto: autoInvest && autoAmount ? `${naira(Number(autoAmount))} ${frequency.toLowerCase()} from ${startDate}` : "",
+    gift: forWhom === "gift" ? recipient.trim() : "",
+  };
+
   return (
     <AppShell title="Plan Options" navVariant="elevated">
-      <div className="pb-2">
+      {/* ── Desktop layout (mobile untouched below) ─────────────── */}
+      <div className="hidden md:block">
+        <section className="relative overflow-hidden rounded-xl bg-brand-gradient px-8 pb-8 pt-8 text-primary-foreground shadow-float">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
+          />
+          <div className="relative flex items-end justify-between gap-8">
+            <div>
+              <Link
+                to="/fixed-plans/create/tenor"
+                search={{ amount }}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground press"
+              >
+                <ArrowLeft className="size-3.5" /> Tenor
+              </Link>
+              <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.08em] text-primary-foreground/60">
+                Step 3 of 4 · Options
+              </p>
+              <h1 className="k-rise mt-2 font-display text-[34px] font-extrabold leading-[1.05] tracking-[-0.035em]">
+                Personalise your plan
+              </h1>
+              <p className="mt-2 text-[13px] text-primary-foreground/70">
+                All optional — you can skip straight to review.
+              </p>
+            </div>
+            <div className="shrink-0 text-right">
+              <p className="font-display text-[40px] font-extrabold leading-none tracking-[-0.03em] text-num">
+                <AmountCounter value={amount} hidden={false} mask={(v) => naira(v)} />
+              </p>
+              <p className="mt-2 text-[12px] font-medium text-primary-foreground/60">
+                {days} days at {rate} p.a.
+                {maturityDate ? ` · matures ${maturityDate}` : ""}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <div className="mt-6 grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_320px] items-start gap-6">
+          {/* Col 1: personalise + auto-invest */}
+          <div className="min-w-0 space-y-4">
+            <section className="card-surface p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Personalise <span className="normal-case tracking-normal">(optional)</span>
+              </p>
+              <div className="mt-3 space-y-3">
+                <label className="block">
+                  <span className="text-[12px] font-semibold text-foreground">Plan name</span>
+                  <input
+                    value={planName}
+                    onChange={(e) => setPlanName(e.target.value)}
+                    placeholder="e.g. December Detty Fund"
+                    maxLength={40}
+                    className="mt-1.5 w-full rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-[12px] font-semibold text-foreground">Savings goal</span>
+                  <input
+                    value={goal}
+                    onChange={(e) => setGoal(e.target.value)}
+                    placeholder="e.g. School fees"
+                    maxLength={60}
+                    className="mt-1.5 w-full rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-[12px] font-semibold text-foreground">Target amount</span>
+                  <div className="mt-1.5 flex items-baseline gap-1 rounded-xl border border-border/70 bg-background px-3.5 py-3 transition-colors focus-within:border-gold/60">
+                    <span className="text-[13px] font-bold text-muted-foreground">₦</span>
+                    <input
+                      inputMode="numeric"
+                      value={target ? Number(target).toLocaleString("en-NG") : ""}
+                      onChange={(e) => setTarget(e.target.value.replace(/[^0-9]/g, ""))}
+                      placeholder="5,000,000"
+                      className="w-full bg-transparent text-[13.5px] font-medium text-num outline-none placeholder:text-muted-foreground/50"
+                    />
+                  </div>
+                </label>
+              </div>
+            </section>
+
+            <section className="card-surface p-5">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[13.5px] font-bold text-foreground">Auto-invest</p>
+                  <p className="text-[12px] text-muted-foreground">
+                    Top up this plan on a schedule.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={autoInvest}
+                  aria-label="Enable auto-invest"
+                  onClick={() => setAutoInvest((v) => !v)}
+                  className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 press ${
+                    autoInvest ? "bg-gold" : "bg-muted"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 size-6 rounded-full bg-card shadow transition-all duration-200 ${
+                      autoInvest ? "left-[22px]" : "left-0.5"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {autoInvest && (
+                <div className="k-rise mt-4 space-y-3">
+                  <label className="block">
+                    <span className="text-[12px] font-semibold text-foreground">Amount</span>
+                    <div className="mt-1.5 flex items-baseline gap-1 rounded-xl border border-border/70 bg-background px-3.5 py-3 transition-colors focus-within:border-gold/60">
+                      <span className="text-[13px] font-bold text-muted-foreground">₦</span>
+                      <input
+                        inputMode="numeric"
+                        value={autoAmount ? Number(autoAmount).toLocaleString("en-NG") : ""}
+                        onChange={(e) => setAutoAmount(e.target.value.replace(/[^0-9]/g, ""))}
+                        placeholder="50,000"
+                        className="w-full bg-transparent text-[13.5px] font-medium text-num outline-none placeholder:text-muted-foreground/50"
+                      />
+                    </div>
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {FREQUENCIES.map((f) => (
+                      <button
+                        key={f}
+                        type="button"
+                        onClick={() => setFrequency(f)}
+                        aria-pressed={frequency === f}
+                        className={`rounded-xl border py-2.5 text-[12.5px] font-bold transition-colors press ${
+                          frequency === f
+                            ? "border-gold/60 bg-gold/10 text-foreground"
+                            : "border-border/70 bg-background text-muted-foreground"
+                        }`}
+                      >
+                        {f}
+                      </button>
+                    ))}
+                  </div>
+                  <label className="block">
+                    <span className="text-[12px] font-semibold text-foreground">Start date</span>
+                    <input
+                      type="date"
+                      value={startDate}
+                      min={todayISO}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="mt-1.5 w-full rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium text-foreground outline-none transition-colors focus:border-gold/60"
+                    />
+                  </label>
+                  <div className="flex items-center gap-3 rounded-xl border border-border/70 bg-background px-3.5 py-3">
+                    <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-gold/15 text-gold">
+                      <Wallet className="size-4" strokeWidth={2.4} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[12.5px] font-bold text-foreground">
+                        Kipit Wallet
+                      </span>
+                      <span className="block text-[11px] text-muted-foreground">
+                        Funding source · {naira(WALLET)} available
+                      </span>
+                    </span>
+                    <Check className="size-4 shrink-0 text-gold" strokeWidth={3} />
+                  </div>
+                  {autoAmount && Number(autoAmount) > WALLET && (
+                    <p className="k-shake rounded-xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
+                      Auto-invest amount is above your wallet balance of {naira(WALLET)}.
+                    </p>
+                  )}
+                </div>
+              )}
+            </section>
+          </div>
+
+          {/* Col 2: gift + maturity */}
+          <div className="min-w-0 space-y-4">
+            <section className="card-surface p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Who is this plan for?
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                {(
+                  [
+                    { id: "self", name: "For myself", icon: User },
+                    { id: "gift", name: "Send as a gift", icon: Gift },
+                  ] as const
+                ).map((o) => (
+                  <button
+                    key={o.id}
+                    type="button"
+                    onClick={() => setForWhom(o.id)}
+                    aria-pressed={forWhom === o.id}
+                    className={`flex min-w-0 items-center gap-2 rounded-xl border px-3 py-3 text-left transition-colors press ${
+                      forWhom === o.id
+                        ? "border-gold/60 bg-gold/10"
+                        : "border-border/70 bg-background hover:bg-muted/40"
+                    }`}
+                  >
+                    <span
+                      className={`grid size-8 shrink-0 place-items-center rounded-lg ${
+                        forWhom === o.id ? "bg-gold text-gold-foreground" : "bg-primary/[0.06] text-foreground"
+                      }`}
+                    >
+                      <o.icon className="size-4" strokeWidth={2.4} />
+                    </span>
+                    <span className="truncate text-[12px] font-bold text-foreground">{o.name}</span>
+                  </button>
+                ))}
+              </div>
+
+              {forWhom === "gift" && (
+                <div className="k-rise mt-4 space-y-3">
+                  <input
+                    value={recipient}
+                    onChange={(e) => setRecipient(e.target.value)}
+                    placeholder="Recipient name"
+                    maxLength={50}
+                    aria-label="Recipient name"
+                    className="w-full rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
+                  />
+                  <input
+                    value={recipientContact}
+                    onChange={(e) => setRecipientContact(e.target.value)}
+                    placeholder="Recipient email or phone"
+                    aria-label="Recipient email or phone"
+                    className="w-full rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
+                  />
+                  <textarea
+                    value={giftMessage}
+                    onChange={(e) => setGiftMessage(e.target.value)}
+                    placeholder="Personal message (optional)"
+                    rows={2}
+                    maxLength={140}
+                    aria-label="Personal message"
+                    className="w-full resize-none rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
+                  />
+                  {!giftValid && (recipient || recipientContact) && (
+                    <p className="k-shake rounded-xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
+                      Add the recipient's name and email or phone to gift this plan.
+                    </p>
+                  )}
+                </div>
+              )}
+            </section>
+
+            <section className="card-surface p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                At maturity
+              </p>
+              <div className="mt-3 space-y-2">
+                {MATURITY_OPTIONS.map((o) => {
+                  const active = maturity === o.id;
+                  return (
+                    <button
+                      key={o.id}
+                      type="button"
+                      onClick={() => setMaturity(o.id)}
+                      aria-pressed={active}
+                      className={`flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-colors press ${
+                        active
+                          ? "border-gold/60 bg-gold/[0.07]"
+                          : "border-border/70 bg-background hover:bg-muted/40"
+                      }`}
+                    >
+                      <span
+                        className={`grid size-5 shrink-0 place-items-center rounded-full border-2 transition-all ${
+                          active ? "border-gold bg-gold" : "border-muted-foreground/30"
+                        }`}
+                      >
+                        {active && (
+                          <Check
+                            key={o.id}
+                            className="k-pop size-3 text-gold-foreground"
+                            strokeWidth={4}
+                          />
+                        )}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[13px] font-bold text-foreground">{o.name}</span>
+                        <span className="block text-[11.5px] text-muted-foreground">{o.note}</span>
+                      </span>
+                      <o.icon
+                        className={`size-4 shrink-0 ${active ? "text-gold" : "text-muted-foreground/40"}`}
+                        strokeWidth={2.2}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          </div>
+
+          {/* Col 3: sticky summary rail */}
+          <aside className="sticky top-6 space-y-4">
+            <section className="card-surface p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Plan summary
+              </p>
+              <dl className="mt-3 space-y-2.5 text-[12.5px]">
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-muted-foreground">Amount</dt>
+                  <dd className="font-bold text-num">{naira(amount)}</dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-muted-foreground">Tenor</dt>
+                  <dd className="font-bold">{days} days</dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-muted-foreground">Rate</dt>
+                  <dd className="font-bold text-gold">{rate} p.a.</dd>
+                </div>
+                {maturityDate && (
+                  <div className="flex items-center justify-between gap-3">
+                    <dt className="text-muted-foreground">Matures</dt>
+                    <dd className="font-bold">{maturityDate}</dd>
+                  </div>
+                )}
+                <div className="flex items-center justify-between gap-3 border-t border-border/60 pt-2.5">
+                  <dt className="text-muted-foreground">At maturity</dt>
+                  <dd className="font-bold">
+                    {MATURITY_OPTIONS.find((o) => o.id === maturity)?.name}
+                  </dd>
+                </div>
+                {planName.trim() && (
+                  <div className="flex items-center justify-between gap-3">
+                    <dt className="text-muted-foreground">Name</dt>
+                    <dd className="truncate font-bold">{planName.trim()}</dd>
+                  </div>
+                )}
+                {forWhom === "gift" && recipient.trim() && (
+                  <div className="flex items-center justify-between gap-3">
+                    <dt className="text-muted-foreground">Gift to</dt>
+                    <dd className="truncate font-bold">{recipient.trim()}</dd>
+                  </div>
+                )}
+              </dl>
+            </section>
+
+            <div className="card-surface p-5">
+              <Link
+                to="/fixed-plans/create/review"
+                search={reviewSearch}
+                disabled={!giftValid}
+                className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press ${
+                  giftValid ? "k-glow" : "pointer-events-none opacity-40 shadow-none"
+                }`}
+              >
+                Review plan
+                <ChevronDown className="size-4 rotate-[-90deg]" strokeWidth={2.6} />
+              </Link>
+              <p className="mt-2.5 text-center text-[11.5px] text-muted-foreground">
+                Next: review the full summary and confirm your investment.
+              </p>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <div className="pb-2 md:hidden">
         {/* ── Hero summary ───────────────────────────────────── */}
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
           <span
