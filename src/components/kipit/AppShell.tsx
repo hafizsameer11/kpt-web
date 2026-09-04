@@ -5,6 +5,7 @@ import {
   Compass,
   PieChart,
   Settings,
+  MessageCircle,
   type LucideIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -45,6 +46,18 @@ export function AppShell({
           {children}
         </main>
       </div>
+
+      {/* Mobile floating Chat to Trade button */}
+      {pathname !== "/chat" && (
+        <Link
+          to="/chat"
+          aria-label="Chat to Trade"
+          className="fixed bottom-24 right-4 z-40 flex items-center gap-2 rounded-full bg-brand-gradient px-4 py-3 text-primary-foreground shadow-float ring-1 ring-white/15 press md:hidden"
+        >
+          <MessageCircle className="size-5" strokeWidth={2} />
+          <span className="text-xs font-bold">Chat</span>
+        </Link>
+      )}
 
       {/* Mobile bottom tab bar */}
       {navVariant === "orbit" ? (
