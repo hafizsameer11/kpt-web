@@ -26,10 +26,11 @@
 - ADM-090–092 Reconciliation: dashboard, records ledger, variance review
 - ADM-080–081 Plan adjustments: request (maker), maker-checker approval detail
 - ADM-100–105 Marketing: dashboard, campaigns list/detail/create, audience builder, home feed manager, create card, daily digest
+- CHAT-001–010 Chat-to-Trade customer surface (/chat)
 - ADM-110–111 Support: ticket desk list + ticket detail (conversation, customer, transactions, history, assign/resolve dialogs)
 
 ## Left to build
 - WEB-002–013 desktop refinements (dashboard side panel, holdings/transaction tables, plan builder two-column, web withdrawal step flow)
 - Admin console: ADM-001–003 auth — DONE (sign in, two-factor, session lock, access reset)
 - ADM-120–122 admin users & permissions, ADM-130 audit log
-- Chat-to-Trade CHAT-xxx surfaces
+
