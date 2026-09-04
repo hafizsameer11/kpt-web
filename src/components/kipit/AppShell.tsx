@@ -49,14 +49,26 @@ export function AppShell({
 
       {/* Mobile floating Chat to Trade button */}
       {pathname !== "/chat" && (
-        <Link
-          to="/chat"
-          aria-label="Chat to Trade"
-          className="fixed bottom-24 right-4 z-40 flex items-center gap-2 rounded-full bg-brand-gradient px-4 py-3 text-primary-foreground shadow-float ring-1 ring-white/15 press md:hidden"
-        >
-          <MessageCircle className="size-5" strokeWidth={2} />
-          <span className="text-xs font-bold">Chat</span>
-        </Link>
+        <>
+          <style>{`
+            @keyframes kipit-fab-in {
+              from { opacity: 0; transform: translateY(24px) scale(0.92); }
+              to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+          `}</style>
+          <Link
+            to="/chat"
+            aria-label="Chat to Trade"
+            className="fixed bottom-[5.5rem] right-4 z-40 flex items-center gap-2 rounded-full bg-brand-gradient px-4 py-3 text-primary-foreground shadow-float ring-1 ring-white/15 transition-all duration-300 ease-out hover:scale-105 active:scale-95 md:hidden"
+            style={{ animation: "kipit-fab-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both" }}
+          >
+            <span className="relative grid size-8 place-items-center rounded-full bg-gold-gradient text-gold-foreground shadow-sm">
+              <MessageCircle className="size-[18px]" strokeWidth={2.2} />
+              <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-emerald-400 ring-2 ring-primary" />
+            </span>
+            <span className="pr-1 text-xs font-bold">Chat to Trade</span>
+          </Link>
+        </>
       )}
 
       {/* Mobile bottom tab bar */}
