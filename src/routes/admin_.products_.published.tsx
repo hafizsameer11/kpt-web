@@ -7,11 +7,11 @@ import { Panel } from "@/components/kipit/AdminBits";
 type PublishedSearch = { name?: string | undefined; rate?: string | undefined; tenor?: string | undefined };
 
 export const Route = createFileRoute("/admin_/products_/published")({
-  validateSearch: (search: Record<string, unknown>): PublishedSearch => ({
-    name: typeof search['name'] === "string" ? (search['name'] as string) : undefined,
-    rate: typeof search['rate'] === "string" ? (search['rate'] as string) : undefined,
-    tenor: typeof search['tenor'] === "string" ? (search['tenor'] as string) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): PublishedSearch => {
+    const str = (v: unknown) =>
+      typeof v === "string" ? v : typeof v === "number" ? String(v) : undefined;
+    return { name: str(search['name']), rate: str(search['rate']), tenor: str(search['tenor']) };
+  },
   head: () => ({
     meta: [
       { title: "Product published — Kipit Admin Console" },
