@@ -332,7 +332,7 @@ function SubscriptionReviewScreen() {
                 <DisclosureStrip variant="marketplace" />
               </div>
 
-              <label className="hidden cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-4 md:flex">
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-4">
                 <input
                   type="checkbox"
                   checked={acceptedTerms}
