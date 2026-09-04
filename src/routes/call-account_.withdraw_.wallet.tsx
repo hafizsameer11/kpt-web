@@ -56,7 +56,7 @@ function ToWalletScreen() {
           <div className="relative">
             <div className="flex items-center justify-between gap-3">
               <Link
-                to="/call-account/withdraw"
+                to="/call-account"
                 className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground press"
               >
                 <ArrowLeft className="size-3.5" /> Back

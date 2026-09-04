@@ -110,7 +110,7 @@ function MobileInvest() {
                   Add money <ArrowUpRight className="size-3.5" />
                 </Link>
                 <Link
-                  to="/call-account/withdraw"
+                  to="/call-account/withdraw/wallet"
                   className="inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-white/20 bg-white/10 px-3 py-3 text-[11px] font-bold text-primary-foreground press"
                 >
                   Withdraw <ArrowDownLeft className="size-3.5" />
@@ -410,7 +410,7 @@ function DesktopInvest() {
                   Add money <ArrowUpRight className="size-3.5" />
                 </Link>
                 <Link
-                  to="/call-account/withdraw"
+                  to="/call-account/withdraw/wallet"
                   className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-xs font-bold press hover:bg-white/20"
                 >
                   Withdraw <ArrowDownLeft className="size-3.5" />
