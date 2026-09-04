@@ -58,6 +58,8 @@ function RestrictedScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
+          <div className="md:mx-auto md:grid md:max-w-5xl md:grid-cols-[minmax(0,1fr)_320px] md:items-start md:gap-6">
+          <div className="min-w-0">
           <section className="card-surface p-4 md:p-5">
             <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
               What you'll need
@@ -93,6 +95,33 @@ function RestrictedScreen() {
           <p className="mt-2.5 flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
             <Lock className="size-3.5" /> Verification usually completes in a few minutes.
           </p>
+          </div>
+
+          <aside className="hidden space-y-4 md:block">
+            <section className="card-surface p-5">
+              <p className="text-[12.5px] font-extrabold text-foreground">Why we ask</p>
+              <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+                Nigerian regulations require full identity verification before funds can leave the
+                platform. It protects your money from unauthorised payouts.
+              </p>
+            </section>
+            <section className="card-surface p-5">
+              <p className="text-[12.5px] font-extrabold text-foreground">Meanwhile you can still</p>
+              <ul className="mt-2 space-y-2">
+                {[
+                  "Fund your wallet and Call Account.",
+                  "Create fixed plans and earn interest.",
+                  "Track maturities and download statements.",
+                ].map((t) => (
+                  <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </aside>
+          </div>
         </div>
       </div>
     </AppShell>
