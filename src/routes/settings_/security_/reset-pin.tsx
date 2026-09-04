@@ -62,7 +62,9 @@ function ResetPinScreen() {
       backLabel="Security"
       subtitle="We verify your identity before a new PIN can be set."
     >
-      <div className="mx-auto max-w-md">
+      <div className="mx-auto max-w-md md:max-w-4xl md:grid md:grid-cols-[minmax(0,1fr)_320px] md:items-start md:gap-6">
+        <div className="min-w-0">
+
         <ol className="mb-4 flex items-center gap-1.5">
           {steps.map((s, i) => (
             <li key={s} className="flex-1">
