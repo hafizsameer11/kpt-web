@@ -116,6 +116,12 @@ function SubscriptionReviewScreen() {
           if (next === CORRECT_PIN) {
             setOpen(false);
             setPin("");
+            recordTermsAcceptance({
+              productId: product.id,
+              productName: product.name,
+              version: termsVersion,
+              amount,
+            });
             void navigate({
               to: "/explore/$productId/processing",
               params: { productId: product.id },
