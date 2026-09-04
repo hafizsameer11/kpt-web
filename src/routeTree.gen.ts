@@ -107,6 +107,7 @@ import { Route as AdminComplianceReportingRouteImport } from './routes/admin_.co
 import { Route as AdminProductsProductIdRouteImport } from './routes/admin_.products_.$productId'
 import { Route as AdminProductsNewRouteImport } from './routes/admin_.products_.new'
 import { Route as AdminProductsPublishedRouteImport } from './routes/admin_.products_.published'
+import { Route as AdminRatesApprovalsRouteImport } from './routes/admin_.rates_.approvals'
 import { Route as AdminRatesProposeRouteImport } from './routes/admin_.rates_.propose'
 import { Route as AdminTransactionsTxnIdRouteImport } from './routes/admin_.transactions_.$txnId'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin_.users_.$userId'
@@ -639,6 +640,11 @@ const AdminProductsPublishedRoute = AdminProductsPublishedRouteImport.update({
   path: '/admin/products/published',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRatesApprovalsRoute = AdminRatesApprovalsRouteImport.update({
+  id: '/admin_/rates_/approvals',
+  path: '/admin/rates/approvals',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRatesProposeRoute = AdminRatesProposeRouteImport.update({
   id: '/admin_/rates_/propose',
   path: '/admin/rates/propose',
@@ -939,6 +945,7 @@ export interface FileRoutesByFullPath {
   '/admin/products/$productId': typeof AdminProductsProductIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/products/published': typeof AdminProductsPublishedRoute
+  '/admin/rates/approvals': typeof AdminRatesApprovalsRoute
   '/admin/rates/propose': typeof AdminRatesProposeRoute
   '/admin/transactions/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRouteWithChildren
@@ -1074,6 +1081,7 @@ export interface FileRoutesByTo {
   '/admin/products/$productId': typeof AdminProductsProductIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/products/published': typeof AdminProductsPublishedRoute
+  '/admin/rates/approvals': typeof AdminRatesApprovalsRoute
   '/admin/rates/propose': typeof AdminRatesProposeRoute
   '/admin/transactions/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin/withdrawals/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
@@ -1210,6 +1218,7 @@ export interface FileRoutesById {
   '/admin_/products_/$productId': typeof AdminProductsProductIdRoute
   '/admin_/products_/new': typeof AdminProductsNewRoute
   '/admin_/products_/published': typeof AdminProductsPublishedRoute
+  '/admin_/rates_/approvals': typeof AdminRatesApprovalsRoute
   '/admin_/rates_/propose': typeof AdminRatesProposeRoute
   '/admin_/transactions_/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin_/users_/$userId': typeof AdminUsersUserIdRouteWithChildren
@@ -1348,6 +1357,7 @@ export interface FileRouteTypes {
     | '/admin/products/$productId'
     | '/admin/products/new'
     | '/admin/products/published'
+    | '/admin/rates/approvals'
     | '/admin/rates/propose'
     | '/admin/transactions/$txnId'
     | '/admin/users/$userId'
@@ -1483,6 +1493,7 @@ export interface FileRouteTypes {
     | '/admin/products/$productId'
     | '/admin/products/new'
     | '/admin/products/published'
+    | '/admin/rates/approvals'
     | '/admin/rates/propose'
     | '/admin/transactions/$txnId'
     | '/admin/withdrawals/$withdrawalId'
@@ -1618,6 +1629,7 @@ export interface FileRouteTypes {
     | '/admin_/products_/$productId'
     | '/admin_/products_/new'
     | '/admin_/products_/published'
+    | '/admin_/rates_/approvals'
     | '/admin_/rates_/propose'
     | '/admin_/transactions_/$txnId'
     | '/admin_/users_/$userId'
@@ -1755,6 +1767,7 @@ export interface RootRouteChildren {
   AdminProductsProductIdRoute: typeof AdminProductsProductIdRoute
   AdminProductsNewRoute: typeof AdminProductsNewRoute
   AdminProductsPublishedRoute: typeof AdminProductsPublishedRoute
+  AdminRatesApprovalsRoute: typeof AdminRatesApprovalsRoute
   AdminRatesProposeRoute: typeof AdminRatesProposeRoute
   AdminTransactionsTxnIdRoute: typeof AdminTransactionsTxnIdRoute
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRouteWithChildren
@@ -2467,6 +2480,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductsPublishedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/rates_/approvals': {
+      id: '/admin_/rates_/approvals'
+      path: '/admin/rates/approvals'
+      fullPath: '/admin/rates/approvals'
+      preLoaderRoute: typeof AdminRatesApprovalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/rates_/propose': {
       id: '/admin_/rates_/propose'
       path: '/admin/rates/propose'
@@ -2867,6 +2887,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminProductsProductIdRoute: AdminProductsProductIdRoute,
   AdminProductsNewRoute: AdminProductsNewRoute,
   AdminProductsPublishedRoute: AdminProductsPublishedRoute,
+  AdminRatesApprovalsRoute: AdminRatesApprovalsRoute,
   AdminRatesProposeRoute: AdminRatesProposeRoute,
   AdminTransactionsTxnIdRoute: AdminTransactionsTxnIdRoute,
   AdminUsersUserIdRoute: AdminUsersUserIdRouteWithChildren,
