@@ -81,16 +81,25 @@ function ChatScreen() {
   const [restored, setRestored] = useState(false);
   const amountRef = useRef<number | undefined>(undefined);
   const endRef = useRef<HTMLDivElement>(null);
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const desktopScrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Restore the conversation after mount so it survives closing the chat.
+  // Restore the conversation after mount so it survives closing the chat,
+  // then open the new session with a fresh greeting + suggested questions.
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const saved = JSON.parse(raw) as { messages?: ChatMessage[]; amount?: number };
         if (Array.isArray(saved.messages) && saved.messages.length > 0) {
-          setMessages(saved.messages);
+          const last = saved.messages[saved.messages.length - 1];
+          const needsGreeting = !(last && last.role === "assistant" && last.screen === "CHAT-001");
+          setMessages(
+            needsGreeting
+              ? [...saved.messages, { ...WELCOME, id: nextId() }]
+              : saved.messages,
+          );
         }
         if (typeof saved.amount === "number") amountRef.current = saved.amount;
       }
@@ -99,6 +108,7 @@ function ChatScreen() {
     }
     setRestored(true);
   }, []);
+
 
   useEffect(() => {
     if (!restored) return;
