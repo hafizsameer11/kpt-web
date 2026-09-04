@@ -103,7 +103,7 @@ function SubscriptionReviewScreen() {
   const valid =
     amount >= product.minimum &&
     product.availability !== "closed" &&
-    (isMobile || acceptedTerms);
+    acceptedTerms;
   const SourceIcon = SOURCE_META[source].icon;
 
   function press(key: string) {
