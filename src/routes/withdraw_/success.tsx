@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
+import { debitWallet } from "@/lib/wallet-balance";
 import { ArrowRight, Landmark } from "lucide-react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
@@ -37,6 +39,14 @@ export const Route = createFileRoute("/withdraw_/success")({
 
 function WithdrawSuccess() {
   const { acct, amount } = Route.useSearch();
+  const applied = useRef(false);
+
+  useEffect(() => {
+    if (applied.current || amount <= 0) return;
+    applied.current = true;
+    debitWallet(`withdrawal-${Date.now()}-${amount}`, amount);
+  }, [amount]);
+
   const account = findAccount(acct);
   const reference = withdrawalReference(amount);
 

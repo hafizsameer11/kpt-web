@@ -9,6 +9,7 @@ import {
   Lightbulb,
   Wallet,
 } from "lucide-react";
+import { useWalletBalance } from "@/lib/wallet-balance";
 import { AppShell } from "@/components/kipit/AppShell";
 import { Logo } from "@/components/kipit/Logo";
 import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
@@ -24,8 +25,6 @@ import {
   NEXT_MATURITY,
   PAYOUTS,
   QUICK_ACTIONS,
-  TOTAL,
-  WALLET,
   WEEK_EARNINGS,
   WEEK_LABELS,
   WEEK_SERIES,
@@ -54,13 +53,24 @@ export const Route = createFileRoute("/")({
   component: HomeV2Screen,
 });
 
-const LENSES = [
-  { key: "total", label: "Total", value: TOTAL, note: "Wallet + all active plans" },
-  { key: "invested", label: "Invested", value: INVESTED, note: "Across 3 active plans" },
-  { key: "wallet", label: "Wallet", value: WALLET, note: "Available to invest now" },
-] as const;
+const lenses = (wallet: number) =>
+  [
+    {
+      key: "total",
+      label: "Total",
+      value: wallet + INVESTED,
+      note: "Wallet + all active plans",
+    },
+    {
+      key: "invested",
+      label: "Invested",
+      value: INVESTED,
+      note: "Across 3 active plans",
+    },
+    { key: "wallet", label: "Wallet", value: wallet, note: "Available to invest now" },
+  ] as const;
 
-type LensKey = (typeof LENSES)[number]["key"];
+type LensKey = ReturnType<typeof lenses>[number]["key"];
 
 function WeekStrip() {
   const max = Math.max(...WEEK_SERIES);
@@ -111,6 +121,8 @@ function HomeV2Screen() {
 }
 
 function MobileHome() {
+  const WALLET = useWalletBalance();
+  const LENSES = lenses(WALLET);
   const { hidden, toggle, mask } = useBalanceVisibility();
   const [lens, setLens] = useState<LensKey>("total");
   const active = LENSES.find((l) => l.key === lens) ?? LENSES[0];
@@ -505,6 +517,8 @@ function DesktopWeekChart({ hidden }: { hidden: boolean }) {
 }
 
 function DesktopHome() {
+  const WALLET = useWalletBalance();
+  const TOTAL = WALLET + INVESTED;
   const { hidden, toggle, mask } = useBalanceVisibility();
   const investedPct = Math.round((INVESTED / TOTAL) * 100);
 

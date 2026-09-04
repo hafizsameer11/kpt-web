@@ -30,7 +30,8 @@ import {
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { naira, WALLET } from "@/lib/home-data";
+import { naira } from "@/lib/home-data";
+import { useWalletBalance } from "@/lib/wallet-balance";
 import {
   CALL_ACCOUNT,
   CALL_ACCRUAL_TREND,
@@ -204,6 +205,7 @@ function DayDetail({ day, onClose }: { day: number; onClose: () => void }) {
 }
 
 function CallAccountScreen() {
+  const WALLET = useWalletBalance();
   const { mask, hidden, toggle } = useBalanceVisibility();
   const pts = trendPoints(CALL_ACCRUAL_TREND, 300, 88);
   const line = smoothPath(pts);
@@ -625,6 +627,7 @@ function CallAccountScreen() {
    Desktop layout (md+) — dashboard-style Call Account
    ───────────────────────────────────────────────────────────── */
 function DesktopCallAccount() {
+  const WALLET = useWalletBalance();
   const { mask, hidden, toggle } = useBalanceVisibility();
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const total14 = CALL_ACCRUAL_TREND.reduce((a, b) => a + b, 0);
