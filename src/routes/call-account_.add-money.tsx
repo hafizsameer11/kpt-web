@@ -182,11 +182,28 @@ function AddMoneyScreen() {
                 <Info className="size-3.5 shrink-0" />
                 Indicative at {CALL_ACCOUNT.rate} — accrues daily, credited monthly.
               </p>
+
+              {/* Desktop CTA lives in the sticky rail */}
+              <div className="mt-5 hidden md:block">
+                <Link
+                  to="/call-account/review"
+                  search={{ amount }}
+                  aria-disabled={!valid}
+                  className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press ${
+                    valid ? "" : "pointer-events-none opacity-40 shadow-none"
+                  }`}
+                >
+                  Continue <ArrowRight className="size-4" strokeWidth={2.6} />
+                </Link>
+                <p className="mt-2.5 text-[11.5px] text-muted-foreground">
+                  You'll review the amount, rate and funding source before it's confirmed.
+                </p>
+              </div>
             </section>
           </div>
 
-          {/* CTA */}
-          <div className="mt-5">
+          {/* CTA (mobile) */}
+          <div className="mt-5 md:hidden">
             <Link
               to="/call-account/review"
               search={{ amount }}
