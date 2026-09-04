@@ -9,17 +9,37 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { AdminShell } from "@/components/kipit/AdminShell";
 import {
   ALERTS,
+  FLOW_TREND,
   FUM,
   FUM_BREAKDOWN,
   FUM_CHANGE_PCT,
-  FUM_LABELS,
   FUM_SERIES,
+  FUM_TREND,
   INTEREST_ACCRUED,
   INTEREST_PAYABLE,
+  INTEREST_TREND,
   MATURITIES,
+  MATURITY_SCHEDULE,
+  METRIC_SPARKS,
   PRIMARY_METRICS,
   PRINCIPAL_BY_PRODUCT,
   PRINCIPAL_BY_TENOR,
@@ -28,6 +48,34 @@ import {
   compactNaira,
   naira,
 } from "@/lib/admin-data";
+
+const SLICE_FILLS = ["var(--brand)", "var(--gold)", "var(--chart-4)", "var(--chart-5)"];
+
+const tooltipStyle = {
+  borderRadius: 12,
+  border: "1px solid var(--border)",
+  background: "var(--card)",
+  color: "var(--foreground)",
+  fontSize: 12,
+  fontWeight: 600,
+  boxShadow: "0 12px 30px rgba(15,23,42,0.14)",
+} as const;
+
+const axisTick = { fill: "var(--muted-foreground)", fontSize: 10, fontWeight: 600 } as const;
+
+const LABELS: Record<string, string> = {
+  fixed: "Fixed plans",
+  explore: "Explore products",
+  call: "Call money",
+  wallet: "Wallet balances",
+  deposits: "Deposits",
+  withdrawals: "Withdrawals",
+  accrued: "Accrued",
+  paid: "Paid out",
+};
+
+const labelOf = (key: string) => LABELS[key] ?? key;
+
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -109,26 +157,62 @@ function AdminDashboard() {
               </div>
             </div>
 
-            {/* FUM trend */}
-            <div className="relative mt-6">
-              <div className="flex h-24 items-end gap-2">
-                {FUM_SERIES.map((v, i) => {
-                  const max = Math.max(...FUM_SERIES);
-                  const last = i === FUM_SERIES.length - 1;
-                  return (
-                    <div key={FUM_LABELS[i]} className="flex flex-1 flex-col items-center gap-1.5">
-                      <div
-                        className={`w-full rounded-t-md ${last ? "bg-gold" : "bg-white/25"}`}
-                        style={{ height: `${(v / max) * 100}%` }}
-                      />
-                      <span className="text-[10px] font-semibold text-primary-foreground/45">
-                        {FUM_LABELS[i]}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+            {/* FUM trend — stacked area */}
+            <div className="relative mt-6 h-[150px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={FUM_TREND} margin={{ top: 4, right: 4, bottom: 0, left: 4 }}>
+                  <defs>
+                    <linearGradient id="fumFixed" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--gold)" stopOpacity={0.85} />
+                      <stop offset="100%" stopColor="var(--gold)" stopOpacity={0.25} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.12)" vertical={false} />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10, fontWeight: 600 }}
+                  />
+                  <YAxis hide domain={[0, "dataMax + 300"]} />
+                  <Tooltip
+                    cursor={{ stroke: "rgba(255,255,255,0.3)" }}
+                    contentStyle={tooltipStyle}
+                    formatter={(v: number, n: string) => [`₦${v}m`, labelOf(n)]}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="wallet"
+                    stackId="1"
+                    stroke="rgba(255,255,255,0.35)"
+                    fill="rgba(255,255,255,0.12)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="call"
+                    stackId="1"
+                    stroke="rgba(255,255,255,0.5)"
+                    fill="rgba(255,255,255,0.18)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="explore"
+                    stackId="1"
+                    stroke="rgba(255,255,255,0.7)"
+                    fill="rgba(255,255,255,0.26)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="fixed"
+                    stackId="1"
+                    stroke="var(--gold)"
+                    strokeWidth={2}
+                    fill="url(#fumFixed)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
+
           </div>
 
           {/* Today's flows */}
@@ -190,15 +274,126 @@ function AdminDashboard() {
                 ) : null}
                 <span className="truncate text-[11.5px] text-muted-foreground">{m.helper}</span>
               </div>
-              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
-                <div
-                  className="h-full rounded-full bg-brand"
-                  style={{ width: `${(m.value / FUM) * 100}%` }}
-                />
+              <div className="mt-3 h-[46px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={(METRIC_SPARKS[m.id] ?? []).map((v, i) => ({ i, v }))}
+                    margin={{ top: 2, right: 0, bottom: 0, left: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id={`spark-${m.id}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--brand)" stopOpacity={0.35} />
+                        <stop offset="100%" stopColor="var(--brand)" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <YAxis hide domain={["dataMin - 20", "dataMax + 10"]} />
+                    <Area
+                      type="monotone"
+                      dataKey="v"
+                      stroke="var(--brand)"
+                      strokeWidth={2}
+                      fill={`url(#spark-${m.id})`}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
+
             </div>
           ))}
         </section>
+
+        {/* Charts row — flows, interest position, maturity schedule */}
+        <section className="grid gap-4 xl:grid-cols-3">
+          <div className="card-surface p-5">
+            <h2 className="font-display text-[15px] font-extrabold tracking-[-0.01em]">
+              Deposits vs withdrawals
+            </h2>
+            <p className="mt-1 text-[12px] text-muted-foreground">Last 7 days, ₦ millions.</p>
+            <div className="mt-4 h-[190px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={FLOW_TREND} margin={{ top: 4, right: 4, bottom: 0, left: -12 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                  <XAxis dataKey="day" tickLine={false} axisLine={false} tick={axisTick} />
+                  <YAxis tickLine={false} axisLine={false} tick={axisTick} width={46} />
+                  <Tooltip
+                    cursor={{ fill: "var(--muted)" }}
+                    contentStyle={tooltipStyle}
+                    formatter={(v: number, n: string) => [`₦${v}m`, labelOf(n)]}
+                  />
+                  <Bar dataKey="deposits" fill="var(--brand)" radius={[4, 4, 0, 0]} maxBarSize={16} />
+                  <Bar dataKey="withdrawals" fill="var(--gold)" radius={[4, 4, 0, 0]} maxBarSize={16} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="card-surface p-5">
+            <h2 className="font-display text-[15px] font-extrabold tracking-[-0.01em]">
+              Interest accrued vs paid
+            </h2>
+            <p className="mt-1 text-[12px] text-muted-foreground">Monthly, ₦ millions.</p>
+            <div className="mt-4 h-[190px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={INTEREST_TREND} margin={{ top: 4, right: 4, bottom: 0, left: -12 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                  <XAxis dataKey="month" tickLine={false} axisLine={false} tick={axisTick} />
+                  <YAxis tickLine={false} axisLine={false} tick={axisTick} width={46} />
+                  <Tooltip
+                    contentStyle={tooltipStyle}
+                    formatter={(v: number, n: string) => [`₦${v}m`, labelOf(n)]}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="accrued"
+                    stroke="var(--brand)"
+                    strokeWidth={2.5}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="paid"
+                    stroke="var(--gold)"
+                    strokeWidth={2.5}
+                    strokeDasharray="5 4"
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="card-surface p-5">
+            <h2 className="font-display text-[15px] font-extrabold tracking-[-0.01em]">
+              Maturities due
+            </h2>
+            <p className="mt-1 text-[12px] text-muted-foreground">Next six weeks, ₦ millions.</p>
+            <div className="mt-4 h-[190px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={MATURITY_SCHEDULE} margin={{ top: 4, right: 4, bottom: 0, left: -12 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                  <XAxis dataKey="week" tickLine={false} axisLine={false} tick={axisTick} />
+                  <YAxis tickLine={false} axisLine={false} tick={axisTick} width={46} />
+                  <Tooltip
+                    cursor={{ fill: "var(--muted)" }}
+                    contentStyle={tooltipStyle}
+                    formatter={(v: number) => [`₦${v}m`, "Maturing"]}
+                  />
+                  <Bar dataKey="value" radius={[5, 5, 0, 0]} maxBarSize={26}>
+                    {MATURITY_SCHEDULE.map((row, i) => (
+                      <Cell
+                        key={row.week}
+                        fill={i === 2 ? "var(--gold)" : "var(--brand)"}
+                        fillOpacity={i === 2 ? 1 : 0.85}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </section>
+
+
 
         {/* ADM-013 — operational alerts */}
         <section className="card-surface p-5">
@@ -246,32 +441,59 @@ function AdminDashboard() {
               Where customer money currently sits.
             </p>
 
-            <div className="mt-4 flex h-3 overflow-hidden rounded-full">
-              {FUM_BREAKDOWN.map((s) => (
-                <div
-                  key={s.id}
-                  className={s.tone}
-                  style={{ width: `${(s.value / FUM) * 100}%` }}
-                  title={s.label}
-                />
-              ))}
+            <div className="mt-4 grid items-center gap-4 sm:grid-cols-[minmax(0,170px)_minmax(0,1fr)]">
+              <div className="relative h-[170px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={FUM_BREAKDOWN}
+                      dataKey="value"
+                      nameKey="label"
+                      innerRadius={52}
+                      outerRadius={78}
+                      paddingAngle={2}
+                      stroke="none"
+                    >
+                      {FUM_BREAKDOWN.map((s, i) => (
+                        <Cell key={s.id} fill={SLICE_FILLS[i % SLICE_FILLS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={tooltipStyle}
+                      formatter={(v: number, n: string) => [compactNaira(v), n]}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="pointer-events-none absolute inset-0 grid place-items-center">
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      FUM
+                    </p>
+                    <p className="font-display text-[16px] font-extrabold">{compactNaira(FUM)}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="min-w-0">
+                <ul className="space-y-2.5">
+                  {FUM_BREAKDOWN.map((s) => (
+                    <li key={s.id} className="flex items-center justify-between gap-3">
+                      <span className="flex min-w-0 items-center gap-2">
+                        <span className={`size-2.5 shrink-0 rounded-full ${s.tone}`} />
+                        <span className="truncate text-[13px] font-semibold">{s.label}</span>
+                      </span>
+                      <span className="shrink-0 text-[13px] font-bold tabular-nums">
+                        {naira(s.value)}
+                        <span className="ml-2 text-[11.5px] font-semibold text-muted-foreground">
+                          {((s.value / FUM) * 100).toFixed(1)}%
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            <ul className="mt-4 space-y-2.5">
-              {FUM_BREAKDOWN.map((s) => (
-                <li key={s.id} className="flex items-center justify-between gap-3">
-                  <span className="flex min-w-0 items-center gap-2">
-                    <span className={`size-2.5 shrink-0 rounded-full ${s.tone}`} />
-                    <span className="truncate text-[13px] font-semibold">{s.label}</span>
-                  </span>
-                  <span className="shrink-0 text-[13px] font-bold tabular-nums">
-                    {naira(s.value)}
-                    <span className="ml-2 text-[11.5px] font-semibold text-muted-foreground">
-                      {((s.value / FUM) * 100).toFixed(1)}%
-                    </span>
-                  </span>
-                </li>
-              ))}
-            </ul>
+
+
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <div>
