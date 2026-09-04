@@ -32,6 +32,7 @@ import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as AdminComplianceRouteImport } from './routes/admin_.compliance'
 import { Route as AdminProductsRouteImport } from './routes/admin_.products'
+import { Route as AdminRatesRouteImport } from './routes/admin_.rates'
 import { Route as AdminTransactionsRouteImport } from './routes/admin_.transactions'
 import { Route as AdminUsersRouteImport } from './routes/admin_.users'
 import { Route as AdminWithdrawalsRouteImport } from './routes/admin_.withdrawals'
@@ -255,6 +256,11 @@ const AdminComplianceRoute = AdminComplianceRouteImport.update({
 const AdminProductsRoute = AdminProductsRouteImport.update({
   id: '/admin_/products',
   path: '/admin/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRatesRoute = AdminRatesRouteImport.update({
+  id: '/admin_/rates',
+  path: '/admin/rates',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
@@ -852,6 +858,7 @@ export interface FileRoutesByFullPath {
   '/withdraw': typeof WithdrawRoute
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/rates': typeof AdminRatesRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
@@ -986,6 +993,7 @@ export interface FileRoutesByTo {
   '/withdraw': typeof WithdrawRoute
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/rates': typeof AdminRatesRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
@@ -1119,6 +1127,7 @@ export interface FileRoutesById {
   '/withdraw': typeof WithdrawRoute
   '/admin_/compliance': typeof AdminComplianceRoute
   '/admin_/products': typeof AdminProductsRoute
+  '/admin_/rates': typeof AdminRatesRoute
   '/admin_/transactions': typeof AdminTransactionsRoute
   '/admin_/users': typeof AdminUsersRoute
   '/admin_/withdrawals': typeof AdminWithdrawalsRoute
@@ -1255,6 +1264,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin/compliance'
     | '/admin/products'
+    | '/admin/rates'
     | '/admin/transactions'
     | '/admin/users'
     | '/admin/withdrawals'
@@ -1389,6 +1399,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin/compliance'
     | '/admin/products'
+    | '/admin/rates'
     | '/admin/transactions'
     | '/admin/users'
     | '/admin/withdrawals'
@@ -1521,6 +1532,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin_/compliance'
     | '/admin_/products'
+    | '/admin_/rates'
     | '/admin_/transactions'
     | '/admin_/users'
     | '/admin_/withdrawals'
@@ -1656,6 +1668,7 @@ export interface RootRouteChildren {
   WithdrawRoute: typeof WithdrawRoute
   AdminComplianceRoute: typeof AdminComplianceRoute
   AdminProductsRoute: typeof AdminProductsRoute
+  AdminRatesRoute: typeof AdminRatesRoute
   AdminTransactionsRoute: typeof AdminTransactionsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
@@ -1914,6 +1927,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/products'
       fullPath: '/admin/products'
       preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/rates': {
+      id: '/admin_/rates'
+      path: '/admin/rates'
+      fullPath: '/admin/rates'
+      preLoaderRoute: typeof AdminRatesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/transactions': {
@@ -2752,6 +2772,7 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawRoute: WithdrawRoute,
   AdminComplianceRoute: AdminComplianceRoute,
   AdminProductsRoute: AdminProductsRoute,
+  AdminRatesRoute: AdminRatesRoute,
   AdminTransactionsRoute: AdminTransactionsRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminWithdrawalsRoute: AdminWithdrawalsRoute,
