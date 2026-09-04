@@ -37,6 +37,132 @@ export const Route = createFileRoute("/learn_/$articleId")({
   component: ArticleScreen,
 });
 
+type Article = (typeof LEARN_ARTICLES)[number];
+
+function DesktopArticle({
+  article,
+  index,
+  related,
+}: {
+  article: Article;
+  index: number;
+  related: Article[];
+}) {
+  return (
+    <div className="mx-auto w-full max-w-6xl pb-10">
+      {/* Hero */}
+      <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 pb-32 pt-8 text-primary-foreground shadow-float">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-24 -top-32 size-80 rounded-full bg-gold/15 blur-[72px]"
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -bottom-28 -left-20 size-64 rounded-full bg-white/10 blur-[56px]"
+        />
+        <div className="relative max-w-3xl">
+          <Link
+            to="/learn"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold press"
+          >
+            <ArrowLeft className="size-3.5" /> All articles
+          </Link>
+          <span className="mt-6 inline-block rounded-full bg-gold px-3 py-1 text-[9.5px] font-bold uppercase tracking-[0.16em] text-brand">
+            {article.tag}
+          </span>
+          <h1 className="mt-3 font-display text-[32px] font-extrabold leading-tight tracking-[-0.02em]">
+            {article.title}
+          </h1>
+          <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-primary-foreground/80">
+            {article.standfirst}
+          </p>
+          <p className="mt-4 inline-flex items-center gap-2 text-[11.5px] font-semibold text-primary-foreground/65">
+            <Clock3 className="size-3.5" /> {article.readMinutes} min read · {article.date} ·{" "}
+            {article.author}
+          </p>
+        </div>
+      </section>
+
+      {/* Featured image */}
+      <div className="relative -mt-24 h-80 overflow-hidden rounded-3xl bg-[#0B1A30] shadow-float">
+        <img
+          src={articleArt(article.id, Math.max(index, 0))}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          className="absolute inset-0 size-full object-cover opacity-80"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B1A30] via-[#0B1A30]/50 to-transparent" />
+      </div>
+
+      {/* Body + rail */}
+      <div className="mt-8 grid grid-cols-[minmax(0,1fr)_320px] items-start gap-8">
+        <article className="space-y-8 rounded-2xl border border-border/60 bg-card p-8 shadow-card">
+          {article.sections.map((s) => (
+            <section key={s.heading}>
+              <h2 className="font-display text-lg font-extrabold text-foreground">
+                {s.heading}
+              </h2>
+              <div className="mt-3 space-y-3">
+                {s.paragraphs.map((p) => (
+                  <p key={p} className="text-[13.5px] leading-relaxed text-muted-foreground">
+                    {p}
+                  </p>
+                ))}
+              </div>
+            </section>
+          ))}
+          {article.cta && (
+            <Link
+              to={article.cta.to}
+              className="flex items-center justify-between gap-3 rounded-xl bg-brand-gradient p-5 text-primary-foreground shadow-card press hover:shadow-float"
+            >
+              <span className="text-[14px] font-bold">{article.cta.label}</span>
+              <ArrowUpRight className="size-4 text-gold" />
+            </Link>
+          )}
+        </article>
+
+        <aside className="sticky top-6 space-y-4">
+          <section className="rounded-2xl border border-border/60 bg-card p-5 shadow-card">
+            <h2 className="font-display text-[15px] font-extrabold">Keep reading</h2>
+            <div className="mt-3 space-y-3">
+              {related.map((a, i) => (
+                <Link
+                  key={a.id}
+                  to="/learn/$articleId"
+                  params={{ articleId: a.id }}
+                  className="group flex items-start gap-3 rounded-xl border border-border/50 p-3 press hover:bg-muted/40"
+                >
+                  <img
+                    src={articleArt(a.id, i + 1)}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    className="size-14 shrink-0 rounded-lg object-cover"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-brand">
+                      {a.tag}
+                    </p>
+                    <h3 className="mt-0.5 font-display text-[12.5px] font-bold leading-snug">
+                      {a.title}
+                    </h3>
+                    <p className="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold text-muted-foreground">
+                      <Clock3 className="size-3" /> {a.readMinutes} min
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+          <DisclosureStrip />
+        </aside>
+      </div>
+    </div>
+  );
+}
+
 function ArticleScreen() {
   const { article } = Route.useLoaderData();
   const index = LEARN_ARTICLES.findIndex((a) => a.id === article.id);
