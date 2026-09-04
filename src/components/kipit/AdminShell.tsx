@@ -16,7 +16,11 @@ import {
   KeyRound,
   ScrollText,
   Bell,
+  FileSpreadsheet,
+  LineChart,
   Search,
+  Settings,
+  UserCircle,
   LockKeyhole,
   LogOut,
   type LucideIcon,
@@ -68,13 +72,24 @@ const GROUPS: Group[] = [
     ],
   },
   {
+    heading: "Insights",
+    items: [
+      { label: "Reports & analytics", to: "/admin/analytics", icon: LineChart },
+      { label: "Reports centre", to: "/admin/reports", icon: FileSpreadsheet },
+    ],
+  },
+  {
     heading: "Console",
     items: [
       { label: "Admin users", to: "/admin/team", icon: UserCog },
       { label: "Roles & permissions", to: "/admin/team/roles", icon: KeyRound },
       { label: "Audit log", to: "/admin/audit", icon: ScrollText },
+      { label: "Notifications", to: "/admin/notifications", icon: Bell },
+      { label: "System settings", to: "/admin/settings", icon: Settings },
+      { label: "My profile", to: "/admin/profile", icon: UserCircle },
     ],
   },
+
 ];
 
 /**
@@ -237,22 +252,31 @@ export function AdminShell({
               ) : null}
             </div>
 
-            <label className="hidden items-center gap-2 rounded-lg border border-border bg-muted/50 px-3 py-2 md:flex">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const q = new FormData(e.currentTarget).get("q");
+                navigate({ to: "/admin/search", search: { q: String(q ?? "") } });
+              }}
+              className="hidden items-center gap-2 rounded-lg border border-border bg-muted/50 px-3 py-2 md:flex"
+            >
               <Search className="size-4 text-muted-foreground" />
               <input
+                name="q"
                 placeholder="Search users, references…"
                 className="w-56 bg-transparent text-[13px] outline-none placeholder:text-muted-foreground"
               />
-            </label>
+            </form>
 
-            <button
-              type="button"
+            <Link
+              to="/admin/notifications"
               aria-label="Notifications"
               className="relative grid size-10 place-items-center rounded-lg border border-border bg-card text-foreground transition hover:bg-muted"
             >
               <Bell className="size-4" />
               <span className="absolute right-2 top-2 size-2 rounded-full bg-gold" />
-            </button>
+            </Link>
+
           </div>
         </header>
 
