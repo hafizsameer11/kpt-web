@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AutoInvestRouteImport } from './routes/auto-invest'
 import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as CallAccountRouteImport } from './routes/call-account'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as FixedPlansRouteImport } from './routes/fixed-plans'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -189,6 +190,11 @@ const CalculatorRoute = CalculatorRouteImport.update({
 const CallAccountRoute = CallAccountRouteImport.update({
   id: '/call-account',
   path: '/call-account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExploreRoute = ExploreRouteImport.update({
@@ -984,6 +990,7 @@ export interface FileRoutesByFullPath {
   '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
+  '/chat': typeof ChatRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -1142,6 +1149,7 @@ export interface FileRoutesByTo {
   '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
+  '/chat': typeof ChatRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -1299,6 +1307,7 @@ export interface FileRoutesById {
   '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
+  '/chat': typeof ChatRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -1459,6 +1468,7 @@ export interface FileRouteTypes {
     | '/auto-invest'
     | '/calculator'
     | '/call-account'
+    | '/chat'
     | '/explore'
     | '/fixed-plans'
     | '/forgot-password'
@@ -1617,6 +1627,7 @@ export interface FileRouteTypes {
     | '/auto-invest'
     | '/calculator'
     | '/call-account'
+    | '/chat'
     | '/explore'
     | '/fixed-plans'
     | '/forgot-password'
@@ -1773,6 +1784,7 @@ export interface FileRouteTypes {
     | '/auto-invest'
     | '/calculator'
     | '/call-account'
+    | '/chat'
     | '/explore'
     | '/fixed-plans'
     | '/forgot-password'
@@ -1932,6 +1944,7 @@ export interface RootRouteChildren {
   AutoInvestRoute: typeof AutoInvestRoute
   CalculatorRoute: typeof CalculatorRoute
   CallAccountRoute: typeof CallAccountRoute
+  ChatRoute: typeof ChatRoute
   ExploreRoute: typeof ExploreRoute
   FixedPlansRoute: typeof FixedPlansRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
@@ -2106,6 +2119,13 @@ declare module '@tanstack/react-router' {
       path: '/call-account'
       fullPath: '/call-account'
       preLoaderRoute: typeof CallAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/explore': {
@@ -3220,6 +3240,7 @@ const rootRouteChildren: RootRouteChildren = {
   AutoInvestRoute: AutoInvestRoute,
   CalculatorRoute: CalculatorRoute,
   CallAccountRoute: CallAccountRoute,
+  ChatRoute: ChatRoute,
   ExploreRoute: ExploreRoute,
   FixedPlansRoute: FixedPlansRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
