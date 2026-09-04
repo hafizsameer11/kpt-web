@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 import { ArrowRight, TrendingUp } from "lucide-react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
-import { naira, WALLET } from "@/lib/home-data";
+import { naira } from "@/lib/home-data";
+import { creditWallet, useWalletBalance } from "@/lib/wallet-balance";
 import { cardFee, depositReference } from "@/lib/wallet-data";
 
 export const Route = createFileRoute("/wallet_/success")({
@@ -34,6 +36,17 @@ function DepositSuccess() {
   const { amount, method } = Route.useSearch();
   const fee = method === "card" ? cardFee(amount) : 0;
   const reference = depositReference(amount);
+  const applied = useRef(false);
+  const balanceAfter = useRef<number | null>(null);
+  const wallet = useWalletBalance();
+
+  useEffect(() => {
+    if (applied.current || amount <= 0) return;
+    applied.current = true;
+    balanceAfter.current = creditWallet(`deposit-${Date.now()}-${amount}`, amount);
+  }, [amount]);
+
+  const newBalance = balanceAfter.current ?? wallet;
 
   return (
     <AppShell title="Deposit Successful" navVariant="elevated">
@@ -69,7 +82,7 @@ function DepositSuccess() {
               {naira(amount)}
             </p>
             <p className="k-success-fade mt-3 text-[12.5px] font-medium text-primary-foreground/70">
-              New wallet balance {naira(WALLET + amount)}
+              New wallet balance {naira(newBalance)}
             </p>
           </div>
         </section>
