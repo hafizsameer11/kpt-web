@@ -9,12 +9,15 @@ import {
   Landmark,
   LifeBuoy,
   LogOut,
+  Moon,
   Scale,
   ShieldCheck,
+  Sun,
   User,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { PROFILE } from "@/lib/settings-data";
+import { useTheme } from "@/lib/theme";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -91,6 +94,7 @@ const GROUPS: { label: string; items: Item[] }[] = [
 ];
 
 function SettingsHome() {
+  const { isDark, toggle: toggleTheme } = useTheme();
   return (
     <AppShell title="Settings" navVariant="elevated">
       {/* ===== MOBILE (unchanged) ===== */}
@@ -123,6 +127,38 @@ function SettingsHome() {
 
         <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
           <span aria-hidden className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden" />
+
+          <section className="mb-6 md:hidden">
+            <h2 className="mb-2.5 px-1 font-display text-[13px] font-extrabold uppercase tracking-[0.12em] text-muted-foreground">
+              Appearance
+            </h2>
+            <div className="card-surface overflow-hidden">
+              <button
+                type="button"
+                onClick={toggleTheme}
+                aria-pressed={isDark}
+                className="flex w-full items-center gap-3.5 px-4 py-3.5 text-left press"
+              >
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25">
+                  {isDark ? <Sun className="size-[18px]" strokeWidth={2} /> : <Moon className="size-[18px]" strokeWidth={2} />}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13.5px] font-bold tracking-tight">Dark mode</p>
+                  <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                    {isDark ? "On · easier on the eyes at night" : "Off · using light theme"}
+                  </p>
+                </div>
+                <span
+                  aria-hidden
+                  className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${isDark ? "bg-gold" : "bg-border"}`}
+                >
+                  <span
+                    className={`absolute top-0.5 size-5 rounded-full bg-card shadow transition-all ${isDark ? "left-[22px]" : "left-0.5"}`}
+                  />
+                </span>
+              </button>
+            </div>
+          </section>
 
           <div className="space-y-6 md:grid md:grid-cols-2 md:items-start md:gap-5 md:space-y-0">
             {GROUPS.map((group) => (
