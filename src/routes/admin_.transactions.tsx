@@ -183,7 +183,7 @@ function TransactionsPage() {
         <div className="h-[220px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={DAILY_FLOW} barGap={4}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
               <XAxis dataKey="day" tickLine={false} axisLine={false} fontSize={12} />
               <YAxis
                 tickFormatter={(v: number) => compactNaira(v)}
@@ -193,9 +193,10 @@ function TransactionsPage() {
                 width={60}
               />
               <Tooltip formatter={(v: number) => naira(v)} />
-              <Bar dataKey="inflow" name="Inflow" fill="hsl(var(--brand))" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="placements" name="Placements" fill="hsl(var(--gold))" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="outflow" name="Payouts" fill="hsl(var(--muted-foreground))" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="inflow" name="Inflow" fill="var(--brand)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="placements" name="Placements" fill="var(--gold)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="outflow" name="Payouts" fill="var(--muted-foreground)" radius={[4, 4, 0, 0]} />
+
             </BarChart>
           </ResponsiveContainer>
         </div>
