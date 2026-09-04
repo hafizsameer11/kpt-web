@@ -315,23 +315,26 @@ function AdminDashboard() {
                 </div>
               </div>
               <div className="min-w-0">
+                <ul className="space-y-2.5">
+                  {FUM_BREAKDOWN.map((s) => (
+                    <li key={s.id} className="flex items-center justify-between gap-3">
+                      <span className="flex min-w-0 items-center gap-2">
+                        <span className={`size-2.5 shrink-0 rounded-full ${s.tone}`} />
+                        <span className="truncate text-[13px] font-semibold">{s.label}</span>
+                      </span>
+                      <span className="shrink-0 text-[13px] font-bold tabular-nums">
+                        {naira(s.value)}
+                        <span className="ml-2 text-[11.5px] font-semibold text-muted-foreground">
+                          {((s.value / FUM) * 100).toFixed(1)}%
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
 
-            <ul className="mt-4 space-y-2.5">
-              {FUM_BREAKDOWN.map((s) => (
-                <li key={s.id} className="flex items-center justify-between gap-3">
-                  <span className="flex min-w-0 items-center gap-2">
-                    <span className={`size-2.5 shrink-0 rounded-full ${s.tone}`} />
-                    <span className="truncate text-[13px] font-semibold">{s.label}</span>
-                  </span>
-                  <span className="shrink-0 text-[13px] font-bold tabular-nums">
-                    {naira(s.value)}
-                    <span className="ml-2 text-[11.5px] font-semibold text-muted-foreground">
-                      {((s.value / FUM) * 100).toFixed(1)}%
-                    </span>
-                  </span>
-                </li>
-              ))}
-            </ul>
+
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <div>
