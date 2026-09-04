@@ -141,18 +141,7 @@ function MobileHome() {
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-2.5">
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-                  className="grid size-10 place-items-center rounded-full border border-white/20 bg-white/10 press"
-                >
-                  {isDark ? (
-                    <Sun className="size-[18px]" strokeWidth={1.8} />
-                  ) : (
-                    <Moon className="size-[18px]" strokeWidth={1.8} />
-                  )}
-                </button>
+
                 <Link
                   to="/notifications"
                   aria-label="Notifications"
