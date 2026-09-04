@@ -28,6 +28,8 @@ export const SIDEBAR_NAV: SidebarItem[] = [
   { label: "Settings", to: "/settings", icon: Settings },
 ];
 
+import { useWalletBalance } from "@/lib/wallet-balance";
+
 const naira = (value: number) =>
   `₦${value.toLocaleString("en-NG", { maximumFractionDigits: 0 })}`;
 
@@ -36,7 +38,7 @@ const naira = (value: number) =>
  * Pair with a main column that has `md:pl-[17rem]`.
  */
 export function DashboardSidebar({
-  walletBalance = 500000,
+  walletBalance,
   hideBalance = false,
   activePath,
 }: {
@@ -44,6 +46,8 @@ export function DashboardSidebar({
   hideBalance?: boolean;
   activePath?: string;
 }) {
+  const liveWallet = useWalletBalance();
+  const balance = walletBalance ?? liveWallet;
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const current = activePath ?? pathname;
 
@@ -100,7 +104,7 @@ export function DashboardSidebar({
           Wallet
         </p>
         <p className="mt-1.5 text-[22px] font-bold text-num">
-          {hideBalance ? "₦ • • • • • •" : naira(walletBalance)}
+          {hideBalance ? "₦ • • • • • •" : naira(balance)}
         </p>
         <Link
           to="/wallet/add-money"

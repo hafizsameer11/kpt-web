@@ -4,7 +4,8 @@ import { ArrowLeft, ArrowRight, Clock, Landmark, ShieldCheck } from "lucide-reac
 import { useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
-import { naira, WALLET } from "@/lib/home-data";
+import { naira } from "@/lib/home-data";
+import { useWalletBalance } from "@/lib/wallet-balance";
 import {
   findAccount,
   maskAccount,
@@ -43,6 +44,7 @@ export const Route = createFileRoute("/withdraw_/amount")({
 const QUICK = [50_000, 100_000, 250_000];
 
 function AmountScreen() {
+  const WALLET = useWalletBalance();
   const { acct } = Route.useSearch();
   const account = findAccount(acct);
   const navigate = useNavigate();
@@ -117,6 +119,7 @@ function MobileAmount({
   bank,
   accountNumber,
 }: AmountProps) {
+  const WALLET = useWalletBalance();
   void _raw;
   const navigate = useNavigate();
 
@@ -285,6 +288,7 @@ function DesktopAmount({
   bank,
   accountNumber,
 }: AmountProps) {
+  const WALLET = useWalletBalance();
   const navigate = useNavigate();
 
   return (

@@ -11,7 +11,8 @@ import {
   Wallet,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
-import { naira, WALLET } from "@/lib/home-data";
+import { naira } from "@/lib/home-data";
+import { useWalletBalance } from "@/lib/wallet-balance";
 import {
   maskAccount,
   MIN_WITHDRAWAL,
@@ -61,6 +62,7 @@ function WithdrawEntry() {
 }
 
 function MobileWithdraw() {
+  const WALLET = useWalletBalance();
   const eligible = TIER.eligible;
 
   return (
@@ -175,6 +177,7 @@ function MobileWithdraw() {
 }
 
 function DesktopWithdraw() {
+  const WALLET = useWalletBalance();
   const eligible = TIER.eligible;
 
   return (
