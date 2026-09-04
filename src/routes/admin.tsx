@@ -1,0 +1,409 @@
+import { createFileRoute } from "@tanstack/react-router";
+import {
+  AlertTriangle,
+  ArrowDownRight,
+  ArrowUpRight,
+  CalendarClock,
+  Clock,
+  Info,
+  TrendingUp,
+} from "lucide-react";
+import { useState } from "react";
+import { AdminShell } from "@/components/kipit/AdminShell";
+import {
+  ALERTS,
+  FUM,
+  FUM_BREAKDOWN,
+  FUM_CHANGE_PCT,
+  FUM_LABELS,
+  FUM_SERIES,
+  INTEREST_ACCRUED,
+  INTEREST_PAYABLE,
+  MATURITIES,
+  PRIMARY_METRICS,
+  PRINCIPAL_BY_PRODUCT,
+  PRINCIPAL_BY_TENOR,
+  RECENT_ACTIVITY,
+  TODAY_FLOWS,
+  compactNaira,
+  naira,
+} from "@/lib/admin-data";
+
+export const Route = createFileRoute("/admin")({
+  head: () => ({
+    meta: [
+      { title: "Executive Dashboard — Kipit Admin Console" },
+      {
+        name: "description",
+        content:
+          "Operational cockpit for Kipit: funds under management, interest accrued and payable, maturity tracker and operational alerts.",
+      },
+      { property: "og:title", content: "Executive Dashboard — Kipit Admin Console" },
+      {
+        property: "og:description",
+        content:
+          "Funds under management, interest position, maturity tracker and operational alerts for Kipit administrators.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
+  component: AdminDashboard,
+});
+
+type Window = "week" | "month" | "custom";
+
+function AdminDashboard() {
+  const [window, setWindow] = useState<Window>("week");
+  const rows = MATURITIES.filter((m) =>
+    window === "week" ? m.window === "week" : window === "month" ? true : true,
+  );
+  const maturingTotal = rows.reduce((sum, r) => sum + r.principal, 0);
+
+  return (
+    <AdminShell
+      title="Executive dashboard"
+      subtitle="Business cockpit · Operations, Global and Super Admin"
+    >
+      <div className="space-y-5">
+        {/* ADM-010 — headline position */}
+        <section className="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+          <div className="relative overflow-hidden rounded-2xl bg-brand-gradient p-6 text-primary-foreground shadow-float md:p-7">
+            <div className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-gold/15 blur-3xl" />
+            <div className="relative flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-primary-foreground/55">
+                  Total funds under management
+                </p>
+                <p className="mt-2 font-display text-[38px] font-extrabold leading-none tracking-[-0.03em] md:text-[46px]">
+                  {naira(FUM)}
+                </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-gold/20 px-2.5 py-1 text-[12px] font-bold text-gold">
+                    <ArrowUpRight className="size-3.5" />
+                    {FUM_CHANGE_PCT}% MoM
+                  </span>
+                  <span className="text-[12px] text-primary-foreground/60">
+                    Across wallet, call, fixed and Explore balances
+                  </span>
+                </div>
+              </div>
+
+              <div className="rounded-xl bg-white/10 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-primary-foreground/55">
+                  Interest position
+                </p>
+                <div className="mt-2 space-y-1.5">
+                  <div className="flex items-baseline justify-between gap-6">
+                    <span className="text-[12px] text-primary-foreground/70">Accrued</span>
+                    <span className="text-[15px] font-bold">{naira(INTEREST_ACCRUED)}</span>
+                  </div>
+                  <div className="flex items-baseline justify-between gap-6">
+                    <span className="text-[12px] text-primary-foreground/70">Payable</span>
+                    <span className="text-[15px] font-bold text-gold">
+                      {naira(INTEREST_PAYABLE)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* FUM trend */}
+            <div className="relative mt-6">
+              <div className="flex h-24 items-end gap-2">
+                {FUM_SERIES.map((v, i) => {
+                  const max = Math.max(...FUM_SERIES);
+                  const last = i === FUM_SERIES.length - 1;
+                  return (
+                    <div key={FUM_LABELS[i]} className="flex flex-1 flex-col items-center gap-1.5">
+                      <div
+                        className={`w-full rounded-t-md ${last ? "bg-gold" : "bg-white/25"}`}
+                        style={{ height: `${(v / max) * 100}%` }}
+                      />
+                      <span className="text-[10px] font-semibold text-primary-foreground/45">
+                        {FUM_LABELS[i]}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Today's flows */}
+          <div className="card-surface p-5">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-[15px] font-extrabold tracking-[-0.01em]">
+                Today&apos;s flows
+              </h2>
+              <span className="text-[11px] font-semibold text-muted-foreground">Live</span>
+            </div>
+            <ul className="mt-4 space-y-3">
+              {[
+                { label: "Deposits", value: TODAY_FLOWS.deposits, up: true },
+                { label: "Placements", value: TODAY_FLOWS.placements, up: true },
+                { label: "Interest credits", value: TODAY_FLOWS.interestCredits, up: true },
+                { label: "Withdrawals", value: TODAY_FLOWS.withdrawals, up: false },
+              ].map((f) => (
+                <li
+                  key={f.label}
+                  className="flex items-center justify-between border-b border-border/60 pb-3 last:border-0 last:pb-0"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className={`grid size-8 place-items-center rounded-lg ${
+                        f.up ? "bg-brand/10 text-brand" : "bg-gold/15 text-gold-foreground"
+                      }`}
+                    >
+                      {f.up ? (
+                        <ArrowDownRight className="size-4" />
+                      ) : (
+                        <ArrowUpRight className="size-4" />
+                      )}
+                    </span>
+                    <span className="text-[13px] font-semibold">{f.label}</span>
+                  </div>
+                  <span className="text-[14px] font-bold tabular-nums">{naira(f.value)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* ADM-010 — primary metrics */}
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {PRIMARY_METRICS.map((m) => (
+            <div key={m.id} className="card-surface p-5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                {m.label}
+              </p>
+              <p className="mt-2 font-display text-[24px] font-extrabold tracking-[-0.02em]">
+                {naira(m.value)}
+              </p>
+              <div className="mt-2 flex items-center gap-2">
+                {m.changePct != null ? (
+                  <span className="inline-flex items-center gap-0.5 rounded-full bg-brand/10 px-2 py-0.5 text-[11px] font-bold text-brand">
+                    <TrendingUp className="size-3" />
+                    {m.changePct}%
+                  </span>
+                ) : null}
+                <span className="truncate text-[11.5px] text-muted-foreground">{m.helper}</span>
+              </div>
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-brand"
+                  style={{ width: `${(m.value / FUM) * 100}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </section>
+
+        {/* ADM-013 — operational alerts */}
+        <section className="card-surface p-5">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-[15px] font-extrabold tracking-[-0.01em]">
+              Operational alerts
+            </h2>
+            <span className="text-[11.5px] text-muted-foreground">Requires operator action</span>
+          </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            {ALERTS.map((a) => {
+              const tone =
+                a.severity === "critical"
+                  ? "border-gold/50 bg-gold/10"
+                  : a.severity === "warning"
+                    ? "border-border bg-muted/50"
+                    : "border-border bg-card";
+              const Icon =
+                a.severity === "critical" ? AlertTriangle : a.severity === "warning" ? Clock : Info;
+              return (
+                <div key={a.id} className={`rounded-xl border p-4 ${tone}`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-[12px] font-bold leading-tight">{a.label}</p>
+                    <Icon className="size-4 shrink-0 text-muted-foreground" />
+                  </div>
+                  <p className="mt-2 font-display text-[26px] font-extrabold leading-none tracking-[-0.02em]">
+                    {a.count}
+                  </p>
+                  <p className="mt-1.5 text-[11px] leading-snug text-muted-foreground">
+                    {a.helper}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+          {/* ADM-011 — FUM breakdown */}
+          <section className="card-surface p-5">
+            <h2 className="font-display text-[15px] font-extrabold tracking-[-0.01em]">
+              FUM breakdown
+            </h2>
+            <p className="mt-1 text-[12px] text-muted-foreground">
+              Where customer money currently sits.
+            </p>
+
+            <div className="mt-4 flex h-3 overflow-hidden rounded-full">
+              {FUM_BREAKDOWN.map((s) => (
+                <div
+                  key={s.id}
+                  className={s.tone}
+                  style={{ width: `${(s.value / FUM) * 100}%` }}
+                  title={s.label}
+                />
+              ))}
+            </div>
+            <ul className="mt-4 space-y-2.5">
+              {FUM_BREAKDOWN.map((s) => (
+                <li key={s.id} className="flex items-center justify-between gap-3">
+                  <span className="flex min-w-0 items-center gap-2">
+                    <span className={`size-2.5 shrink-0 rounded-full ${s.tone}`} />
+                    <span className="truncate text-[13px] font-semibold">{s.label}</span>
+                  </span>
+                  <span className="shrink-0 text-[13px] font-bold tabular-nums">
+                    {naira(s.value)}
+                    <span className="ml-2 text-[11.5px] font-semibold text-muted-foreground">
+                      {((s.value / FUM) * 100).toFixed(1)}%
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                  Principal by tenor
+                </p>
+                <ul className="mt-2.5 space-y-2">
+                  {PRINCIPAL_BY_TENOR.map((t) => (
+                    <li key={t.band} className="flex items-center justify-between text-[12.5px]">
+                      <span className="font-semibold">
+                        {t.band}
+                        <span className="ml-1.5 text-[11px] font-bold text-brand">{t.rate}</span>
+                      </span>
+                      <span className="font-bold tabular-nums">{compactNaira(t.value)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                  Principal by Explore product
+                </p>
+                <ul className="mt-2.5 space-y-2">
+                  {PRINCIPAL_BY_PRODUCT.map((p) => (
+                    <li key={p.product} className="flex items-center justify-between gap-3 text-[12.5px]">
+                      <span className="truncate font-semibold">{p.product}</span>
+                      <span className="shrink-0 font-bold tabular-nums">
+                        {compactNaira(p.value)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          {/* ADM-012 — maturity tracker */}
+          <section className="card-surface p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <CalendarClock className="size-4 text-brand" />
+                <h2 className="font-display text-[15px] font-extrabold tracking-[-0.01em]">
+                  Maturity tracker
+                </h2>
+              </div>
+              <div className="flex rounded-lg border border-border bg-muted/60 p-0.5">
+                {(
+                  [
+                    ["week", "This week"],
+                    ["month", "This month"],
+                    ["custom", "Custom"],
+                  ] as const
+                ).map(([id, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setWindow(id)}
+                    className={`rounded-[7px] px-3 py-1.5 text-[12px] font-bold transition ${
+                      window === id
+                        ? "bg-card text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-3 flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2">
+              <span className="text-[12px] text-muted-foreground">
+                {rows.length} maturities in view
+              </span>
+              <span className="text-[13px] font-bold tabular-nums">{naira(maturingTotal)}</span>
+            </div>
+
+            <div className="mt-3 overflow-x-auto">
+              <table className="w-full min-w-[560px] text-left">
+                <thead>
+                  <tr className="border-b border-border text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                    <th className="pb-2 pr-3">User</th>
+                    <th className="pb-2 pr-3">Product</th>
+                    <th className="pb-2 pr-3 text-right">Principal</th>
+                    <th className="pb-2 pr-3 text-right">Expected</th>
+                    <th className="pb-2 text-right">Maturity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    <tr key={r.id} className="border-b border-border/60 last:border-0">
+                      <td className="py-2.5 pr-3 text-[13px] font-semibold">{r.user}</td>
+                      <td className="py-2.5 pr-3 text-[12.5px] text-muted-foreground">
+                        {r.product}
+                      </td>
+                      <td className="py-2.5 pr-3 text-right text-[13px] font-bold tabular-nums">
+                        {naira(r.principal)}
+                      </td>
+                      <td className="py-2.5 pr-3 text-right text-[13px] font-bold tabular-nums text-brand">
+                        {naira(r.expected)}
+                      </td>
+                      <td className="py-2.5 text-right text-[12.5px] font-semibold">{r.date}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        {/* Admin audit trail */}
+        <section className="card-surface p-5">
+          <h2 className="font-display text-[15px] font-extrabold tracking-[-0.01em]">
+            Recent admin activity
+          </h2>
+          <ul className="mt-3 divide-y divide-border/60">
+            {RECENT_ACTIVITY.map((a) => (
+              <li key={a.id} className="flex items-center justify-between gap-4 py-2.5">
+                <div className="min-w-0">
+                  <p className="truncate text-[13px] font-semibold">{a.action}</p>
+                  <p className="truncate text-[11.5px] text-muted-foreground">{a.actor}</p>
+                </div>
+                <span className="shrink-0 text-[11.5px] text-muted-foreground">{a.at}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <p className="pb-2 text-[11px] leading-relaxed text-muted-foreground">
+          Prototype data. All figures are illustrative and every administrative action shown here is
+          recorded against the operator, role and session in the production design.
+        </p>
+      </div>
+    </AdminShell>
+  );
+}
