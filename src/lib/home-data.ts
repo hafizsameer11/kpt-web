@@ -12,9 +12,15 @@ import { LEARN_ARTICLES } from "@/lib/learn-data";
  * Single source of truth for the Home Dashboard (MOB-020 / WEB-002).
  * Every home concept renders the same reconciled figures.
  */
-export const WALLET = 500_000;
+/** Live wallet balance — moves when the user funds or withdraws. */
+export let WALLET = getWalletBalance();
 export const INVESTED = 2_450_000;
-export const TOTAL = WALLET + INVESTED; // ₦2,950,000
+export let TOTAL = WALLET + INVESTED;
+
+subscribeWallet((value) => {
+  WALLET = value;
+  TOTAL = WALLET + INVESTED;
+});
 export const WEEK_EARNINGS = 12_480;
 export const MONTH_CHANGE = 38_200;
 export const MONTH_CHANGE_PCT = 1.58;
