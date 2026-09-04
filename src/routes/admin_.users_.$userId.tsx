@@ -156,8 +156,8 @@ function AdminUserProfile() {
         <nav className="no-scrollbar overflow-x-auto rounded-xl border border-border bg-card p-1.5">
           <ul className="flex min-w-max gap-1">
             {TABS.map((tab) => {
-              const href = tab.to.replace("$userId", userId);
-              const active = tab.exact ? pathname === href : pathname === href;
+              const active = pathname === tab.to.replace("$userId", userId);
+
               return (
                 <li key={tab.label}>
                   <Link
