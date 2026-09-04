@@ -252,3 +252,12 @@ function LargeTicketRequestScreen() {
     </AppShell>
   );
 }
+
+function RailRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-3 py-2.5">
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="text-right font-bold text-foreground">{children}</dd>
+    </div>
+  );
+}
