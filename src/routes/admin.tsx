@@ -603,23 +603,70 @@ function AdminDashboard() {
           </section>
         </div>
 
-        {/* Admin audit trail */}
+        {/* Admin audit trail — timeline */}
         <section className="card-surface p-5">
-          <h2 className="font-display text-[15px] font-extrabold tracking-[-0.01em]">
-            Recent admin activity
-          </h2>
-          <ul className="mt-3 divide-y divide-border/60">
-            {RECENT_ACTIVITY.map((a) => (
-              <li key={a.id} className="flex items-center justify-between gap-4 py-2.5">
-                <div className="min-w-0">
-                  <p className="truncate text-[13px] font-semibold">{a.action}</p>
-                  <p className="truncate text-[11.5px] text-muted-foreground">{a.actor}</p>
-                </div>
-                <span className="shrink-0 text-[11.5px] text-muted-foreground">{a.at}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="font-display text-[15px] font-extrabold tracking-[-0.01em]">
+                Recent admin activity
+              </h2>
+              <p className="mt-1 text-[12px] text-muted-foreground">
+                Every action is stamped with operator, role and session.
+              </p>
+            </div>
+            <span className="rounded-full bg-muted px-3 py-1 text-[11px] font-bold text-muted-foreground">
+              Live audit trail
+            </span>
+          </div>
+
+          <ol className="relative mt-5 space-y-1 pl-2">
+            <span
+              aria-hidden
+              className="absolute left-[22px] top-3 bottom-6 w-px bg-gradient-to-b from-border via-border to-transparent"
+            />
+            {RECENT_ACTIVITY.map((a) => {
+              const tone = ACTIVITY_TONE[a.kind];
+              const Icon = tone.icon;
+              return (
+                <li
+                  key={a.id}
+                  className="group relative flex gap-4 rounded-2xl p-3 transition-colors hover:bg-muted/60"
+                >
+                  <span
+                    className={`relative z-10 grid size-9 shrink-0 place-items-center rounded-xl ring-4 ring-card ${tone.wrap}`}
+                  >
+                    <Icon className="size-4" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                      <p className="text-[13.5px] font-bold tracking-[-0.01em]">{a.action}</p>
+                      {a.amount != null ? (
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums ${tone.chip}`}
+                        >
+                          {naira(a.amount)}
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="mt-0.5 truncate text-[12px] text-muted-foreground">{a.detail}</p>
+                    <div className="mt-1.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+                      <span className="grid size-5 place-items-center rounded-full bg-brand/10 text-[9px] font-extrabold text-brand">
+                        {a.who.slice(0, 1)}
+                      </span>
+                      <span className="font-semibold text-foreground/80">{a.who}</span>
+                      <span aria-hidden>·</span>
+                      <span>{a.team}</span>
+                    </div>
+                  </div>
+                  <span className="shrink-0 self-start text-[11.5px] font-semibold text-muted-foreground">
+                    {a.at}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
         </section>
+
 
         <p className="pb-2 text-[11px] leading-relaxed text-muted-foreground">
           Prototype data. All figures are illustrative and every administrative action shown here is
