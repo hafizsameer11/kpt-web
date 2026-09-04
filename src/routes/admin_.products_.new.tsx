@@ -61,7 +61,7 @@ function CreateProductPage() {
   const [step, setStep] = useState(1);
 
   const [name, setName] = useState("");
-  const [category, setCategory] = useState<string>(PRODUCT_CATEGORIES[1]);
+  const [category, setCategory] = useState<string>("Fixed Income");
   const [issuer, setIssuer] = useState("");
   const [description, setDescription] = useState("");
   const [rate, setRate] = useState("");
@@ -72,7 +72,7 @@ function CreateProductPage() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [replaceId, setReplaceId] = useState<string | null>(null);
   const [docName, setDocName] = useState("");
-  const [docKind, setDocKind] = useState<ProductDoc["kind"]>(DOC_KINDS[0]);
+  const [docKind, setDocKind] = useState<ProductDoc["kind"]>("Term sheet");
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const detailsValid =
