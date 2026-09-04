@@ -260,8 +260,16 @@ function HelpCentre() {
             >
               <Phone className="size-4" strokeWidth={2.4} /> Call us
             </a>
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2.5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-600/30 bg-emerald-500/10 px-4 py-3.5 text-[13px] font-bold text-emerald-700 press hover:bg-emerald-500/15"
+            >
+              <MessageCircle className="size-4" strokeWidth={2.4} /> Chat on WhatsApp
+            </a>
             <p className="mt-3 text-[11.5px] text-muted-foreground">
-              Monday to Saturday, 8am – 8pm WAT.
+              Monday to Saturday, 8am – 8pm WAT. WhatsApp replies within the hour.
             </p>
           </section>
         </aside>
