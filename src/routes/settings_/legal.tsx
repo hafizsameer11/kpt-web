@@ -179,6 +179,32 @@ function LegalScreen() {
             </section>
 
             <section className="card-surface p-5">
+              <p className="flex items-center gap-2 text-[13px] font-extrabold">
+                <CheckCircle2 className="size-4 text-emerald-600" /> Product terms you accepted
+              </p>
+              {accepted.length === 0 ? (
+                <p className="mt-2 text-[12.5px] leading-relaxed text-muted-foreground">
+                  Nothing yet. When you subscribe to a marketplace product, the offer terms version
+                  you accept is recorded here.
+                </p>
+              ) : (
+                <ul className="mt-3 divide-y divide-border/60">
+                  {accepted.map((a) => (
+                    <li key={`${a.productId}-${a.acceptedAt}`} className="py-2.5">
+                      <p className="text-[12.5px] font-bold text-foreground">{a.productName}</p>
+                      <p className="mt-0.5 text-[11.5px] text-muted-foreground">
+                        Offer terms {a.version} &middot; {naira(a.amount)}
+                      </p>
+                      <p className="text-[11.5px] text-muted-foreground">
+                        Accepted {formatAcceptedAt(a.acceptedAt)}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+
+            <section className="card-surface p-5">
               <p className="text-[13px] font-extrabold">Need clarification?</p>
               <p className="mt-2 text-[12.5px] leading-relaxed text-muted-foreground">
                 Our support team can walk you through any clause before you accept a new version.
