@@ -238,7 +238,7 @@ export const TODAY_FLOWS = {
 
 /** FUM trend in ₦m, split by pool, for the stacked area chart. */
 export const FUM_TREND = FUM_LABELS.map((month, i) => {
-  const total = FUM_SERIES[i];
+  const total = FUM_SERIES[i] ?? 0;
   return {
     month,
     total,
