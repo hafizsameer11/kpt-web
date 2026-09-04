@@ -5,6 +5,7 @@ import {
   Compass,
   PieChart,
   Settings,
+  MessageCircle,
   type LucideIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
