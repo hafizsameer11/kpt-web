@@ -33,6 +33,7 @@ import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as AdminAccessHelpRouteImport } from './routes/admin_.access-help'
 import { Route as AdminAdjustmentsRouteImport } from './routes/admin_.adjustments'
+import { Route as AdminAiChatRouteImport } from './routes/admin_.ai-chat'
 import { Route as AdminAuditRouteImport } from './routes/admin_.audit'
 import { Route as AdminComplianceRouteImport } from './routes/admin_.compliance'
 import { Route as AdminLockedRouteImport } from './routes/admin_.locked'
@@ -113,6 +114,7 @@ import { Route as WithdrawSuccessRouteImport } from './routes/withdraw_/success'
 import { Route as WithdrawTrackerRouteImport } from './routes/withdraw_/tracker'
 import { Route as AdminAdjustmentsRequestIdRouteImport } from './routes/admin_.adjustments_.$requestId'
 import { Route as AdminAdjustmentsNewRouteImport } from './routes/admin_.adjustments_.new'
+import { Route as AdminAiChatSessionIdRouteImport } from './routes/admin_.ai-chat_.$sessionId'
 import { Route as AdminComplianceAmlRouteImport } from './routes/admin_.compliance_.aml'
 import { Route as AdminComplianceMonitoringRouteImport } from './routes/admin_.compliance_.monitoring'
 import { Route as AdminComplianceQueueRouteImport } from './routes/admin_.compliance_.queue'
@@ -290,6 +292,11 @@ const AdminAccessHelpRoute = AdminAccessHelpRouteImport.update({
 const AdminAdjustmentsRoute = AdminAdjustmentsRouteImport.update({
   id: '/admin_/adjustments',
   path: '/admin/adjustments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAiChatRoute = AdminAiChatRouteImport.update({
+  id: '/admin_/ai-chat',
+  path: '/admin/ai-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAuditRoute = AdminAuditRouteImport.update({
@@ -696,6 +703,11 @@ const AdminAdjustmentsNewRoute = AdminAdjustmentsNewRouteImport.update({
   path: '/admin/adjustments/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAiChatSessionIdRoute = AdminAiChatSessionIdRouteImport.update({
+  id: '/admin_/ai-chat_/$sessionId',
+  path: '/admin/ai-chat/$sessionId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminComplianceAmlRoute = AdminComplianceAmlRouteImport.update({
   id: '/admin_/compliance_/aml',
   path: '/admin/compliance/aml',
@@ -1039,6 +1051,7 @@ export interface FileRoutesByFullPath {
   '/withdraw': typeof WithdrawRoute
   '/admin/access-help': typeof AdminAccessHelpRoute
   '/admin/adjustments': typeof AdminAdjustmentsRoute
+  '/admin/ai-chat': typeof AdminAiChatRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/locked': typeof AdminLockedRoute
@@ -1119,6 +1132,7 @@ export interface FileRoutesByFullPath {
   '/withdraw/tracker': typeof WithdrawTrackerRoute
   '/admin/adjustments/$requestId': typeof AdminAdjustmentsRequestIdRoute
   '/admin/adjustments/new': typeof AdminAdjustmentsNewRoute
+  '/admin/ai-chat/$sessionId': typeof AdminAiChatSessionIdRoute
   '/admin/compliance/aml': typeof AdminComplianceAmlRoute
   '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin/compliance/queue': typeof AdminComplianceQueueRoute
@@ -1203,6 +1217,7 @@ export interface FileRoutesByTo {
   '/withdraw': typeof WithdrawRoute
   '/admin/access-help': typeof AdminAccessHelpRoute
   '/admin/adjustments': typeof AdminAdjustmentsRoute
+  '/admin/ai-chat': typeof AdminAiChatRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/locked': typeof AdminLockedRoute
@@ -1282,6 +1297,7 @@ export interface FileRoutesByTo {
   '/withdraw/tracker': typeof WithdrawTrackerRoute
   '/admin/adjustments/$requestId': typeof AdminAdjustmentsRequestIdRoute
   '/admin/adjustments/new': typeof AdminAdjustmentsNewRoute
+  '/admin/ai-chat/$sessionId': typeof AdminAiChatSessionIdRoute
   '/admin/compliance/aml': typeof AdminComplianceAmlRoute
   '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin/compliance/queue': typeof AdminComplianceQueueRoute
@@ -1366,6 +1382,7 @@ export interface FileRoutesById {
   '/withdraw': typeof WithdrawRoute
   '/admin_/access-help': typeof AdminAccessHelpRoute
   '/admin_/adjustments': typeof AdminAdjustmentsRoute
+  '/admin_/ai-chat': typeof AdminAiChatRoute
   '/admin_/audit': typeof AdminAuditRoute
   '/admin_/compliance': typeof AdminComplianceRoute
   '/admin_/locked': typeof AdminLockedRoute
@@ -1446,6 +1463,7 @@ export interface FileRoutesById {
   '/withdraw_/tracker': typeof WithdrawTrackerRoute
   '/admin_/adjustments_/$requestId': typeof AdminAdjustmentsRequestIdRoute
   '/admin_/adjustments_/new': typeof AdminAdjustmentsNewRoute
+  '/admin_/ai-chat_/$sessionId': typeof AdminAiChatSessionIdRoute
   '/admin_/compliance_/aml': typeof AdminComplianceAmlRoute
   '/admin_/compliance_/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin_/compliance_/queue': typeof AdminComplianceQueueRoute
@@ -1532,6 +1550,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin/access-help'
     | '/admin/adjustments'
+    | '/admin/ai-chat'
     | '/admin/audit'
     | '/admin/compliance'
     | '/admin/locked'
@@ -1612,6 +1631,7 @@ export interface FileRouteTypes {
     | '/withdraw/tracker'
     | '/admin/adjustments/$requestId'
     | '/admin/adjustments/new'
+    | '/admin/ai-chat/$sessionId'
     | '/admin/compliance/aml'
     | '/admin/compliance/monitoring'
     | '/admin/compliance/queue'
@@ -1696,6 +1716,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin/access-help'
     | '/admin/adjustments'
+    | '/admin/ai-chat'
     | '/admin/audit'
     | '/admin/compliance'
     | '/admin/locked'
@@ -1775,6 +1796,7 @@ export interface FileRouteTypes {
     | '/withdraw/tracker'
     | '/admin/adjustments/$requestId'
     | '/admin/adjustments/new'
+    | '/admin/ai-chat/$sessionId'
     | '/admin/compliance/aml'
     | '/admin/compliance/monitoring'
     | '/admin/compliance/queue'
@@ -1858,6 +1880,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin_/access-help'
     | '/admin_/adjustments'
+    | '/admin_/ai-chat'
     | '/admin_/audit'
     | '/admin_/compliance'
     | '/admin_/locked'
@@ -1938,6 +1961,7 @@ export interface FileRouteTypes {
     | '/withdraw_/tracker'
     | '/admin_/adjustments_/$requestId'
     | '/admin_/adjustments_/new'
+    | '/admin_/ai-chat_/$sessionId'
     | '/admin_/compliance_/aml'
     | '/admin_/compliance_/monitoring'
     | '/admin_/compliance_/queue'
@@ -2023,6 +2047,7 @@ export interface RootRouteChildren {
   WithdrawRoute: typeof WithdrawRoute
   AdminAccessHelpRoute: typeof AdminAccessHelpRoute
   AdminAdjustmentsRoute: typeof AdminAdjustmentsRoute
+  AdminAiChatRoute: typeof AdminAiChatRoute
   AdminAuditRoute: typeof AdminAuditRoute
   AdminComplianceRoute: typeof AdminComplianceRoute
   AdminLockedRoute: typeof AdminLockedRoute
@@ -2103,6 +2128,7 @@ export interface RootRouteChildren {
   WithdrawTrackerRoute: typeof WithdrawTrackerRoute
   AdminAdjustmentsRequestIdRoute: typeof AdminAdjustmentsRequestIdRoute
   AdminAdjustmentsNewRoute: typeof AdminAdjustmentsNewRoute
+  AdminAiChatSessionIdRoute: typeof AdminAiChatSessionIdRoute
   AdminComplianceAmlRoute: typeof AdminComplianceAmlRoute
   AdminComplianceMonitoringRoute: typeof AdminComplianceMonitoringRoute
   AdminComplianceQueueRoute: typeof AdminComplianceQueueRoute
@@ -2317,6 +2343,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/adjustments'
       fullPath: '/admin/adjustments'
       preLoaderRoute: typeof AdminAdjustmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/ai-chat': {
+      id: '/admin_/ai-chat'
+      path: '/admin/ai-chat'
+      fullPath: '/admin/ai-chat'
+      preLoaderRoute: typeof AdminAiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/audit': {
@@ -2879,6 +2912,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdjustmentsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/ai-chat_/$sessionId': {
+      id: '/admin_/ai-chat_/$sessionId'
+      path: '/admin/ai-chat/$sessionId'
+      fullPath: '/admin/ai-chat/$sessionId'
+      preLoaderRoute: typeof AdminAiChatSessionIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/compliance_/aml': {
       id: '/admin_/compliance_/aml'
       path: '/admin/compliance/aml'
@@ -3359,6 +3399,7 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawRoute: WithdrawRoute,
   AdminAccessHelpRoute: AdminAccessHelpRoute,
   AdminAdjustmentsRoute: AdminAdjustmentsRoute,
+  AdminAiChatRoute: AdminAiChatRoute,
   AdminAuditRoute: AdminAuditRoute,
   AdminComplianceRoute: AdminComplianceRoute,
   AdminLockedRoute: AdminLockedRoute,
@@ -3439,6 +3480,7 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawTrackerRoute: WithdrawTrackerRoute,
   AdminAdjustmentsRequestIdRoute: AdminAdjustmentsRequestIdRoute,
   AdminAdjustmentsNewRoute: AdminAdjustmentsNewRoute,
+  AdminAiChatSessionIdRoute: AdminAiChatSessionIdRoute,
   AdminComplianceAmlRoute: AdminComplianceAmlRoute,
   AdminComplianceMonitoringRoute: AdminComplianceMonitoringRoute,
   AdminComplianceQueueRoute: AdminComplianceQueueRoute,
