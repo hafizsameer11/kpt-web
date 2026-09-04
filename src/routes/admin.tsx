@@ -226,12 +226,30 @@ function AdminDashboard() {
                 ) : null}
                 <span className="truncate text-[11.5px] text-muted-foreground">{m.helper}</span>
               </div>
-              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
-                <div
-                  className="h-full rounded-full bg-brand"
-                  style={{ width: `${(m.value / FUM) * 100}%` }}
-                />
+              <div className="mt-3 h-[46px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={(METRIC_SPARKS[m.id] ?? []).map((v, i) => ({ i, v }))}
+                    margin={{ top: 2, right: 0, bottom: 0, left: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id={`spark-${m.id}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--brand)" stopOpacity={0.35} />
+                        <stop offset="100%" stopColor="var(--brand)" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <YAxis hide domain={["dataMin - 20", "dataMax + 10"]} />
+                    <Area
+                      type="monotone"
+                      dataKey="v"
+                      stroke="var(--brand)"
+                      strokeWidth={2}
+                      fill={`url(#spark-${m.id})`}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
+
             </div>
           ))}
         </section>
