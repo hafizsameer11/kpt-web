@@ -53,6 +53,7 @@ function ReferralsScreen() {
       eyebrow="MOB-150"
       subtitle="Earn a reward each time a friend joins Kipit and funds their first investment."
     >
+      <div className="md:hidden">
       <section className="card-surface p-5">
         <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
           Your referral code
