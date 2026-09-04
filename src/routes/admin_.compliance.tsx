@@ -43,6 +43,7 @@ const SECTIONS = [
     icon: ClipboardList,
     blurb: "Tier 1 and Tier 2 submissions awaiting a reviewer decision.",
     count: "18 waiting",
+    to: "/admin/compliance/queue" as const,
   },
   {
     id: "ADM-031",
@@ -50,6 +51,7 @@ const SECTIONS = [
     icon: FileSearch,
     blurb: "Side-by-side documents, selfie match and BVN/NIN check results.",
     count: "6 in progress",
+    to: "/admin/compliance/queue" as const,
   },
   {
     id: "ADM-032",
@@ -57,6 +59,7 @@ const SECTIONS = [
     icon: UserCheck,
     blurb: "Approve, reject with reason codes or escalate to the MLRO.",
     count: "2 escalated",
+    to: "/admin/compliance/queue" as const,
   },
   {
     id: "ADM-033",
@@ -64,6 +67,7 @@ const SECTIONS = [
     icon: AlertTriangle,
     blurb: "Sanctions, PEP and adverse-media hits raised on customer records.",
     count: "3 open hits",
+    to: "/admin/compliance/aml" as const,
   },
   {
     id: "ADM-034",
@@ -71,6 +75,7 @@ const SECTIONS = [
     icon: Clock,
     blurb: "Re-verification due dates, expiring documents and dormancy reviews.",
     count: "41 due in 30 days",
+    to: "/admin/compliance/monitoring" as const,
   },
   {
     id: "ADM-035",
@@ -78,6 +83,7 @@ const SECTIONS = [
     icon: ShieldCheck,
     blurb: "CBN / NFIU submission packs and audit-ready evidence exports.",
     count: "Next pack: 30 Sep",
+    to: "/admin/compliance/reporting" as const,
   },
 ];
 
@@ -102,23 +108,25 @@ function Compliance() {
             {SECTIONS.map((s) => {
               const Icon = s.icon;
               return (
-                <li
-                  key={s.id}
-                  className="rounded-xl border border-border/80 bg-muted/25 p-4 transition hover:border-brand/25"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-brand/8 text-brand">
-                      <Icon className="size-4" strokeWidth={2.1} />
-                    </span>
-                    <p className="truncate text-[13.5px] font-bold">{s.label}</p>
-                    <span className="ml-auto text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                      {s.id}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-[12.5px] leading-snug text-muted-foreground">{s.blurb}</p>
-                  <p className="mt-3 inline-flex rounded-md bg-gold/20 px-2 py-0.5 text-[11px] font-bold text-gold-foreground">
-                    {s.count}
-                  </p>
+                <li key={s.id}>
+                  <Link
+                    to={s.to}
+                    className="block h-full rounded-xl border border-border/80 bg-muted/25 p-4 transition hover:border-brand/30 hover:bg-muted/45"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-brand/8 text-brand">
+                        <Icon className="size-4" strokeWidth={2.1} />
+                      </span>
+                      <p className="truncate text-[13.5px] font-bold">{s.label}</p>
+                      <span className="ml-auto text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        {s.id}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-[12.5px] leading-snug text-muted-foreground">{s.blurb}</p>
+                    <p className="mt-3 inline-flex rounded-md bg-gold/20 px-2 py-0.5 text-[11px] font-bold text-gold-foreground">
+                      {s.count}
+                    </p>
+                  </Link>
                 </li>
               );
             })}
@@ -156,7 +164,7 @@ function Compliance() {
             ))}
           </ul>
           <p className="mt-4 rounded-xl bg-muted/60 p-3 text-[12.5px] text-muted-foreground">
-            Full review, decision and AML screens are built next.
+            Open the verification queue for full document review, decisions and escalation.
           </p>
         </Panel>
       </div>

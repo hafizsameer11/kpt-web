@@ -96,6 +96,10 @@ import { Route as WithdrawRestrictedRouteImport } from './routes/withdraw_/restr
 import { Route as WithdrawReviewRouteImport } from './routes/withdraw_/review'
 import { Route as WithdrawSuccessRouteImport } from './routes/withdraw_/success'
 import { Route as WithdrawTrackerRouteImport } from './routes/withdraw_/tracker'
+import { Route as AdminComplianceAmlRouteImport } from './routes/admin_.compliance_.aml'
+import { Route as AdminComplianceMonitoringRouteImport } from './routes/admin_.compliance_.monitoring'
+import { Route as AdminComplianceQueueRouteImport } from './routes/admin_.compliance_.queue'
+import { Route as AdminComplianceReportingRouteImport } from './routes/admin_.compliance_.reporting'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin_.users_.$userId'
 import { Route as ExploreProductIdCalculatorRouteImport } from './routes/explore_.$productId_.calculator'
 import { Route as ExploreProductIdProcessingRouteImport } from './routes/explore_.$productId_.processing'
@@ -118,6 +122,8 @@ import { Route as SettingsSecurityChangePinRouteImport } from './routes/settings
 import { Route as SettingsSecurityResetPinRouteImport } from './routes/settings_/security_/reset-pin'
 import { Route as SettingsSecuritySessionsRouteImport } from './routes/settings_/security_/sessions'
 import { Route as SettingsStatementsGeneratedRouteImport } from './routes/settings_/statements_/generated'
+import { Route as AdminComplianceAmlAlertIdRouteImport } from './routes/admin_.compliance_.aml_.$alertId'
+import { Route as AdminComplianceQueueCaseIdRouteImport } from './routes/admin_.compliance_.queue_.$caseId'
 import { Route as AdminUsersUserIdIndexRouteImport } from './routes/admin_.users_.$userId.index'
 import { Route as AdminUsersUserIdAuditRouteImport } from './routes/admin_.users_.$userId.audit'
 import { Route as AdminUsersUserIdBalancesRouteImport } from './routes/admin_.users_.$userId.balances'
@@ -566,6 +572,28 @@ const WithdrawTrackerRoute = WithdrawTrackerRouteImport.update({
   path: '/withdraw/tracker',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminComplianceAmlRoute = AdminComplianceAmlRouteImport.update({
+  id: '/admin_/compliance_/aml',
+  path: '/admin/compliance/aml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminComplianceMonitoringRoute =
+  AdminComplianceMonitoringRouteImport.update({
+    id: '/admin_/compliance_/monitoring',
+    path: '/admin/compliance/monitoring',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminComplianceQueueRoute = AdminComplianceQueueRouteImport.update({
+  id: '/admin_/compliance_/queue',
+  path: '/admin/compliance/queue',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminComplianceReportingRoute =
+  AdminComplianceReportingRouteImport.update({
+    id: '/admin_/compliance_/reporting',
+    path: '/admin/compliance/reporting',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
   id: '/admin_/users_/$userId',
   path: '/admin/users/$userId',
@@ -686,6 +714,18 @@ const SettingsStatementsGeneratedRoute =
   SettingsStatementsGeneratedRouteImport.update({
     id: '/settings_/statements_/generated',
     path: '/settings/statements/generated',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminComplianceAmlAlertIdRoute =
+  AdminComplianceAmlAlertIdRouteImport.update({
+    id: '/admin_/compliance_/aml_/$alertId',
+    path: '/admin/compliance/aml/$alertId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminComplianceQueueCaseIdRoute =
+  AdminComplianceQueueCaseIdRouteImport.update({
+    id: '/admin_/compliance_/queue_/$caseId',
+    path: '/admin/compliance/queue/$caseId',
     getParentRoute: () => rootRouteImport,
   } as any)
 const AdminUsersUserIdIndexRoute = AdminUsersUserIdIndexRouteImport.update({
@@ -827,6 +867,10 @@ export interface FileRoutesByFullPath {
   '/withdraw/review': typeof WithdrawReviewRoute
   '/withdraw/success': typeof WithdrawSuccessRoute
   '/withdraw/tracker': typeof WithdrawTrackerRoute
+  '/admin/compliance/aml': typeof AdminComplianceAmlRoute
+  '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
+  '/admin/compliance/queue': typeof AdminComplianceQueueRoute
+  '/admin/compliance/reporting': typeof AdminComplianceReportingRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
@@ -849,6 +893,8 @@ export interface FileRoutesByFullPath {
   '/settings/security/sessions': typeof SettingsSecuritySessionsRoute
   '/settings/statements/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans/create/': typeof FixedPlansCreateIndexRoute
+  '/admin/compliance/aml/$alertId': typeof AdminComplianceAmlAlertIdRoute
+  '/admin/compliance/queue/$caseId': typeof AdminComplianceQueueCaseIdRoute
   '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -946,6 +992,10 @@ export interface FileRoutesByTo {
   '/withdraw/review': typeof WithdrawReviewRoute
   '/withdraw/success': typeof WithdrawSuccessRoute
   '/withdraw/tracker': typeof WithdrawTrackerRoute
+  '/admin/compliance/aml': typeof AdminComplianceAmlRoute
+  '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
+  '/admin/compliance/queue': typeof AdminComplianceQueueRoute
+  '/admin/compliance/reporting': typeof AdminComplianceReportingRoute
   '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
@@ -967,6 +1017,8 @@ export interface FileRoutesByTo {
   '/settings/security/sessions': typeof SettingsSecuritySessionsRoute
   '/settings/statements/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans/create': typeof FixedPlansCreateIndexRoute
+  '/admin/compliance/aml/$alertId': typeof AdminComplianceAmlAlertIdRoute
+  '/admin/compliance/queue/$caseId': typeof AdminComplianceQueueCaseIdRoute
   '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -1066,6 +1118,10 @@ export interface FileRoutesById {
   '/withdraw_/review': typeof WithdrawReviewRoute
   '/withdraw_/success': typeof WithdrawSuccessRoute
   '/withdraw_/tracker': typeof WithdrawTrackerRoute
+  '/admin_/compliance_/aml': typeof AdminComplianceAmlRoute
+  '/admin_/compliance_/monitoring': typeof AdminComplianceMonitoringRoute
+  '/admin_/compliance_/queue': typeof AdminComplianceQueueRoute
+  '/admin_/compliance_/reporting': typeof AdminComplianceReportingRoute
   '/admin_/users_/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/explore_/$productId_/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore_/$productId_/processing': typeof ExploreProductIdProcessingRoute
@@ -1088,6 +1144,8 @@ export interface FileRoutesById {
   '/settings_/security_/sessions': typeof SettingsSecuritySessionsRoute
   '/settings_/statements_/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans_/create/': typeof FixedPlansCreateIndexRoute
+  '/admin_/compliance_/aml_/$alertId': typeof AdminComplianceAmlAlertIdRoute
+  '/admin_/compliance_/queue_/$caseId': typeof AdminComplianceQueueCaseIdRoute
   '/admin_/users_/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin_/users_/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin_/users_/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -1188,6 +1246,10 @@ export interface FileRouteTypes {
     | '/withdraw/review'
     | '/withdraw/success'
     | '/withdraw/tracker'
+    | '/admin/compliance/aml'
+    | '/admin/compliance/monitoring'
+    | '/admin/compliance/queue'
+    | '/admin/compliance/reporting'
     | '/admin/users/$userId'
     | '/explore/$productId/calculator'
     | '/explore/$productId/processing'
@@ -1210,6 +1272,8 @@ export interface FileRouteTypes {
     | '/settings/security/sessions'
     | '/settings/statements/generated'
     | '/fixed-plans/create/'
+    | '/admin/compliance/aml/$alertId'
+    | '/admin/compliance/queue/$caseId'
     | '/admin/users/$userId/audit'
     | '/admin/users/$userId/balances'
     | '/admin/users/$userId/investments'
@@ -1307,6 +1371,10 @@ export interface FileRouteTypes {
     | '/withdraw/review'
     | '/withdraw/success'
     | '/withdraw/tracker'
+    | '/admin/compliance/aml'
+    | '/admin/compliance/monitoring'
+    | '/admin/compliance/queue'
+    | '/admin/compliance/reporting'
     | '/explore/$productId/calculator'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
@@ -1328,6 +1396,8 @@ export interface FileRouteTypes {
     | '/settings/security/sessions'
     | '/settings/statements/generated'
     | '/fixed-plans/create'
+    | '/admin/compliance/aml/$alertId'
+    | '/admin/compliance/queue/$caseId'
     | '/admin/users/$userId/audit'
     | '/admin/users/$userId/balances'
     | '/admin/users/$userId/investments'
@@ -1426,6 +1496,10 @@ export interface FileRouteTypes {
     | '/withdraw_/review'
     | '/withdraw_/success'
     | '/withdraw_/tracker'
+    | '/admin_/compliance_/aml'
+    | '/admin_/compliance_/monitoring'
+    | '/admin_/compliance_/queue'
+    | '/admin_/compliance_/reporting'
     | '/admin_/users_/$userId'
     | '/explore_/$productId_/calculator'
     | '/explore_/$productId_/processing'
@@ -1448,6 +1522,8 @@ export interface FileRouteTypes {
     | '/settings_/security_/sessions'
     | '/settings_/statements_/generated'
     | '/fixed-plans_/create/'
+    | '/admin_/compliance_/aml_/$alertId'
+    | '/admin_/compliance_/queue_/$caseId'
     | '/admin_/users_/$userId/audit'
     | '/admin_/users_/$userId/balances'
     | '/admin_/users_/$userId/investments'
@@ -1547,6 +1623,10 @@ export interface RootRouteChildren {
   WithdrawReviewRoute: typeof WithdrawReviewRoute
   WithdrawSuccessRoute: typeof WithdrawSuccessRoute
   WithdrawTrackerRoute: typeof WithdrawTrackerRoute
+  AdminComplianceAmlRoute: typeof AdminComplianceAmlRoute
+  AdminComplianceMonitoringRoute: typeof AdminComplianceMonitoringRoute
+  AdminComplianceQueueRoute: typeof AdminComplianceQueueRoute
+  AdminComplianceReportingRoute: typeof AdminComplianceReportingRoute
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRouteWithChildren
   ExploreProductIdCalculatorRoute: typeof ExploreProductIdCalculatorRoute
   ExploreProductIdProcessingRoute: typeof ExploreProductIdProcessingRoute
@@ -1563,6 +1643,8 @@ export interface RootRouteChildren {
   SettingsSecurityResetPinRoute: typeof SettingsSecurityResetPinRoute
   SettingsSecuritySessionsRoute: typeof SettingsSecuritySessionsRoute
   SettingsStatementsGeneratedRoute: typeof SettingsStatementsGeneratedRoute
+  AdminComplianceAmlAlertIdRoute: typeof AdminComplianceAmlAlertIdRoute
+  AdminComplianceQueueCaseIdRoute: typeof AdminComplianceQueueCaseIdRoute
   PortfolioTransactionsTxnIdReceiptRoute: typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 
@@ -2177,6 +2259,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WithdrawTrackerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/compliance_/aml': {
+      id: '/admin_/compliance_/aml'
+      path: '/admin/compliance/aml'
+      fullPath: '/admin/compliance/aml'
+      preLoaderRoute: typeof AdminComplianceAmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/compliance_/monitoring': {
+      id: '/admin_/compliance_/monitoring'
+      path: '/admin/compliance/monitoring'
+      fullPath: '/admin/compliance/monitoring'
+      preLoaderRoute: typeof AdminComplianceMonitoringRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/compliance_/queue': {
+      id: '/admin_/compliance_/queue'
+      path: '/admin/compliance/queue'
+      fullPath: '/admin/compliance/queue'
+      preLoaderRoute: typeof AdminComplianceQueueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/compliance_/reporting': {
+      id: '/admin_/compliance_/reporting'
+      path: '/admin/compliance/reporting'
+      fullPath: '/admin/compliance/reporting'
+      preLoaderRoute: typeof AdminComplianceReportingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/users_/$userId': {
       id: '/admin_/users_/$userId'
       path: '/admin/users/$userId'
@@ -2329,6 +2439,20 @@ declare module '@tanstack/react-router' {
       path: '/settings/statements/generated'
       fullPath: '/settings/statements/generated'
       preLoaderRoute: typeof SettingsStatementsGeneratedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/compliance_/aml_/$alertId': {
+      id: '/admin_/compliance_/aml_/$alertId'
+      path: '/admin/compliance/aml/$alertId'
+      fullPath: '/admin/compliance/aml/$alertId'
+      preLoaderRoute: typeof AdminComplianceAmlAlertIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/compliance_/queue_/$caseId': {
+      id: '/admin_/compliance_/queue_/$caseId'
+      path: '/admin/compliance/queue/$caseId'
+      fullPath: '/admin/compliance/queue/$caseId'
+      preLoaderRoute: typeof AdminComplianceQueueCaseIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/users_/$userId/': {
@@ -2531,6 +2655,10 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawReviewRoute: WithdrawReviewRoute,
   WithdrawSuccessRoute: WithdrawSuccessRoute,
   WithdrawTrackerRoute: WithdrawTrackerRoute,
+  AdminComplianceAmlRoute: AdminComplianceAmlRoute,
+  AdminComplianceMonitoringRoute: AdminComplianceMonitoringRoute,
+  AdminComplianceQueueRoute: AdminComplianceQueueRoute,
+  AdminComplianceReportingRoute: AdminComplianceReportingRoute,
   AdminUsersUserIdRoute: AdminUsersUserIdRouteWithChildren,
   ExploreProductIdCalculatorRoute: ExploreProductIdCalculatorRoute,
   ExploreProductIdProcessingRoute: ExploreProductIdProcessingRoute,
@@ -2547,6 +2675,8 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsSecurityResetPinRoute: SettingsSecurityResetPinRoute,
   SettingsSecuritySessionsRoute: SettingsSecuritySessionsRoute,
   SettingsStatementsGeneratedRoute: SettingsStatementsGeneratedRoute,
+  AdminComplianceAmlAlertIdRoute: AdminComplianceAmlAlertIdRoute,
+  AdminComplianceQueueCaseIdRoute: AdminComplianceQueueCaseIdRoute,
   PortfolioTransactionsTxnIdReceiptRoute:
     PortfolioTransactionsTxnIdReceiptRoute,
 }
