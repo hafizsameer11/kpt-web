@@ -32,5 +32,6 @@
 ## Left to build
 - WEB-002–013 desktop refinements (dashboard side panel, holdings/transaction tables, plan builder two-column, web withdrawal step flow)
 - Admin console: ADM-001–003 auth — DONE (sign in, two-factor, session lock, access reset)
-- ADM-120–122 admin users & permissions, ADM-130 audit log
+- ADM-120–122 admin users, add admin, roles & permissions — DONE (/admin/team, /admin/team/new, /admin/team/roles, /admin/team/$adminId)
+- ADM-130 global audit log — DONE (/admin/audit)
 
