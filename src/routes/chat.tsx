@@ -265,20 +265,26 @@ function ChatScreen() {
         <AppShell title="Ask AI">
           <div className="md:grid md:grid-cols-[minmax(0,1fr)_20rem] md:gap-6">
             <section className="flex h-[calc(100vh-8rem)] flex-col overflow-hidden rounded-2xl border border-border bg-surface">
-              <header className="flex shrink-0 items-center gap-3 border-b border-border bg-surface px-6 py-4">
-                <span className="grid size-10 place-items-center rounded-full bg-brand-gradient text-primary-foreground">
-                  <MessageCircle className="size-[18px]" />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-[14px] font-bold leading-tight">Kipit Assistant</p>
-                  <p className="text-[11.5px] text-muted-foreground">
-                    Guided help · money moves only in secure screens
-                  </p>
+              <header className="relative shrink-0 overflow-hidden bg-brand-gradient px-6 py-5 text-primary-foreground">
+                <span className="pointer-events-none absolute -right-16 -top-24 size-56 rounded-full bg-gold/20 blur-3xl" />
+                <span className="pointer-events-none absolute -left-20 -bottom-24 size-56 rounded-full border border-primary-foreground/10" />
+                <div className="relative flex items-center gap-3">
+                  <span className="grid size-10 place-items-center rounded-full bg-gold-gradient text-gold-foreground">
+                    <MessageCircle className="size-[18px]" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="font-display text-[16px] font-bold leading-tight">Ask AI</p>
+                    <p className="flex items-center gap-1.5 text-[11.5px] text-primary-foreground/70">
+                      <span className="size-1.5 rounded-full bg-emerald-400" /> Guided help · money
+                      moves only in secure screens
+                    </p>
+                  </div>
+                  <span className="ml-auto flex items-center gap-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide">
+                    <ShieldCheck className="size-3.5 text-gold" /> Controlled
+                  </span>
                 </div>
-                <span className="ml-auto flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide text-muted-foreground">
-                  <ShieldCheck className="size-3.5 text-gold" /> Controlled
-                </span>
               </header>
+
 
               <div className="flex-1 space-y-4 overflow-y-auto px-6 py-5">{transcript}</div>
 
