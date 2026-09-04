@@ -442,3 +442,412 @@ function FixedPlansScreen() {
     </AppShell>
   );
 }
+
+// ── Desktop-only layout ──────────────────────────────────────────────
+type DesktopProps = {
+  hidden: boolean;
+  mask: (n: number) => string;
+  invested: number;
+  expected: number;
+  expectedInterest: number;
+  nextMaturity: (typeof HOLDINGS)[number] | undefined;
+  nextProgress: number;
+  tab: Tab;
+  setTab: (t: Tab) => void;
+};
+
+function DesktopFixedPlans({
+  hidden,
+  mask,
+  invested,
+  expected,
+  expectedInterest,
+  nextMaturity,
+  nextProgress,
+  tab,
+  setTab,
+}: DesktopProps) {
+  void hidden;
+  return (
+    <div className="hidden md:block">
+      {/* Hero */}
+      <section className="relative overflow-hidden rounded-xl bg-brand-gradient px-8 pb-10 pt-12 text-primary-foreground shadow-float">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -bottom-28 -left-20 size-64 rounded-full bg-white/10 blur-[56px]"
+        />
+        <div className="relative flex items-end justify-between gap-8">
+          <div>
+            <h1 className="k-rise font-display text-[40px] font-extrabold leading-[1.05] tracking-[-0.035em]">
+              Fixed plans
+            </h1>
+            <p
+              className="k-rise mt-2 text-sm text-primary-foreground/70"
+              style={{ ["--d" as string]: "60ms" }}
+            >
+              Lock a tenor, know your payout upfront
+            </p>
+            <div
+              className="k-rise mt-6 flex items-stretch gap-8"
+              style={{ ["--d" as string]: "120ms" }}
+            >
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.08em] text-primary-foreground/60">
+                  Total in fixed plans
+                </p>
+                <p className="mt-1 font-display text-[36px] font-extrabold leading-none tracking-[-0.03em] text-num">
+                  <AmountCounter value={invested} hidden={hidden} mask={mask} />
+                </p>
+                <p className="mt-1.5 text-[12px] text-primary-foreground/60">
+                  {HOLDINGS.length} active {HOLDINGS.length === 1 ? "plan" : "plans"}
+                </p>
+              </div>
+              <span aria-hidden className="w-px bg-white/12" />
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.08em] text-primary-foreground/60">
+                  Value at maturity
+                </p>
+                <p className="mt-1 text-[22px] font-extrabold text-num">
+                  <AmountCounter value={expected} hidden={hidden} mask={mask} />
+                </p>
+              </div>
+              <span aria-hidden className="w-px bg-white/12" />
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.08em] text-primary-foreground/60">
+                  Expected interest
+                </p>
+                <p className="mt-1 text-[22px] font-extrabold text-num text-gold">
+                  <AmountCounter value={expectedInterest} hidden={hidden} mask={mask} />
+                </p>
+              </div>
+            </div>
+          </div>
+          <Link
+            to="/fixed-plans/create"
+            className="k-glow k-rise inline-flex shrink-0 items-center gap-1.5 rounded-full bg-gold-gradient px-6 py-3.5 text-[13px] font-extrabold text-gold-foreground press"
+            style={{ ["--d" as string]: "180ms" }}
+          >
+            <Plus className="size-4" strokeWidth={2.6} />
+            Create new plan
+          </Link>
+        </div>
+      </section>
+
+      {/* Body: main + right rail */}
+      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_320px] items-start gap-6">
+        <div className="min-w-0 space-y-6">
+          {/* Rate / tenor overview */}
+          <section className="card-surface p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="font-display text-lg font-extrabold">Rate &amp; tenor overview</h2>
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground">
+                <TrendingUp className="size-3.5" /> rates per annum
+              </span>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              {TENOR_BANDS.map((band, i) => {
+                const featured = i === 1;
+                return (
+                  <article
+                    key={band.days}
+                    style={{ ["--d" as string]: `${i * 90}ms` }}
+                    className={`k-rise relative flex flex-col justify-between overflow-hidden rounded-xl p-5 ${
+                      featured
+                        ? "bg-brand-gradient text-primary-foreground shadow-float"
+                        : "border border-border bg-card"
+                    }`}
+                  >
+                    <span
+                      aria-hidden
+                      className={`pointer-events-none absolute -right-10 -top-10 size-28 rounded-full ${
+                        featured ? "bg-gold/20" : "bg-accent/60"
+                      }`}
+                    />
+                    <div className="relative">
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest ${
+                          featured
+                            ? "bg-white/15 text-primary-foreground"
+                            : "bg-secondary text-muted-foreground"
+                        }`}
+                      >
+                        {featured ? "Most popular" : "Fixed tenor"}
+                      </span>
+                      <h3 className="mt-3 font-display text-base font-extrabold leading-tight">
+                        {band.name}
+                      </h3>
+                      <p
+                        className={`mt-0.5 text-[11px] font-semibold ${
+                          featured ? "text-primary-foreground/70" : "text-muted-foreground"
+                        }`}
+                      >
+                        {band.days} &middot; min {naira(band.minimum)}
+                      </p>
+                    </div>
+                    <div className="relative mt-5">
+                      <p
+                        className={`text-[10px] ${
+                          featured ? "text-primary-foreground/60" : "text-muted-foreground"
+                        }`}
+                      >
+                        Rate p.a.
+                      </p>
+                      <p
+                        className={`text-2xl font-extrabold text-num ${
+                          featured ? "text-gold" : ""
+                        }`}
+                      >
+                        {band.rate}
+                      </p>
+                      <Link
+                        to="/fixed-plans/create"
+                        search={{ plan: band.days }}
+                        className={`mt-3 inline-flex w-full items-center justify-center gap-1 rounded-full px-3 py-2.5 text-[11px] font-extrabold press ${
+                          featured
+                            ? "bg-gold-gradient text-gold-foreground k-glow"
+                            : "bg-brand text-brand-foreground"
+                        }`}
+                      >
+                        <Plus className="size-3.5" strokeWidth={2.6} />
+                        Invest
+                      </Link>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Plans */}
+          <section className="card-surface p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="font-display text-lg font-extrabold">Your plans</h2>
+              <div className="flex items-center gap-3">
+                <div
+                  role="tablist"
+                  aria-label="Filter plans"
+                  className="inline-flex rounded-full border border-border/60 bg-card p-1"
+                >
+                  {(
+                    [
+                      ["active", `Active (${HOLDINGS.length})`],
+                      ["matured", `Matured (${MATURED_PLANS.length})`],
+                    ] as const
+                  ).map(([key, label]) => (
+                    <button
+                      key={key}
+                      role="tab"
+                      aria-selected={tab === key}
+                      onClick={() => setTab(key)}
+                      className={`rounded-full px-4 py-1.5 text-[12px] font-bold transition-all duration-300 ${
+                        tab === key
+                          ? "bg-brand text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <Link
+                  to="/portfolio"
+                  className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
+                >
+                  Portfolio <ChevronRight className="size-3.5" />
+                </Link>
+              </div>
+            </div>
+
+            {tab === "active" ? (
+              HOLDINGS.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center">
+                  <p className="text-sm font-bold">No fixed plans yet</p>
+                  <p className="mt-1 text-[12px] text-muted-foreground">
+                    Pick a tenor above to start your first plan.
+                  </p>
+                </div>
+              ) : (
+                <ul className="divide-y divide-border/60">
+                  {HOLDINGS.map((h, i) => {
+                    const progress = Math.min(
+                      100,
+                      Math.max(6, Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)),
+                    );
+                    const earned = Math.round(
+                      ((h.expectedPayout - h.amount) * (h.totalDays - h.daysLeft)) / h.totalDays,
+                    );
+                    return (
+                      <li key={h.id} style={{ ["--d" as string]: `${i * 90}ms` }} className="k-rise">
+                        <Link
+                          to="/portfolio/$holdingId"
+                          params={{ holdingId: h.id }}
+                          className="group -mx-3 grid grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto] items-center gap-6 rounded-xl px-3 py-4 transition-colors hover:bg-secondary/60 focus-visible:bg-secondary/60 focus-visible:outline-none"
+                        >
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-bold group-hover:text-brand">
+                              {h.name}
+                            </p>
+                            <p className="mt-1 text-[11px] text-muted-foreground">
+                              Matures {h.date} · {h.daysLeft} days left
+                            </p>
+                          </div>
+                          <div className="min-w-0">
+                            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                              <div
+                                className="k-fill h-full rounded-full bg-brand"
+                                style={{
+                                  width: `${progress}%`,
+                                  ["--d" as string]: `${150 + i * 90}ms`,
+                                }}
+                              />
+                            </div>
+                            <div className="mt-1.5 flex items-center justify-between text-[10px] font-semibold text-muted-foreground">
+                              <span>{progress}% of tenor</span>
+                              <span>
+                                Interest so far{" "}
+                                <span className="font-bold text-foreground">{mask(earned)}</span>
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex shrink-0 items-center gap-4 text-right">
+                            <div>
+                              <p className="text-base font-extrabold text-num">{mask(h.amount)}</p>
+                              <span className="mt-1 inline-flex rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-brand">
+                                {h.rate}
+                              </span>
+                            </div>
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                                h.autoRenew
+                                  ? "bg-accent/15 text-brand"
+                                  : "bg-muted text-muted-foreground"
+                              }`}
+                            >
+                              <RefreshCw className="size-3" />
+                              {h.autoRenew ? "Roll over on" : "Roll over off"}
+                            </span>
+                            <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-brand" />
+                          </div>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )
+            ) : (
+              <ul className="divide-y divide-border/60">
+                {MATURED_PLANS.map((p, i) => (
+                  <li
+                    key={`${p.name}-${p.maturedOn}`}
+                    style={{ ["--d" as string]: `${i * 90}ms` }}
+                    className="k-rise flex items-center justify-between gap-6 px-1 py-4"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-bold">{p.name}</p>
+                      <p className="mt-1 text-[11px] text-muted-foreground">
+                        {p.tenor} · matured {p.maturedOn}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-6 text-right">
+                      <span className="text-[11px] text-muted-foreground">
+                        Principal{" "}
+                        <span className="font-bold text-foreground">{mask(p.principal)}</span>
+                      </span>
+                      <div>
+                        <p className="text-base font-extrabold text-num">{mask(p.payout)}</p>
+                        <span className="mt-1 inline-flex rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-brand">
+                          {p.rate}
+                        </span>
+                      </div>
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-brand">
+                        <CheckCircle2 className="size-3.5" /> {p.status}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
+
+        {/* Right rail */}
+        <aside className="space-y-6">
+          {nextMaturity ? (
+            <section className="k-rise card-surface overflow-hidden p-5">
+              <div className="flex items-center gap-3">
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent/15 text-brand">
+                  <CalendarClock className="size-5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                    Next maturity
+                  </p>
+                  <p className="truncate text-sm font-bold">{nextMaturity.name}</p>
+                </div>
+              </div>
+              <div className="mt-4 flex items-end justify-between">
+                <p className="font-display text-[32px] font-extrabold leading-none text-num text-brand">
+                  {nextMaturity.daysLeft}
+                  <span className="text-base"> days</span>
+                </p>
+                <p className="text-[11px] font-semibold text-muted-foreground">
+                  {nextMaturity.date}
+                </p>
+              </div>
+              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  className="k-fill h-full rounded-full bg-accent"
+                  style={{ width: `${nextProgress}%`, ["--d" as string]: "220ms" }}
+                />
+              </div>
+              <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+                Payout at maturity{" "}
+                <span className="font-bold text-foreground">
+                  {mask(nextMaturity.expectedPayout)}
+                </span>{" "}
+                · credited to your wallet
+              </p>
+              <Link
+                to="/portfolio/$holdingId"
+                params={{ holdingId: nextMaturity.id }}
+                className="mt-4 inline-flex w-full items-center justify-center gap-1 rounded-full border border-border px-4 py-2.5 text-[12px] font-extrabold text-brand press hover:bg-secondary/60"
+              >
+                View plan <ChevronRight className="size-3.5" />
+              </Link>
+            </section>
+          ) : null}
+
+          <section className="k-rise card-surface p-5" style={{ ["--d" as string]: "90ms" }}>
+            <h3 className="font-display text-sm font-extrabold">Why fixed plans?</h3>
+            <ul className="mt-3 space-y-3 text-[12px] leading-relaxed text-muted-foreground">
+              <li className="flex gap-2.5">
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-brand" />
+                Rate locked at creation — payout known upfront.
+              </li>
+              <li className="flex gap-2.5">
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-brand" />
+                Interest accrues daily and pays out at maturity.
+              </li>
+              <li className="flex gap-2.5">
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-brand" />
+                Optional roll over reinvests principal automatically.
+              </li>
+            </ul>
+            <Link
+              to="/fixed-plans/create"
+              className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-brand px-4 py-2.5 text-[12px] font-extrabold text-primary-foreground press"
+            >
+              <Plus className="size-3.5" strokeWidth={2.6} /> Start a plan
+            </Link>
+          </section>
+
+          <DisclosureStrip variant="fixed" />
+        </aside>
+      </div>
+    </div>
+  );
+}
