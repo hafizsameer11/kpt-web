@@ -88,26 +88,78 @@ function AdminUserList() {
 
   const filtered = tier !== "all" || status !== "all" || query.trim().length > 0;
 
+  const maxValue = Math.max(...ADMIN_USERS.map((u) => portfolioValue(u)), 1);
+  const tierSplit = [0, 1, 2].map(
+    (t) => ADMIN_USERS.filter((u) => u.tier === t).length / ADMIN_USERS.length,
+  );
+
   return (
     <AdminShell title="Users" subtitle="ADM-020 · Customer directory">
       <div className="space-y-5">
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Stat
-            label="Total users"
-            value={totals.users.toLocaleString("en-NG")}
-            helper="Registered accounts"
-            tone="brand"
-          />
-          <Stat label="Tier 2 verified" value={`${totals.verified}`} helper="Full withdrawal access" />
-          <Stat label="Awaiting KYC" value={`${totals.pending}`} helper="Tier 0 · no funding yet" tone="gold" />
-          <Stat label="Customer AUM" value={compactNaira(totals.aum)} helper="Wallet + call + invested" />
+        {/* Directory overview band */}
+        <section className="relative overflow-hidden rounded-3xl bg-brand-gradient p-6 text-primary-foreground shadow-[0_24px_60px_-38px_rgba(11,29,58,0.9)]">
+          <span className="pointer-events-none absolute -right-16 -top-24 size-72 rounded-full bg-gold/18 blur-3xl" />
+          <span className="pointer-events-none absolute -bottom-28 left-1/3 size-72 rounded-full bg-white/8 blur-3xl" />
+
+          <div className="relative flex flex-wrap items-start justify-between gap-6">
+            <div>
+              <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-primary-foreground/55">
+                Customer directory
+              </p>
+              <p className="mt-1.5 font-display text-[30px] font-extrabold tracking-[-0.03em]">
+                {totals.users.toLocaleString("en-NG")} accounts
+              </p>
+              <p className="text-[13px] text-primary-foreground/65">
+                {compactNaira(totals.aum)} under management · {totals.pending} awaiting verification
+              </p>
+            </div>
+
+            <div className="grid flex-1 grid-cols-2 gap-x-8 gap-y-4 sm:max-w-[34rem] sm:grid-cols-3">
+              {[
+                { label: "Tier 2 verified", value: `${totals.verified}`, helper: "Full withdrawal access" },
+                { label: "Awaiting KYC", value: `${totals.pending}`, helper: "Tier 0 · no funding yet" },
+                { label: "Customer AUM", value: compactNaira(totals.aum), helper: "Wallet + call + invested" },
+              ].map((s) => (
+                <div key={s.label} className="border-l border-white/12 pl-4 first:border-l-0 first:pl-0 sm:border-l sm:pl-4 sm:first:pl-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary-foreground/50">
+                    {s.label}
+                  </p>
+                  <p className="mt-1 font-display text-[20px] font-extrabold tracking-[-0.02em]">
+                    {s.value}
+                  </p>
+                  <p className="text-[11.5px] text-primary-foreground/55">{s.helper}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Tier distribution meter */}
+          <div className="relative mt-6">
+            <div className="flex h-2 overflow-hidden rounded-full bg-white/12">
+              {["bg-white/30", "bg-gold/70", "bg-gold"].map((tone, i) => (
+                <span key={tone} className={tone} style={{ width: `${tierSplit[i]! * 100}%` }} />
+              ))}
+            </div>
+            <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[11.5px] text-primary-foreground/60">
+              {["Tier 0", "Tier 1", "Tier 2"].map((label, i) => (
+                <span key={label} className="inline-flex items-center gap-1.5">
+                  <span
+                    className={`size-2 rounded-full ${
+                      i === 0 ? "bg-white/30" : i === 1 ? "bg-gold/70" : "bg-gold"
+                    }`}
+                  />
+                  {label} · {Math.round(tierSplit[i]! * 100)}%
+                </span>
+              ))}
+            </div>
+          </div>
         </section>
 
         <Panel className="overflow-hidden">
           <div className="-m-5">
             {/* Controls */}
-            <div className="flex flex-wrap items-center gap-3 border-b border-border/70 px-5 py-4">
-              <label className="flex min-w-[16rem] flex-1 items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
+            <div className="flex flex-wrap items-center gap-3 border-b border-border/60 bg-muted/25 px-5 py-4">
+              <label className="flex min-w-[16rem] flex-1 items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 shadow-sm transition focus-within:border-brand/50 focus-within:ring-2 focus-within:ring-brand/10">
                 <Search className="size-4 shrink-0 text-muted-foreground" />
                 <input
                   value={query}
@@ -122,24 +174,27 @@ function AdminUserList() {
                 ) : null}
               </label>
 
-              <select
-                value={String(tier)}
-                onChange={(e) =>
-                  setTier(e.target.value === "all" ? "all" : (Number(e.target.value) as Tier))
-                }
-                className="rounded-lg border border-border bg-card px-3 py-2 text-[13px] font-semibold outline-none"
-              >
+              <div className="flex rounded-xl border border-border bg-card p-1 shadow-sm">
                 {TIER_OPTIONS.map((o) => (
-                  <option key={String(o.value)} value={String(o.value)}>
-                    {o.label}
-                  </option>
+                  <button
+                    key={String(o.value)}
+                    type="button"
+                    onClick={() => setTier(o.value)}
+                    className={`rounded-lg px-3 py-1.5 text-[12.5px] font-bold transition ${
+                      tier === o.value
+                        ? "bg-brand text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {o.value === "all" ? "All" : `T${o.value}`}
+                  </button>
                 ))}
-              </select>
+              </div>
 
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as StatusFilter)}
-                className="rounded-lg border border-border bg-card px-3 py-2 text-[13px] font-semibold outline-none"
+                className="rounded-xl border border-border bg-card px-3 py-2.5 text-[13px] font-semibold shadow-sm outline-none"
               >
                 {STATUS_OPTIONS.map((o) => (
                   <option key={o.value} value={o.value}>
@@ -151,7 +206,7 @@ function AdminUserList() {
               <button
                 type="button"
                 onClick={() => setFiltersOpen(true)}
-                className="grid size-10 place-items-center rounded-lg bg-brand text-primary-foreground transition hover:opacity-90"
+                className="grid size-10 place-items-center rounded-xl bg-brand text-primary-foreground shadow-sm transition hover:opacity-90"
                 aria-label="More filters"
               >
                 <SlidersHorizontal className="size-4" />
@@ -160,7 +215,7 @@ function AdminUserList() {
               <button
                 type="button"
                 onClick={() => toast.success("Export queued", { description: "CSV will be emailed to you." })}
-                className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-[13px] font-semibold transition hover:bg-muted"
+                className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-[13px] font-semibold shadow-sm transition hover:bg-muted"
               >
                 <Download className="size-4" />
                 Export
@@ -171,62 +226,93 @@ function AdminUserList() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[64rem] border-collapse text-left">
                 <thead>
-                  <tr className="border-b border-border/70 bg-muted/40 text-[11px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
-                    <th className="px-5 py-3">Name</th>
-                    <th className="px-5 py-3">Email</th>
-                    <th className="px-5 py-3">Phone</th>
+                  <tr className="border-b border-border/60 text-[10.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                    <th className="px-5 py-3">Customer</th>
+                    <th className="px-5 py-3">Contact</th>
                     <th className="px-5 py-3">Tier</th>
                     <th className="px-5 py-3">Status</th>
-                    <th className="px-5 py-3 text-right">Portfolio value</th>
+                    <th className="px-5 py-3">Portfolio value</th>
                     <th className="px-5 py-3">Joined</th>
                     <th className="px-5 py-3" />
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((u) => (
-                    <tr key={u.id} className="border-b border-border/60 transition hover:bg-muted/40">
-                      <td className="px-5 py-3.5">
-                        <Link
-                          to="/admin/users/$userId"
-                          params={{ userId: u.id }}
-                          className="flex items-center gap-3"
-                        >
-                          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand/10 text-[12px] font-extrabold text-brand">
-                            {u.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
+                  {rows.map((u) => {
+                    const value = portfolioValue(u);
+                    return (
+                      <tr
+                        key={u.id}
+                        className="group border-b border-border/50 transition last:border-0 hover:bg-brand/[0.035]"
+                      >
+                        <td className="relative px-5 py-4">
+                          <span className="absolute inset-y-0 left-0 w-[3px] scale-y-0 rounded-r-full bg-gold transition group-hover:scale-y-100" />
+                          <Link
+                            to="/admin/users/$userId"
+                            params={{ userId: u.id }}
+                            className="flex items-center gap-3"
+                          >
+                            <span className="relative grid size-10 shrink-0 place-items-center rounded-full bg-brand-gradient text-[12px] font-extrabold text-primary-foreground ring-2 ring-brand/10">
+                              {u.name
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                              <span
+                                className={`absolute -bottom-0.5 -right-0.5 size-3 rounded-full ring-2 ring-card ${
+                                  u.status === "active"
+                                    ? "bg-emerald-500"
+                                    : u.status === "frozen"
+                                      ? "bg-destructive"
+                                      : u.status === "pending"
+                                        ? "bg-gold"
+                                        : "bg-muted-foreground/50"
+                                }`}
+                              />
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block truncate text-[14px] font-bold tracking-[-0.01em]">
+                                {u.name}
+                              </span>
+                              <span className="block font-mono text-[11px] text-muted-foreground">
+                                {u.id}
+                              </span>
+                            </span>
+                          </Link>
+                        </td>
+                        <td className="px-5 py-4">
+                          <span className="block truncate text-[13px]">{u.email}</span>
+                          <span className="block text-[11.5px] text-muted-foreground">{u.phone}</span>
+                        </td>
+                        <td className="px-5 py-4">
+                          <TierPill tier={u.tier} />
+                        </td>
+                        <td className="px-5 py-4">
+                          <StatusPill status={u.status} />
+                        </td>
+                        <td className="px-5 py-4">
+                          <span className="block text-[13.5px] font-bold tabular-nums">
+                            {naira(value)}
                           </span>
-                          <span className="min-w-0">
-                            <span className="block truncate text-[13.5px] font-bold">{u.name}</span>
-                            <span className="block text-[11.5px] text-muted-foreground">{u.id}</span>
+                          <span className="mt-1.5 block h-1 w-28 overflow-hidden rounded-full bg-muted">
+                            <span
+                              className="block h-full rounded-full bg-brand/70"
+                              style={{ width: `${Math.max(2, (value / maxValue) * 100)}%` }}
+                            />
                           </span>
-                        </Link>
-                      </td>
-                      <td className="px-5 py-3.5 text-[13px] text-muted-foreground">{u.email}</td>
-                      <td className="px-5 py-3.5 text-[13px] text-muted-foreground">{u.phone}</td>
-                      <td className="px-5 py-3.5">
-                        <TierPill tier={u.tier} />
-                      </td>
-                      <td className="px-5 py-3.5">
-                        <StatusPill status={u.status} />
-                      </td>
-                      <td className="px-5 py-3.5 text-right text-[13.5px] font-bold">
-                        {naira(portfolioValue(u))}
-                      </td>
-                      <td className="px-5 py-3.5 text-[13px] text-muted-foreground">{u.joined}</td>
-                      <td className="px-5 py-3.5 text-right">
-                        <Link
-                          to="/admin/users/$userId"
-                          params={{ userId: u.id }}
-                          className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-[12px] font-bold transition hover:bg-muted"
-                        >
-                          Open
-                          <ChevronRight className="size-3.5" />
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="px-5 py-4 text-[13px] text-muted-foreground">{u.joined}</td>
+                        <td className="px-5 py-4 text-right">
+                          <Link
+                            to="/admin/users/$userId"
+                            params={{ userId: u.id }}
+                            className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-[12px] font-bold transition group-hover:border-brand group-hover:bg-brand group-hover:text-primary-foreground"
+                          >
+                            Open
+                            <ChevronRight className="size-3.5" />
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
 
@@ -249,7 +335,7 @@ function AdminUserList() {
               ) : null}
             </div>
 
-            <div className="flex items-center justify-between gap-3 px-5 py-3.5 text-[12px] text-muted-foreground">
+            <div className="flex items-center justify-between gap-3 border-t border-border/60 bg-muted/20 px-5 py-3.5 text-[12px] text-muted-foreground">
               <span>
                 Showing {rows.length} of {ADMIN_USERS.length} users
                 {filtered ? " (filtered)" : ""}
@@ -259,6 +345,7 @@ function AdminUserList() {
           </div>
         </Panel>
       </div>
+
 
       {/* Full filter dialog */}
       <Dialog open={filtersOpen} onOpenChange={setFiltersOpen}>
