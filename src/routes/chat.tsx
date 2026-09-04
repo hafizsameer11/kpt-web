@@ -329,9 +329,18 @@ function ChatScreen() {
                       moves only in secure screens
                     </p>
                   </div>
-                  <span className="ml-auto flex items-center gap-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide">
-                    <ShieldCheck className="size-3.5 text-gold" /> Controlled
-                  </span>
+                  <div className="ml-auto flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={resetChat}
+                      className="flex items-center gap-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide press"
+                    >
+                      <RotateCcw className="size-3.5 text-gold" /> New chat
+                    </button>
+                    <span className="flex items-center gap-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide">
+                      <ShieldCheck className="size-3.5 text-gold" /> Controlled
+                    </span>
+                  </div>
                 </div>
               </header>
 
