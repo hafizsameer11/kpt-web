@@ -41,6 +41,31 @@ function OccupationStep() {
       eyebrow="Tier 2"
       title="How do you earn?"
       subtitle="Nigerian AML regulations require us to understand where the money you invest comes from."
+      aside={
+        <>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Why we ask</p>
+            <ul className="mt-2 space-y-2">
+              {[
+                "Anti-money-laundering rules require it.",
+                "Helps us set sensible transaction limits.",
+                "Speeds up reviews on larger investments.",
+              ].map((t) => (
+                <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </section>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Almost done</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+              This is the final step. We review Tier 2 submissions within one business day.
+            </p>
+          </section>
+        </>
+      }
       step={4}
       totalSteps={4}
     >
