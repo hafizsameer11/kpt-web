@@ -397,7 +397,9 @@ function FixedPlansScreen() {
                             {h.autoRenew ? "Roll over on" : "Roll over off"}
                           </span>
                         </div>
+                        </Link>
                       </li>
+
                     );
                   })}
                 </ul>
