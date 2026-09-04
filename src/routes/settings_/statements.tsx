@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Check, FileText } from "lucide-react";
+import { Check, FileText, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
 import { STATEMENT_KINDS, type StatementKind } from "@/lib/settings-data";
@@ -22,11 +22,44 @@ export const Route = createFileRoute("/settings_/statements")({
   component: StatementsScreen,
 });
 
+const PRESETS = [
+  { label: "Last 30 days", days: 30 },
+  { label: "Last 3 months", days: 90 },
+  { label: "Last 6 months", days: 182 },
+  { label: "Year to date", days: 0 },
+] as const;
+
+function iso(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+
+function fmt(d: string) {
+  const date = new Date(d);
+  return Number.isNaN(date.getTime())
+    ? d
+    : date.toLocaleDateString("en-NG", { day: "2-digit", month: "short", year: "numeric" });
+}
+
 function StatementsScreen() {
   const navigate = useNavigate();
   const [kind, setKind] = useState<StatementKind>("Account statement");
   const [start, setStart] = useState("2026-01-01");
   const [end, setEnd] = useState("2026-09-03");
+
+  const generate = () =>
+    navigate({ to: "/settings/statements/generated", search: { kind, start, end } });
+
+  const applyPreset = (days: number) => {
+    const today = new Date();
+    setEnd(iso(today));
+    if (days === 0) {
+      setStart(`${today.getFullYear()}-01-01`);
+      return;
+    }
+    const from = new Date(today);
+    from.setDate(from.getDate() - days);
+    setStart(iso(from));
+  };
 
   return (
     <SettingsPage
@@ -34,7 +67,8 @@ function StatementsScreen() {
       eyebrow="MOB-143"
       subtitle="Official statements you can share with a bank, employer or adviser."
     >
-      <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+      {/* Mobile — unchanged */}
+      <div className="space-y-4 md:hidden">
         <section className="card-surface overflow-hidden">
           <p className="border-b border-border/60 px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
             Statement type
@@ -72,50 +106,175 @@ function StatementsScreen() {
           </ul>
         </section>
 
-        <div className="space-y-4">
-          <section className="card-surface p-4">
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
-              Period
-            </p>
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              <label className="block">
-                <span className="text-[11px] font-semibold text-muted-foreground">Start date</span>
-                <input
-                  type="date"
-                  value={start}
-                  onChange={(e) => setStart(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-border bg-secondary px-3 py-2.5 text-[13px] font-semibold outline-none focus:border-brand"
-                />
-              </label>
-              <label className="block">
-                <span className="text-[11px] font-semibold text-muted-foreground">End date</span>
-                <input
-                  type="date"
-                  value={end}
-                  onChange={(e) => setEnd(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-border bg-secondary px-3 py-2.5 text-[13px] font-semibold outline-none focus:border-brand"
-                />
-              </label>
-            </div>
-          </section>
-
-          <button
-            type="button"
-            onClick={() =>
-              navigate({
-                to: "/settings/statements/generated",
-                search: { kind, start, end },
-              })
-            }
-            className="inline-flex w-full items-center justify-center rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
-          >
-            Generate statement
-          </button>
-
-          <p className="px-1 text-[11.5px] leading-relaxed text-muted-foreground">
-            Statements are stamped and include a verification reference. Generating one does not
-            change your holdings.
+        <section className="card-surface p-4">
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
+            Period
           </p>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <label className="block">
+              <span className="text-[11px] font-semibold text-muted-foreground">Start date</span>
+              <input
+                type="date"
+                value={start}
+                onChange={(e) => setStart(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-border bg-secondary px-3 py-2.5 text-[13px] font-semibold outline-none focus:border-brand"
+              />
+            </label>
+            <label className="block">
+              <span className="text-[11px] font-semibold text-muted-foreground">End date</span>
+              <input
+                type="date"
+                value={end}
+                onChange={(e) => setEnd(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-border bg-secondary px-3 py-2.5 text-[13px] font-semibold outline-none focus:border-brand"
+              />
+            </label>
+          </div>
+        </section>
+
+        <button
+          type="button"
+          onClick={generate}
+          className="inline-flex w-full items-center justify-center rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press"
+        >
+          Generate statement
+        </button>
+
+        <p className="px-1 text-[11.5px] leading-relaxed text-muted-foreground">
+          Statements are stamped and include a verification reference. Generating one does not
+          change your holdings.
+        </p>
+      </div>
+
+      {/* Desktop */}
+      <div className="hidden md:block">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+          <div className="space-y-5">
+            <section className="card-surface p-6">
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
+                Statement type
+              </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                {STATEMENT_KINDS.map((s) => {
+                  const active = s.kind === kind;
+                  return (
+                    <button
+                      key={s.kind}
+                      type="button"
+                      onClick={() => setKind(s.kind)}
+                      className={`flex h-full flex-col items-start rounded-2xl border p-4 text-left transition-all press ${
+                        active
+                          ? "border-brand bg-secondary/60 ring-2 ring-brand/25"
+                          : "border-border bg-card hover:-translate-y-0.5 hover:shadow-float"
+                      }`}
+                    >
+                      <span
+                        className={`grid size-10 place-items-center rounded-xl ring-1 ring-inset ${
+                          active
+                            ? "bg-brand text-gold ring-gold/25"
+                            : "bg-secondary text-muted-foreground ring-border"
+                        }`}
+                      >
+                        <FileText className="size-[18px]" strokeWidth={2} />
+                      </span>
+                      <p className="mt-3 flex items-center gap-1.5 text-[13.5px] font-extrabold">
+                        {s.kind}
+                        {active ? <Check className="size-3.5 text-brand" strokeWidth={3} /> : null}
+                      </p>
+                      <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+                        {s.desc}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            <section className="card-surface p-6">
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
+                Period
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {PRESETS.map((p) => (
+                  <button
+                    key={p.label}
+                    type="button"
+                    onClick={() => applyPreset(p.days)}
+                    className="rounded-full border border-border bg-secondary px-3.5 py-1.5 text-[12px] font-bold text-muted-foreground transition-colors hover:border-brand hover:text-brand press"
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <label className="block">
+                  <span className="text-[11.5px] font-semibold text-muted-foreground">
+                    Start date
+                  </span>
+                  <input
+                    type="date"
+                    value={start}
+                    onChange={(e) => setStart(e.target.value)}
+                    className="mt-1.5 w-full rounded-xl border border-border bg-secondary px-3.5 py-3 text-[13.5px] font-semibold outline-none focus:border-brand"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-[11.5px] font-semibold text-muted-foreground">
+                    End date
+                  </span>
+                  <input
+                    type="date"
+                    value={end}
+                    onChange={(e) => setEnd(e.target.value)}
+                    className="mt-1.5 w-full rounded-xl border border-border bg-secondary px-3.5 py-3 text-[13.5px] font-semibold outline-none focus:border-brand"
+                  />
+                </label>
+              </div>
+            </section>
+          </div>
+
+          <aside className="space-y-4 lg:sticky lg:top-6">
+            <section className="card-surface overflow-hidden">
+              <div className="flex items-center gap-3 border-b border-border/60 p-5">
+                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25">
+                  <FileText className="size-5" strokeWidth={2} />
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate text-[13.5px] font-extrabold">{kind}</p>
+                  <p className="text-[11.5px] text-muted-foreground">PDF · stamped</p>
+                </div>
+              </div>
+              <dl className="divide-y divide-border/60 px-5 text-[12.5px]">
+                <div className="flex items-center justify-between gap-3 py-3">
+                  <dt className="text-muted-foreground">From</dt>
+                  <dd className="font-bold">{fmt(start)}</dd>
+                </div>
+                <div className="flex items-center justify-between gap-3 py-3">
+                  <dt className="text-muted-foreground">To</dt>
+                  <dd className="font-bold">{fmt(end)}</dd>
+                </div>
+              </dl>
+              <div className="p-5 pt-1">
+                <button
+                  type="button"
+                  onClick={generate}
+                  className="inline-flex w-full items-center justify-center rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press"
+                >
+                  Generate statement
+                </button>
+              </div>
+            </section>
+
+            <section className="card-surface flex items-start gap-3 p-5">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25">
+                <ShieldCheck className="size-[18px]" strokeWidth={2} />
+              </span>
+              <p className="text-[12.5px] leading-relaxed text-muted-foreground">
+                Statements are stamped and include a verification reference a bank can check.
+                Generating one does not change your holdings.
+              </p>
+            </section>
+          </aside>
         </div>
       </div>
     </SettingsPage>
