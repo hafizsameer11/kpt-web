@@ -79,7 +79,7 @@ export function AdminShell({
           </span>
         </div>
 
-        <nav className="hide-scrollbar flex-1 overflow-y-auto px-3 pb-6">
+        <nav className="no-scrollbar flex-1 overflow-y-auto px-3 pb-6">
           {GROUPS.map((group) => (
             <div key={group.heading} className="mt-5 first:mt-1">
               <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-primary-foreground/40">
