@@ -3,6 +3,8 @@ import { ArrowLeft, Delete } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { Logo } from "@/components/kipit/Logo";
+import authBrandImage from "@/assets/auth-brand.jpg";
+
 
 /**
  * Full-screen navy shell used by every onboarding / auth screen (MOB-001–017).
