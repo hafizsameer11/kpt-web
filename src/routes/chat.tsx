@@ -706,40 +706,50 @@ function ProductCard({
 }) {
   const est = useMemo(() => estimatedReturn(product, amount), [product, amount]);
   return (
-    <div className="max-w-[92%] rounded-2xl border border-border bg-surface p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+    <ResponseCard>
+      <div className="flex items-start gap-3 border-b border-border px-4 py-3.5">
+        <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand">
+          <Landmark className="size-4" />
+        </span>
+        <div className="min-w-0 flex-1">
           <p className="text-[13.5px] font-bold">{product.name}</p>
-          <p className="text-[12px] text-muted-foreground">{product.blurb}</p>
+          <p className="text-[11.5px] text-muted-foreground">{product.blurb}</p>
         </div>
         <span className="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[11.5px] font-bold text-num text-brand">
           {product.rate}
         </span>
       </div>
-      <dl className="mt-3 grid grid-cols-3 gap-2 text-[12px]">
-        <Cell label="Tenor" value={product.tenor} />
-        <Cell label="Minimum" value={naira(product.minimum)} />
-        <Cell label="Est. return" value={naira(est)} />
+      <dl className="grid grid-cols-3 divide-x divide-border text-[12px]">
+        <div className="px-3 py-3">
+          <Cell label="Tenor" value={product.tenor} />
+        </div>
+        <div className="px-3 py-3">
+          <Cell label="Minimum" value={naira(product.minimum)} />
+        </div>
+        <div className="px-3 py-3">
+          <Cell label="Est. return" value={naira(est)} />
+        </div>
       </dl>
-      <div className="mt-3 flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => onSend(`explain:${product.id}`, `Tell me about ${product.name}`)}
-          className="rounded-full border border-border px-3.5 py-2 text-[12.5px] font-bold press hover:bg-secondary"
-        >
-          Learn More
-        </button>
+      <CardFooter>
         <button
           type="button"
           onClick={() => onSend(`continue:${product.id}`, `Continue with ${product.name}`)}
-          className="inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-[12.5px] font-bold text-brand-foreground press"
+          className="inline-flex items-center gap-1.5 rounded-full bg-brand-gradient px-4 py-2 text-[12.5px] font-bold text-brand-foreground press"
         >
-          Continue <ArrowRight className="size-3.5" />
+          Continue <ArrowRight className="size-3.5 text-gold" />
         </button>
-      </div>
-    </div>
+        <button
+          type="button"
+          onClick={() => onSend(`explain:${product.id}`, `Tell me about ${product.name}`)}
+          className="rounded-full border border-border bg-surface px-3.5 py-2 text-[12.5px] font-bold press hover:bg-secondary"
+        >
+          Learn More
+        </button>
+      </CardFooter>
+    </ResponseCard>
   );
 }
+
 
 function StatusCard({ item }: { item: (typeof CHAT_STATUSES)[number] }) {
   const map = {
