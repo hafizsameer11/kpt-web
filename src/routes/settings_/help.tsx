@@ -3,6 +3,7 @@ import { ChevronDown, MessageCircle, Phone, Search, TrendingUp } from "lucide-re
 import { useMemo, useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
 import { FAQS, FAQ_CATEGORIES, POPULAR_QUESTIONS } from "@/lib/settings-data";
+import { WHATSAPP_URL } from "@/lib/terms-acceptance";
 
 export const Route = createFileRoute("/settings_/help")({
   head: () => ({
