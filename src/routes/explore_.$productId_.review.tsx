@@ -250,82 +250,93 @@ function SubscriptionReviewScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
-            <Rise>
-              <section className="card-surface p-4 md:p-5">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  Subscription summary
-                </p>
-                <dl className="mt-3 divide-y divide-border text-[13px]">
-                  <Row label="Product">{product.name}</Row>
-                  <Row label="Issuer">{product.issuer}</Row>
-                  <Row label="Amount">{naira(amount)}</Row>
-                  <Row label="Funding method">
-                    <span className="inline-flex items-center gap-1.5">
-                      <SourceIcon className="size-3.5 text-gold" />
-                      {SOURCE_META[source].label}
-                    </span>
-                  </Row>
-                  {source === "wallet" && (
-                    <Row label="Wallet after">
-                      {naira(Math.max(WALLET - amount, 0))}
+          <div className="space-y-4 md:grid md:grid-cols-[minmax(0,1fr)_360px] md:items-start md:gap-5 md:space-y-0">
+            {/* Left column — summary (+ desktop disclosure) */}
+            <div className="min-w-0 space-y-4">
+              <Rise>
+                <section className="card-surface p-4 md:p-6">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                    Subscription summary
+                  </p>
+                  <dl className="mt-3 divide-y divide-border text-[13px] md:text-[14px]">
+                    <Row label="Product">{product.name}</Row>
+                    <Row label="Issuer">{product.issuer}</Row>
+                    <Row label="Amount">{naira(amount)}</Row>
+                    <Row label="Funding method">
+                      <span className="inline-flex items-center gap-1.5">
+                        <SourceIcon className="size-3.5 text-gold" />
+                        {SOURCE_META[source].label}
+                      </span>
                     </Row>
-                  )}
-                </dl>
-              </section>
-            </Rise>
+                    {source === "wallet" && (
+                      <Row label="Wallet after">
+                        {naira(Math.max(WALLET - amount, 0))}
+                      </Row>
+                    )}
+                  </dl>
+                </section>
+              </Rise>
+              <div className="hidden md:block">
+                <DisclosureStrip variant="marketplace" />
+              </div>
+            </div>
 
-            <Rise delay={60}>
-              <section className="card-surface p-4 md:p-5">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  Expected terms
-                </p>
-                <p className="mt-2 font-display text-[30px] font-extrabold leading-none text-num">
-                  {naira(payout)}
-                </p>
-                <div className="mt-3 flex divide-x divide-border">
-                  <div className="flex-1 pr-4">
-                    <p className="text-[11px] font-semibold text-muted-foreground">
-                      Expected return
-                    </p>
-                    <p className="mt-0.5 font-display text-[17px] font-extrabold leading-none text-gold text-num">
-                      {naira(interest)}
-                    </p>
+            {/* Right rail — terms + confirm */}
+            <aside className="min-w-0 space-y-4 md:sticky md:top-6">
+              <Rise delay={60}>
+                <section className="card-surface p-4 md:p-6">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                    Expected terms
+                  </p>
+                  <p className="mt-2 font-display text-[30px] font-extrabold leading-none text-num md:text-[34px]">
+                    {naira(payout)}
+                  </p>
+                  <div className="mt-3 flex divide-x divide-border">
+                    <div className="flex-1 pr-4">
+                      <p className="text-[11px] font-semibold text-muted-foreground">
+                        Expected return
+                      </p>
+                      <p className="mt-0.5 font-display text-[17px] font-extrabold leading-none text-gold text-num">
+                        {naira(interest)}
+                      </p>
+                    </div>
+                    <div className="flex-1 pl-4">
+                      <p className="text-[11px] font-semibold text-muted-foreground">
+                        Rate &middot; tenor
+                      </p>
+                      <p className="mt-0.5 text-[15px] font-bold text-foreground">
+                        {product.rate} &middot; {product.tenor}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1 pl-4">
-                    <p className="text-[11px] font-semibold text-muted-foreground">
-                      Rate &middot; tenor
-                    </p>
-                    <p className="mt-0.5 text-[15px] font-bold text-foreground">
-                      {product.rate} &middot; {product.tenor}
-                    </p>
-                  </div>
-                </div>
-                <p className="mt-3 flex items-start gap-1.5 text-[11px] text-muted-foreground">
-                  <Building2 className="mt-0.5 size-3.5 shrink-0" />
-                  Indicative until allotted. Paid at maturity to your wallet.
+                  <p className="mt-3 flex items-start gap-1.5 text-[11px] text-muted-foreground">
+                    <Building2 className="mt-0.5 size-3.5 shrink-0" />
+                    Indicative until allotted. Paid at maturity to your wallet.
+                  </p>
+                </section>
+              </Rise>
+
+              <div className="md:hidden">
+                <DisclosureStrip variant="marketplace" />
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  disabled={!valid}
+                  onClick={() => setOpen(true)}
+                  className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press ${
+                    valid ? "k-glow" : "opacity-40 shadow-none"
+                  }`}
+                >
+                  {valid ? "Confirm subscription" : "Details incomplete"}
+                  <ArrowRight className="size-4" strokeWidth={2.6} />
+                </button>
+                <p className="mt-2.5 flex items-center justify-center gap-1.5 whitespace-nowrap text-[11.5px] text-muted-foreground md:justify-start">
+                  <Lock className="size-3.5" /> Authorize with your PIN or biometrics.
                 </p>
-              </section>
-            </Rise>
-          </div>
-
-          <DisclosureStrip variant="marketplace" />
-
-          <div className="mt-5">
-            <button
-              type="button"
-              disabled={!valid}
-              onClick={() => setOpen(true)}
-              className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
-                valid ? "k-glow" : "opacity-40 shadow-none"
-              }`}
-            >
-              {valid ? "Confirm subscription" : "Details incomplete"}
-              <ArrowRight className="size-4" strokeWidth={2.6} />
-            </button>
-            <p className="mt-2.5 flex items-center justify-center gap-1.5 whitespace-nowrap text-[11.5px] text-muted-foreground md:justify-start">
-              <Lock className="size-3.5" /> Authorize with your PIN or biometrics.
-            </p>
+              </div>
+            </aside>
           </div>
         </div>
       </div>
