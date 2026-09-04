@@ -44,7 +44,12 @@ function ArticleScreen() {
 
   return (
     <AppShell title="Learn" navVariant="elevated">
-      <div className="pb-2">
+      {/* ── Desktop layout ─────────────────────────────────────── */}
+      <div className="hidden md:block">
+        <DesktopArticle article={article} index={index} related={related} />
+      </div>
+      {/* ── Mobile layout (unchanged) ──────────────────────────── */}
+      <div className="pb-2 md:hidden">
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-28 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-36 md:pt-8 md:shadow-float">
           <span
             aria-hidden
