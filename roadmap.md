@@ -24,9 +24,10 @@
 - ADM-060–064 Product management: list, create (details/documents/review), product detail, published confirmation
 - ADM-070–073 Rate management: rate table, propose change, approval queue, approve/reject decision
 - ADM-090–092 Reconciliation: dashboard, records ledger, variance review
+- ADM-080–081 Plan adjustments: request (maker), maker-checker approval detail
 
 ## Left to build
 - WEB-002–013 desktop refinements (dashboard side panel, holdings/transaction tables, plan builder two-column, web withdrawal step flow)
-- Admin console: ADM-001–003 auth, ADM-080–081 adjustments, ADM-100–105 marketing, ADM-110+ support
+- Admin console: ADM-001–003 auth, ADM-100–105 marketing, ADM-110+ support
 - ADM-120–122 admin users & permissions, ADM-130 audit log
 - Chat-to-Trade CHAT-xxx surfaces
