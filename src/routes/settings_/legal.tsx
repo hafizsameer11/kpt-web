@@ -4,6 +4,12 @@ import { toast } from "sonner";
 import { CheckCircle2, ChevronRight, Download, FileText, Scale } from "lucide-react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
 import { LEGAL_DOCS } from "@/lib/settings-data";
+import { naira } from "@/lib/home-data";
+import {
+  formatAcceptedAt,
+  listTermsAcceptances,
+  type TermsAcceptance,
+} from "@/lib/terms-acceptance";
 import {
   Dialog,
   DialogContent,
