@@ -115,6 +115,9 @@ export function estimatedReturn(product: ChatProduct, amount: number) {
   return Math.round((amount * product.ratePct * days) / (100 * 365));
 }
 
+const compact = (items: (ChatProduct | undefined)[]): ChatProduct[] =>
+  items.filter((item): item is ChatProduct => Boolean(item));
+
 export const DEFAULT_AMOUNT = 500_000;
 
 const has = (text: string, words: string[]) => words.some((w) => text.includes(w));
@@ -122,9 +125,9 @@ const has = (text: string, words: string[]) => words.some((w) => text.includes(w
 /** Parses "₦500,000" / "500k" / "500000" out of free text. */
 export function parseAmount(text: string): number | undefined {
   const k = text.match(/([\d,.]+)\s*k\b/i);
-  if (k) return Math.round(Number(k[1].replace(/[,]/g, "")) * 1000);
+  if (k?.[1]) return Math.round(Number(k[1].replace(/,/g, "")) * 1000);
   const m = text.match(/([\d][\d,]{2,})/);
-  if (m) return Number(m[1].replace(/,/g, ""));
+  if (m?.[1]) return Number(m[1].replace(/,/g, ""));
   return undefined;
 }
 
@@ -173,13 +176,11 @@ export function assistantReply(raw: string, amountInFlight?: number): ChatMessag
     const invest = amount ?? DEFAULT_AMOUNT;
     let picks: ChatProduct[];
     if (access === "yes") {
-      picks = [callProduct, ...fixedProducts.slice(0, 1)];
+      picks = compact([callProduct, fixedProducts[0]]);
     } else if (tenor === "short") {
-      picks = [fixedProducts[0], callProduct, marketProducts[0]].filter(Boolean);
+      picks = compact([fixedProducts[0], callProduct, marketProducts[0]]);
     } else {
-      picks = [marketProducts[0], fixedProducts[1] ?? fixedProducts[0], fixedProducts[0]]
-        .filter(Boolean)
-        .slice(0, 3);
+      picks = compact([marketProducts[0], fixedProducts[1] ?? fixedProducts[0], fixedProducts[0]]).slice(0, 3);
     }
     return {
       id: nextId(),
@@ -299,7 +300,7 @@ export function assistantReply(raw: string, amountInFlight?: number): ChatMessag
           kind: "products",
           intro: "These are open right now. Rate, tenor and minimum are shown together.",
           amount: amount ?? DEFAULT_AMOUNT,
-          products: [callProduct, fixedProducts[0], marketProducts[0]].filter(Boolean),
+          products: compact([callProduct, fixedProducts[0], marketProducts[0]]),
         },
       ],
     };
