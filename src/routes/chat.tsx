@@ -282,9 +282,14 @@ function ChatScreen() {
                 <span className="size-1.5 rounded-full bg-emerald-400" /> Online · guided help
               </p>
             </div>
-            <span className="ml-auto grid size-9 place-items-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10">
-              <ShieldCheck className="size-4 text-gold" />
-            </span>
+            <button
+              type="button"
+              onClick={resetChat}
+              aria-label="Start a new chat"
+              className="ml-auto grid size-9 place-items-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10 press"
+            >
+              <RotateCcw className="size-4 text-gold" />
+            </button>
           </div>
         </header>
 
