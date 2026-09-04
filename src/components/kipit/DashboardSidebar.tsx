@@ -5,14 +5,17 @@ import {
   Home,
   MessageCircle,
   LogOut,
+  Moon,
   PieChart,
   Plus,
   Settings,
+  Sun,
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { GreetingText } from "@/components/kipit/SpecBlocks";
+import { useTheme } from "@/lib/theme";
 
 export type SidebarItem = { label: string; to: string; icon: LucideIcon };
 
@@ -129,6 +132,7 @@ export function DashboardSidebar({
 
 /** Desktop dashboard top bar that sits above page content, next to the sidebar. */
 export function DashboardTopBar({ title = "Dashboard" }: { title?: string }) {
+  const { isDark, toggle } = useTheme();
   return (
     <header className="sticky top-0 z-30 hidden h-[72px] items-center gap-4 border-b border-border bg-background/80 px-8 backdrop-blur-xl md:flex">
       <div>
@@ -138,6 +142,14 @@ export function DashboardTopBar({ title = "Dashboard" }: { title?: string }) {
         </p>
       </div>
       <div className="ml-auto flex items-center gap-2">
+        <button
+          type="button"
+          onClick={toggle}
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          className="grid size-10 place-items-center rounded-full border border-border bg-surface text-foreground press hover:bg-secondary"
+        >
+          {isDark ? <Sun className="size-[18px]" strokeWidth={1.8} /> : <Moon className="size-[18px]" strokeWidth={1.8} />}
+        </button>
         <Link
           to="/notifications"
           aria-label="Notifications"
