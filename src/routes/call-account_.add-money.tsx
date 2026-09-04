@@ -132,9 +132,9 @@ function AddMoneyScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+          <div className="space-y-4 md:grid md:grid-cols-[minmax(0,1fr)_340px] md:items-start md:gap-6 md:space-y-0">
             {/* Funding source */}
-            <section className="card-surface p-4 md:p-5">
+            <section className="card-surface p-4 md:p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Funding source
               </p>
@@ -160,7 +160,7 @@ function AddMoneyScreen() {
             </section>
 
             {/* What you'll earn */}
-            <section className="card-surface p-4 md:p-5">
+            <section className="card-surface p-4 md:sticky md:top-6 md:p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 What this earns
               </p>
@@ -182,11 +182,28 @@ function AddMoneyScreen() {
                 <Info className="size-3.5 shrink-0" />
                 Indicative at {CALL_ACCOUNT.rate} — accrues daily, credited monthly.
               </p>
+
+              {/* Desktop CTA lives in the sticky rail */}
+              <div className="mt-5 hidden md:block">
+                <Link
+                  to="/call-account/review"
+                  search={{ amount }}
+                  aria-disabled={!valid}
+                  className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press ${
+                    valid ? "" : "pointer-events-none opacity-40 shadow-none"
+                  }`}
+                >
+                  Continue <ArrowRight className="size-4" strokeWidth={2.6} />
+                </Link>
+                <p className="mt-2.5 text-[11.5px] text-muted-foreground">
+                  You'll review the amount, rate and funding source before it's confirmed.
+                </p>
+              </div>
             </section>
           </div>
 
-          {/* CTA */}
-          <div className="mt-5">
+          {/* CTA (mobile) */}
+          <div className="mt-5 md:hidden">
             <Link
               to="/call-account/review"
               search={{ amount }}
