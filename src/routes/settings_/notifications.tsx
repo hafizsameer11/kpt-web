@@ -32,7 +32,7 @@ function NotificationSettings() {
       eyebrow="MOB-151"
       subtitle="Alerts about your money are on by default. Marketing is always optional."
     >
-      <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+      <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_300px] lg:gap-5">
         <Group
           icon={Bell}
           label="Push notifications"
