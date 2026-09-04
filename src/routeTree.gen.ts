@@ -30,6 +30,7 @@ import { Route as SplashRouteImport } from './routes/splash'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
+import { Route as AdminComplianceRouteImport } from './routes/admin_.compliance'
 import { Route as AdminUsersRouteImport } from './routes/admin_.users'
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
@@ -230,6 +231,11 @@ const WelcomeRoute = WelcomeRouteImport.update({
 const WithdrawRoute = WithdrawRouteImport.update({
   id: '/withdraw',
   path: '/withdraw',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminComplianceRoute = AdminComplianceRouteImport.update({
+  id: '/admin_/compliance',
+  path: '/admin/compliance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
@@ -755,6 +761,7 @@ export interface FileRoutesByFullPath {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin/compliance': typeof AdminComplianceRoute
   '/admin/users': typeof AdminUsersRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
@@ -874,6 +881,7 @@ export interface FileRoutesByTo {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin/compliance': typeof AdminComplianceRoute
   '/admin/users': typeof AdminUsersRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
@@ -992,6 +1000,7 @@ export interface FileRoutesById {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin_/compliance': typeof AdminComplianceRoute
   '/admin_/users': typeof AdminUsersRoute
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
   '/call-account_/review': typeof CallAccountReviewRoute
@@ -1113,6 +1122,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
+    | '/admin/compliance'
     | '/admin/users'
     | '/call-account/add-money'
     | '/call-account/review'
@@ -1232,6 +1242,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
+    | '/admin/compliance'
     | '/admin/users'
     | '/call-account/add-money'
     | '/call-account/review'
@@ -1349,6 +1360,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
+    | '/admin_/compliance'
     | '/admin_/users'
     | '/call-account_/add-money'
     | '/call-account_/review'
@@ -1469,6 +1481,7 @@ export interface RootRouteChildren {
   VerificationRoute: typeof VerificationRoute
   WelcomeRoute: typeof WelcomeRoute
   WithdrawRoute: typeof WithdrawRoute
+  AdminComplianceRoute: typeof AdminComplianceRoute
   AdminUsersRoute: typeof AdminUsersRoute
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
   CallAccountReviewRoute: typeof CallAccountReviewRoute
@@ -1700,6 +1713,13 @@ declare module '@tanstack/react-router' {
       path: '/withdraw'
       fullPath: '/withdraw'
       preLoaderRoute: typeof WithdrawRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/compliance': {
+      id: '/admin_/compliance'
+      path: '/admin/compliance'
+      fullPath: '/admin/compliance'
+      preLoaderRoute: typeof AdminComplianceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/users': {
@@ -2445,6 +2465,7 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationRoute: VerificationRoute,
   WelcomeRoute: WelcomeRoute,
   WithdrawRoute: WithdrawRoute,
+  AdminComplianceRoute: AdminComplianceRoute,
   AdminUsersRoute: AdminUsersRoute,
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
   CallAccountReviewRoute: CallAccountReviewRoute,
