@@ -30,6 +30,7 @@ import { Route as SplashRouteImport } from './routes/splash'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
+import { Route as AdminAdjustmentsRouteImport } from './routes/admin_.adjustments'
 import { Route as AdminComplianceRouteImport } from './routes/admin_.compliance'
 import { Route as AdminProductsRouteImport } from './routes/admin_.products'
 import { Route as AdminRatesRouteImport } from './routes/admin_.rates'
@@ -101,6 +102,8 @@ import { Route as WithdrawRestrictedRouteImport } from './routes/withdraw_/restr
 import { Route as WithdrawReviewRouteImport } from './routes/withdraw_/review'
 import { Route as WithdrawSuccessRouteImport } from './routes/withdraw_/success'
 import { Route as WithdrawTrackerRouteImport } from './routes/withdraw_/tracker'
+import { Route as AdminAdjustmentsRequestIdRouteImport } from './routes/admin_.adjustments_.$requestId'
+import { Route as AdminAdjustmentsNewRouteImport } from './routes/admin_.adjustments_.new'
 import { Route as AdminComplianceAmlRouteImport } from './routes/admin_.compliance_.aml'
 import { Route as AdminComplianceMonitoringRouteImport } from './routes/admin_.compliance_.monitoring'
 import { Route as AdminComplianceQueueRouteImport } from './routes/admin_.compliance_.queue'
@@ -252,6 +255,11 @@ const WelcomeRoute = WelcomeRouteImport.update({
 const WithdrawRoute = WithdrawRouteImport.update({
   id: '/withdraw',
   path: '/withdraw',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAdjustmentsRoute = AdminAdjustmentsRouteImport.update({
+  id: '/admin_/adjustments',
+  path: '/admin/adjustments',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminComplianceRoute = AdminComplianceRouteImport.update({
@@ -612,6 +620,17 @@ const WithdrawTrackerRoute = WithdrawTrackerRouteImport.update({
   path: '/withdraw/tracker',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAdjustmentsRequestIdRoute =
+  AdminAdjustmentsRequestIdRouteImport.update({
+    id: '/admin_/adjustments_/$requestId',
+    path: '/admin/adjustments/$requestId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminAdjustmentsNewRoute = AdminAdjustmentsNewRouteImport.update({
+  id: '/admin_/adjustments_/new',
+  path: '/admin/adjustments/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminComplianceAmlRoute = AdminComplianceAmlRouteImport.update({
   id: '/admin_/compliance_/aml',
   path: '/admin/compliance/aml',
@@ -895,6 +914,7 @@ export interface FileRoutesByFullPath {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin/adjustments': typeof AdminAdjustmentsRoute
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/rates': typeof AdminRatesRoute
@@ -966,6 +986,8 @@ export interface FileRoutesByFullPath {
   '/withdraw/review': typeof WithdrawReviewRoute
   '/withdraw/success': typeof WithdrawSuccessRoute
   '/withdraw/tracker': typeof WithdrawTrackerRoute
+  '/admin/adjustments/$requestId': typeof AdminAdjustmentsRequestIdRoute
+  '/admin/adjustments/new': typeof AdminAdjustmentsNewRoute
   '/admin/compliance/aml': typeof AdminComplianceAmlRoute
   '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin/compliance/queue': typeof AdminComplianceQueueRoute
@@ -1036,6 +1058,7 @@ export interface FileRoutesByTo {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin/adjustments': typeof AdminAdjustmentsRoute
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/rates': typeof AdminRatesRoute
@@ -1106,6 +1129,8 @@ export interface FileRoutesByTo {
   '/withdraw/review': typeof WithdrawReviewRoute
   '/withdraw/success': typeof WithdrawSuccessRoute
   '/withdraw/tracker': typeof WithdrawTrackerRoute
+  '/admin/adjustments/$requestId': typeof AdminAdjustmentsRequestIdRoute
+  '/admin/adjustments/new': typeof AdminAdjustmentsNewRoute
   '/admin/compliance/aml': typeof AdminComplianceAmlRoute
   '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin/compliance/queue': typeof AdminComplianceQueueRoute
@@ -1176,6 +1201,7 @@ export interface FileRoutesById {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
+  '/admin_/adjustments': typeof AdminAdjustmentsRoute
   '/admin_/compliance': typeof AdminComplianceRoute
   '/admin_/products': typeof AdminProductsRoute
   '/admin_/rates': typeof AdminRatesRoute
@@ -1247,6 +1273,8 @@ export interface FileRoutesById {
   '/withdraw_/review': typeof WithdrawReviewRoute
   '/withdraw_/success': typeof WithdrawSuccessRoute
   '/withdraw_/tracker': typeof WithdrawTrackerRoute
+  '/admin_/adjustments_/$requestId': typeof AdminAdjustmentsRequestIdRoute
+  '/admin_/adjustments_/new': typeof AdminAdjustmentsNewRoute
   '/admin_/compliance_/aml': typeof AdminComplianceAmlRoute
   '/admin_/compliance_/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin_/compliance_/queue': typeof AdminComplianceQueueRoute
@@ -1319,6 +1347,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
+    | '/admin/adjustments'
     | '/admin/compliance'
     | '/admin/products'
     | '/admin/rates'
@@ -1390,6 +1419,8 @@ export interface FileRouteTypes {
     | '/withdraw/review'
     | '/withdraw/success'
     | '/withdraw/tracker'
+    | '/admin/adjustments/$requestId'
+    | '/admin/adjustments/new'
     | '/admin/compliance/aml'
     | '/admin/compliance/monitoring'
     | '/admin/compliance/queue'
@@ -1460,6 +1491,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
+    | '/admin/adjustments'
     | '/admin/compliance'
     | '/admin/products'
     | '/admin/rates'
@@ -1530,6 +1562,8 @@ export interface FileRouteTypes {
     | '/withdraw/review'
     | '/withdraw/success'
     | '/withdraw/tracker'
+    | '/admin/adjustments/$requestId'
+    | '/admin/adjustments/new'
     | '/admin/compliance/aml'
     | '/admin/compliance/monitoring'
     | '/admin/compliance/queue'
@@ -1599,6 +1633,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
+    | '/admin_/adjustments'
     | '/admin_/compliance'
     | '/admin_/products'
     | '/admin_/rates'
@@ -1670,6 +1705,8 @@ export interface FileRouteTypes {
     | '/withdraw_/review'
     | '/withdraw_/success'
     | '/withdraw_/tracker'
+    | '/admin_/adjustments_/$requestId'
+    | '/admin_/adjustments_/new'
     | '/admin_/compliance_/aml'
     | '/admin_/compliance_/monitoring'
     | '/admin_/compliance_/queue'
@@ -1741,6 +1778,7 @@ export interface RootRouteChildren {
   VerificationRoute: typeof VerificationRoute
   WelcomeRoute: typeof WelcomeRoute
   WithdrawRoute: typeof WithdrawRoute
+  AdminAdjustmentsRoute: typeof AdminAdjustmentsRoute
   AdminComplianceRoute: typeof AdminComplianceRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminRatesRoute: typeof AdminRatesRoute
@@ -1812,6 +1850,8 @@ export interface RootRouteChildren {
   WithdrawReviewRoute: typeof WithdrawReviewRoute
   WithdrawSuccessRoute: typeof WithdrawSuccessRoute
   WithdrawTrackerRoute: typeof WithdrawTrackerRoute
+  AdminAdjustmentsRequestIdRoute: typeof AdminAdjustmentsRequestIdRoute
+  AdminAdjustmentsNewRoute: typeof AdminAdjustmentsNewRoute
   AdminComplianceAmlRoute: typeof AdminComplianceAmlRoute
   AdminComplianceMonitoringRoute: typeof AdminComplianceMonitoringRoute
   AdminComplianceQueueRoute: typeof AdminComplianceQueueRoute
@@ -1994,6 +2034,13 @@ declare module '@tanstack/react-router' {
       path: '/withdraw'
       fullPath: '/withdraw'
       preLoaderRoute: typeof WithdrawRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/adjustments': {
+      id: '/admin_/adjustments'
+      path: '/admin/adjustments'
+      fullPath: '/admin/adjustments'
+      preLoaderRoute: typeof AdminAdjustmentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/compliance': {
@@ -2493,6 +2540,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WithdrawTrackerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/adjustments_/$requestId': {
+      id: '/admin_/adjustments_/$requestId'
+      path: '/admin/adjustments/$requestId'
+      fullPath: '/admin/adjustments/$requestId'
+      preLoaderRoute: typeof AdminAdjustmentsRequestIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/adjustments_/new': {
+      id: '/admin_/adjustments_/new'
+      path: '/admin/adjustments/new'
+      fullPath: '/admin/adjustments/new'
+      preLoaderRoute: typeof AdminAdjustmentsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/compliance_/aml': {
       id: '/admin_/compliance_/aml'
       path: '/admin/compliance/aml'
@@ -2893,6 +2954,7 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationRoute: VerificationRoute,
   WelcomeRoute: WelcomeRoute,
   WithdrawRoute: WithdrawRoute,
+  AdminAdjustmentsRoute: AdminAdjustmentsRoute,
   AdminComplianceRoute: AdminComplianceRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminRatesRoute: AdminRatesRoute,
@@ -2964,6 +3026,8 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawReviewRoute: WithdrawReviewRoute,
   WithdrawSuccessRoute: WithdrawSuccessRoute,
   WithdrawTrackerRoute: WithdrawTrackerRoute,
+  AdminAdjustmentsRequestIdRoute: AdminAdjustmentsRequestIdRoute,
+  AdminAdjustmentsNewRoute: AdminAdjustmentsNewRoute,
   AdminComplianceAmlRoute: AdminComplianceAmlRoute,
   AdminComplianceMonitoringRoute: AdminComplianceMonitoringRoute,
   AdminComplianceQueueRoute: AdminComplianceQueueRoute,
