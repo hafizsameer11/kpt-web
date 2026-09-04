@@ -317,7 +317,11 @@ function ChatScreen() {
           </div>
         </header>
 
-        <div className="flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4">
+        <div
+          ref={mobileScrollRef}
+          className="flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4"
+        >
+
           {transcript}
         </div>
 
