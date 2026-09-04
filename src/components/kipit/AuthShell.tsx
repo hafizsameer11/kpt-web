@@ -3,6 +3,7 @@ import { ArrowLeft, Delete } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { Logo } from "@/components/kipit/Logo";
+import authBrandArt from "@/assets/auth-brand.jpg";
 
 /**
  * Full-screen navy shell used by every onboarding / auth screen (MOB-001–017).
@@ -45,7 +46,7 @@ export function AuthShell({
           <div className="relative">
             <Logo tone="light" className="text-3xl" />
           </div>
-          <div>
+          <div className="relative">
             <p className="inline-flex items-center rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-gold">
               Wealth, simplified
             </p>
@@ -56,7 +57,7 @@ export function AuthShell({
               Save, invest in fixed-return plans, and track everything in one simple account.
             </p>
           </div>
-          <div className="grid max-w-md gap-3">
+          <div className="relative grid max-w-md gap-3">
             {[
               ["Up to 22% p.a.", "Fixed-return plans with clear tenors"],
               ["Daily interest", "Call Account interest accrues every day"],
@@ -71,7 +72,7 @@ export function AuthShell({
               </div>
             ))}
           </div>
-          <p className="max-w-md text-[11.5px] leading-relaxed text-brand-foreground/50">
+          <p className="relative max-w-md text-[11.5px] leading-relaxed text-brand-foreground/50">
             Kipit works with SEC-licensed partners. Returns shown are indicative and subject to
             issuer terms.
           </p>
