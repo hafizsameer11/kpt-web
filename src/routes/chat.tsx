@@ -107,39 +107,48 @@ function ChatScreen() {
 
   const showPrompts = messages.length === 1;
 
+  const promptIcons = [PieChart, Wallet, CalendarClock, LifeBuoy, BookOpen, Landmark];
+
   const transcript = (
     <>
-      {messages.map((message) =>
+      {messages.map((message, mi) =>
         message.role === "user" ? (
-          <div key={message.id} className="flex justify-end">
-            <p className="max-w-[80%] rounded-2xl rounded-br-md bg-brand px-3.5 py-2.5 text-[13.5px] font-medium text-brand-foreground">
+          <div key={message.id} className="k-rise flex justify-end">
+            <p className="max-w-[80%] rounded-[1.25rem] rounded-br-md bg-brand-gradient px-4 py-2.5 text-[13.5px] font-medium text-brand-foreground shadow-card">
               {message.text}
             </p>
           </div>
         ) : (
-          <div key={message.id} className="flex gap-2.5">
-            <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-brand-gradient text-primary-foreground">
-              <MessageCircle className="size-3.5" />
+          <div key={message.id} className="k-rise flex gap-2.5">
+            <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-brand-gradient text-primary-foreground ring-1 ring-gold/40">
+              <MessageCircle className="size-3.5 text-gold" />
             </span>
             <div className="min-w-0 flex-1 space-y-3">
               {message.blocks?.map((block, index) => (
-                <BlockView key={index} block={block} onSend={send} />
+                <div
+                  key={index}
+                  className="k-rise"
+                  style={{ "--d": `${index * 70}ms` } as React.CSSProperties}
+                >
+                  <BlockView block={block} onSend={send} />
+                </div>
               ))}
             </div>
+            <span className="sr-only">{mi}</span>
           </div>
         ),
       )}
 
       {thinking && (
         <div className="flex gap-2.5">
-          <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-brand-gradient text-primary-foreground">
-            <MessageCircle className="size-3.5" />
+          <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-brand-gradient text-primary-foreground ring-1 ring-gold/40">
+            <MessageCircle className="size-3.5 text-gold" />
           </span>
-          <div className="flex items-center gap-1 rounded-2xl bg-secondary px-3.5 py-3">
+          <div className="flex items-center gap-1 rounded-2xl rounded-tl-md border border-border bg-surface px-3.5 py-3 shadow-card">
             {[0, 1, 2].map((dot) => (
               <span
                 key={dot}
-                className="size-1.5 animate-bounce rounded-full bg-muted-foreground/60"
+                className="size-1.5 animate-bounce rounded-full bg-brand/60"
                 style={{ animationDelay: `${dot * 120}ms` }}
               />
             ))}
@@ -149,20 +158,28 @@ function ChatScreen() {
 
       {showPrompts && (
         <div className="pl-10">
-          <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+          <p className="mb-2.5 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
             Try one of these
           </p>
-          <div className="flex flex-wrap gap-2">
-            {SUGGESTED_PROMPTS.map((prompt) => (
-              <button
-                key={prompt}
-                type="button"
-                onClick={() => send(prompt)}
-                className="rounded-full border border-border bg-surface px-3.5 py-2 text-[12.5px] font-semibold press hover:border-brand hover:text-brand"
-              >
-                {prompt}
-              </button>
-            ))}
+          <div className="grid gap-2 sm:grid-cols-2">
+            {SUGGESTED_PROMPTS.map((prompt, i) => {
+              const Icon = promptIcons[i % promptIcons.length];
+              return (
+                <button
+                  key={prompt}
+                  type="button"
+                  onClick={() => send(prompt)}
+                  style={{ "--d": `${120 + i * 60}ms` } as React.CSSProperties}
+                  className="k-rise group flex items-center gap-3 rounded-2xl border border-border bg-surface px-3.5 py-3 text-left text-[12.5px] font-semibold shadow-card press hover:border-brand/40"
+                >
+                  <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-brand/8 text-brand transition-colors group-hover:bg-brand group-hover:text-brand-foreground">
+                    <Icon className="size-4" />
+                  </span>
+                  <span className="min-w-0 flex-1">{prompt}</span>
+                  <ArrowRight className="size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-brand" />
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
@@ -173,25 +190,26 @@ function ChatScreen() {
 
   const composer = (
     <>
-      <div className="flex items-end gap-2 rounded-3xl border border-border bg-background px-4 py-1.5">
+      <div className="flex items-end gap-2 rounded-[1.75rem] border border-border bg-background px-3 py-1.5 transition-colors focus-within:border-brand/50">
         <input
           ref={inputRef}
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Ask about balances, products or a transaction…"
-          className="min-w-0 flex-1 bg-transparent py-2 text-[14px] outline-none placeholder:text-muted-foreground"
+          className="min-w-0 flex-1 bg-transparent px-1.5 py-2.5 text-[14px] outline-none placeholder:text-muted-foreground"
         />
         <button
           type="submit"
           aria-label="Send"
           disabled={!input.trim() || thinking}
-          className="mb-1 grid size-9 shrink-0 place-items-center rounded-full bg-brand text-brand-foreground press transition-opacity disabled:opacity-40"
+          className="mb-1 grid size-9 shrink-0 place-items-center rounded-full bg-brand-gradient text-brand-foreground press transition-opacity disabled:opacity-40"
         >
-          <Send className="size-4" />
+          <Send className="size-4 text-gold" />
         </button>
       </div>
-      <p className="mt-2 text-center text-[10.5px] text-muted-foreground">
-        Kipit never authorizes transactions in chat. You confirm every investment with your PIN.
+      <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-[10.5px] text-muted-foreground">
+        <Lock className="size-3 text-gold" /> Kipit never moves money in chat — you confirm with your
+        PIN.
       </p>
     </>
   );
@@ -200,22 +218,29 @@ function ChatScreen() {
     <>
       {/* Mobile: full-screen native-style chat (no tab bar, fixed composer) */}
       <div className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-background md:hidden">
-        <header className="flex shrink-0 items-center gap-3 border-b border-border bg-surface px-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
-          <Link
-            to="/"
-            aria-label="Back"
-            className="grid size-9 shrink-0 place-items-center rounded-full border border-border press"
-          >
-            <ArrowLeft className="size-4" />
-          </Link>
-          <span className="grid size-9 place-items-center rounded-full bg-brand-gradient text-primary-foreground">
-            <MessageCircle className="size-4" />
-          </span>
-          <div className="min-w-0">
-            <p className="text-[14px] font-bold leading-tight">Ask AI</p>
-            <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
-              <span className="size-1.5 rounded-full bg-emerald-500" /> Online · guided help
-            </p>
+        <header className="relative shrink-0 overflow-hidden bg-brand-gradient px-3 pb-4 pt-[max(0.75rem,env(safe-area-inset-top))] text-primary-foreground">
+          <span className="pointer-events-none absolute -right-16 -top-20 size-52 rounded-full bg-gold/20 blur-3xl" />
+          <span className="pointer-events-none absolute -left-24 top-6 size-48 rounded-full border border-primary-foreground/10" />
+          <div className="relative flex items-center gap-3">
+            <Link
+              to="/"
+              aria-label="Back"
+              className="grid size-9 shrink-0 place-items-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10 press"
+            >
+              <ArrowLeft className="size-4" />
+            </Link>
+            <span className="grid size-9 place-items-center rounded-full bg-gold-gradient text-gold-foreground">
+              <MessageCircle className="size-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="font-display text-[15px] font-bold leading-tight">Ask AI</p>
+              <p className="flex items-center gap-1.5 text-[11px] text-primary-foreground/70">
+                <span className="size-1.5 rounded-full bg-emerald-400" /> Online · guided help
+              </p>
+            </div>
+            <span className="ml-auto grid size-9 place-items-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10">
+              <ShieldCheck className="size-4 text-gold" />
+            </span>
           </div>
         </header>
 
@@ -228,11 +253,12 @@ function ChatScreen() {
             event.preventDefault();
             send(input);
           }}
-          className="shrink-0 border-t border-border bg-surface px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2"
+          className="shrink-0 border-t border-border bg-surface px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2.5"
         >
           {composer}
         </form>
       </div>
+
 
       {/* Desktop */}
       <div className="hidden md:block">
