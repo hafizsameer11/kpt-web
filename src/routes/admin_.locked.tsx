@@ -114,29 +114,34 @@ function AdminLocked() {
           unlock();
         }}
       >
-        <AdminField label="Password" error={error}>
-          <div className="relative">
-            <input
-              type={show ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={`${adminInputClass} pr-12`}
-              placeholder="••••••••"
-              autoComplete="current-password"
-            />
-            <button
-              type="button"
-              onClick={() => setShow((s) => !s)}
-              aria-label={show ? "Hide password" : "Show password"}
-              className="absolute inset-y-0 right-3 flex items-center text-brand-foreground/60"
-            >
-              {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-            </button>
+        <AdminField label="Quick PIN" error={error}>
+          <div className="flex gap-3">
+            {digits.map((d, i) => (
+              <input
+                key={i}
+                ref={(el) => {
+                  refs.current[i] = el;
+                }}
+                value={d}
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                aria-label={`PIN digit ${i + 1}`}
+                onChange={(e) => setDigit(i, e.target.value)}
+                onKeyDown={(e) => onKeyDown(i, e)}
+                type="password"
+                className="h-14 w-full rounded-xl border border-white/15 bg-white/5 text-center font-display text-[20px] font-extrabold text-brand-foreground outline-none focus:border-gold/70"
+              />
+            ))}
           </div>
         </AdminField>
-        <AdminPrimaryButton type="submit" disabled={password.length < 4 || busy}>
+        <p className="text-[11.5px] text-brand-foreground/55">
+          Use the short PIN for this trusted device. Signing out requires your full password and
+          two-factor code.
+        </p>
+        <AdminPrimaryButton type="submit" disabled={pin.length < LENGTH || busy}>
           {busy ? "Unlocking…" : "Unlock console"}
         </AdminPrimaryButton>
+
       </form>
     </AdminAuthShell>
   );
