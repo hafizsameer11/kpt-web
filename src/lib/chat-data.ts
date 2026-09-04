@@ -64,7 +64,7 @@ export const PORTFOLIO_SNAPSHOT = {
 
 export const MATURITY = NEXT_MATURITY;
 
-const pct = (rate: string) => Number(rate.replace(/[^0-9.]/g, "")) || 0;
+const pct = (rate: string) => Number(rate.match(/[\d.]+/)?.[0] ?? 0) || 0;
 
 const fixedProducts: ChatProduct[] = FIXED_PLANS.map((plan, index) => ({
   id: `fixed-${index}`,
