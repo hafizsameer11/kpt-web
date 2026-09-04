@@ -61,7 +61,7 @@ function TicketScreen() {
       backLabel="Help centre"
       subtitle="The more detail you give, the faster we can resolve it."
     >
-      <div className="mx-auto max-w-lg space-y-4">
+      <div className="mx-auto max-w-lg space-y-4 md:hidden">
         <section className="card-surface p-4">
           <label className="block">
             <span className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-muted-foreground">
