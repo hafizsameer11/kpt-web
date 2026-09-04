@@ -116,9 +116,9 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
       </head>
       <body>
-        <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
         {children}
         <Scripts />
       </body>
