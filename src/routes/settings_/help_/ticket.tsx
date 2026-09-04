@@ -61,7 +61,7 @@ function TicketScreen() {
       backLabel="Help centre"
       subtitle="The more detail you give, the faster we can resolve it."
     >
-      <div className="mx-auto max-w-lg space-y-4">
+      <div className="mx-auto max-w-lg space-y-4 md:hidden">
         <section className="card-surface p-4">
           <label className="block">
             <span className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-muted-foreground">
@@ -124,6 +124,118 @@ function TicketScreen() {
         >
           Submit ticket
         </button>
+      </div>
+
+      {/* ---------- Desktop ---------- */}
+      <div className="hidden md:grid md:grid-cols-[minmax(0,1fr)_320px] md:items-start md:gap-6">
+        <section className="card-surface overflow-hidden p-0">
+          <p className="border-b border-border/70 px-6 py-4 font-display text-[16px] font-extrabold tracking-[-0.02em] text-foreground">
+            Tell us what happened
+          </p>
+          <div className="space-y-5 p-6">
+            <div className="grid grid-cols-2 gap-4">
+              <label className="block">
+                <span className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-muted-foreground">
+                  Category
+                </span>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="mt-1.5 w-full rounded-xl border border-border bg-secondary px-3.5 py-3 text-[13.5px] font-semibold outline-none focus:border-brand"
+                >
+                  {TICKET_CATEGORIES.map((c) => (
+                    <option key={c}>{c}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="block">
+                <span className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-muted-foreground">
+                  Subject
+                </span>
+                <input
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Short summary of the issue"
+                  className="mt-1.5 w-full rounded-xl border border-border bg-secondary px-3.5 py-3 text-[13.5px] font-semibold outline-none focus:border-brand"
+                />
+              </label>
+            </div>
+
+            <label className="block">
+              <span className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-muted-foreground">
+                Description
+              </span>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={8}
+                placeholder="What happened, what you expected, and any reference numbers"
+                className="mt-1.5 w-full resize-none rounded-xl border border-border bg-secondary px-4 py-3.5 text-[13.5px] font-medium leading-relaxed outline-none focus:border-brand"
+              />
+            </label>
+
+            <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-border px-4 py-4 transition hover:bg-secondary/50">
+              <Paperclip className="size-4 shrink-0 text-muted-foreground" />
+              <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-muted-foreground">
+                {attachment ?? "Attach a screenshot (optional)"}
+              </span>
+              <span className="shrink-0 text-[11.5px] font-extrabold text-brand">Browse</span>
+              <input
+                type="file"
+                className="hidden"
+                onChange={(e) => setAttachment(e.target.files?.[0]?.name ?? null)}
+              />
+            </label>
+          </div>
+          <div className="flex items-center justify-between gap-4 border-t border-border/70 bg-secondary/40 px-6 py-4">
+            <p className="text-[11.5px] text-muted-foreground">
+              {valid ? "Ready to send." : "Add a subject and a short description to continue."}
+            </p>
+            <button
+              type="button"
+              disabled={!valid}
+              onClick={() => setReference(ticketReference())}
+              className="inline-flex shrink-0 items-center justify-center rounded-xl bg-brand-gradient px-8 py-3 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40"
+            >
+              Submit ticket
+            </button>
+          </div>
+        </section>
+
+        <aside className="space-y-4 md:sticky md:top-6">
+          <section className="card-surface p-5">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
+              What happens next
+            </p>
+            <ol className="mt-3 space-y-3 text-[12px] leading-relaxed text-muted-foreground">
+              <li className="flex gap-2.5">
+                <span className="grid size-5 shrink-0 place-items-center rounded-full bg-brand text-[10px] font-extrabold text-primary-foreground">
+                  1
+                </span>
+                You get a reference number instantly.
+              </li>
+              <li className="flex gap-2.5">
+                <span className="grid size-5 shrink-0 place-items-center rounded-full bg-brand text-[10px] font-extrabold text-primary-foreground">
+                  2
+                </span>
+                An agent reviews the details, usually within one business day.
+              </li>
+              <li className="flex gap-2.5">
+                <span className="grid size-5 shrink-0 place-items-center rounded-full bg-brand text-[10px] font-extrabold text-primary-foreground">
+                  3
+                </span>
+                We reply by email and in-app notification.
+              </li>
+            </ol>
+          </section>
+
+          <section className="card-surface p-5">
+            <p className="text-[13px] font-extrabold text-foreground">Need help faster?</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+              Call us on 0700 054 7480, Monday to Saturday, 8am – 8pm WAT.
+            </p>
+          </section>
+        </aside>
       </div>
     </SettingsPage>
   );
