@@ -133,9 +133,20 @@ function ChatScreen() {
     }
   };
 
+  // Keep the newest message in view in whichever pane is scrolling.
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages, thinking]);
+    const scroll = () => {
+      for (const el of [mobileScrollRef.current, desktopScrollRef.current]) {
+        if (el && el.scrollHeight > el.clientHeight) {
+          el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+        }
+      }
+      endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    };
+    scroll();
+    const t = window.setTimeout(scroll, 120);
+    return () => window.clearTimeout(t);
+  }, [messages, thinking, restored]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -159,7 +170,10 @@ function ChatScreen() {
       inputRef.current?.focus();
     }, 550);
   };
-  const showPrompts = messages.length === 1;
+  const lastMessage = messages[messages.length - 1];
+  const showPrompts =
+    !thinking && lastMessage?.role === "assistant" && lastMessage.screen === "CHAT-001";
+
 
   const promptIcons = [PieChart, Wallet, CalendarClock, LifeBuoy, BookOpen, Landmark];
 
