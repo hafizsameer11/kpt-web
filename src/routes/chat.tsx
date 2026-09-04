@@ -106,179 +106,232 @@ function ChatScreen() {
 
   const showPrompts = messages.length === 1;
 
-  return (
-    <AppShell title="Ask AI">
-      <div className="md:grid md:grid-cols-[minmax(0,1fr)_20rem] md:gap-6">
-        <section className="flex min-h-[calc(100vh-9rem)] flex-col md:min-h-[calc(100vh-8rem)] md:rounded-2xl md:border md:border-border md:bg-surface">
-          {/* Mobile header */}
-          <header className="flex items-center gap-3 border-b border-border bg-surface px-4 py-3 md:px-6 md:py-4">
-            <span className="grid size-10 place-items-center rounded-full bg-brand-gradient text-primary-foreground">
-              <MessageCircle className="size-[18px]" />
+  const transcript = (
+    <>
+      {messages.map((message) =>
+        message.role === "user" ? (
+          <div key={message.id} className="flex justify-end">
+            <p className="max-w-[80%] rounded-2xl rounded-br-md bg-brand px-3.5 py-2.5 text-[13.5px] font-medium text-brand-foreground">
+              {message.text}
+            </p>
+          </div>
+        ) : (
+          <div key={message.id} className="flex gap-2.5">
+            <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-brand-gradient text-primary-foreground">
+              <MessageCircle className="size-3.5" />
             </span>
-            <div className="min-w-0">
-              <p className="text-[14px] font-bold leading-tight">Kipit Assistant</p>
-              <p className="text-[11.5px] text-muted-foreground">
-                Guided help · money moves only in secure screens
-              </p>
+            <div className="min-w-0 flex-1 space-y-3">
+              {message.blocks?.map((block, index) => (
+                <BlockView key={index} block={block} onSend={send} />
+              ))}
             </div>
-            <span className="ml-auto hidden items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide text-muted-foreground sm:flex">
-              <ShieldCheck className="size-3.5 text-gold" /> Controlled
-            </span>
-          </header>
+          </div>
+        ),
+      )}
 
-          <div className="flex-1 space-y-4 overflow-y-auto px-4 py-5 md:px-6">
-            {messages.map((message) =>
-              message.role === "user" ? (
-                <div key={message.id} className="flex justify-end">
-                  <p className="max-w-[80%] rounded-2xl rounded-br-md bg-brand px-3.5 py-2.5 text-[13.5px] font-medium text-brand-foreground">
-                    {message.text}
+      {thinking && (
+        <div className="flex gap-2.5">
+          <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-brand-gradient text-primary-foreground">
+            <MessageCircle className="size-3.5" />
+          </span>
+          <div className="flex items-center gap-1 rounded-2xl bg-secondary px-3.5 py-3">
+            {[0, 1, 2].map((dot) => (
+              <span
+                key={dot}
+                className="size-1.5 animate-bounce rounded-full bg-muted-foreground/60"
+                style={{ animationDelay: `${dot * 120}ms` }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {showPrompts && (
+        <div className="pl-10">
+          <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            Try one of these
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {SUGGESTED_PROMPTS.map((prompt) => (
+              <button
+                key={prompt}
+                type="button"
+                onClick={() => send(prompt)}
+                className="rounded-full border border-border bg-surface px-3.5 py-2 text-[12.5px] font-semibold press hover:border-brand hover:text-brand"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div ref={endRef} />
+    </>
+  );
+
+  const composer = (
+    <>
+      <div className="flex items-end gap-2 rounded-3xl border border-border bg-background px-4 py-1.5">
+        <input
+          ref={inputRef}
+          value={input}
+          onChange={(event) => setInput(event.target.value)}
+          placeholder="Ask about balances, products or a transaction…"
+          className="min-w-0 flex-1 bg-transparent py-2 text-[14px] outline-none placeholder:text-muted-foreground"
+        />
+        <button
+          type="submit"
+          aria-label="Send"
+          disabled={!input.trim() || thinking}
+          className="mb-1 grid size-9 shrink-0 place-items-center rounded-full bg-brand text-brand-foreground press transition-opacity disabled:opacity-40"
+        >
+          <Send className="size-4" />
+        </button>
+      </div>
+      <p className="mt-2 text-center text-[10.5px] text-muted-foreground">
+        Kipit never authorizes transactions in chat. You confirm every investment with your PIN.
+      </p>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile: full-screen native-style chat (no tab bar, fixed composer) */}
+      <div className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-background md:hidden">
+        <header className="flex shrink-0 items-center gap-3 border-b border-border bg-surface px-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+          <Link
+            to="/"
+            aria-label="Back"
+            className="grid size-9 shrink-0 place-items-center rounded-full border border-border press"
+          >
+            <ArrowLeft className="size-4" />
+          </Link>
+          <span className="grid size-9 place-items-center rounded-full bg-brand-gradient text-primary-foreground">
+            <MessageCircle className="size-4" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-[14px] font-bold leading-tight">Ask AI</p>
+            <p className="flex items-center gap-1 text-[11px] text-muted-foreground">
+              <span className="size-1.5 rounded-full bg-emerald-500" /> Online · guided help
+            </p>
+          </div>
+        </header>
+
+        <div className="flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4">
+          {transcript}
+        </div>
+
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            send(input);
+          }}
+          className="shrink-0 border-t border-border bg-surface px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2"
+        >
+          {composer}
+        </form>
+      </div>
+
+      {/* Desktop */}
+      <div className="hidden md:block">
+        <AppShell title="Ask AI">
+          <div className="md:grid md:grid-cols-[minmax(0,1fr)_20rem] md:gap-6">
+            <section className="flex h-[calc(100vh-8rem)] flex-col overflow-hidden rounded-2xl border border-border bg-surface">
+              <header className="flex shrink-0 items-center gap-3 border-b border-border bg-surface px-6 py-4">
+                <span className="grid size-10 place-items-center rounded-full bg-brand-gradient text-primary-foreground">
+                  <MessageCircle className="size-[18px]" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[14px] font-bold leading-tight">Kipit Assistant</p>
+                  <p className="text-[11.5px] text-muted-foreground">
+                    Guided help · money moves only in secure screens
                   </p>
                 </div>
-              ) : (
-                <div key={message.id} className="flex gap-2.5">
-                  <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-brand-gradient text-primary-foreground">
-                    <MessageCircle className="size-3.5" />
-                  </span>
-                  <div className="min-w-0 flex-1 space-y-3">
-                    {message.blocks?.map((block, index) => (
-                      <BlockView key={index} block={block} onSend={send} />
-                    ))}
-                  </div>
-                </div>
-              ),
-            )}
-
-            {thinking && (
-              <div className="flex gap-2.5">
-                <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-brand-gradient text-primary-foreground">
-                  <MessageCircle className="size-3.5" />
+                <span className="ml-auto flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide text-muted-foreground">
+                  <ShieldCheck className="size-3.5 text-gold" /> Controlled
                 </span>
-                <div className="flex items-center gap-1 rounded-2xl bg-secondary px-3.5 py-3">
-                  {[0, 1, 2].map((dot) => (
-                    <span
-                      key={dot}
-                      className="size-1.5 animate-bounce rounded-full bg-muted-foreground/60"
-                      style={{ animationDelay: `${dot * 120}ms` }}
-                    />
-                  ))}
+              </header>
+
+              <div className="flex-1 space-y-4 overflow-y-auto px-6 py-5">{transcript}</div>
+
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  send(input);
+                }}
+                className="shrink-0 rounded-b-2xl border-t border-border bg-surface px-6 py-3"
+              >
+                {composer}
+              </form>
+            </section>
+
+            {/* Desktop context rail */}
+            <aside className="hidden md:block">
+              <div className="sticky top-24 space-y-4">
+                <div className="rounded-2xl border border-border bg-surface p-5">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                    Your position
+                  </p>
+                  <p className="mt-1.5 text-[22px] font-bold text-num">
+                    {naira(PORTFOLIO_SNAPSHOT.total)}
+                  </p>
+                  <dl className="mt-3 space-y-2 text-[12.5px]">
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">Wallet</dt>
+                      <dd className="font-semibold text-num">{naira(PORTFOLIO_SNAPSHOT.wallet)}</dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">Invested</dt>
+                      <dd className="font-semibold text-num">
+                        {naira(PORTFOLIO_SNAPSHOT.invested)}
+                      </dd>
+                    </div>
+                  </dl>
+                  <Link
+                    to="/portfolio"
+                    className="mt-4 flex items-center justify-center gap-1.5 rounded-full border border-border py-2 text-[12.5px] font-bold press hover:bg-secondary"
+                  >
+                    View portfolio <ArrowRight className="size-3.5" />
+                  </Link>
+                </div>
+
+                <div className="rounded-2xl border border-border bg-surface p-5">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                    What I can do
+                  </p>
+                  <ul className="mt-3 space-y-2.5 text-[12.5px] text-muted-foreground">
+                    {[
+                      "Read balances, maturities and transaction status",
+                      "Match you to products by tenor and access",
+                      "Explain rate, tenor and minimum before you commit",
+                      "Hand you to the secure screen to authorize",
+                    ].map((item) => (
+                      <li key={item} className="flex gap-2">
+                        <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-gold" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="rounded-2xl border border-border bg-brand-gradient p-5 text-primary-foreground">
+                  <Lock className="size-4 text-gold" />
+                  <p className="mt-2 text-[13px] font-bold">Chat can't move money</p>
+                  <p className="mt-1 text-[12px] text-primary-foreground/75">
+                    Every investment, funding and withdrawal is completed in Kipit's standard
+                    authorized flow with your transaction PIN.
+                  </p>
                 </div>
               </div>
-            )}
-
-            {showPrompts && (
-              <div className="pl-10">
-                <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-                  Try one of these
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {SUGGESTED_PROMPTS.map((prompt) => (
-                    <button
-                      key={prompt}
-                      type="button"
-                      onClick={() => send(prompt)}
-                      className="rounded-full border border-border bg-surface px-3.5 py-2 text-[12.5px] font-semibold press hover:border-brand hover:text-brand"
-                    >
-                      {prompt}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div ref={endRef} />
+            </aside>
           </div>
-
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              send(input);
-            }}
-            className="sticky bottom-0 border-t border-border bg-surface px-4 py-3 md:rounded-b-2xl md:px-6"
-          >
-            <div className="flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2">
-              <input
-                ref={inputRef}
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-                placeholder="Ask about balances, products or a transaction…"
-                className="min-w-0 flex-1 bg-transparent text-[13.5px] outline-none placeholder:text-muted-foreground"
-              />
-              <button
-                type="submit"
-                aria-label="Send"
-                disabled={!input.trim() || thinking}
-                className="grid size-9 shrink-0 place-items-center rounded-full bg-brand text-brand-foreground press disabled:opacity-40"
-              >
-                <Send className="size-4" />
-              </button>
-            </div>
-            <p className="mt-2 text-center text-[10.5px] text-muted-foreground">
-              Kipit never authorizes transactions in chat. You confirm every investment with your PIN.
-            </p>
-          </form>
-        </section>
-
-        {/* Desktop context rail */}
-        <aside className="hidden md:block">
-          <div className="sticky top-24 space-y-4">
-            <div className="rounded-2xl border border-border bg-surface p-5">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-                Your position
-              </p>
-              <p className="mt-1.5 text-[22px] font-bold text-num">
-                {naira(PORTFOLIO_SNAPSHOT.total)}
-              </p>
-              <dl className="mt-3 space-y-2 text-[12.5px]">
-                <div className="flex justify-between">
-                  <dt className="text-muted-foreground">Wallet</dt>
-                  <dd className="font-semibold text-num">{naira(PORTFOLIO_SNAPSHOT.wallet)}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-muted-foreground">Invested</dt>
-                  <dd className="font-semibold text-num">{naira(PORTFOLIO_SNAPSHOT.invested)}</dd>
-                </div>
-              </dl>
-              <Link
-                to="/portfolio"
-                className="mt-4 flex items-center justify-center gap-1.5 rounded-full border border-border py-2 text-[12.5px] font-bold press hover:bg-secondary"
-              >
-                View portfolio <ArrowRight className="size-3.5" />
-              </Link>
-            </div>
-
-            <div className="rounded-2xl border border-border bg-surface p-5">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-                What I can do
-              </p>
-              <ul className="mt-3 space-y-2.5 text-[12.5px] text-muted-foreground">
-                {[
-                  "Read balances, maturities and transaction status",
-                  "Match you to products by tenor and access",
-                  "Explain rate, tenor and minimum before you commit",
-                  "Hand you to the secure screen to authorize",
-                ].map((item) => (
-                  <li key={item} className="flex gap-2">
-                    <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-gold" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="rounded-2xl border border-border bg-brand-gradient p-5 text-primary-foreground">
-              <Lock className="size-4 text-gold" />
-              <p className="mt-2 text-[13px] font-bold">Chat can't move money</p>
-              <p className="mt-1 text-[12px] text-primary-foreground/75">
-                Every investment, funding and withdrawal is completed in Kipit's standard authorized
-                flow with your transaction PIN.
-              </p>
-            </div>
-          </div>
-        </aside>
+        </AppShell>
       </div>
-    </AppShell>
+    </>
   );
 }
+
 
 function Bubble({ children }: { children: React.ReactNode }) {
   return (
