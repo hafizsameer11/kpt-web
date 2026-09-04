@@ -174,6 +174,7 @@ import { Route as AdminReconciliationRecordsRecordIdRouteImport } from './routes
 import { Route as AdminUsersUserIdIndexRouteImport } from './routes/admin_.users_.$userId.index'
 import { Route as AdminUsersUserIdAuditRouteImport } from './routes/admin_.users_.$userId.audit'
 import { Route as AdminUsersUserIdBalancesRouteImport } from './routes/admin_.users_.$userId.balances'
+import { Route as AdminUsersUserIdFrozenRouteImport } from './routes/admin_.users_.$userId.frozen'
 import { Route as AdminUsersUserIdInvestmentsRouteImport } from './routes/admin_.users_.$userId.investments'
 import { Route as AdminUsersUserIdKycRouteImport } from './routes/admin_.users_.$userId.kyc'
 import { Route as AdminUsersUserIdSessionsRouteImport } from './routes/admin_.users_.$userId.sessions'
@@ -1033,6 +1034,11 @@ const AdminUsersUserIdBalancesRoute =
     path: '/balances',
     getParentRoute: () => AdminUsersUserIdRoute,
   } as any)
+const AdminUsersUserIdFrozenRoute = AdminUsersUserIdFrozenRouteImport.update({
+  id: '/frozen',
+  path: '/frozen',
+  getParentRoute: () => AdminUsersUserIdRoute,
+} as any)
 const AdminUsersUserIdInvestmentsRoute =
   AdminUsersUserIdInvestmentsRouteImport.update({
     id: '/investments',
@@ -1233,6 +1239,7 @@ export interface FileRoutesByFullPath {
   '/admin/reconciliation/records/$recordId': typeof AdminReconciliationRecordsRecordIdRoute
   '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
+  '/admin/users/$userId/frozen': typeof AdminUsersUserIdFrozenRoute
   '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
   '/admin/users/$userId/kyc': typeof AdminUsersUserIdKycRoute
   '/admin/users/$userId/sessions': typeof AdminUsersUserIdSessionsRoute
@@ -1404,6 +1411,7 @@ export interface FileRoutesByTo {
   '/admin/reconciliation/records/$recordId': typeof AdminReconciliationRecordsRecordIdRoute
   '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
+  '/admin/users/$userId/frozen': typeof AdminUsersUserIdFrozenRoute
   '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
   '/admin/users/$userId/kyc': typeof AdminUsersUserIdKycRoute
   '/admin/users/$userId/sessions': typeof AdminUsersUserIdSessionsRoute
@@ -1578,6 +1586,7 @@ export interface FileRoutesById {
   '/admin_/reconciliation_/records_/$recordId': typeof AdminReconciliationRecordsRecordIdRoute
   '/admin_/users_/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin_/users_/$userId/balances': typeof AdminUsersUserIdBalancesRoute
+  '/admin_/users_/$userId/frozen': typeof AdminUsersUserIdFrozenRoute
   '/admin_/users_/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
   '/admin_/users_/$userId/kyc': typeof AdminUsersUserIdKycRoute
   '/admin_/users_/$userId/sessions': typeof AdminUsersUserIdSessionsRoute
@@ -1753,6 +1762,7 @@ export interface FileRouteTypes {
     | '/admin/reconciliation/records/$recordId'
     | '/admin/users/$userId/audit'
     | '/admin/users/$userId/balances'
+    | '/admin/users/$userId/frozen'
     | '/admin/users/$userId/investments'
     | '/admin/users/$userId/kyc'
     | '/admin/users/$userId/sessions'
@@ -1924,6 +1934,7 @@ export interface FileRouteTypes {
     | '/admin/reconciliation/records/$recordId'
     | '/admin/users/$userId/audit'
     | '/admin/users/$userId/balances'
+    | '/admin/users/$userId/frozen'
     | '/admin/users/$userId/investments'
     | '/admin/users/$userId/kyc'
     | '/admin/users/$userId/sessions'
@@ -2097,6 +2108,7 @@ export interface FileRouteTypes {
     | '/admin_/reconciliation_/records_/$recordId'
     | '/admin_/users_/$userId/audit'
     | '/admin_/users_/$userId/balances'
+    | '/admin_/users_/$userId/frozen'
     | '/admin_/users_/$userId/investments'
     | '/admin_/users_/$userId/kyc'
     | '/admin_/users_/$userId/sessions'
@@ -3423,6 +3435,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersUserIdBalancesRouteImport
       parentRoute: typeof AdminUsersUserIdRoute
     }
+    '/admin_/users_/$userId/frozen': {
+      id: '/admin_/users_/$userId/frozen'
+      path: '/frozen'
+      fullPath: '/admin/users/$userId/frozen'
+      preLoaderRoute: typeof AdminUsersUserIdFrozenRouteImport
+      parentRoute: typeof AdminUsersUserIdRoute
+    }
     '/admin_/users_/$userId/investments': {
       id: '/admin_/users_/$userId/investments'
       path: '/investments'
@@ -3492,6 +3511,7 @@ const FixedPlansCreateRouteWithChildren =
 interface AdminUsersUserIdRouteChildren {
   AdminUsersUserIdAuditRoute: typeof AdminUsersUserIdAuditRoute
   AdminUsersUserIdBalancesRoute: typeof AdminUsersUserIdBalancesRoute
+  AdminUsersUserIdFrozenRoute: typeof AdminUsersUserIdFrozenRoute
   AdminUsersUserIdInvestmentsRoute: typeof AdminUsersUserIdInvestmentsRoute
   AdminUsersUserIdKycRoute: typeof AdminUsersUserIdKycRoute
   AdminUsersUserIdSessionsRoute: typeof AdminUsersUserIdSessionsRoute
@@ -3503,6 +3523,7 @@ interface AdminUsersUserIdRouteChildren {
 const AdminUsersUserIdRouteChildren: AdminUsersUserIdRouteChildren = {
   AdminUsersUserIdAuditRoute: AdminUsersUserIdAuditRoute,
   AdminUsersUserIdBalancesRoute: AdminUsersUserIdBalancesRoute,
+  AdminUsersUserIdFrozenRoute: AdminUsersUserIdFrozenRoute,
   AdminUsersUserIdInvestmentsRoute: AdminUsersUserIdInvestmentsRoute,
   AdminUsersUserIdKycRoute: AdminUsersUserIdKycRoute,
   AdminUsersUserIdSessionsRoute: AdminUsersUserIdSessionsRoute,
