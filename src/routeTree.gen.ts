@@ -57,6 +57,7 @@ import { Route as AdminWithdrawalsRouteImport } from './routes/admin_.withdrawal
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
+import { Route as CallAccountWithdrawRouteImport } from './routes/call-account_.withdraw'
 import { Route as ExploreProductIdRouteImport } from './routes/explore_.$productId'
 import { Route as FixedPlansCreateRouteImport } from './routes/fixed-plans_/create'
 import { Route as ForgotPasswordNewRouteImport } from './routes/forgot-password_/new'
@@ -421,6 +422,11 @@ const CallAccountReviewRoute = CallAccountReviewRouteImport.update({
 const CallAccountSuccessRoute = CallAccountSuccessRouteImport.update({
   id: '/call-account_/success',
   path: '/call-account/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CallAccountWithdrawRoute = CallAccountWithdrawRouteImport.update({
+  id: '/call-account_/withdraw',
+  path: '/call-account/withdraw',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExploreProductIdRoute = ExploreProductIdRouteImport.update({
@@ -1129,6 +1135,7 @@ export interface FileRoutesByFullPath {
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
+  '/call-account/withdraw': typeof CallAccountWithdrawRoute
   '/explore/$productId': typeof ExploreProductIdRoute
   '/fixed-plans/create': typeof FixedPlansCreateRouteWithChildren
   '/forgot-password/new': typeof ForgotPasswordNewRoute
@@ -1304,6 +1311,7 @@ export interface FileRoutesByTo {
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
+  '/call-account/withdraw': typeof CallAccountWithdrawRoute
   '/explore/$productId': typeof ExploreProductIdRoute
   '/forgot-password/new': typeof ForgotPasswordNewRoute
   '/forgot-password/otp': typeof ForgotPasswordOtpRoute
@@ -1478,6 +1486,7 @@ export interface FileRoutesById {
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
   '/call-account_/review': typeof CallAccountReviewRoute
   '/call-account_/success': typeof CallAccountSuccessRoute
+  '/call-account_/withdraw': typeof CallAccountWithdrawRoute
   '/explore_/$productId': typeof ExploreProductIdRoute
   '/fixed-plans_/create': typeof FixedPlansCreateRouteWithChildren
   '/forgot-password_/new': typeof ForgotPasswordNewRoute
@@ -1655,6 +1664,7 @@ export interface FileRouteTypes {
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
+    | '/call-account/withdraw'
     | '/explore/$productId'
     | '/fixed-plans/create'
     | '/forgot-password/new'
@@ -1830,6 +1840,7 @@ export interface FileRouteTypes {
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
+    | '/call-account/withdraw'
     | '/explore/$productId'
     | '/forgot-password/new'
     | '/forgot-password/otp'
@@ -2003,6 +2014,7 @@ export interface FileRouteTypes {
     | '/call-account_/add-money'
     | '/call-account_/review'
     | '/call-account_/success'
+    | '/call-account_/withdraw'
     | '/explore_/$productId'
     | '/fixed-plans_/create'
     | '/forgot-password_/new'
@@ -2179,6 +2191,7 @@ export interface RootRouteChildren {
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
   CallAccountReviewRoute: typeof CallAccountReviewRoute
   CallAccountSuccessRoute: typeof CallAccountSuccessRoute
+  CallAccountWithdrawRoute: typeof CallAccountWithdrawRoute
   ExploreProductIdRoute: typeof ExploreProductIdRoute
   FixedPlansCreateRoute: typeof FixedPlansCreateRouteWithChildren
   ForgotPasswordNewRoute: typeof ForgotPasswordNewRoute
@@ -2627,6 +2640,13 @@ declare module '@tanstack/react-router' {
       path: '/call-account/success'
       fullPath: '/call-account/success'
       preLoaderRoute: typeof CallAccountSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/call-account_/withdraw': {
+      id: '/call-account_/withdraw'
+      path: '/call-account/withdraw'
+      fullPath: '/call-account/withdraw'
+      preLoaderRoute: typeof CallAccountWithdrawRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/explore_/$productId': {
@@ -3604,6 +3624,7 @@ const rootRouteChildren: RootRouteChildren = {
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
   CallAccountReviewRoute: CallAccountReviewRoute,
   CallAccountSuccessRoute: CallAccountSuccessRoute,
+  CallAccountWithdrawRoute: CallAccountWithdrawRoute,
   ExploreProductIdRoute: ExploreProductIdRoute,
   FixedPlansCreateRoute: FixedPlansCreateRouteWithChildren,
   ForgotPasswordNewRoute: ForgotPasswordNewRoute,
