@@ -32,7 +32,7 @@ const GROUPS: Group[] = [
     items: [
       { label: "Users", to: "/admin/users", icon: Users },
       { label: "Compliance & KYC", to: "/admin/compliance", icon: ShieldCheck },
-      { label: "Transactions", to: "/admin", icon: ArrowLeftRight, soon: true },
+      { label: "Transactions", to: "/admin/transactions", icon: ArrowLeftRight },
       { label: "Withdrawals", to: "/admin", icon: Banknote, soon: true },
       { label: "Reconciliation", to: "/admin", icon: Scale, soon: true },
     ],
