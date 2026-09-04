@@ -66,8 +66,8 @@ export function AuthShell({
           </p>
         </aside>
 
-        <div className="flex min-h-dvh w-full flex-col px-5 pb-8 pt-6 lg:min-h-0 lg:justify-center lg:rounded-[28px] lg:border lg:border-white/12 lg:bg-white/8 lg:px-10 lg:py-11 lg:shadow-[0_30px_80px_-40px_rgba(0,0,0,0.85)] lg:backdrop-blur-md">
-          <div className="flex items-center justify-between">
+        <div className="flex min-h-dvh w-full flex-col px-5 pb-8 pt-6 lg:mx-auto lg:min-h-dvh lg:w-full lg:max-w-none lg:justify-center lg:border-l lg:border-white/10 lg:bg-white/[0.06] lg:px-16 lg:py-16 lg:backdrop-blur-md lg:[&>*]:mx-auto lg:[&>*]:w-full lg:[&>*]:max-w-md">
+          <div className="flex items-center justify-between lg:hidden">
             {back ? (
               <Link
                 to={back}
