@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LogOut, Monitor, Smartphone } from "lucide-react";
+import { LogOut, Monitor, ShieldAlert, Smartphone } from "lucide-react";
 import { useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
 import { SESSIONS } from "@/lib/settings-data";
