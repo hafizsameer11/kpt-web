@@ -39,7 +39,7 @@ function ProductUnavailableScreen() {
 
   return (
     <AppShell title="Unavailable" navVariant="elevated">
-      <div className="pb-2">
+      <div className="pb-2 md:mx-auto md:max-w-4xl">
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-16 pt-10 text-center text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:shadow-float">
           <span
             aria-hidden
@@ -67,6 +67,8 @@ function ProductUnavailableScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
+          <div className="md:grid md:grid-cols-[minmax(0,1fr)_300px] md:items-start md:gap-5">
+          <div className="min-w-0">
           <Rise>
             <section className="card-surface p-4 md:p-5">
               <p className="text-[13px] leading-relaxed text-muted-foreground">
@@ -115,6 +117,32 @@ function ProductUnavailableScreen() {
               )}
             </button>
           </Rise>
+
+          </div>
+
+          <aside className="mt-4 hidden space-y-4 md:mt-0 md:block">
+            <section className="card-surface p-5">
+              <p className="text-[12.5px] font-extrabold text-foreground">Why offers close</p>
+              <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+                Issuers allocate a fixed volume per window. Once it is fully subscribed the
+                offer closes, often at short notice.
+              </p>
+            </section>
+            <section className="card-surface p-5">
+              <p className="text-[12.5px] font-extrabold text-foreground">Similar options</p>
+              <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+                Kipit fixed plans and the Call Account stay open at all times, with rates
+                fixed at the point you invest.
+              </p>
+              <Link
+                to="/fixed-plans"
+                className="mt-3 inline-flex items-center rounded-xl border border-border bg-background px-4 py-2.5 text-[12.5px] font-bold text-foreground press"
+              >
+                View fixed plans
+              </Link>
+            </section>
+          </aside>
+          </div>
 
           <DisclosureStrip variant="marketplace" />
 
