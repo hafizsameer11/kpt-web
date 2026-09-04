@@ -17,6 +17,7 @@ export function KycStep({
   backTo,
   backLabel = "Back",
   hero,
+  aside,
   children,
 }: {
   navTitle: string;
