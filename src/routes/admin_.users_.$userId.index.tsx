@@ -118,7 +118,7 @@ function Overview() {
         <span className="pointer-events-none absolute -right-16 -top-24 size-72 rounded-full bg-gold/20 blur-3xl" />
         <span className="pointer-events-none absolute -bottom-32 left-1/3 size-72 rounded-full bg-white/8 blur-3xl" />
 
-        <div className="relative grid gap-6 lg:grid-cols-[minmax(0,220px)_minmax(0,1fr)] lg:items-center">
+        <div className="relative grid gap-6 lg:grid-cols-[minmax(260px,auto)_minmax(0,1fr)] lg:items-center">
           <div className="flex items-center gap-5">
             <div className="relative size-[132px] shrink-0">
               <ResponsiveContainer width="100%" height="100%">
@@ -150,11 +150,11 @@ function Overview() {
                 </div>
               </div>
             </div>
-            <div className="lg:hidden xl:block">
+            <div className="min-w-0">
               <p className="text-[10.5px] font-bold uppercase tracking-[0.16em] text-primary-foreground/60">
                 Portfolio total
               </p>
-              <p className="mt-1 font-display text-[27px] font-extrabold tracking-[-0.03em]">
+              <p className="mt-1 whitespace-nowrap font-display text-[26px] font-extrabold tracking-[-0.03em]">
                 {naira(total)}
               </p>
             </div>
