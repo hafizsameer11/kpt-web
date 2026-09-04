@@ -29,6 +29,8 @@ export function KycStep({
   backTo?: "/verification" | "/settings";
   backLabel?: string;
   hero?: ReactNode;
+  /** Desktop-only supporting rail shown beside the step content. */
+  aside?: ReactNode;
   children: ReactNode;
 }) {
   return (
