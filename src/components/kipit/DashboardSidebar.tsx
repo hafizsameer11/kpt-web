@@ -5,14 +5,17 @@ import {
   Home,
   MessageCircle,
   LogOut,
+  Moon,
   PieChart,
   Plus,
   Settings,
+  Sun,
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { GreetingText } from "@/components/kipit/SpecBlocks";
+import { useTheme } from "@/lib/theme";
 
 export type SidebarItem = { label: string; to: string; icon: LucideIcon };
 
