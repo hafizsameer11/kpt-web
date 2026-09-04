@@ -113,7 +113,7 @@ function Welcome() {
           className="animate-rise mt-auto space-y-4 pt-12 lg:mt-0 lg:flex lg:flex-col lg:justify-center lg:space-y-0 lg:border-l lg:border-white/10 lg:bg-white/[0.06] lg:px-16 lg:py-16 lg:pt-16 lg:backdrop-blur-md"
           style={{ animationDelay: "700ms" }}
         >
-          <div className="contents lg:mx-auto lg:block lg:w-full lg:max-w-sm lg:space-y-4">
+          <div className="flex flex-col gap-4 lg:mx-auto lg:block lg:w-full lg:max-w-sm lg:space-y-4">
           <div className="hidden lg:block lg:pb-4">
             <h2 className="text-2xl font-semibold tracking-tight">Get started in minutes</h2>
             <p className="mt-2 max-w-sm text-sm leading-relaxed text-brand-foreground/65">
