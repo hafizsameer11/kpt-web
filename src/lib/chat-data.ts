@@ -200,6 +200,19 @@ export function assistantReply(raw: string, amountInFlight?: number): ChatMessag
     };
   }
 
+  // CHAT-009 — funding help
+  if (has(text, ["fund", "add money", "top up", "top-up", "how do i pay", "bank transfer"])) {
+    return {
+      id: nextId(),
+      role: "assistant",
+      screen: "CHAT-009",
+      blocks: [
+        { kind: "text", text: "You can fund your Kipit wallet by bank transfer or card." },
+        { kind: "funding" },
+      ],
+    };
+  }
+
   // CHAT-002 — balance
   if (has(text, ["balance", "how much", "portfolio value", "worth", "wallet"])) {
     return {
@@ -246,19 +259,6 @@ export function assistantReply(raw: string, amountInFlight?: number): ChatMessag
       blocks: [
         { kind: "text", text: "Here are your most recent money movements." },
         { kind: "status" },
-      ],
-    };
-  }
-
-  // CHAT-009 — funding help
-  if (has(text, ["fund", "add money", "top up", "top-up", "how do i pay", "bank transfer"])) {
-    return {
-      id: nextId(),
-      role: "assistant",
-      screen: "CHAT-009",
-      blocks: [
-        { kind: "text", text: "You can fund your Kipit wallet by bank transfer or card." },
-        { kind: "funding" },
       ],
     };
   }
