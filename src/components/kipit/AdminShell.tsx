@@ -11,6 +11,9 @@ import {
   Scale,
   Megaphone,
   LifeBuoy,
+  UserCog,
+  KeyRound,
+  ScrollText,
   Bell,
   Search,
   LockKeyhole,
@@ -60,6 +63,14 @@ const GROUPS: Group[] = [
     items: [
       { label: "Marketing", to: "/admin/marketing", icon: Megaphone },
       { label: "Support", to: "/admin/support", icon: LifeBuoy },
+    ],
+  },
+  {
+    heading: "Console",
+    items: [
+      { label: "Admin users", to: "/admin/team", icon: UserCog },
+      { label: "Roles & permissions", to: "/admin/team/roles", icon: KeyRound },
+      { label: "Audit log", to: "/admin/audit", icon: ScrollText },
     ],
   },
 ];
