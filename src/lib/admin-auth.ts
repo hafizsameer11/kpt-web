@@ -6,6 +6,8 @@
 export const ADMIN_EMAIL = "seyi.adeleke@kipit.com";
 export const ADMIN_PASSWORD = "Kipit1234!";
 export const ADMIN_OTP = "123456";
+/** ADM-003 — short PIN used to re-enter a locked session on a trusted device. */
+export const ADMIN_PIN = "2468";
 
 const KEY = "kipit.admin.session";
 

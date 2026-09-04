@@ -130,6 +130,7 @@ import { Route as AdminMarketingAudienceRouteImport } from './routes/admin_.mark
 import { Route as AdminMarketingCampaignsRouteImport } from './routes/admin_.marketing_.campaigns'
 import { Route as AdminMarketingDigestRouteImport } from './routes/admin_.marketing_.digest'
 import { Route as AdminMarketingFeedRouteImport } from './routes/admin_.marketing_.feed'
+import { Route as AdminMarketingReferralsRouteImport } from './routes/admin_.marketing_.referrals'
 import { Route as AdminProductsProductIdRouteImport } from './routes/admin_.products_.$productId'
 import { Route as AdminProductsNewRouteImport } from './routes/admin_.products_.new'
 import { Route as AdminProductsPublishedRouteImport } from './routes/admin_.products_.published'
@@ -793,6 +794,11 @@ const AdminMarketingFeedRoute = AdminMarketingFeedRouteImport.update({
   path: '/admin/marketing/feed',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMarketingReferralsRoute = AdminMarketingReferralsRouteImport.update({
+  id: '/admin_/marketing_/referrals',
+  path: '/admin/marketing/referrals',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProductsProductIdRoute = AdminProductsProductIdRouteImport.update({
   id: '/admin_/products_/$productId',
   path: '/admin/products/$productId',
@@ -1196,6 +1202,7 @@ export interface FileRoutesByFullPath {
   '/admin/marketing/campaigns': typeof AdminMarketingCampaignsRoute
   '/admin/marketing/digest': typeof AdminMarketingDigestRoute
   '/admin/marketing/feed': typeof AdminMarketingFeedRoute
+  '/admin/marketing/referrals': typeof AdminMarketingReferralsRoute
   '/admin/products/$productId': typeof AdminProductsProductIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/products/published': typeof AdminProductsPublishedRoute
@@ -1369,6 +1376,7 @@ export interface FileRoutesByTo {
   '/admin/marketing/campaigns': typeof AdminMarketingCampaignsRoute
   '/admin/marketing/digest': typeof AdminMarketingDigestRoute
   '/admin/marketing/feed': typeof AdminMarketingFeedRoute
+  '/admin/marketing/referrals': typeof AdminMarketingReferralsRoute
   '/admin/products/$productId': typeof AdminProductsProductIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/products/published': typeof AdminProductsPublishedRoute
@@ -1543,6 +1551,7 @@ export interface FileRoutesById {
   '/admin_/marketing_/campaigns': typeof AdminMarketingCampaignsRoute
   '/admin_/marketing_/digest': typeof AdminMarketingDigestRoute
   '/admin_/marketing_/feed': typeof AdminMarketingFeedRoute
+  '/admin_/marketing_/referrals': typeof AdminMarketingReferralsRoute
   '/admin_/products_/$productId': typeof AdminProductsProductIdRoute
   '/admin_/products_/new': typeof AdminProductsNewRoute
   '/admin_/products_/published': typeof AdminProductsPublishedRoute
@@ -1719,6 +1728,7 @@ export interface FileRouteTypes {
     | '/admin/marketing/campaigns'
     | '/admin/marketing/digest'
     | '/admin/marketing/feed'
+    | '/admin/marketing/referrals'
     | '/admin/products/$productId'
     | '/admin/products/new'
     | '/admin/products/published'
@@ -1892,6 +1902,7 @@ export interface FileRouteTypes {
     | '/admin/marketing/campaigns'
     | '/admin/marketing/digest'
     | '/admin/marketing/feed'
+    | '/admin/marketing/referrals'
     | '/admin/products/$productId'
     | '/admin/products/new'
     | '/admin/products/published'
@@ -2065,6 +2076,7 @@ export interface FileRouteTypes {
     | '/admin_/marketing_/campaigns'
     | '/admin_/marketing_/digest'
     | '/admin_/marketing_/feed'
+    | '/admin_/marketing_/referrals'
     | '/admin_/products_/$productId'
     | '/admin_/products_/new'
     | '/admin_/products_/published'
@@ -2240,6 +2252,7 @@ export interface RootRouteChildren {
   AdminMarketingCampaignsRoute: typeof AdminMarketingCampaignsRoute
   AdminMarketingDigestRoute: typeof AdminMarketingDigestRoute
   AdminMarketingFeedRoute: typeof AdminMarketingFeedRoute
+  AdminMarketingReferralsRoute: typeof AdminMarketingReferralsRoute
   AdminProductsProductIdRoute: typeof AdminProductsProductIdRoute
   AdminProductsNewRoute: typeof AdminProductsNewRoute
   AdminProductsPublishedRoute: typeof AdminProductsPublishedRoute
@@ -3127,6 +3140,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMarketingFeedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/marketing_/referrals': {
+      id: '/admin_/marketing_/referrals'
+      path: '/admin/marketing/referrals'
+      fullPath: '/admin/marketing/referrals'
+      preLoaderRoute: typeof AdminMarketingReferralsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/products_/$productId': {
       id: '/admin_/products_/$productId'
       path: '/admin/products/$productId'
@@ -3657,6 +3677,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminMarketingCampaignsRoute: AdminMarketingCampaignsRoute,
   AdminMarketingDigestRoute: AdminMarketingDigestRoute,
   AdminMarketingFeedRoute: AdminMarketingFeedRoute,
+  AdminMarketingReferralsRoute: AdminMarketingReferralsRoute,
   AdminProductsProductIdRoute: AdminProductsProductIdRoute,
   AdminProductsNewRoute: AdminProductsNewRoute,
   AdminProductsPublishedRoute: AdminProductsPublishedRoute,
