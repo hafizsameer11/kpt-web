@@ -49,7 +49,7 @@ export function SettingsPage({
               {title}
             </h1>
             {subtitle ? (
-              <p className="k-rise mt-2 max-w-md text-[12.5px] leading-relaxed text-primary-foreground/70">
+              <p className="k-rise mt-2 max-w-md text-[12.5px] leading-relaxed text-primary-foreground/70 md:max-w-2xl md:text-[13.5px]">
                 {subtitle}
               </p>
             ) : null}
