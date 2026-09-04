@@ -29,6 +29,32 @@ function BvnMatch() {
       eyebrow="Tier 1"
       title="Is this you?"
       subtitle="These details came from your BVN record. They'll be locked on your Kipit profile once confirmed."
+      aside={
+        <>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Check carefully</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+              These details come straight from NIBSS. If anything looks wrong, update it at your
+              bank first — we cannot edit BVN records.
+            </p>
+          </section>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">What Tier 1 unlocks</p>
+            <ul className="mt-2 space-y-2">
+              {[
+                "Fund your wallet and Call Account.",
+                "Create fixed plans and subscribe to offers.",
+                "Withdrawals need Tier 2 verification.",
+              ].map((t) => (
+                <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </section>
+        </>
+      }
       step={2}
       totalSteps={2}
     >

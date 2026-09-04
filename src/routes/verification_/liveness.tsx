@@ -35,6 +35,32 @@ function LivenessIntro() {
       eyebrow="Tier 2"
       title="Let's confirm it's really you"
       subtitle="We'll take a short live selfie and match it against your ID photo."
+      aside={
+        <>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Before you start</p>
+            <ul className="mt-2 space-y-2">
+              {[
+                "Find a well-lit spot facing a window or lamp.",
+                "Remove hats, sunglasses and face coverings.",
+                "Hold your device at eye level and stay still.",
+              ].map((t) => (
+                <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </section>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Your privacy</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+              The liveness check is used only to confirm you are a real person and is stored
+              encrypted alongside your KYC record.
+            </p>
+          </section>
+        </>
+      }
       step={2}
       totalSteps={4}
     >
