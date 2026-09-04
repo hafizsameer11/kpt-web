@@ -308,7 +308,7 @@ function CallAccountScreen() {
                 Add money <ArrowUpRight className="size-3.5" strokeWidth={2.6} />
               </Link>
               <Link
-                to="/call-account/withdraw"
+                to="/call-account/withdraw/wallet"
                 className="inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[12px] font-bold text-primary-foreground/90 press hover:text-primary-foreground"
               >
                 <ArrowDownLeft className="size-3.5" strokeWidth={2.6} /> Withdraw
@@ -673,7 +673,7 @@ function DesktopCallAccount() {
                   <Plus className="size-4" strokeWidth={2.6} /> Add money
                 </Link>
                 <Link
-                  to="/call-account/withdraw"
+                  to="/call-account/withdraw/wallet"
                   className="press inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-[12.5px] font-bold text-primary-foreground hover:bg-white/15"
                 >
                   <ArrowDownLeft className="size-4" strokeWidth={2.6} /> Withdraw
