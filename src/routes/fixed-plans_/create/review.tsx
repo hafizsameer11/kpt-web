@@ -8,6 +8,7 @@ import {
   Lock,
   PiggyBank,
   RefreshCcw,
+  ShieldCheck,
   Wallet,
 } from "lucide-react";
 import { useState } from "react";
@@ -71,223 +72,15 @@ const MATURITY_LABEL = {
   call: { label: "Move to Call Account", icon: PiggyBank },
 } as const;
 
-function PlanReviewScreen() {
-  const isMobile = useIsMobile();
-  return (
-    <>
-      <div className="md:hidden">
-        <PlanReviewMobile />
-      </div>
-      <div className="hidden md:block">
-        <PlanReviewDesktop />
-      </div>
-      <ReviewAuthGate isMobile={isMobile} />
-    </>
-  );
-}
-
-// Shared review state + auth sheet/dialog so mobile and desktop stay in sync.
-const ReviewCtx = React.createContext<{
-  amount: number;
-  days: number;
+interface PlanCalc {
+  ratePct: number;
   rateLabel: string;
-  open: boolean;
-  setOpen: (o: boolean) => void;
-  valid: boolean;
-} | null>(null);
-
-function useReviewState() {
-  const ctx = React.useContext(ReviewCtx);
-  if (!ctx) throw new Error("Review context missing");
-  return ctx;
+  interest: number;
+  payout: number;
+  maturityDate: string;
 }
 
-function ReviewAuthGate({ isMobile }: { isMobile: boolean }) {
-  const { amount, days, name, maturity, auto, gift } = Route.useSearch();
-  const navigate = useNavigate();
-
-  const [open, setOpen] = useState(false);
-  const [pin, setPin] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [attempts, setAttempts] = useState(0);
-  const [busy, setBusy] = useState(false);
-
-  const band = TENOR_BANDS.find(
-    (b) => Number(b.days.replace(/\D/g, "")) === days,
-  );
-  const ratePct = band ? Number(band.rate.replace(/[^0-9.]/g, "")) : 14;
-  const rateLabel = band ? band.rate : `${ratePct}%`;
-
-  const locked = attempts >= MAX_ATTEMPTS;
-  const valid = amount > 0 && days > 0 && amount <= WALLET;
-
-  function press(key: string) {
-    if (locked || busy) return;
-    setError(null);
-    if (key === "del") {
-      setPin((p) => p.slice(0, -1));
-      return;
-    }
-    setPin((p) => {
-      const next = (p + key).slice(0, PIN_LENGTH);
-      if (next.length === PIN_LENGTH) {
-        setBusy(true);
-        window.setTimeout(() => {
-          setBusy(false);
-          if (next === CORRECT_PIN) {
-            setOpen(false);
-            setPin("");
-            void navigate({
-              to: "/fixed-plans/create/processing",
-              search: { amount, days, name, maturity },
-            });
-          } else {
-            const n = attempts + 1;
-            setAttempts(n);
-            setPin("");
-            setError(
-              n >= MAX_ATTEMPTS
-                ? "Too many attempts. Try again in 30 minutes or reset your PIN."
-                : `Incorrect PIN. ${MAX_ATTEMPTS - n} attempt${MAX_ATTEMPTS - n === 1 ? "" : "s"} left.`,
-            );
-          }
-        }, 650);
-      }
-      return next;
-    });
-  }
-
-  function biometrics() {
-    if (locked || busy) return;
-    setBusy(true);
-    setError(null);
-    window.setTimeout(() => {
-      setBusy(false);
-      setError("Biometric authentication failed. Enter your PIN instead.");
-    }, 900);
-  }
-
-  const authPad = (
-    <>
-      <p className="mt-3 text-center text-[16px] font-extrabold">
-        Authorize investment
-      </p>
-      <p className="-mt-0.5 text-center text-[12px] text-muted-foreground">
-        {naira(amount)} · {days} days at {rateLabel}
-      </p>
-
-      <div className={`mt-4 flex justify-center gap-3 ${error ? "k-shake" : ""}`}>
-        {Array.from({ length: PIN_LENGTH }).map((_, i) => (
-          <span
-            key={i}
-            className={`size-3.5 rounded-full ${
-              i < pin.length ? "k-pop bg-gold" : "bg-border"
-            }`}
-          />
-        ))}
-      </div>
-
-      {error && (
-        <p className="mt-3 text-center text-[12px] font-semibold text-destructive">
-          {error}
-        </p>
-      )}
-      {busy && !error && (
-        <p className="mt-3 text-center text-[12px] font-semibold text-muted-foreground">
-          Verifying…
-        </p>
-      )}
-
-      <div className="mx-auto mt-5 grid w-full max-w-sm auto-rows-max grid-cols-3 gap-x-3 gap-y-2.5">
-        {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((k) => (
-          <Key key={k} onClick={() => press(k)} disabled={locked}>
-            {k}
-          </Key>
-        ))}
-        <Key onClick={biometrics} aria-label="Use biometrics" disabled={locked}>
-          <Fingerprint className="mx-auto size-5 text-gold" />
-        </Key>
-        <Key onClick={() => press("0")} disabled={locked}>
-          0
-        </Key>
-        <Key onClick={() => press("del")} aria-label="Delete" disabled={locked}>
-          <Delete className="mx-auto size-5" />
-        </Key>
-      </div>
-
-      <p className="mt-4 text-center text-[11px] text-muted-foreground">
-        Use PIN <span className="font-bold text-foreground">1234</span> in this prototype.
-      </p>
-    </>
-  );
-
-  return (
-    <ReviewCtx.Provider value={{ amount, days, rateLabel, open, setOpen, valid }}>
-      {isMobile ? (
-        <Drawer
-          open={open}
-          onOpenChange={(o) => {
-            setOpen(o);
-            if (!o) {
-              setPin("");
-              setError(null);
-            }
-          }}
-        >
-          <DrawerContent className="max-h-[92svh] rounded-t-[2rem] bg-card px-6 pb-8 pt-2">
-            <DrawerTitle className="sr-only">Authorize investment</DrawerTitle>
-            <DrawerDescription className="sr-only">
-              Enter your transaction PIN to confirm {naira(amount)}
-            </DrawerDescription>
-            {authPad}
-          </DrawerContent>
-        </Drawer>
-      ) : (
-        <Dialog
-          open={open}
-          onOpenChange={(o) => {
-            setOpen(o);
-            if (!o) {
-              setPin("");
-              setError(null);
-            }
-          }}
-        >
-          <DialogContent className="max-w-sm rounded-xl">
-            <DialogHeader>
-              <DialogTitle className="sr-only">Authorize investment</DialogTitle>
-            </DialogHeader>
-            {authPad}
-          </DialogContent>
-        </Dialog>
-      )}
-      {/* Render children layouts inside provider via portals below */}
-      <ReviewRenderer auto={auto} gift={gift} name={name} maturity={maturity} isMobile={isMobile} />
-    </ReviewCtx.Provider>
-  );
-}
-
-function ReviewRenderer({
-  auto,
-  gift,
-  name,
-  maturity,
-  isMobile,
-}: {
-  auto: string;
-  gift: string;
-  name: string;
-  maturity: "wallet" | "rollover" | "call";
-  isMobile: boolean;
-}) {
-  const { amount, days } = useReviewState();
-  return null;
-}
-
-function PlanReviewMobile() {
-  const { amount, days, name, maturity, auto, gift } = Route.useSearch();
-  const { setOpen, valid } = useReviewState();
-
+function usePlanCalc(amount: number, days: number): PlanCalc {
   const band = TENOR_BANDS.find(
     (b) => Number(b.days.replace(/\D/g, "")) === days,
   );
@@ -299,8 +92,28 @@ function PlanReviewMobile() {
     "en-NG",
     { day: "2-digit", month: "short", year: "numeric" },
   );
+  return { ratePct, rateLabel, interest, payout, maturityDate };
+}
 
-  const MaturityIcon = MATURITY_LABEL[maturity].icon;
+function PlanReviewScreen() {
+  const isMobile = useIsMobile();
+  return isMobile ? <PlanReviewMobile /> : <PlanReviewDesktop />;
+}
+
+/* ------------------------------------------------------------------ */
+/* Shared authorization flow (PIN pad in Drawer on mobile, Dialog on desktop) */
+/* ------------------------------------------------------------------ */
+
+function useAuthFlow() {
+  const { amount, days, name, maturity } = Route.useSearch();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [pin, setPin] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [attempts, setAttempts] = useState(0);
+  const [busy, setBusy] = useState(false);
+
+  const locked = attempts >= MAX_ATTEMPTS;
 
   function press(key: string) {
     if (locked || busy) return;
@@ -348,32 +161,54 @@ function PlanReviewMobile() {
     }, 900);
   }
 
-  const authPad = (
+  return {
+    amount,
+    open,
+    setOpen,
+    pin,
+    error,
+    locked,
+    busy,
+    press,
+    biometrics,
+    reset: () => {
+      setPin("");
+      setError(null);
+    },
+  };
+}
+
+function AuthPad({ flow }: { flow: ReturnType<typeof useAuthFlow> }) {
+  const { rateLabel } = usePlanCalc(Route.useSearch().amount, Route.useSearch().days);
+  const days = Route.useSearch().days;
+  return (
     <>
       <p className="mt-3 text-center text-[16px] font-extrabold">
         Authorize investment
       </p>
       <p className="-mt-0.5 text-center text-[12px] text-muted-foreground">
-        {naira(amount)} · {days} days at {rateLabel}
+        {naira(flow.amount)} · {days} days at {rateLabel}
       </p>
 
-      <div className={`mt-4 flex justify-center gap-3 ${error ? "k-shake" : ""}`}>
+      <div
+        className={`mt-4 flex justify-center gap-3 ${flow.error ? "k-shake" : ""}`}
+      >
         {Array.from({ length: PIN_LENGTH }).map((_, i) => (
           <span
             key={i}
             className={`size-3.5 rounded-full ${
-              i < pin.length ? "k-pop bg-gold" : "bg-border"
+              i < flow.pin.length ? "k-pop bg-gold" : "bg-border"
             }`}
           />
         ))}
       </div>
 
-      {error && (
+      {flow.error && (
         <p className="mt-3 text-center text-[12px] font-semibold text-destructive">
-          {error}
+          {flow.error}
         </p>
       )}
-      {busy && !error && (
+      {flow.busy && !flow.error && (
         <p className="mt-3 text-center text-[12px] font-semibold text-muted-foreground">
           Verifying…
         </p>
@@ -381,17 +216,25 @@ function PlanReviewMobile() {
 
       <div className="mx-auto mt-5 grid w-full max-w-sm auto-rows-max grid-cols-3 gap-x-3 gap-y-2.5">
         {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((k) => (
-          <Key key={k} onClick={() => press(k)} disabled={locked}>
+          <Key key={k} onClick={() => flow.press(k)} disabled={flow.locked}>
             {k}
           </Key>
         ))}
-        <Key onClick={biometrics} aria-label="Use biometrics" disabled={locked}>
+        <Key
+          onClick={flow.biometrics}
+          aria-label="Use biometrics"
+          disabled={flow.locked}
+        >
           <Fingerprint className="mx-auto size-5 text-gold" />
         </Key>
-        <Key onClick={() => press("0")} disabled={locked}>
+        <Key onClick={() => flow.press("0")} disabled={flow.locked}>
           0
         </Key>
-        <Key onClick={() => press("del")} aria-label="Delete" disabled={locked}>
+        <Key
+          onClick={() => flow.press("del")}
+          aria-label="Delete"
+          disabled={flow.locked}
+        >
           <Delete className="mx-auto size-5" />
         </Key>
       </div>
@@ -401,17 +244,30 @@ function PlanReviewMobile() {
       </p>
     </>
   );
+}
+
+/* ------------------------------------------------------------------ */
+/* Mobile layout (unchanged design) */
+/* ------------------------------------------------------------------ */
+
+function PlanReviewMobile() {
+  const { amount, days, name, maturity, auto, gift } = Route.useSearch();
+  const flow = useAuthFlow();
+  const { rateLabel, interest, payout, maturityDate } = usePlanCalc(amount, days);
+
+  const valid = amount > 0 && days > 0 && amount <= WALLET;
+  const MaturityIcon = MATURITY_LABEL[maturity].icon;
 
   return (
     <AppShell title="Review Plan" navVariant="elevated">
       <div className="pb-2">
         {/* Hero */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-14 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
           />
-          <div className="relative md:max-w-3xl">
+          <div className="relative">
             <div className="flex items-center justify-between gap-3">
               <Link
                 to="/fixed-plans/create/options"
@@ -429,7 +285,7 @@ function PlanReviewMobile() {
               {name ? name : "You're investing"}
             </p>
             <p
-              className="k-rise mt-2 font-display text-[38px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[46px]"
+              className="k-rise mt-2 font-display text-[38px] font-extrabold leading-none tracking-[-0.035em] text-num"
               style={{ "--d": "80ms" } as React.CSSProperties}
             >
               <AmountCounter value={amount} hidden={false} mask={(v) => naira(v)} />
@@ -444,15 +300,15 @@ function PlanReviewMobile() {
         </section>
 
         {/* Sheet */}
-        <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
+        <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5">
           <span
             aria-hidden
-            className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
+            className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border"
           />
 
-          <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+          <div className="space-y-4">
             <Rise>
-              <section className="card-surface p-4 md:p-5">
+              <section className="card-surface p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   Plan summary
                 </p>
@@ -474,7 +330,7 @@ function PlanReviewMobile() {
             </Rise>
 
             <Rise delay={60}>
-              <section className="card-surface p-4 md:p-5">
+              <section className="card-surface p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   What you get at maturity
                 </p>
@@ -503,7 +359,7 @@ function PlanReviewMobile() {
             </Rise>
 
             <Rise delay={120}>
-              <section className="card-surface p-4 md:p-5 md:col-span-2">
+              <section className="card-surface p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   Instructions
                 </p>
@@ -541,59 +397,226 @@ function PlanReviewMobile() {
             <button
               type="button"
               disabled={!valid}
-              onClick={() => setOpen(true)}
-              className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
+              onClick={() => flow.setOpen(true)}
+              className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press ${
                 valid ? "k-glow" : "opacity-40 shadow-none"
               }`}
             >
               {valid ? "Confirm investment" : "Details incomplete"}
               <ArrowRight className="size-4" strokeWidth={2.6} />
             </button>
-            <p className="mt-2.5 flex items-center justify-center gap-1.5 text-[11.5px] text-muted-foreground md:justify-start">
+            <p className="mt-2.5 flex items-center justify-center gap-1.5 text-[11.5px] text-muted-foreground">
               <Lock className="size-3.5" /> Authorize with your PIN or biometrics.
             </p>
           </div>
         </div>
       </div>
 
-      {isMobile ? (
-        <Drawer
-          open={open}
-          onOpenChange={(o) => {
-            setOpen(o);
-            if (!o) {
-              setPin("");
-              setError(null);
-            }
-          }}
-        >
-          <DrawerContent className="max-h-[92svh] rounded-t-[2rem] bg-card px-6 pb-8 pt-2">
-            <DrawerTitle className="sr-only">Authorize investment</DrawerTitle>
-            <DrawerDescription className="sr-only">
-              Enter your transaction PIN to confirm {naira(amount)}
-            </DrawerDescription>
-            {authPad}
-          </DrawerContent>
-        </Drawer>
-      ) : (
-        <Dialog
-          open={open}
-          onOpenChange={(o) => {
-            setOpen(o);
-            if (!o) {
-              setPin("");
-              setError(null);
-            }
-          }}
-        >
-          <DialogContent className="max-w-sm rounded-xl">
-            <DialogHeader>
-              <DialogTitle className="sr-only">Authorize investment</DialogTitle>
-            </DialogHeader>
-            {authPad}
-          </DialogContent>
-        </Dialog>
-      )}
+      <Drawer
+        open={flow.open}
+        onOpenChange={(o) => {
+          flow.setOpen(o);
+          if (!o) flow.reset();
+        }}
+      >
+        <DrawerContent className="max-h-[92svh] rounded-t-[2rem] bg-card px-6 pb-8 pt-2">
+          <DrawerTitle className="sr-only">Authorize investment</DrawerTitle>
+          <DrawerDescription className="sr-only">
+            Enter your transaction PIN to confirm {naira(amount)}
+          </DrawerDescription>
+          <AuthPad flow={flow} />
+        </DrawerContent>
+      </Drawer>
+    </AppShell>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Desktop layout */
+/* ------------------------------------------------------------------ */
+
+function PlanReviewDesktop() {
+  const { amount, days, name, maturity, auto, gift } = Route.useSearch();
+  const flow = useAuthFlow();
+  const { rateLabel, interest, payout, maturityDate } = usePlanCalc(amount, days);
+
+  const valid = amount > 0 && days > 0 && amount <= WALLET;
+  const MaturityIcon = MATURITY_LABEL[maturity].icon;
+
+  return (
+    <AppShell title="Review Plan" navVariant="elevated">
+      <div className="mx-auto w-full max-w-6xl pb-6">
+        {/* Step hero */}
+        <section className="relative overflow-hidden rounded-xl bg-brand-gradient px-8 pb-10 pt-8 text-primary-foreground shadow-float">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-24 -top-32 size-80 rounded-full bg-gold/15 blur-[72px]"
+          />
+          <div className="relative flex flex-wrap items-end justify-between gap-6">
+            <div className="min-w-0">
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/fixed-plans/create/options"
+                  search={{ amount, days }}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground press"
+                >
+                  <ArrowLeft className="size-3.5" /> Back
+                </Link>
+                <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-primary-foreground/75">
+                  Step 4 of 4 · Review
+                </span>
+              </div>
+              <p className="mt-5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                {name ? name : "You're investing"}
+              </p>
+              <p className="mt-1.5 font-display text-[46px] font-extrabold leading-none tracking-[-0.035em] text-num">
+                <AmountCounter value={amount} hidden={false} mask={(v) => naira(v)} />
+              </p>
+              <p className="mt-2.5 text-[12.5px] font-medium text-primary-foreground/65">
+                {days} days at {rateLabel} p.a. · matures {maturityDate}
+              </p>
+            </div>
+            <div className="flex shrink-0 gap-6 rounded-2xl border border-white/10 bg-white/5 px-6 py-4 backdrop-blur">
+              <div>
+                <p className="text-[11px] font-semibold text-primary-foreground/60">
+                  Expected interest
+                </p>
+                <p className="mt-1 font-display text-[22px] font-extrabold leading-none text-num text-gold">
+                  +{naira(interest)}
+                </p>
+              </div>
+              <div className="border-l border-white/10 pl-6">
+                <p className="text-[11px] font-semibold text-primary-foreground/60">
+                  Expected payout
+                </p>
+                <p className="mt-1 font-display text-[22px] font-extrabold leading-none text-num">
+                  {naira(payout)}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="mt-6 grid grid-cols-[minmax(0,1fr)_340px] items-start gap-6">
+          <div className="space-y-5">
+            <Rise>
+              <section className="card-surface p-5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Plan summary
+                </p>
+                <dl className="mt-3 divide-y divide-border text-[13px]">
+                  <Row label="Plan name">{name || "Fixed plan"}</Row>
+                  <Row label="Investment amount">{naira(amount)}</Row>
+                  <Row label="Rate">{rateLabel} p.a.</Row>
+                  <Row label="Tenor">{days} days</Row>
+                  <Row label="Funding source">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Wallet className="size-3.5 text-gold" /> Kipit Wallet
+                    </span>
+                  </Row>
+                  <Row label="Wallet after">
+                    {naira(Math.max(WALLET - amount, 0))}
+                  </Row>
+                </dl>
+              </section>
+            </Rise>
+
+            <Rise delay={60}>
+              <section className="card-surface p-5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Instructions
+                </p>
+                <dl className="mt-3 divide-y divide-border text-[13px]">
+                  <Row label="Maturity instruction">
+                    <span className="inline-flex items-center gap-1.5">
+                      <MaturityIcon className="size-3.5 text-gold" />
+                      {MATURITY_LABEL[maturity].label}
+                    </span>
+                  </Row>
+                  <Row label="Auto-invest">
+                    {auto ? (
+                      <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[11px] font-extrabold text-gold">
+                        {auto}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">Off</span>
+                    )}
+                  </Row>
+                  <Row label="Beneficiary">
+                    {gift ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <Gift className="size-3.5 text-gold" /> {gift}
+                      </span>
+                    ) : (
+                      "Myself"
+                    )}
+                  </Row>
+                </dl>
+              </section>
+            </Rise>
+          </div>
+
+          {/* Sticky authorization rail */}
+          <Rise delay={100}>
+            <aside className="sticky top-6 space-y-4">
+              <section className="card-surface overflow-hidden">
+                <div className="bg-brand-gradient px-5 py-4 text-primary-foreground">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-primary-foreground/60">
+                    At maturity · {maturityDate}
+                  </p>
+                  <p className="mt-1 font-display text-[26px] font-extrabold leading-none text-num">
+                    {naira(payout)}
+                  </p>
+                  <p className="mt-1 text-[11px] text-primary-foreground/65">
+                    Principal + {naira(interest)} interest
+                  </p>
+                </div>
+                <div className="p-5">
+                  <button
+                    type="button"
+                    disabled={!valid}
+                    onClick={() => flow.setOpen(true)}
+                    className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press ${
+                      valid ? "k-glow" : "opacity-40 shadow-none"
+                    }`}
+                  >
+                    {valid ? "Confirm investment" : "Details incomplete"}
+                    <ArrowRight className="size-4" strokeWidth={2.6} />
+                  </button>
+                  <p className="mt-3 flex items-center justify-center gap-1.5 text-[11.5px] text-muted-foreground">
+                    <Lock className="size-3.5" /> Authorize with PIN or biometrics.
+                  </p>
+                </div>
+              </section>
+
+              <section className="card-surface flex items-start gap-3 p-4">
+                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-gold/15 text-gold">
+                  <ShieldCheck className="size-4" />
+                </span>
+                <p className="text-[11.5px] leading-relaxed text-muted-foreground">
+                  Indicative figures — early liquidation may reduce interest.
+                  Your funds are held with regulated partners.
+                </p>
+              </section>
+            </aside>
+          </Rise>
+        </div>
+      </div>
+
+      <Dialog
+        open={flow.open}
+        onOpenChange={(o) => {
+          flow.setOpen(o);
+          if (!o) flow.reset();
+        }}
+      >
+        <DialogContent className="max-w-sm rounded-xl">
+          <DialogHeader>
+            <DialogTitle className="sr-only">Authorize investment</DialogTitle>
+          </DialogHeader>
+          <AuthPad flow={flow} />
+        </DialogContent>
+      </Dialog>
     </AppShell>
   );
 }
