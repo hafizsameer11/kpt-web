@@ -42,6 +42,7 @@ function HelpCentre() {
       eyebrow="MOB-152"
       subtitle="Find an answer in seconds, or talk to a human."
     >
+      <div className="md:hidden">
       <div className="relative">
         <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
