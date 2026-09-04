@@ -32,11 +32,15 @@ export function KycStep({
 }) {
   return (
     <AppShell title={navTitle} navVariant="elevated">
-      <div className="pb-2">
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pt-8 md:shadow-float">
+      <div className="pb-2 md:mx-auto md:w-full md:max-w-4xl md:pb-10">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-2xl md:px-9 md:pb-9 md:pt-9 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -bottom-28 -left-20 hidden size-64 rounded-full bg-white/10 blur-[56px] md:block"
           />
           <div className="relative md:max-w-3xl">
             <div className="flex items-center justify-between gap-3">
@@ -62,15 +66,17 @@ export function KycStep({
                 {eyebrow}
               </p>
             )}
-            <h1 className="mt-2 font-display text-[26px] font-extrabold leading-tight tracking-[-0.02em] md:text-[30px]">
+            <h1 className="mt-2 font-display text-[26px] font-extrabold leading-tight tracking-[-0.02em] md:text-[32px]">
               {title}
             </h1>
             {subtitle && (
-              <p className="mt-2 max-w-md text-[12.5px] text-primary-foreground/65">{subtitle}</p>
+              <p className="mt-2 max-w-md text-[12.5px] text-primary-foreground/65 md:max-w-2xl md:text-[13.5px] md:leading-relaxed">
+                {subtitle}
+              </p>
             )}
 
             {step && totalSteps && (
-              <div className="mt-5 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-white/15">
+              <div className="mt-5 h-1.5 w-full max-w-xs overflow-hidden md:max-w-sm rounded-full bg-white/15">
                 <span
                   className="block h-full rounded-full bg-gold transition-[width] duration-500"
                   style={{ width: `${(step / totalSteps) * 100}%` }}
