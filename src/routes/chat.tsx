@@ -40,6 +40,7 @@ import {
   type ChatMessage,
   type ChatProduct,
 } from "@/lib/chat-data";
+import { WHATSAPP_URL } from "@/lib/terms-acceptance";
 
 export const Route = createFileRoute("/chat")({
   head: () => ({
