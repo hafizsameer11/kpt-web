@@ -10,7 +10,7 @@ import { RATE_BANDS, findBand } from "@/lib/admin-rates-data";
 
 export const Route = createFileRoute("/admin_/rates_/propose")({
   validateSearch: (search: Record<string, unknown>) => ({
-    band: typeof search.band === "string" ? search.band : "",
+    band: typeof search["band"] === "string" ? (search["band"] as string) : "",
   }),
   head: () => ({
     meta: [
@@ -36,13 +36,13 @@ function ProposeRatePage() {
   const { band } = Route.useSearch();
   const navigate = useNavigate();
 
-  const [bandId, setBandId] = useState(band || RATE_BANDS[0].id);
+  const [bandId, setBandId] = useState(band || RATE_BANDS[0]!.id);
   const [rate, setRate] = useState("");
   const [effectiveDate, setEffectiveDate] = useState("");
   const [reason, setReason] = useState("");
   const [touched, setTouched] = useState(false);
 
-  const selected = useMemo(() => findBand(bandId) ?? RATE_BANDS[0], [bandId]);
+  const selected = useMemo(() => findBand(bandId) ?? RATE_BANDS[0]!, [bandId]);
   const proposed = Number(rate);
   const validRate = rate !== "" && !Number.isNaN(proposed) && proposed > 0 && proposed <= 40;
   const delta = validRate ? proposed - selected.currentRate : 0;
@@ -194,8 +194,8 @@ function Field({
   children,
 }: {
   label: string;
-  hint?: string;
-  error?: string;
+  hint?: string | undefined;
+  error?: string | undefined;
   children: React.ReactNode;
 }) {
   return (
