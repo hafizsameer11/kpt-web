@@ -402,12 +402,13 @@ function FixedPlansScreen() {
                   <li
                     key={`${p.name}-${p.maturedOn}`}
                     style={{ ["--d" as string]: `${i * 90}ms` }}
-                    className="k-rise card-surface relative overflow-hidden p-4"
+                    className="k-rise card-surface relative overflow-hidden"
                   >
                     <span
                       className="absolute inset-y-0 left-0 w-1 bg-muted-foreground/30"
                       aria-hidden
                     />
+                    <Link to="/portfolio/maturities" className="block p-4 press">
                     <div className="flex items-start justify-between gap-3 pl-2">
                       <div className="min-w-0">
                         <p className="truncate text-sm font-bold">{p.name}</p>
@@ -428,9 +429,12 @@ function FixedPlansScreen() {
                       </span>
                       <span className="inline-flex items-center gap-1 font-bold text-brand">
                         <CheckCircle2 className="size-3.5" /> {p.status}
+                        <ChevronRight className="size-3.5 text-muted-foreground" />
                       </span>
                     </div>
+                    </Link>
                   </li>
+
                 ))}
               </ul>
             )}
