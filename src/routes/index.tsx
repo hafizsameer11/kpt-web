@@ -8,6 +8,8 @@ import {
   EyeOff,
   Lightbulb,
   Wallet,
+  Moon,
+  Sun,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { Logo } from "@/components/kipit/Logo";
@@ -15,6 +17,7 @@ import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { ForYouFeature } from "@/components/kipit/ForYouVariants";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 import { GreetingText } from "@/components/kipit/SpecBlocks";
+import { useTheme } from "@/lib/theme";
 import { AmountCounter } from "@/components/kipit/motion";
 import {
   HOLDINGS,
