@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, notFound, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, Ban, Mail, Phone, Snowflake, TicketCheck } from "lucide-react";
+import { ArrowLeft, Lock, LockOpen, Mail, Phone, TicketCheck } from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminShell } from "@/components/kipit/AdminShell";
@@ -74,8 +74,9 @@ function AdminUserProfile() {
         </Link>
 
         {/* Identity header */}
-        <section className="relative overflow-hidden rounded-2xl bg-brand-gradient p-6 text-primary-foreground shadow-float">
-          <div className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-gold/15 blur-3xl" />
+        <section className="relative overflow-hidden rounded-3xl bg-brand-gradient p-6 text-primary-foreground shadow-[0_24px_60px_-38px_rgba(11,29,58,0.9)]">
+          <div className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-gold/18 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-28 left-1/4 size-64 rounded-full bg-white/8 blur-3xl" />
           <div className="relative flex flex-wrap items-start justify-between gap-5">
             <div className="flex items-start gap-4">
               <span className="grid size-14 shrink-0 place-items-center rounded-full bg-gold text-[16px] font-extrabold text-gold-foreground">
@@ -99,8 +100,8 @@ function AdminUserProfile() {
                   </span>
                 </div>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <TierPill tier={user.tier} />
-                  <StatusPill status={user.status} />
+                  <TierPill tier={user.tier} onDark />
+                  <StatusPill status={user.status} onDark />
                   <span className="text-[12px] text-primary-foreground/60">
                     Joined {user.joined} · last active {user.lastActive}
                   </span>
@@ -109,7 +110,7 @@ function AdminUserProfile() {
             </div>
 
             <div className="flex flex-col items-end gap-3">
-              <div className="rounded-xl bg-white/10 px-4 py-3 text-right">
+              <div className="rounded-2xl bg-white/10 px-4 py-3 text-right ring-1 ring-white/15">
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-primary-foreground/55">
                   Portfolio value
                 </p>
@@ -137,12 +138,12 @@ function AdminUserProfile() {
                 >
                   {user.status === "frozen" ? (
                     <>
-                      <Ban className="size-4" />
+                      <LockOpen className="size-4" />
                       Unfreeze
                     </>
                   ) : (
                     <>
-                      <Snowflake className="size-4" />
+                      <Lock className="size-4" />
                       Freeze account
                     </>
                   )}
@@ -153,7 +154,7 @@ function AdminUserProfile() {
         </section>
 
         {/* Tabs */}
-        <nav className="no-scrollbar overflow-x-auto rounded-xl border border-border bg-card p-1.5">
+        <nav className="no-scrollbar sticky top-16 z-20 overflow-x-auto rounded-2xl border border-border/80 bg-card/95 p-1.5 shadow-[0_1px_2px_rgba(11,29,58,0.04),0_12px_28px_-22px_rgba(11,29,58,0.4)] backdrop-blur">
           <ul className="flex min-w-max gap-1">
             {TABS.map((tab) => {
               const active = pathname === tab.to.replace("$userId", userId);
@@ -164,9 +165,9 @@ function AdminUserProfile() {
                     to={tab.to}
                     params={{ userId }}
                     activeOptions={{ exact: true }}
-                    className={`block rounded-lg px-3.5 py-2 text-[13px] font-bold transition ${
+                    className={`block rounded-xl px-3.5 py-2 text-[13px] font-bold transition ${
                       active
-                        ? "bg-brand text-primary-foreground"
+                        ? "bg-brand text-primary-foreground shadow-sm"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     }`}
                   >
