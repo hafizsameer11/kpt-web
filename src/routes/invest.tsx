@@ -355,7 +355,12 @@ function DesktopInvest() {
               aria-hidden
               className="pointer-events-none absolute -left-24 bottom-[-6rem] size-72 rounded-full bg-white/10 blur-3xl"
             />
-            <div className="relative">
+            <Link
+              to="/call-account"
+              aria-label={`Open ${CALL_ACCOUNT.name}`}
+              className="absolute inset-0 z-0"
+            />
+            <div className="pointer-events-none relative z-10">
               <div className="flex items-start justify-between gap-6">
                 <div className="min-w-0">
                   <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary-foreground/60">
