@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { ChevronRight, Download, Search, SlidersHorizontal, Users2, X } from "lucide-react";
 
 import { AdminShell } from "@/components/kipit/AdminShell";
-import { Panel, StatusPill, Stat, TierPill } from "@/components/kipit/AdminBits";
+import { Panel, StatusPill, TierPill } from "@/components/kipit/AdminBits";
 import {
   ADMIN_USERS,
   portfolioValue,
