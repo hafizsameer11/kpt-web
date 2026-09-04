@@ -95,9 +95,114 @@ function AutoInvestScreen() {
     });
   };
 
+  const heroFigure = (
+    <>
+      <p className="k-rise mt-6 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+        Investing automatically each month
+      </p>
+      <h1 className="k-rise mt-1 font-display text-[32px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[46px]">
+        <AmountCounter value={monthlyTotal} hidden={hidden} mask={mask} />
+      </h1>
+    </>
+  );
+
+  const newRuleButton = (className: string) => (
+    <button
+      type="button"
+      onClick={() => setOpen(true)}
+      className={className}
+    >
+      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-white/12">
+        <Plus className="size-[18px]" />
+      </span>
+      <span className="min-w-0 flex-1 text-left">
+        <span className="block text-[13px] font-bold">New auto-invest</span>
+        <span className="block text-[11.5px] text-brand-foreground/70">
+          Fund a plan weekly, fortnightly or monthly
+        </span>
+      </span>
+    </button>
+  );
+
+  const ruleCard = (r: AutoInvestRule, i: number) => (
+    <li
+      key={r.id}
+      className="k-rise card-surface p-4"
+      style={{ ["--d" as string]: `${i * 60}ms` }}
+    >
+      <div className="flex items-start gap-3">
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-secondary text-brand">
+          <Repeat className="size-[18px]" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[13px] font-bold">{r.destination}</p>
+          <p className="text-[11.5px] text-muted-foreground">
+            {r.rate} · {r.frequency}
+          </p>
+        </div>
+        <Switch
+          checked={r.active}
+          onCheckedChange={() => toggle(r.id)}
+          aria-label={`${r.active ? "Pause" : "Resume"} auto-invest into ${r.destination}`}
+        />
+      </div>
+
+      <div className="mt-3.5 grid grid-cols-3 gap-2 rounded-xl bg-muted/50 p-3">
+        <div className="min-w-0">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Amount
+          </p>
+          <p className="mt-0.5 text-[12.5px] font-extrabold text-num">
+            {mask(r.amount)}
+          </p>
+        </div>
+        <div className="min-w-0">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Next run
+          </p>
+          <p className="mt-0.5 truncate text-[12.5px] font-extrabold">
+            {r.nextRun}
+          </p>
+        </div>
+        <div className="min-w-0">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Invested
+          </p>
+          <p className="mt-0.5 text-[12.5px] font-extrabold text-num">
+            {mask(r.investedToDate)}
+          </p>
+        </div>
+      </div>
+
+      <p className="mt-3 flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
+        <Wallet className="size-3.5" /> Funded from {r.fundedFrom}
+      </p>
+    </li>
+  );
+
+  const howItWorks = (
+    <section className="rounded-xl border border-border bg-card p-4">
+      <p className="flex items-center gap-1.5 text-[12.5px] font-bold">
+        <CalendarClock className="size-4 text-brand" /> How auto-invest works
+      </p>
+      <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+        On each run date Kipit moves the amount from your wallet into the plan you
+        chose. If your wallet balance is short, the run is skipped and we notify you —
+        no fees, no penalty. Pause or edit any schedule at any time.
+      </p>
+      <Link
+        to="/wallet/add-money"
+        className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-[11.5px] font-bold text-brand press"
+      >
+        <Plus className="size-3.5" /> Top up wallet · {naira(WALLET)} available
+      </Link>
+    </section>
+  );
+
   return (
     <AppShell title="Auto-invest" navVariant="elevated">
-      <div className="pb-2">
+      {/* ══ Mobile layout (unchanged) ══ */}
+      <div className="pb-2 md:hidden">
         {/* ── Hero ─────────────────────────────────────────── */}
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pt-8 md:shadow-float">
           <span
