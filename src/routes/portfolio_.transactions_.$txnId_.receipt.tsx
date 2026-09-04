@@ -50,12 +50,54 @@ function ReceiptScreen() {
           </span>
         </div>
 
-        <div className="k-rise mt-4 md:max-w-xl">
-          <ReceiptCard txn={txn} />
-        </div>
+        <div className="md:grid md:grid-cols-[minmax(0,1fr)_320px] md:items-start md:gap-6">
+          <div className="k-rise mt-4 md:mt-6 md:rounded-3xl md:bg-secondary/40 md:p-6 md:ring-1 md:ring-border">
+            <ReceiptCard txn={txn} />
+          </div>
 
-        <div className="mt-5 md:max-w-xl">
-          <ReceiptActions txn={txn} />
+          <div className="mt-5 md:sticky md:top-6 md:mt-6 md:space-y-4">
+            <ReceiptActions txn={txn} />
+
+            {/* Desktop-only details rail */}
+            <section className="hidden md:block card-surface overflow-hidden">
+              <div className="border-b border-border px-5 py-3">
+                <p className="text-[10.5px] font-black uppercase tracking-[0.16em] text-muted-foreground">
+                  Receipt details
+                </p>
+              </div>
+              <ul className="divide-y divide-border">
+                {[
+                  { label: "Reference", value: txn.reference },
+                  { label: "Status", value: txn.status },
+                  { label: "Date", value: txn.date },
+                  { label: "Issued by", value: "Kipit" },
+                ].map((row) => (
+                  <li key={row.label} className="flex items-center justify-between gap-3 px-5 py-3">
+                    <span className="text-[12px] font-semibold text-muted-foreground">
+                      {row.label}
+                    </span>
+                    <span className="truncate text-[12px] font-bold text-foreground">
+                      {row.value}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <section className="hidden md:block card-surface p-5">
+              <p className="text-[12.5px] font-extrabold text-foreground">Need help with this?</p>
+              <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+                Quote the reference above when contacting support and we can trace the transaction
+                end to end.
+              </p>
+              <Link
+                to="/settings/help/ticket"
+                className="mt-3 inline-flex items-center gap-2 text-[12.5px] font-bold text-brand"
+              >
+                Contact support
+              </Link>
+            </section>
+          </div>
         </div>
       </div>
     </AppShell>
