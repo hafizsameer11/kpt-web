@@ -360,9 +360,10 @@ function SubscriptionReviewScreen() {
                 >
                   {valid
                     ? "Confirm subscription"
-                    : !isMobile && !acceptedTerms && amount >= product.minimum
+                    : !acceptedTerms && amount >= product.minimum
                       ? "Accept the offer terms"
                       : "Details incomplete"}
+
                   <ArrowRight className="size-4" strokeWidth={2.6} />
                 </button>
                 <p className="mt-2.5 flex items-center justify-center gap-1.5 whitespace-nowrap text-[11.5px] text-muted-foreground md:justify-start">
