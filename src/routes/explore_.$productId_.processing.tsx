@@ -63,7 +63,7 @@ function SubscriptionProcessingScreen() {
 
   return (
     <AppShell title="Processing" navVariant="elevated">
-      <div className="pb-2">
+      <div className="pb-2 md:mx-auto md:w-full md:max-w-[720px]">
         <section className="relative -mx-4 flex min-h-[70svh] flex-col items-center justify-center overflow-hidden bg-brand-gradient px-6 py-16 text-center text-primary-foreground md:mx-0 md:min-h-[60vh] md:rounded-xl md:shadow-float">
           <span
             aria-hidden

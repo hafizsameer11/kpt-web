@@ -63,7 +63,7 @@ function SubscriptionSuccessScreen() {
 
   return (
     <AppShell title="Subscription Confirmed" navVariant="elevated">
-      <div className="pb-2">
+      <div className="pb-2 md:mx-auto md:max-w-4xl">
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-16 pt-10 text-center text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:shadow-float">
           <span
             aria-hidden
