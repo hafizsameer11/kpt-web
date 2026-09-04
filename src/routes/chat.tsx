@@ -14,6 +14,7 @@ import {
   Lock,
   MessageCircle,
   PieChart,
+  RotateCcw,
   Send,
   ShieldCheck,
   Wallet,
@@ -71,13 +72,56 @@ const WELCOME: ChatMessage = {
   ],
 };
 
+const STORAGE_KEY = "kipit:chat-history";
+
 function ChatScreen() {
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [restored, setRestored] = useState(false);
   const amountRef = useRef<number | undefined>(undefined);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Restore the conversation after mount so it survives closing the chat.
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as { messages?: ChatMessage[]; amount?: number };
+        if (Array.isArray(saved.messages) && saved.messages.length > 0) {
+          setMessages(saved.messages);
+        }
+        if (typeof saved.amount === "number") amountRef.current = saved.amount;
+      }
+    } catch {
+      /* storage unavailable or corrupt */
+    }
+    setRestored(true);
+  }, []);
+
+  useEffect(() => {
+    if (!restored) return;
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ messages, amount: amountRef.current }),
+      );
+    } catch {
+      /* storage unavailable */
+    }
+  }, [messages, restored]);
+
+  const resetChat = () => {
+    amountRef.current = undefined;
+    setMessages([WELCOME]);
+    setInput("");
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* storage unavailable */
+    }
+  };
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -86,6 +130,7 @@ function ChatScreen() {
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
 
   const send = (raw: string, display?: string) => {
     const value = raw.trim();
@@ -104,7 +149,6 @@ function ChatScreen() {
       inputRef.current?.focus();
     }, 550);
   };
-
   const showPrompts = messages.length === 1;
 
   const promptIcons = [PieChart, Wallet, CalendarClock, LifeBuoy, BookOpen, Landmark];
@@ -238,9 +282,14 @@ function ChatScreen() {
                 <span className="size-1.5 rounded-full bg-emerald-400" /> Online · guided help
               </p>
             </div>
-            <span className="ml-auto grid size-9 place-items-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10">
-              <ShieldCheck className="size-4 text-gold" />
-            </span>
+            <button
+              type="button"
+              onClick={resetChat}
+              aria-label="Start a new chat"
+              className="ml-auto grid size-9 place-items-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10 press"
+            >
+              <RotateCcw className="size-4 text-gold" />
+            </button>
           </div>
         </header>
 
@@ -279,9 +328,18 @@ function ChatScreen() {
                       moves only in secure screens
                     </p>
                   </div>
-                  <span className="ml-auto flex items-center gap-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide">
-                    <ShieldCheck className="size-3.5 text-gold" /> Controlled
-                  </span>
+                  <div className="ml-auto flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={resetChat}
+                      className="flex items-center gap-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide press"
+                    >
+                      <RotateCcw className="size-3.5 text-gold" /> New chat
+                    </button>
+                    <span className="flex items-center gap-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide">
+                      <ShieldCheck className="size-3.5 text-gold" /> Controlled
+                    </span>
+                  </div>
                 </div>
               </header>
 
@@ -405,27 +463,45 @@ function BlockView({
       );
 
     /* CHAT-002 */
-    case "balance":
+    case "balance": {
+      const invested = PORTFOLIO_SNAPSHOT.invested;
+      const total = PORTFOLIO_SNAPSHOT.total || 1;
+      const investedPct = Math.round((invested / total) * 100);
       return (
-        <div className="space-y-2.5">
-          <div className="grid gap-2.5 sm:grid-cols-3">
-            <StatCard icon={Wallet} label="Wallet" value={naira(PORTFOLIO_SNAPSHOT.wallet)} />
-            <StatCard
+        <ResponseCard>
+          <div className="relative overflow-hidden bg-brand-gradient px-4 pb-5 pt-4 text-primary-foreground">
+            <span className="pointer-events-none absolute -right-10 -top-14 size-36 rounded-full bg-gold/20 blur-3xl" />
+            <p className="relative flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wide text-primary-foreground/70">
+              <Landmark className="size-3.5 text-gold" /> Total portfolio
+            </p>
+            <p className="relative mt-1 font-display text-[26px] font-bold leading-none text-num">
+              {naira(PORTFOLIO_SNAPSHOT.total)}
+            </p>
+            <div className="relative mt-3.5 h-1.5 overflow-hidden rounded-full bg-primary-foreground/15">
+              <span
+                className="block h-full rounded-full bg-gold-gradient"
+                style={{ width: `${investedPct}%` }}
+              />
+            </div>
+            <p className="relative mt-1.5 text-[11px] text-primary-foreground/70">
+              {investedPct}% working in investments
+            </p>
+          </div>
+          <div className="grid grid-cols-2 divide-x divide-border">
+            <MiniStat icon={Wallet} label="Wallet" value={naira(PORTFOLIO_SNAPSHOT.wallet)} hint="Ready to invest" />
+            <MiniStat
               icon={PieChart}
-              label="Investments"
+              label="Invested"
               value={naira(PORTFOLIO_SNAPSHOT.invested)}
               hint={`${PORTFOLIO_SNAPSHOT.holdings} active holdings`}
             />
-            <StatCard
-              icon={Landmark}
-              label="Portfolio"
-              value={naira(PORTFOLIO_SNAPSHOT.total)}
-              accent
-            />
           </div>
-          <CtaLink to="/portfolio" label="View Portfolio" />
-        </div>
+          <CardFooter>
+            <CtaLink to="/portfolio" label="View Portfolio" />
+          </CardFooter>
+        </ResponseCard>
       );
+    }
 
     /* CHAT-004 */
     case "products":
@@ -492,67 +568,99 @@ function BlockView({
       );
 
     /* CHAT-007 */
-    case "maturity":
+    case "maturity": {
+      const progress = Math.max(6, Math.min(96, 100 - (MATURITY.daysLeft / 90) * 100));
       return (
-        <div className="space-y-2.5">
-          <div className="max-w-[92%] rounded-2xl border border-border bg-surface p-4">
-            <div className="flex items-center gap-2">
-              <CalendarClock className="size-4 text-brand" />
-              <p className="text-[13.5px] font-bold">{MATURITY.name}</p>
+        <ResponseCard>
+          <div className="flex items-center gap-3 border-b border-border px-4 py-3.5">
+            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand">
+              <CalendarClock className="size-4" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[13.5px] font-bold">{MATURITY.name}</p>
+              <p className="text-[11.5px] text-muted-foreground">Matures {MATURITY.date}</p>
             </div>
-            <dl className="mt-3 grid grid-cols-3 gap-2 text-[12px]">
-              <Cell label="Amount" value={naira(MATURITY.amount)} />
-              <Cell label="Matures" value={MATURITY.date} />
-              <Cell label="Days left" value={`${MATURITY.daysLeft}`} />
-            </dl>
-            <p className="mt-3 text-[12px] text-muted-foreground">
-              Expected payout {naira(MATURITY.expectedPayout)} at {MATURITY.rate}.
-            </p>
+            <span className="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-bold text-brand">
+              {MATURITY.daysLeft} days left
+            </span>
           </div>
-          <CtaLink to="/portfolio/maturities" label="View Investment" />
-        </div>
+          <div className="px-4 py-3.5">
+            <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
+              <span
+                className="block h-full rounded-full bg-brand-gradient"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <dl className="mt-3.5 grid grid-cols-3 gap-2 text-[12px]">
+              <Cell label="Principal" value={naira(MATURITY.amount)} />
+              <Cell label="Rate" value={MATURITY.rate} />
+              <Cell label="Payout" value={naira(MATURITY.expectedPayout)} />
+            </dl>
+          </div>
+          <CardFooter>
+            <CtaLink to="/portfolio/maturities" label="View Investment" />
+          </CardFooter>
+        </ResponseCard>
       );
+    }
 
     /* CHAT-008 */
     case "status":
       return (
-        <div className="space-y-2.5">
-          <div className="max-w-[92%] space-y-2">
+        <ResponseCard>
+          <div className="divide-y divide-border">
             {CHAT_STATUSES.map((item) => (
               <StatusCard key={item.label} item={item} />
             ))}
           </div>
-          <CtaLink to="/portfolio/transactions" label="View Transaction" />
-        </div>
+          <CardFooter>
+            <CtaLink to="/portfolio/transactions" label="All Transactions" />
+          </CardFooter>
+        </ResponseCard>
       );
 
     /* CHAT-009 */
     case "funding":
       return (
-        <div className="space-y-2.5">
-          <div className="max-w-[92%] rounded-2xl border border-border bg-surface p-4">
-            <div className="flex items-center gap-2 text-[12.5px] font-bold">
-              <Building2 className="size-4 text-brand" /> Bank transfer
-            </div>
-            <dl className="mt-3 space-y-2 text-[12.5px]">
-              <Row label="Account name" value={FUNDING_ACCOUNT.name} />
-              <Row label="Account number" value={FUNDING_ACCOUNT.number} copy />
-              <Row label="Bank" value={FUNDING_ACCOUNT.bank} />
-            </dl>
-            <p className="mt-3 text-[12px] text-muted-foreground">
-              Transfers usually reflect within minutes. Card payments post instantly.
+        <ResponseCard>
+          <div className="relative overflow-hidden bg-brand-gradient px-4 py-4 text-primary-foreground">
+            <span className="pointer-events-none absolute -right-10 -top-14 size-36 rounded-full bg-gold/20 blur-3xl" />
+            <p className="relative flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wide text-primary-foreground/70">
+              <Building2 className="size-3.5 text-gold" /> Bank transfer
             </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <CtaLink to="/wallet/add-money" label="Add Money" />
-              <Link
-                to="/wallet/card"
-                className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-[12.5px] font-bold press hover:bg-secondary"
+            <div className="relative mt-2 flex items-center gap-2">
+              <p className="font-display text-[22px] font-bold leading-none text-num tracking-wide">
+                {FUNDING_ACCOUNT.number}
+              </p>
+              <button
+                type="button"
+                aria-label="Copy account number"
+                onClick={() => {
+                  void navigator.clipboard?.writeText(FUNDING_ACCOUNT.number);
+                  toast.success("Account number copied");
+                }}
+                className="grid size-8 place-items-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10 press"
               >
-                <CreditCard className="size-3.5" /> Pay by card
-              </Link>
+                <Copy className="size-3.5 text-gold" />
+              </button>
             </div>
+            <p className="relative mt-1.5 text-[11.5px] text-primary-foreground/75">
+              {FUNDING_ACCOUNT.bank} · {FUNDING_ACCOUNT.name}
+            </p>
           </div>
-        </div>
+          <p className="px-4 py-3 text-[12px] text-muted-foreground">
+            Transfers usually reflect within minutes. Card payments post instantly.
+          </p>
+          <CardFooter>
+            <CtaLink to="/wallet/add-money" label="Add Money" />
+            <Link
+              to="/wallet/card"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-4 py-2 text-[12.5px] font-bold press hover:bg-secondary"
+            >
+              <CreditCard className="size-3.5" /> Pay by card
+            </Link>
+          </CardFooter>
+        </ResponseCard>
       );
 
     /* CHAT-010 */
@@ -598,40 +706,50 @@ function ProductCard({
 }) {
   const est = useMemo(() => estimatedReturn(product, amount), [product, amount]);
   return (
-    <div className="max-w-[92%] rounded-2xl border border-border bg-surface p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+    <ResponseCard>
+      <div className="flex items-start gap-3 border-b border-border px-4 py-3.5">
+        <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand">
+          <Landmark className="size-4" />
+        </span>
+        <div className="min-w-0 flex-1">
           <p className="text-[13.5px] font-bold">{product.name}</p>
-          <p className="text-[12px] text-muted-foreground">{product.blurb}</p>
+          <p className="text-[11.5px] text-muted-foreground">{product.blurb}</p>
         </div>
         <span className="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[11.5px] font-bold text-num text-brand">
           {product.rate}
         </span>
       </div>
-      <dl className="mt-3 grid grid-cols-3 gap-2 text-[12px]">
-        <Cell label="Tenor" value={product.tenor} />
-        <Cell label="Minimum" value={naira(product.minimum)} />
-        <Cell label="Est. return" value={naira(est)} />
+      <dl className="grid grid-cols-3 divide-x divide-border text-[12px]">
+        <div className="px-3 py-3">
+          <Cell label="Tenor" value={product.tenor} />
+        </div>
+        <div className="px-3 py-3">
+          <Cell label="Minimum" value={naira(product.minimum)} />
+        </div>
+        <div className="px-3 py-3">
+          <Cell label="Est. return" value={naira(est)} />
+        </div>
       </dl>
-      <div className="mt-3 flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => onSend(`explain:${product.id}`, `Tell me about ${product.name}`)}
-          className="rounded-full border border-border px-3.5 py-2 text-[12.5px] font-bold press hover:bg-secondary"
-        >
-          Learn More
-        </button>
+      <CardFooter>
         <button
           type="button"
           onClick={() => onSend(`continue:${product.id}`, `Continue with ${product.name}`)}
-          className="inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-[12.5px] font-bold text-brand-foreground press"
+          className="inline-flex items-center gap-1.5 rounded-full bg-brand-gradient px-4 py-2 text-[12.5px] font-bold text-brand-foreground press"
         >
-          Continue <ArrowRight className="size-3.5" />
+          Continue <ArrowRight className="size-3.5 text-gold" />
         </button>
-      </div>
-    </div>
+        <button
+          type="button"
+          onClick={() => onSend(`explain:${product.id}`, `Tell me about ${product.name}`)}
+          className="rounded-full border border-border bg-surface px-3.5 py-2 text-[12.5px] font-bold press hover:bg-secondary"
+        >
+          Learn More
+        </button>
+      </CardFooter>
+    </ResponseCard>
   );
 }
+
 
 function StatusCard({ item }: { item: (typeof CHAT_STATUSES)[number] }) {
   const map = {
@@ -645,98 +763,68 @@ function StatusCard({ item }: { item: (typeof CHAT_STATUSES)[number] }) {
   return (
     <Link
       to={item.to}
-      className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-3.5 press hover:bg-secondary"
+      className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-secondary/60"
     >
-      <span className={`grid size-9 shrink-0 place-items-center rounded-full ${tone.cls}`}>
+      <span className={`grid size-9 shrink-0 place-items-center rounded-xl ${tone.cls}`}>
         <Icon className="size-4" />
       </span>
       <div className="min-w-0 flex-1">
         <p className="truncate text-[13px] font-semibold">{item.label}</p>
-        <p className="truncate text-[11.5px] text-muted-foreground">{item.detail}</p>
+        <p className="truncate text-[11.5px] text-muted-foreground">{item.time} · {tone.label}</p>
       </div>
-      <div className="text-right">
-        <p className="text-[12.5px] font-bold text-num">{naira(item.amount)}</p>
-        <p className="text-[11px] text-muted-foreground">{tone.label}</p>
-      </div>
+      <p className="shrink-0 text-[12.5px] font-bold text-num">{naira(item.amount)}</p>
     </Link>
   );
 }
 
-function StatCard({
+/** Shared shell so every rich response reads as one crafted card. */
+function ResponseCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="max-w-[92%] overflow-hidden rounded-2xl rounded-tl-md border border-border bg-surface shadow-card">
+      {children}
+    </div>
+  );
+}
+
+function CardFooter({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 border-t border-border bg-secondary/40 px-4 py-3">
+      {children}
+    </div>
+  );
+}
+
+function MiniStat({
   icon: Icon,
   label,
   value,
   hint,
-  accent,
 }: {
   icon: typeof Wallet;
   label: string;
   value: string;
   hint?: string;
-  accent?: boolean;
 }) {
   return (
-    <div
-      className={`rounded-2xl border p-3.5 ${
-        accent
-          ? "border-transparent bg-brand-gradient text-primary-foreground"
-          : "border-border bg-surface"
-      }`}
-    >
-      <Icon className={`size-4 ${accent ? "text-gold" : "text-brand"}`} />
-      <p
-        className={`mt-2 text-[11px] font-bold uppercase tracking-wide ${
-          accent ? "text-primary-foreground/70" : "text-muted-foreground"
-        }`}
-      >
-        {label}
+    <div className="px-4 py-3.5">
+      <p className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wide text-muted-foreground">
+        <Icon className="size-3.5 text-brand" /> {label}
       </p>
-      <p className="text-[15px] font-bold text-num">{value}</p>
-      {hint && (
-        <p
-          className={`text-[11px] ${
-            accent ? "text-primary-foreground/70" : "text-muted-foreground"
-          }`}
-        >
-          {hint}
-        </p>
-      )}
+      <p className="mt-1 text-[15px] font-bold text-num">{value}</p>
+      {hint && <p className="text-[11px] text-muted-foreground">{hint}</p>}
     </div>
   );
 }
 
 function Cell({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-secondary px-2.5 py-2">
-      <dt className="text-[10.5px] font-bold uppercase tracking-wide text-muted-foreground">
+    <div className="min-w-0">
+      <dt className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </dt>
-      <dd className="mt-0.5 truncate text-[12.5px] font-bold text-num">{value}</dd>
+      <dd className="mt-0.5 break-words text-[12.5px] font-bold leading-tight text-num">{value}</dd>
     </div>
-  );
-}
 
-function Row({ label, value, copy }: { label: string; value: string; copy?: boolean }) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className="flex items-center gap-2 font-semibold">
-        {value}
-        {copy && (
-          <button
-            type="button"
-            aria-label="Copy account number"
-            onClick={() => {
-              void navigator.clipboard?.writeText(value);
-              toast.success("Account number copied");
-            }}
-            className="grid size-7 place-items-center rounded-full border border-border press hover:bg-secondary"
-          >
-            <Copy className="size-3.5" />
-          </button>
-        )}
-      </dd>
-    </div>
   );
 }
 
