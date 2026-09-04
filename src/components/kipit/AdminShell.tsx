@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   Users,
@@ -13,10 +13,20 @@ import {
   LifeBuoy,
   Bell,
   Search,
+  LockKeyhole,
+  LogOut,
   type LucideIcon,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Logo } from "./Logo";
+import {
+  ADMIN_IDLE_MINUTES,
+  endAdminSession,
+  getAdminSession,
+  lockAdminSession,
+  type AdminSession,
+} from "@/lib/admin-auth";
+
 
 type Item = { label: string; to: string; icon: LucideIcon; soon?: boolean };
 type Group = { heading: string; items: Item[] };
