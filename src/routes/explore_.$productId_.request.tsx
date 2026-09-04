@@ -111,6 +111,8 @@ function LargeTicketRequestScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
+          <div className="md:grid md:grid-cols-[minmax(0,1fr)_360px] md:items-start md:gap-5">
+            <div className="min-w-0">
           <Rise>
             <section className="card-surface p-4 md:p-5">
               <label
