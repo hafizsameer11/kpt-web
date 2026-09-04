@@ -128,6 +128,7 @@ import { Route as AdminRatesProposeRouteImport } from './routes/admin_.rates_.pr
 import { Route as AdminReconciliationRecordsRouteImport } from './routes/admin_.reconciliation_.records'
 import { Route as AdminSupportTicketIdRouteImport } from './routes/admin_.support_.$ticketId'
 import { Route as AdminTeamNewRouteImport } from './routes/admin_.team_.new'
+import { Route as AdminTeamRolesRouteImport } from './routes/admin_.team_.roles'
 import { Route as AdminTransactionsTxnIdRouteImport } from './routes/admin_.transactions_.$txnId'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin_.users_.$userId'
 import { Route as AdminWithdrawalsWithdrawalIdRouteImport } from './routes/admin_.withdrawals_.$withdrawalId'
@@ -771,6 +772,11 @@ const AdminTeamNewRoute = AdminTeamNewRouteImport.update({
   path: '/admin/team/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminTeamRolesRoute = AdminTeamRolesRouteImport.update({
+  id: '/admin_/team_/roles',
+  path: '/admin/team/roles',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminTransactionsTxnIdRoute = AdminTransactionsTxnIdRouteImport.update({
   id: '/admin_/transactions_/$txnId',
   path: '/admin/transactions/$txnId',
@@ -1116,6 +1122,7 @@ export interface FileRoutesByFullPath {
   '/admin/reconciliation/records': typeof AdminReconciliationRecordsRoute
   '/admin/support/$ticketId': typeof AdminSupportTicketIdRoute
   '/admin/team/new': typeof AdminTeamNewRoute
+  '/admin/team/roles': typeof AdminTeamRolesRoute
   '/admin/transactions/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/admin/withdrawals/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
@@ -1276,6 +1283,7 @@ export interface FileRoutesByTo {
   '/admin/reconciliation/records': typeof AdminReconciliationRecordsRoute
   '/admin/support/$ticketId': typeof AdminSupportTicketIdRoute
   '/admin/team/new': typeof AdminTeamNewRoute
+  '/admin/team/roles': typeof AdminTeamRolesRoute
   '/admin/transactions/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin/withdrawals/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
   '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
@@ -1437,6 +1445,7 @@ export interface FileRoutesById {
   '/admin_/reconciliation_/records': typeof AdminReconciliationRecordsRoute
   '/admin_/support_/$ticketId': typeof AdminSupportTicketIdRoute
   '/admin_/team_/new': typeof AdminTeamNewRoute
+  '/admin_/team_/roles': typeof AdminTeamRolesRoute
   '/admin_/transactions_/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin_/users_/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/admin_/withdrawals_/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
@@ -1600,6 +1609,7 @@ export interface FileRouteTypes {
     | '/admin/reconciliation/records'
     | '/admin/support/$ticketId'
     | '/admin/team/new'
+    | '/admin/team/roles'
     | '/admin/transactions/$txnId'
     | '/admin/users/$userId'
     | '/admin/withdrawals/$withdrawalId'
@@ -1760,6 +1770,7 @@ export interface FileRouteTypes {
     | '/admin/reconciliation/records'
     | '/admin/support/$ticketId'
     | '/admin/team/new'
+    | '/admin/team/roles'
     | '/admin/transactions/$txnId'
     | '/admin/withdrawals/$withdrawalId'
     | '/explore/$productId/calculator'
@@ -1920,6 +1931,7 @@ export interface FileRouteTypes {
     | '/admin_/reconciliation_/records'
     | '/admin_/support_/$ticketId'
     | '/admin_/team_/new'
+    | '/admin_/team_/roles'
     | '/admin_/transactions_/$txnId'
     | '/admin_/users_/$userId'
     | '/admin_/withdrawals_/$withdrawalId'
@@ -2082,6 +2094,7 @@ export interface RootRouteChildren {
   AdminReconciliationRecordsRoute: typeof AdminReconciliationRecordsRoute
   AdminSupportTicketIdRoute: typeof AdminSupportTicketIdRoute
   AdminTeamNewRoute: typeof AdminTeamNewRoute
+  AdminTeamRolesRoute: typeof AdminTeamRolesRoute
   AdminTransactionsTxnIdRoute: typeof AdminTransactionsTxnIdRoute
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRouteWithChildren
   AdminWithdrawalsWithdrawalIdRoute: typeof AdminWithdrawalsWithdrawalIdRoute
@@ -2945,6 +2958,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTeamNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/team_/roles': {
+      id: '/admin_/team_/roles'
+      path: '/admin/team/roles'
+      fullPath: '/admin/team/roles'
+      preLoaderRoute: typeof AdminTeamRolesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/transactions_/$txnId': {
       id: '/admin_/transactions_/$txnId'
       path: '/admin/transactions/$txnId'
@@ -3394,6 +3414,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminReconciliationRecordsRoute: AdminReconciliationRecordsRoute,
   AdminSupportTicketIdRoute: AdminSupportTicketIdRoute,
   AdminTeamNewRoute: AdminTeamNewRoute,
+  AdminTeamRolesRoute: AdminTeamRolesRoute,
   AdminTransactionsTxnIdRoute: AdminTransactionsTxnIdRoute,
   AdminUsersUserIdRoute: AdminUsersUserIdRouteWithChildren,
   AdminWithdrawalsWithdrawalIdRoute: AdminWithdrawalsWithdrawalIdRoute,
