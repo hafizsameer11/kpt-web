@@ -106,7 +106,7 @@ function CaseReview() {
             : kind === "reject"
               ? "Rejected submission"
               : "Escalated to MLRO",
-        note: reason || note || undefined,
+        ...(reason || note ? { note: reason || note } : {}),
       },
     ]);
     setOpen(null);
