@@ -36,6 +36,7 @@ import { Route as AdminMarketingRouteImport } from './routes/admin_.marketing'
 import { Route as AdminProductsRouteImport } from './routes/admin_.products'
 import { Route as AdminRatesRouteImport } from './routes/admin_.rates'
 import { Route as AdminReconciliationRouteImport } from './routes/admin_.reconciliation'
+import { Route as AdminSupportRouteImport } from './routes/admin_.support'
 import { Route as AdminTransactionsRouteImport } from './routes/admin_.transactions'
 import { Route as AdminUsersRouteImport } from './routes/admin_.users'
 import { Route as AdminWithdrawalsRouteImport } from './routes/admin_.withdrawals'
@@ -293,6 +294,11 @@ const AdminRatesRoute = AdminRatesRouteImport.update({
 const AdminReconciliationRoute = AdminReconciliationRouteImport.update({
   id: '/admin_/reconciliation',
   path: '/admin/reconciliation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSupportRoute = AdminSupportRouteImport.update({
+  id: '/admin_/support',
+  path: '/admin/support',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
@@ -970,6 +976,7 @@ export interface FileRoutesByFullPath {
   '/admin/products': typeof AdminProductsRoute
   '/admin/rates': typeof AdminRatesRoute
   '/admin/reconciliation': typeof AdminReconciliationRoute
+  '/admin/support': typeof AdminSupportRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
@@ -1122,6 +1129,7 @@ export interface FileRoutesByTo {
   '/admin/products': typeof AdminProductsRoute
   '/admin/rates': typeof AdminRatesRoute
   '/admin/reconciliation': typeof AdminReconciliationRoute
+  '/admin/support': typeof AdminSupportRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/withdrawals': typeof AdminWithdrawalsRoute
@@ -1273,6 +1281,7 @@ export interface FileRoutesById {
   '/admin_/products': typeof AdminProductsRoute
   '/admin_/rates': typeof AdminRatesRoute
   '/admin_/reconciliation': typeof AdminReconciliationRoute
+  '/admin_/support': typeof AdminSupportRoute
   '/admin_/transactions': typeof AdminTransactionsRoute
   '/admin_/users': typeof AdminUsersRoute
   '/admin_/withdrawals': typeof AdminWithdrawalsRoute
@@ -1427,6 +1436,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/admin/rates'
     | '/admin/reconciliation'
+    | '/admin/support'
     | '/admin/transactions'
     | '/admin/users'
     | '/admin/withdrawals'
@@ -1579,6 +1589,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/admin/rates'
     | '/admin/reconciliation'
+    | '/admin/support'
     | '/admin/transactions'
     | '/admin/users'
     | '/admin/withdrawals'
@@ -1729,6 +1740,7 @@ export interface FileRouteTypes {
     | '/admin_/products'
     | '/admin_/rates'
     | '/admin_/reconciliation'
+    | '/admin_/support'
     | '/admin_/transactions'
     | '/admin_/users'
     | '/admin_/withdrawals'
@@ -1882,6 +1894,7 @@ export interface RootRouteChildren {
   AdminProductsRoute: typeof AdminProductsRoute
   AdminRatesRoute: typeof AdminRatesRoute
   AdminReconciliationRoute: typeof AdminReconciliationRoute
+  AdminSupportRoute: typeof AdminSupportRoute
   AdminTransactionsRoute: typeof AdminTransactionsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
@@ -2182,6 +2195,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/reconciliation'
       fullPath: '/admin/reconciliation'
       preLoaderRoute: typeof AdminReconciliationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/support': {
+      id: '/admin_/support'
+      path: '/admin/support'
+      fullPath: '/admin/support'
+      preLoaderRoute: typeof AdminSupportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/transactions': {
@@ -3122,6 +3142,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminProductsRoute: AdminProductsRoute,
   AdminRatesRoute: AdminRatesRoute,
   AdminReconciliationRoute: AdminReconciliationRoute,
+  AdminSupportRoute: AdminSupportRoute,
   AdminTransactionsRoute: AdminTransactionsRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminWithdrawalsRoute: AdminWithdrawalsRoute,
