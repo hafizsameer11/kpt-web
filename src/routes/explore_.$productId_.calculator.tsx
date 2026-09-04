@@ -99,15 +99,15 @@ function ProductCalculatorScreen() {
         </section>
 
         {/* ── Sheet ────────────────────────────────────────────── */}
-        <div className="relative -mx-4 -mt-10 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
+        <div className="relative -mx-4 -mt-10 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:grid md:grid-cols-[minmax(0,1fr)_380px] md:items-start md:gap-x-5 md:gap-y-4 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
           <span
             aria-hidden
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
           {/* Amount stepper */}
-          <Rise>
-            <section className="card-surface p-4 md:p-5">
+          <Rise className="md:col-start-1 md:row-start-1">
+            <section className="card-surface p-4 md:p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Amount to invest
               </p>
@@ -164,8 +164,8 @@ function ProductCalculatorScreen() {
           </Rise>
 
           {/* Projection */}
-          <Rise delay={60}>
-            <section className="relative mt-4 overflow-hidden rounded-xl bg-primary p-5 text-primary-foreground shadow-float">
+          <Rise delay={60} className="md:col-start-2 md:row-start-1 md:row-span-2">
+            <section className="relative mt-4 overflow-hidden rounded-xl bg-primary p-5 text-primary-foreground shadow-float md:mt-0 md:p-6">
               <span
                 aria-hidden
                 className="pointer-events-none absolute -right-16 -top-20 size-52 rounded-full bg-gold/20 blur-[52px]"
@@ -204,8 +204,8 @@ function ProductCalculatorScreen() {
           </Rise>
 
           {/* Breakdown */}
-          <Rise delay={120}>
-            <section className="mt-4 card-surface p-4">
+          <Rise delay={120} className="md:col-start-1 md:row-start-2">
+            <section className="mt-4 card-surface p-4 md:mt-0 md:p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 How this is calculated
               </p>
@@ -230,8 +230,8 @@ function ProductCalculatorScreen() {
           </Rise>
 
           {/* CTA */}
-          <Rise delay={180}>
-            <div className="mt-5 space-y-2.5">
+          <Rise delay={180} className="md:col-start-1 md:row-start-3">
+            <div className="mt-5 space-y-2.5 md:mt-0">
               <Link
                 to="/explore/$productId/subscribe"
                 params={{ productId: p.id }}
