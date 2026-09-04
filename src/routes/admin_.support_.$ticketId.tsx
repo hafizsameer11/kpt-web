@@ -55,7 +55,7 @@ export const Route = createFileRoute("/admin_/support_/$ticketId")({
   component: TicketDetailPage,
 });
 
-const AGENTS = ["Tolu A.", "Ngozi E.", "Kelechi M.", "Farida S."];
+const AGENTS: [string, ...string[]] = ["Tolu A.", "Ngozi E.", "Kelechi M.", "Farida S."];
 
 function TicketDetailPage() {
   const { ticketId } = useParams({ from: "/admin_/support_/$ticketId" });
