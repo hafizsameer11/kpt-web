@@ -43,7 +43,7 @@ export function AuthShell({
             loading="lazy"
             className="absolute inset-0 size-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/55 to-navy/15" />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand via-brand/60 to-brand/10" />
           <div className="relative flex h-full flex-col justify-between p-12">
             <Logo tone="light" className="text-3xl" />
             <div className="max-w-sm">
