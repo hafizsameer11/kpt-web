@@ -49,7 +49,7 @@ const GROUPS: Group[] = [
     heading: "Growth & care",
     items: [
       { label: "Marketing", to: "/admin/marketing", icon: Megaphone },
-      { label: "Support", to: "/admin", icon: LifeBuoy, soon: true },
+      { label: "Support", to: "/admin/support", icon: LifeBuoy },
     ],
   },
 ];
