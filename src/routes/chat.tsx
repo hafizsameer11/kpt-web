@@ -569,67 +569,99 @@ function BlockView({
       );
 
     /* CHAT-007 */
-    case "maturity":
+    case "maturity": {
+      const progress = Math.max(6, Math.min(96, 100 - (MATURITY.daysLeft / 90) * 100));
       return (
-        <div className="space-y-2.5">
-          <div className="max-w-[92%] rounded-2xl border border-border bg-surface p-4">
-            <div className="flex items-center gap-2">
-              <CalendarClock className="size-4 text-brand" />
-              <p className="text-[13.5px] font-bold">{MATURITY.name}</p>
+        <ResponseCard>
+          <div className="flex items-center gap-3 border-b border-border px-4 py-3.5">
+            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand">
+              <CalendarClock className="size-4" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[13.5px] font-bold">{MATURITY.name}</p>
+              <p className="text-[11.5px] text-muted-foreground">Matures {MATURITY.date}</p>
             </div>
-            <dl className="mt-3 grid grid-cols-3 gap-2 text-[12px]">
-              <Cell label="Amount" value={naira(MATURITY.amount)} />
-              <Cell label="Matures" value={MATURITY.date} />
-              <Cell label="Days left" value={`${MATURITY.daysLeft}`} />
-            </dl>
-            <p className="mt-3 text-[12px] text-muted-foreground">
-              Expected payout {naira(MATURITY.expectedPayout)} at {MATURITY.rate}.
-            </p>
+            <span className="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-bold text-brand">
+              {MATURITY.daysLeft} days left
+            </span>
           </div>
-          <CtaLink to="/portfolio/maturities" label="View Investment" />
-        </div>
+          <div className="px-4 py-3.5">
+            <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
+              <span
+                className="block h-full rounded-full bg-brand-gradient"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <dl className="mt-3.5 grid grid-cols-3 gap-2 text-[12px]">
+              <Cell label="Principal" value={naira(MATURITY.amount)} />
+              <Cell label="Rate" value={MATURITY.rate} />
+              <Cell label="Payout" value={naira(MATURITY.expectedPayout)} />
+            </dl>
+          </div>
+          <CardFooter>
+            <CtaLink to="/portfolio/maturities" label="View Investment" />
+          </CardFooter>
+        </ResponseCard>
       );
+    }
 
     /* CHAT-008 */
     case "status":
       return (
-        <div className="space-y-2.5">
-          <div className="max-w-[92%] space-y-2">
+        <ResponseCard>
+          <div className="divide-y divide-border">
             {CHAT_STATUSES.map((item) => (
               <StatusCard key={item.label} item={item} />
             ))}
           </div>
-          <CtaLink to="/portfolio/transactions" label="View Transaction" />
-        </div>
+          <CardFooter>
+            <CtaLink to="/portfolio/transactions" label="All Transactions" />
+          </CardFooter>
+        </ResponseCard>
       );
 
     /* CHAT-009 */
     case "funding":
       return (
-        <div className="space-y-2.5">
-          <div className="max-w-[92%] rounded-2xl border border-border bg-surface p-4">
-            <div className="flex items-center gap-2 text-[12.5px] font-bold">
-              <Building2 className="size-4 text-brand" /> Bank transfer
-            </div>
-            <dl className="mt-3 space-y-2 text-[12.5px]">
-              <Row label="Account name" value={FUNDING_ACCOUNT.name} />
-              <Row label="Account number" value={FUNDING_ACCOUNT.number} copy />
-              <Row label="Bank" value={FUNDING_ACCOUNT.bank} />
-            </dl>
-            <p className="mt-3 text-[12px] text-muted-foreground">
-              Transfers usually reflect within minutes. Card payments post instantly.
+        <ResponseCard>
+          <div className="relative overflow-hidden bg-brand-gradient px-4 py-4 text-primary-foreground">
+            <span className="pointer-events-none absolute -right-10 -top-14 size-36 rounded-full bg-gold/20 blur-3xl" />
+            <p className="relative flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wide text-primary-foreground/70">
+              <Building2 className="size-3.5 text-gold" /> Bank transfer
             </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <CtaLink to="/wallet/add-money" label="Add Money" />
-              <Link
-                to="/wallet/card"
-                className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-[12.5px] font-bold press hover:bg-secondary"
+            <div className="relative mt-2 flex items-center gap-2">
+              <p className="font-display text-[22px] font-bold leading-none text-num tracking-wide">
+                {FUNDING_ACCOUNT.number}
+              </p>
+              <button
+                type="button"
+                aria-label="Copy account number"
+                onClick={() => {
+                  void navigator.clipboard?.writeText(FUNDING_ACCOUNT.number);
+                  toast.success("Account number copied");
+                }}
+                className="grid size-8 place-items-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10 press"
               >
-                <CreditCard className="size-3.5" /> Pay by card
-              </Link>
+                <Copy className="size-3.5 text-gold" />
+              </button>
             </div>
+            <p className="relative mt-1.5 text-[11.5px] text-primary-foreground/75">
+              {FUNDING_ACCOUNT.bank} · {FUNDING_ACCOUNT.name}
+            </p>
           </div>
-        </div>
+          <p className="px-4 py-3 text-[12px] text-muted-foreground">
+            Transfers usually reflect within minutes. Card payments post instantly.
+          </p>
+          <CardFooter>
+            <CtaLink to="/wallet/add-money" label="Add Money" />
+            <Link
+              to="/wallet/card"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-4 py-2 text-[12.5px] font-bold press hover:bg-secondary"
+            >
+              <CreditCard className="size-3.5" /> Pay by card
+            </Link>
+          </CardFooter>
+        </ResponseCard>
       );
 
     /* CHAT-010 */
