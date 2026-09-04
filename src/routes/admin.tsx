@@ -109,26 +109,62 @@ function AdminDashboard() {
               </div>
             </div>
 
-            {/* FUM trend */}
-            <div className="relative mt-6">
-              <div className="flex h-24 items-end gap-2">
-                {FUM_SERIES.map((v, i) => {
-                  const max = Math.max(...FUM_SERIES);
-                  const last = i === FUM_SERIES.length - 1;
-                  return (
-                    <div key={FUM_LABELS[i]} className="flex flex-1 flex-col items-center gap-1.5">
-                      <div
-                        className={`w-full rounded-t-md ${last ? "bg-gold" : "bg-white/25"}`}
-                        style={{ height: `${(v / max) * 100}%` }}
-                      />
-                      <span className="text-[10px] font-semibold text-primary-foreground/45">
-                        {FUM_LABELS[i]}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+            {/* FUM trend — stacked area */}
+            <div className="relative mt-6 h-[150px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={FUM_TREND} margin={{ top: 4, right: 4, bottom: 0, left: 4 }}>
+                  <defs>
+                    <linearGradient id="fumFixed" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--gold)" stopOpacity={0.85} />
+                      <stop offset="100%" stopColor="var(--gold)" stopOpacity={0.25} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.12)" vertical={false} />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10, fontWeight: 600 }}
+                  />
+                  <YAxis hide domain={[0, "dataMax + 300"]} />
+                  <Tooltip
+                    cursor={{ stroke: "rgba(255,255,255,0.3)" }}
+                    contentStyle={tooltipStyle}
+                    formatter={(v: number, n: string) => [`₦${v}m`, labelOf(n)]}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="wallet"
+                    stackId="1"
+                    stroke="rgba(255,255,255,0.35)"
+                    fill="rgba(255,255,255,0.12)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="call"
+                    stackId="1"
+                    stroke="rgba(255,255,255,0.5)"
+                    fill="rgba(255,255,255,0.18)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="explore"
+                    stackId="1"
+                    stroke="rgba(255,255,255,0.7)"
+                    fill="rgba(255,255,255,0.26)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="fixed"
+                    stackId="1"
+                    stroke="var(--gold)"
+                    strokeWidth={2}
+                    fill="url(#fumFixed)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
+
           </div>
 
           {/* Today's flows */}
