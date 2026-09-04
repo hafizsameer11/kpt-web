@@ -168,7 +168,7 @@ function SubscribeScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+          <div className="space-y-4 md:grid md:grid-cols-[minmax(0,1fr)_360px] md:items-start md:gap-6 md:space-y-0">
             {/* Funding source */}
             <Rise>
               <section className="card-surface p-4 md:p-5">
@@ -226,8 +226,8 @@ function SubscribeScreen() {
             </Rise>
 
             {/* Expected value */}
-            <Rise delay={80}>
-              <section className="relative overflow-hidden rounded-xl bg-brand-gradient p-4 text-primary-foreground shadow-float md:p-5">
+            <Rise delay={80} className="md:sticky md:top-6">
+              <section className="relative overflow-hidden rounded-xl bg-brand-gradient p-4 text-primary-foreground shadow-float md:p-6">
                 <span
                   aria-hidden
                   className="pointer-events-none absolute -right-16 -top-20 size-48 rounded-full bg-gold/20 blur-[48px]"
@@ -268,6 +268,25 @@ function SubscribeScreen() {
                     <Building2 className="mt-0.5 size-3.5 shrink-0" />
                     {product.issuer} &middot; indicative until allotted. Paid at maturity to your wallet.
                   </p>
+
+                  {/* Desktop CTA lives in the sticky rail */}
+                  <div className="mt-5 hidden md:block">
+                    <Link
+                      to="/explore/$productId/review"
+                      params={{ productId: product.id }}
+                      search={{ amount, source }}
+                      disabled={!valid}
+                      className={`flex w-full items-center justify-center gap-2 rounded-xl bg-gold-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-gold-foreground shadow-float press ${
+                        valid ? "" : "pointer-events-none opacity-40 shadow-none"
+                      }`}
+                    >
+                      {closed ? "Fully subscribed" : "Continue"}
+                      {!closed && <ArrowRight className="size-4" strokeWidth={2.6} />}
+                    </Link>
+                    <p className="mt-2.5 text-[11.5px] text-primary-foreground/60">
+                      Review product, amount and funding method before confirming.
+                    </p>
+                  </div>
                 </div>
               </section>
             </Rise>
@@ -275,8 +294,8 @@ function SubscribeScreen() {
 
           <DisclosureStrip variant="marketplace" />
 
-          {/* CTA */}
-          <div className="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom)+0.75rem)] z-30 mt-5 md:static md:bottom-auto">
+          {/* CTA (mobile) */}
+          <div className="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom)+0.75rem)] z-30 mt-5 md:hidden">
             <Link
               to="/explore/$productId/review"
               params={{ productId: product.id }}
