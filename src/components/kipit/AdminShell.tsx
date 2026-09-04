@@ -68,13 +68,24 @@ const GROUPS: Group[] = [
     ],
   },
   {
+    heading: "Insights",
+    items: [
+      { label: "Reports & analytics", to: "/admin/analytics", icon: LineChart },
+      { label: "Reports centre", to: "/admin/reports", icon: FileSpreadsheet },
+    ],
+  },
+  {
     heading: "Console",
     items: [
       { label: "Admin users", to: "/admin/team", icon: UserCog },
       { label: "Roles & permissions", to: "/admin/team/roles", icon: KeyRound },
       { label: "Audit log", to: "/admin/audit", icon: ScrollText },
+      { label: "Notifications", to: "/admin/notifications", icon: Bell },
+      { label: "System settings", to: "/admin/settings", icon: Settings },
+      { label: "My profile", to: "/admin/profile", icon: UserCircle },
     ],
   },
+
 ];
 
 /**
