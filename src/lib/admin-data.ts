@@ -219,12 +219,65 @@ export const ALERTS: Alert[] = [
 
 /* ── Supporting activity feed ────────────────────────────────────────── */
 
-export const RECENT_ACTIVITY = [
-  { id: "a1", actor: "Compliance · Ngozi", action: "Approved Tier 2 KYC for Adaeze Okonkwo", at: "8 min ago" },
-  { id: "a2", actor: "Operations · Kelechi", action: "Processed withdrawal ₦2,400,000 · WD-88213", at: "26 min ago" },
-  { id: "a3", actor: "Global Admin · Seyi", action: "Approved rate change 180d 21.0% → 21.5%", at: "1 hr ago" },
-  { id: "a4", actor: "Marketing · Zainab", action: "Published home feed card 'September outlook'", at: "3 hrs ago" },
-  { id: "a5", actor: "Operations · Kelechi", action: "Declined withdrawal WD-88197 · name mismatch", at: "5 hrs ago" },
+export type AdminActivityKind = "kyc" | "payout" | "rate" | "content" | "decline";
+
+export const RECENT_ACTIVITY: {
+  id: string;
+  kind: AdminActivityKind;
+  team: string;
+  who: string;
+  action: string;
+  detail: string;
+  at: string;
+  amount?: number;
+}[] = [
+  {
+    id: "a1",
+    kind: "kyc",
+    team: "Compliance",
+    who: "Ngozi",
+    action: "Approved Tier 2 KYC",
+    detail: "Adaeze Okonkwo · NIN + liveness matched",
+    at: "8 min ago",
+  },
+  {
+    id: "a2",
+    kind: "payout",
+    team: "Operations",
+    who: "Kelechi",
+    action: "Processed withdrawal",
+    detail: "WD-88213 · GTBank ****4471",
+    at: "26 min ago",
+    amount: 2_400_000,
+  },
+  {
+    id: "a3",
+    kind: "rate",
+    team: "Global Admin",
+    who: "Seyi",
+    action: "Approved rate change",
+    detail: "180d fixed · 21.0% → 21.5%",
+    at: "1 hr ago",
+  },
+  {
+    id: "a4",
+    kind: "content",
+    team: "Marketing",
+    who: "Zainab",
+    action: "Published home feed card",
+    detail: "'September outlook' · live to all users",
+    at: "3 hrs ago",
+  },
+  {
+    id: "a5",
+    kind: "decline",
+    team: "Operations",
+    who: "Kelechi",
+    action: "Declined withdrawal",
+    detail: "WD-88197 · account name mismatch",
+    at: "5 hrs ago",
+    amount: 860_000,
+  },
 ];
 
 export const TODAY_FLOWS = {
@@ -279,8 +332,9 @@ export const MATURITY_SCHEDULE = [
 
 /** Small sparkline series keyed by metric id (₦m). */
 export const METRIC_SPARKS: Record<string, number[]> = {
-  wallet: [162, 168, 171, 175, 178, 181, 184.5],
-  call: [352, 366, 375, 388, 396, 404, 412.8],
-  fixed: [1064, 1102, 1148, 1189, 1224, 1258, 1286.4],
-  explore: [452, 476, 498, 517, 538, 557, 574.3],
+  // 14 days of daily balances — real books wobble, so these do too.
+  wallet: [162.4, 158.9, 166.2, 171.8, 164.5, 169.1, 176.4, 170.2, 173.8, 181.6, 174.9, 179.3, 186.1, 184.5],
+  call: [352.1, 361.4, 356.8, 370.2, 383.6, 374.1, 389.5, 396.8, 388.2, 401.7, 394.6, 409.3, 418.2, 412.8],
+  fixed: [1064, 1082, 1074, 1103, 1128, 1119, 1147, 1172, 1161, 1198, 1226, 1214, 1263, 1286.4],
+  explore: [452.3, 468.1, 459.7, 481.4, 474.2, 496.8, 512.3, 503.6, 528.9, 519.4, 544.7, 561.2, 552.8, 574.3],
 };
