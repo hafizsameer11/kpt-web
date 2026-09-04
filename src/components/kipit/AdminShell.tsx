@@ -11,6 +11,7 @@ import {
   Scale,
   Megaphone,
   LifeBuoy,
+  MessageSquare,
   UserCog,
   KeyRound,
   ScrollText,
@@ -63,6 +64,7 @@ const GROUPS: Group[] = [
     items: [
       { label: "Marketing", to: "/admin/marketing", icon: Megaphone },
       { label: "Support", to: "/admin/support", icon: LifeBuoy },
+      { label: "Ask AI log", to: "/admin/ai-chat", icon: MessageSquare },
     ],
   },
   {
