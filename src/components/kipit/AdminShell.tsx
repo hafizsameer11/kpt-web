@@ -78,6 +78,47 @@ export function AdminShell({
   subtitle?: string;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const [session, setSession] = useState<AdminSession | null>(null);
+
+  /** ADM-001/003 — no session means back to sign in; a locked session goes to the lock screen. */
+  useEffect(() => {
+    const current = getAdminSession();
+    setSession(current);
+    if (!current) navigate({ to: "/admin/login", replace: true });
+    else if (current.locked) navigate({ to: "/admin/locked", replace: true });
+  }, [navigate, pathname]);
+
+  /** ADM-003 — auto-lock after a period of inactivity. */
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    const reset = () => {
+      clearTimeout(timer);
+      timer = setTimeout(
+        () => {
+          lockAdminSession();
+          navigate({ to: "/admin/locked", replace: true });
+        },
+        ADMIN_IDLE_MINUTES * 60 * 1000,
+      );
+    };
+    const events = ["mousemove", "keydown", "click", "scroll"] as const;
+    events.forEach((e) => window.addEventListener(e, reset, { passive: true }));
+    reset();
+    return () => {
+      clearTimeout(timer);
+      events.forEach((e) => window.removeEventListener(e, reset));
+    };
+  }, [navigate]);
+
+  const initials = (session?.name ?? "Seyi Adeleke")
+    .split(" ")
+    .map((p) => p[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+
 
   return (
     <div className="min-h-screen bg-muted/40">
