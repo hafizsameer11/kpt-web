@@ -339,10 +339,16 @@ function FixedPlansScreen() {
                       <li
                         key={h.name}
                         style={{ ["--d" as string]: `${i * 90}ms` }}
-                        className="k-rise card-surface relative overflow-hidden p-4 transition-shadow hover:shadow-md"
+                        className="k-rise card-surface relative overflow-hidden transition-shadow hover:shadow-md"
                       >
                         <span className="absolute inset-y-0 left-0 w-1 bg-accent" aria-hidden />
+                        <Link
+                          to="/portfolio/$holdingId"
+                          params={{ holdingId: h.id }}
+                          className="block p-4 press"
+                        >
                         <div className="flex items-start justify-between gap-3 pl-2">
+
                           <div className="min-w-0">
                             <p className="truncate text-sm font-bold">{h.name}</p>
                             <p className="mt-1 text-[11px] text-muted-foreground">
@@ -391,7 +397,9 @@ function FixedPlansScreen() {
                             {h.autoRenew ? "Roll over on" : "Roll over off"}
                           </span>
                         </div>
+                        </Link>
                       </li>
+
                     );
                   })}
                 </ul>
@@ -402,12 +410,13 @@ function FixedPlansScreen() {
                   <li
                     key={`${p.name}-${p.maturedOn}`}
                     style={{ ["--d" as string]: `${i * 90}ms` }}
-                    className="k-rise card-surface relative overflow-hidden p-4"
+                    className="k-rise card-surface relative overflow-hidden"
                   >
                     <span
                       className="absolute inset-y-0 left-0 w-1 bg-muted-foreground/30"
                       aria-hidden
                     />
+                    <Link to="/portfolio/maturities" className="block p-4 press">
                     <div className="flex items-start justify-between gap-3 pl-2">
                       <div className="min-w-0">
                         <p className="truncate text-sm font-bold">{p.name}</p>
@@ -428,9 +437,12 @@ function FixedPlansScreen() {
                       </span>
                       <span className="inline-flex items-center gap-1 font-bold text-brand">
                         <CheckCircle2 className="size-3.5" /> {p.status}
+                        <ChevronRight className="size-3.5 text-muted-foreground" />
                       </span>
                     </div>
+                    </Link>
                   </li>
+
                 ))}
               </ul>
             )}
@@ -744,30 +756,37 @@ function DesktopFixedPlans({
                   <li
                     key={`${p.name}-${p.maturedOn}`}
                     style={{ ["--d" as string]: `${i * 90}ms` }}
-                    className="k-rise flex items-center justify-between gap-6 px-1 py-4"
+                    className="k-rise"
                   >
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-bold">{p.name}</p>
-                      <p className="mt-1 text-[11px] text-muted-foreground">
-                        {p.tenor} · matured {p.maturedOn}
-                      </p>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-6 text-right">
-                      <span className="text-[11px] text-muted-foreground">
-                        Principal{" "}
-                        <span className="font-bold text-foreground">{mask(p.principal)}</span>
-                      </span>
-                      <div>
-                        <p className="text-base font-extrabold text-num">{mask(p.payout)}</p>
-                        <span className="mt-1 inline-flex rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-brand">
-                          {p.rate}
-                        </span>
+                    <Link
+                      to="/portfolio/maturities"
+                      className="group -mx-3 flex items-center justify-between gap-6 rounded-xl px-4 py-4 transition-colors hover:bg-secondary/60 focus-visible:bg-secondary/60 focus-visible:outline-none"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-bold group-hover:text-brand">{p.name}</p>
+                        <p className="mt-1 text-[11px] text-muted-foreground">
+                          {p.tenor} · matured {p.maturedOn}
+                        </p>
                       </div>
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-brand">
-                        <CheckCircle2 className="size-3.5" /> {p.status}
-                      </span>
-                    </div>
+                      <div className="flex shrink-0 items-center gap-6 text-right">
+                        <span className="text-[11px] text-muted-foreground">
+                          Principal{" "}
+                          <span className="font-bold text-foreground">{mask(p.principal)}</span>
+                        </span>
+                        <div>
+                          <p className="text-base font-extrabold text-num">{mask(p.payout)}</p>
+                          <span className="mt-1 inline-flex rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-brand">
+                            {p.rate}
+                          </span>
+                        </div>
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-brand">
+                          <CheckCircle2 className="size-3.5" /> {p.status}
+                        </span>
+                        <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                      </div>
+                    </Link>
                   </li>
+
                 ))}
               </ul>
             )}
