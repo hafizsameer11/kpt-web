@@ -29,7 +29,7 @@ function AddressScreen() {
       eyebrow="MOB-142"
       subtitle="We are required to keep these details current for regulatory reporting."
     >
-      <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+      <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_300px] lg:gap-5">
         <FieldCard label="Residential address">
           <Field label="Street" value={ADDRESS.street} />
           <Field label="City" value={ADDRESS.city} />
