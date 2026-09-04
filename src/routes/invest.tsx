@@ -377,7 +377,7 @@ function DesktopInvest() {
                       type="button"
                       onClick={toggle}
                       aria-label={hidden ? "Show balances" : "Hide balances"}
-                      className="mb-1.5 grid size-9 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 press hover:bg-white/20"
+                      className="pointer-events-auto mb-1.5 grid size-9 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 press hover:bg-white/20"
                     >
                       {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                     </button>
@@ -396,7 +396,7 @@ function DesktopInvest() {
                 </div>
                 <Link
                   to="/call-account"
-                  className="hidden shrink-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold press hover:bg-white/20 lg:inline-flex"
+                  className="pointer-events-auto hidden shrink-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold press hover:bg-white/20 lg:inline-flex"
                 >
                   Account activity <ChevronRight className="size-3.5" />
                 </Link>
@@ -405,19 +405,19 @@ function DesktopInvest() {
               <div className="mt-6 flex flex-wrap gap-2.5">
                 <Link
                   to="/call-account/add-money"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-gold-gradient px-5 py-2.5 text-xs font-extrabold text-gold-foreground press"
+                  className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-gold-gradient px-5 py-2.5 text-xs font-extrabold text-gold-foreground press"
                 >
                   Add money <ArrowUpRight className="size-3.5" />
                 </Link>
                 <Link
                   to="/withdraw"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-xs font-bold press hover:bg-white/20"
+                  className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-xs font-bold press hover:bg-white/20"
                 >
                   Withdraw <ArrowDownLeft className="size-3.5" />
                 </Link>
                 <Link
                   to="/fixed-plans/create"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-xs font-bold press hover:bg-white/20"
+                  className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-xs font-bold press hover:bg-white/20"
                 >
                   <Plus className="size-3.5" strokeWidth={2.6} /> New fixed plan
                 </Link>
