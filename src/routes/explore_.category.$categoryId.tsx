@@ -1,5 +1,15 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ArrowUpDown, Check } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpDown,
+  Check,
+  ChevronRight,
+  Layers,
+  ShieldCheck,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { Rise } from "@/components/kipit/motion";
