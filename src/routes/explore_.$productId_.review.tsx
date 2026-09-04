@@ -103,7 +103,7 @@ function SubscriptionReviewScreen() {
   const valid =
     amount >= product.minimum &&
     product.availability !== "closed" &&
-    (isMobile || acceptedTerms);
+    acceptedTerms;
   const SourceIcon = SOURCE_META[source].icon;
 
   function press(key: string) {
@@ -332,7 +332,7 @@ function SubscriptionReviewScreen() {
                 <DisclosureStrip variant="marketplace" />
               </div>
 
-              <label className="hidden cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-4 md:flex">
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-4">
                 <input
                   type="checkbox"
                   checked={acceptedTerms}
@@ -360,9 +360,10 @@ function SubscriptionReviewScreen() {
                 >
                   {valid
                     ? "Confirm subscription"
-                    : !isMobile && !acceptedTerms && amount >= product.minimum
+                    : !acceptedTerms && amount >= product.minimum
                       ? "Accept the offer terms"
                       : "Details incomplete"}
+
                   <ArrowRight className="size-4" strokeWidth={2.6} />
                 </button>
                 <p className="mt-2.5 flex items-center justify-center gap-1.5 whitespace-nowrap text-[11.5px] text-muted-foreground md:justify-start">

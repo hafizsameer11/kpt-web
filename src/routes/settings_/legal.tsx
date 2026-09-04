@@ -119,10 +119,34 @@ function LegalScreen() {
         <Download className="size-4" strokeWidth={2.4} /> Download all documents
       </button>
 
+      {accepted.length > 0 ? (
+        <section className="card-surface mt-4 p-4 md:hidden">
+          <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
+            Product terms you accepted
+          </p>
+          <ul className="mt-3 divide-y divide-border/60">
+            {accepted.map((a, i) => (
+              <li key={`${a.productId}-${a.acceptedAt}-${i}`} className="py-2.5">
+                <p className="flex items-center gap-2 text-[13px] font-bold">
+                  {a.productName}
+                  <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-extrabold text-muted-foreground">
+                    {a.version}
+                  </span>
+                </p>
+                <p className="mt-0.5 text-[11.5px] text-muted-foreground">
+                  {naira(a.amount)} · {formatAcceptedAt(a.acceptedAt)}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       <p className="mt-4 px-1 text-[11.5px] leading-relaxed text-muted-foreground md:hidden">
         Kipit records the document, version, user and timestamp for every acceptance. You will be
         asked to review any document that changes materially.
       </p>
+
 
       {/* Desktop */}
       <div className="hidden md:block">
