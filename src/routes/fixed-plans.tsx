@@ -150,8 +150,11 @@ function FixedPlansScreen() {
 
           {/* Next maturity countdown */}
           {nextMaturity ? (
-            <section
-              className="k-rise card-surface mt-1 overflow-hidden p-4"
+            <Link
+              to="/portfolio/$holdingId"
+              params={{ holdingId: nextMaturity.id }}
+              aria-label={`View ${nextMaturity.name}`}
+              className="k-rise card-surface mt-1 block overflow-hidden p-4 press"
               style={{ ["--d" as string]: "60ms" }}
             >
               <div className="flex items-center gap-3">
@@ -186,7 +189,7 @@ function FixedPlansScreen() {
                 </span>{" "}
                 · credited to your wallet
               </p>
-            </section>
+            </Link>
           ) : null}
 
           {/* Rate / tenor overview */}
@@ -796,7 +799,12 @@ function DesktopFixedPlans({
         {/* Right rail */}
         <aside className="space-y-6">
           {nextMaturity ? (
-            <section className="k-rise card-surface overflow-hidden p-5">
+            <Link
+              to="/portfolio/$holdingId"
+              params={{ holdingId: nextMaturity.id }}
+              aria-label={`View ${nextMaturity.name}`}
+              className="group k-rise card-surface block overflow-hidden p-5 transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
               <div className="flex items-center gap-3">
                 <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent/15 text-brand">
                   <CalendarClock className="size-5" />
@@ -830,14 +838,10 @@ function DesktopFixedPlans({
                 </span>{" "}
                 · credited to your wallet
               </p>
-              <Link
-                to="/portfolio/$holdingId"
-                params={{ holdingId: nextMaturity.id }}
-                className="mt-4 inline-flex w-full items-center justify-center gap-1 rounded-full border border-border px-4 py-2.5 text-[12px] font-extrabold text-brand press hover:bg-secondary/60"
-              >
+              <span className="mt-4 inline-flex w-full items-center justify-center gap-1 rounded-full border border-border px-4 py-2.5 text-[12px] font-extrabold text-brand transition-colors group-hover:bg-secondary/60">
                 View plan <ChevronRight className="size-3.5" />
-              </Link>
-            </section>
+              </span>
+            </Link>
           ) : null}
 
           <section className="k-rise card-surface p-5" style={{ ["--d" as string]: "90ms" }}>
