@@ -78,8 +78,9 @@ function AddAccountScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
+          <div className="md:mx-auto md:grid md:max-w-5xl md:grid-cols-[minmax(0,1fr)_320px] md:items-start md:gap-6">
           {stage === "confirm" ? (
-            <section className="card-surface p-4 md:max-w-lg md:p-5">
+            <section className="card-surface p-4 md:p-5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Confirm account name
               </p>
@@ -120,7 +121,7 @@ function AddAccountScreen() {
               </div>
             </section>
           ) : (
-            <section className="card-surface p-4 md:max-w-lg md:p-5">
+            <section className="card-surface p-4 md:p-5">
               <label className="block">
                 <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   Bank
@@ -175,6 +176,38 @@ function AddAccountScreen() {
               )}
             </section>
           )}
+
+          <aside className="hidden space-y-4 md:block">
+            <section className="card-surface p-5">
+              <p className="text-[12.5px] font-extrabold text-foreground">Before you add it</p>
+              <ul className="mt-2 space-y-2">
+                {[
+                  "The account must be in your own name — third-party payouts are declined.",
+                  "We verify the name with your bank instantly, no documents needed.",
+                  "Only NGN current or savings accounts can receive withdrawals.",
+                ].map((t) => (
+                  <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </section>
+            <section className="card-surface p-5">
+              <p className="text-[12.5px] font-extrabold text-foreground">Name mismatch?</p>
+              <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+                If the verified name doesn't match your Kipit profile, update your profile or reach
+                out to support and we'll help sort it out.
+              </p>
+              <Link
+                to="/settings/help/ticket"
+                className="mt-3 inline-flex items-center rounded-xl border border-border bg-background px-4 py-2.5 text-[12.5px] font-bold text-foreground press"
+              >
+                Contact support
+              </Link>
+            </section>
+          </aside>
+          </div>
         </div>
       </div>
     </AppShell>
