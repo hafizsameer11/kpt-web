@@ -11,6 +11,7 @@ import {
   Scale,
   Megaphone,
   LifeBuoy,
+  MessageSquare,
   UserCog,
   KeyRound,
   ScrollText,
