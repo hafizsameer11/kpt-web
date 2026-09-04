@@ -29,7 +29,7 @@ function AddressScreen() {
       eyebrow="MOB-142"
       subtitle="We are required to keep these details current for regulatory reporting."
     >
-      <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+      <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_300px] lg:gap-5">
         <FieldCard label="Residential address">
           <Field label="Street" value={ADDRESS.street} />
           <Field label="City" value={ADDRESS.city} />
@@ -66,6 +66,50 @@ function AddressScreen() {
             Save changes
           </button>
         </div>
+
+        {/* Desktop-only guidance rail */}
+        <aside className="hidden lg:block">
+          <div className="sticky top-6 space-y-4">
+            <section className="card-surface overflow-hidden">
+              <div className="bg-brand-gradient px-5 py-4">
+                <p className="text-[10.5px] font-black uppercase tracking-[0.16em] text-gold">
+                  On record
+                </p>
+                <p className="mt-1 text-[15px] font-extrabold text-primary-foreground">
+                  {ADDRESS.city}, {ADDRESS.state}
+                </p>
+              </div>
+              <ul className="divide-y divide-border">
+                {[
+                  { label: "Last updated", value: "12 Aug 2026" },
+                  { label: "Proof of address", value: "On file" },
+                  { label: "Review time", value: "1 business day" },
+                ].map((row) => (
+                  <li key={row.label} className="flex items-center justify-between px-5 py-3">
+                    <span className="text-[12.5px] font-semibold text-foreground">{row.label}</span>
+                    <span className="text-[11.5px] font-bold text-brand">{row.value}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <section className="card-surface p-5">
+              <p className="text-[12.5px] font-extrabold text-foreground">Why we ask</p>
+              <ul className="mt-2 space-y-2">
+                {[
+                  "Regulatory reporting requires a current residential address.",
+                  "Source of funds keeps large investments compliant.",
+                  "Accurate details prevent withdrawal delays.",
+                ].map((t) => (
+                  <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
+        </aside>
       </div>
     </SettingsPage>
   );
