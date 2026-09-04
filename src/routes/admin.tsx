@@ -6,7 +6,12 @@ import {
   CalendarClock,
   Clock,
   Info,
+  Megaphone,
+  Percent,
+  Send,
+  ShieldCheck,
   TrendingUp,
+  XCircle,
 } from "lucide-react";
 import { useState } from "react";
 import {
@@ -48,6 +53,18 @@ import {
   compactNaira,
   naira,
 } from "@/lib/admin-data";
+
+const ACTIVITY_TONE = {
+  kyc: { icon: ShieldCheck, wrap: "bg-brand/10 text-brand", chip: "bg-brand/10 text-brand" },
+  payout: { icon: Send, wrap: "bg-gold/15 text-gold-ink", chip: "bg-gold/15 text-gold-ink" },
+  rate: { icon: Percent, wrap: "bg-brand/10 text-brand", chip: "bg-brand/10 text-brand" },
+  content: { icon: Megaphone, wrap: "bg-muted text-foreground/70", chip: "bg-muted text-foreground/70" },
+  decline: {
+    icon: XCircle,
+    wrap: "bg-destructive/10 text-destructive",
+    chip: "bg-destructive/10 text-destructive",
+  },
+} as const;
 
 const SLICE_FILLS = ["var(--brand)", "var(--gold)", "var(--chart-4)", "var(--chart-5)"];
 
