@@ -14,6 +14,7 @@ import {
   Lock,
   MessageCircle,
   PieChart,
+  RotateCcw,
   Send,
   ShieldCheck,
   Wallet,
