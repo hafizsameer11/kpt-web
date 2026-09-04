@@ -100,7 +100,10 @@ function SubscriptionReviewScreen() {
   );
 
   const locked = attempts >= MAX_ATTEMPTS;
-  const valid = amount >= product.minimum && product.availability !== "closed";
+  const valid =
+    amount >= product.minimum &&
+    product.availability !== "closed" &&
+    (isMobile || acceptedTerms);
   const SourceIcon = SOURCE_META[source].icon;
 
   function press(key: string) {
