@@ -332,6 +332,23 @@ function SubscriptionReviewScreen() {
                 <DisclosureStrip variant="marketplace" />
               </div>
 
+              <label className="hidden cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-4 md:flex">
+                <input
+                  type="checkbox"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  className="mt-0.5 size-4 shrink-0 accent-[var(--gold,#c9a227)]"
+                />
+                <span className="text-[12.5px] leading-relaxed text-muted-foreground">
+                  I have read and accept the{" "}
+                  <span className="font-bold text-foreground">
+                    {product.name} offer terms ({termsVersion})
+                  </span>{" "}
+                  and the Kipit Risk Disclosure. Kipit records the version, date and time of your
+                  acceptance.
+                </span>
+              </label>
+
               <div>
                 <button
                   type="button"
