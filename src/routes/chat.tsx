@@ -71,13 +71,56 @@ const WELCOME: ChatMessage = {
   ],
 };
 
+const STORAGE_KEY = "kipit:chat-history";
+
 function ChatScreen() {
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [restored, setRestored] = useState(false);
   const amountRef = useRef<number | undefined>(undefined);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Restore the conversation after mount so it survives closing the chat.
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as { messages?: ChatMessage[]; amount?: number };
+        if (Array.isArray(saved.messages) && saved.messages.length > 0) {
+          setMessages(saved.messages);
+        }
+        if (typeof saved.amount === "number") amountRef.current = saved.amount;
+      }
+    } catch {
+      /* storage unavailable or corrupt */
+    }
+    setRestored(true);
+  }, []);
+
+  useEffect(() => {
+    if (!restored) return;
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ messages, amount: amountRef.current }),
+      );
+    } catch {
+      /* storage unavailable */
+    }
+  }, [messages, restored]);
+
+  const resetChat = () => {
+    amountRef.current = undefined;
+    setMessages([WELCOME]);
+    setInput("");
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* storage unavailable */
+    }
+  };
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -86,6 +129,7 @@ function ChatScreen() {
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
 
   const send = (raw: string, display?: string) => {
     const value = raw.trim();
