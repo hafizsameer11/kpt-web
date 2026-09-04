@@ -160,10 +160,45 @@ function ResetPinScreen() {
             </button>
           ) : null}
         </section>
+        </div>
+
+        <aside className="hidden space-y-4 md:block">
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">How the reset works</p>
+            <ol className="mt-2 space-y-2">
+              {[
+                "Confirm the date of birth on your account.",
+                "Enter the one-time code sent to your phone.",
+                "Choose a new 4-digit PIN — active immediately.",
+              ].map((t, i) => (
+                <li key={t} className="flex gap-2.5 text-[12px] leading-relaxed text-muted-foreground">
+                  <span className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full bg-gold/15 text-[10px] font-extrabold text-gold">
+                    {i + 1}
+                  </span>
+                  {t}
+                </li>
+              ))}
+            </ol>
+          </section>
+          <section className="card-surface p-5">
+            <p className="text-[12.5px] font-extrabold text-foreground">Keeping you safe</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+              We notify you by email whenever a PIN is reset. If that wasn&apos;t you, contact
+              support straight away.
+            </p>
+            <Link
+              to="/settings/help/ticket"
+              className="mt-3 inline-flex items-center rounded-xl border border-border bg-background px-4 py-2.5 text-[12.5px] font-bold text-foreground press"
+            >
+              Contact support
+            </Link>
+          </section>
+        </aside>
       </div>
     </SettingsPage>
   );
 }
+
 
 function Head({
   icon: Icon,
