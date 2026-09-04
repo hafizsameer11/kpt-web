@@ -254,6 +254,99 @@ function AdminDashboard() {
           ))}
         </section>
 
+        {/* Charts row — flows, interest position, maturity schedule */}
+        <section className="grid gap-4 xl:grid-cols-3">
+          <div className="card-surface p-5">
+            <h2 className="font-display text-[15px] font-extrabold tracking-[-0.01em]">
+              Deposits vs withdrawals
+            </h2>
+            <p className="mt-1 text-[12px] text-muted-foreground">Last 7 days, ₦ millions.</p>
+            <div className="mt-4 h-[190px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={FLOW_TREND} margin={{ top: 4, right: 4, bottom: 0, left: -18 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                  <XAxis dataKey="day" tickLine={false} axisLine={false} tick={axisTick} />
+                  <YAxis tickLine={false} axisLine={false} tick={axisTick} width={38} />
+                  <Tooltip
+                    cursor={{ fill: "var(--muted)" }}
+                    contentStyle={tooltipStyle}
+                    formatter={(v: number, n: string) => [`₦${v}m`, labelOf(n)]}
+                  />
+                  <Bar dataKey="deposits" fill="var(--brand)" radius={[4, 4, 0, 0]} maxBarSize={16} />
+                  <Bar dataKey="withdrawals" fill="var(--gold)" radius={[4, 4, 0, 0]} maxBarSize={16} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="card-surface p-5">
+            <h2 className="font-display text-[15px] font-extrabold tracking-[-0.01em]">
+              Interest accrued vs paid
+            </h2>
+            <p className="mt-1 text-[12px] text-muted-foreground">Monthly, ₦ millions.</p>
+            <div className="mt-4 h-[190px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={INTEREST_TREND} margin={{ top: 4, right: 4, bottom: 0, left: -18 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                  <XAxis dataKey="month" tickLine={false} axisLine={false} tick={axisTick} />
+                  <YAxis tickLine={false} axisLine={false} tick={axisTick} width={38} />
+                  <Tooltip
+                    contentStyle={tooltipStyle}
+                    formatter={(v: number, n: string) => [`₦${v}m`, labelOf(n)]}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="accrued"
+                    stroke="var(--brand)"
+                    strokeWidth={2.5}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="paid"
+                    stroke="var(--gold)"
+                    strokeWidth={2.5}
+                    strokeDasharray="5 4"
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="card-surface p-5">
+            <h2 className="font-display text-[15px] font-extrabold tracking-[-0.01em]">
+              Maturities due
+            </h2>
+            <p className="mt-1 text-[12px] text-muted-foreground">Next six weeks, ₦ millions.</p>
+            <div className="mt-4 h-[190px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={MATURITY_SCHEDULE} margin={{ top: 4, right: 4, bottom: 0, left: -18 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                  <XAxis dataKey="week" tickLine={false} axisLine={false} tick={axisTick} />
+                  <YAxis tickLine={false} axisLine={false} tick={axisTick} width={38} />
+                  <Tooltip
+                    cursor={{ fill: "var(--muted)" }}
+                    contentStyle={tooltipStyle}
+                    formatter={(v: number) => [`₦${v}m`, "Maturing"]}
+                  />
+                  <Bar dataKey="value" radius={[5, 5, 0, 0]} maxBarSize={26}>
+                    {MATURITY_SCHEDULE.map((row, i) => (
+                      <Cell
+                        key={row.week}
+                        fill={i === 2 ? "var(--gold)" : "var(--brand)"}
+                        fillOpacity={i === 2 ? 1 : 0.85}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </section>
+
+
+
         {/* ADM-013 — operational alerts */}
         <section className="card-surface p-5">
           <div className="flex items-center justify-between">
