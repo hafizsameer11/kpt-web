@@ -1,5 +1,15 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ArrowUpDown, Check } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpDown,
+  Check,
+  ChevronRight,
+  Layers,
+  ShieldCheck,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { Rise } from "@/components/kipit/motion";
@@ -74,7 +84,12 @@ function ExploreCategoryScreen() {
 
   return (
     <AppShell title={category.short} navVariant="elevated">
-      <div className="pb-2">
+      {/* ── Desktop layout ─────────────────────────────────────── */}
+      <div className="hidden md:block">
+        <DesktopCategory category={category} products={products} sort={sort} setSort={setSort} openOnly={openOnly} setOpenOnly={setOpenOnly} />
+      </div>
+      {/* ── Mobile layout (unchanged) ──────────────────────────── */}
+      <div className="pb-2 md:hidden">
         {/* ── Hero ─────────────────────────────────────────────── */}
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-16 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-16 md:pt-8 md:shadow-float">
           <span
@@ -217,6 +232,167 @@ function ExploreCategoryScreen() {
         </div>
       </div>
     </AppShell>
+  );
+}
+
+function DesktopCategory({
+  category,
+  products,
+  sort,
+  setSort,
+  openOnly,
+  setOpenOnly,
+}: {
+  category: (typeof EXPLORE_CATEGORIES)[number];
+  products: ExploreProduct[];
+  sort: SortKey;
+  setSort: (s: SortKey) => void;
+  openOnly: boolean;
+  setOpenOnly: (fn: (v: boolean) => boolean) => void;
+}) {
+  const bestRate = products.reduce((m, p) => Math.max(m, num(p.rate)), 0);
+  const lowestMin = products.reduce((m, p) => Math.min(m, p.minimum), Infinity);
+  const openCount = products.filter((p) => p.availability !== "closed").length;
+
+  return (
+    <div className="mx-auto w-full max-w-6xl pb-10">
+      {/* Hero */}
+      <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 py-8 text-primary-foreground shadow-float">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-24 -top-32 size-80 rounded-full bg-gold/15 blur-[72px]"
+        />
+        <div className="relative flex items-end justify-between gap-8">
+          <div className="min-w-0">
+            <Link
+              to="/explore"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold press"
+            >
+              <ArrowLeft className="size-3.5" /> Explore marketplace
+            </Link>
+            <h1 className="mt-4 font-display text-[32px] font-extrabold leading-tight tracking-[-0.02em]">
+              {category.name}
+            </h1>
+            <p className="mt-2 max-w-xl text-[13px] font-medium text-primary-foreground/70">
+              Compare every offer in this category — rate, tenor and minimum side by side.
+            </p>
+          </div>
+          <div className="grid shrink-0 grid-cols-3 gap-3">
+            <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
+              <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/60">
+                <Layers className="size-3.5" /> Open offers
+              </p>
+              <p className="mt-1 font-display text-[22px] font-extrabold text-num">{openCount}</p>
+            </div>
+            <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
+              <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/60">
+                <TrendingUp className="size-3.5" /> Best rate
+              </p>
+              <p className="mt-1 font-display text-[22px] font-extrabold text-gold text-num">
+                {bestRate ? `${bestRate}%` : "—"}
+              </p>
+            </div>
+            <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
+              <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/60">
+                <Wallet className="size-3.5" /> From
+              </p>
+              <p className="mt-1 font-display text-[22px] font-extrabold text-num">
+                {Number.isFinite(lowestMin) ? naira(lowestMin) : "—"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Sort / filter bar */}
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card px-5 py-3.5 shadow-card">
+        <div className="flex items-center gap-2">
+          <span className="mr-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            <ArrowUpDown className="size-3.5" /> Sort
+          </span>
+          {SORTS.map((s) => (
+            <button
+              key={s.key}
+              type="button"
+              onClick={() => setSort(s.key)}
+              aria-pressed={sort === s.key}
+              className={`rounded-full border px-3.5 py-1.5 text-[12px] font-bold press ${
+                sort === s.key
+                  ? "border-transparent bg-primary text-gold"
+                  : "border-border bg-card text-foreground"
+              }`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => setOpenOnly((v) => !v)}
+          aria-pressed={openOnly}
+          className="flex items-center gap-2.5 rounded-xl bg-muted/50 px-3.5 py-2 press"
+        >
+          <span
+            className={`grid size-5 place-items-center rounded-md border-2 ${
+              openOnly ? "border-gold bg-gold" : "border-muted-foreground/30"
+            }`}
+          >
+            {openOnly && <Check className="size-3 text-gold-foreground" strokeWidth={4} />}
+          </span>
+          <span className="text-[12.5px] font-semibold">Hide fully subscribed offers</span>
+        </button>
+      </div>
+
+      {/* Product rows */}
+      <section className="mt-5 overflow-hidden rounded-2xl border border-border/60 bg-card shadow-card">
+        <div className="grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.7fr))_auto] items-center gap-4 border-b border-border/60 bg-muted/40 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <span>Offer</span>
+          <span>Rate p.a.</span>
+          <span>Tenor</span>
+          <span>Minimum</span>
+          <span className="w-24 text-right">Status</span>
+        </div>
+        {products.map((p) => (
+          <Link
+            key={p.id}
+            to="/explore/$productId"
+            params={{ productId: p.id }}
+            className="group grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.7fr))_auto] items-center gap-4 border-b border-border/50 px-6 py-4 transition-colors last:border-0 hover:bg-muted/40"
+          >
+            <div className="min-w-0">
+              <p className="truncate font-display text-[14.5px] font-extrabold tracking-[-0.01em]">
+                {p.name}
+              </p>
+              <p className="mt-0.5 truncate text-[12px] text-muted-foreground">{p.issuer}</p>
+            </div>
+            <p className="text-[14px] font-extrabold text-gold text-num">{p.rate}</p>
+            <p className="text-[13.5px] font-bold text-num">{p.tenor}</p>
+            <p className="text-[13.5px] font-bold text-num">{naira(p.minimum)}</p>
+            <div className="flex w-24 items-center justify-end gap-2">
+              <span
+                className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide ${AVAILABILITY_STYLE[p.availability]}`}
+              >
+                {AVAILABILITY_LABEL[p.availability]}
+              </span>
+              <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+            </div>
+          </Link>
+        ))}
+        {products.length === 0 && (
+          <div className="p-10 text-center">
+            <p className="text-[14px] font-bold">Nothing open right now</p>
+            <p className="mt-1 text-[12.5px] text-muted-foreground">
+              Turn off the filter to see closed offers in this category.
+            </p>
+          </div>
+        )}
+      </section>
+
+      <p className="mt-5 flex items-center justify-center gap-1.5 text-center text-[11.5px] text-muted-foreground">
+        <ShieldCheck className="size-3.5 text-gold" /> Marketplace offers are arranged with
+        SEC-licensed partners. Rates are indicative and capital is at risk.
+      </p>
+    </div>
   );
 }
 
