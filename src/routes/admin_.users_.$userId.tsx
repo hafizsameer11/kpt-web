@@ -53,6 +53,7 @@ const TABS = [
   { label: "Sessions", to: "/admin/users/$userId/sessions" as const },
   { label: "Support", to: "/admin/users/$userId/support" as const },
   { label: "Audit", to: "/admin/users/$userId/audit" as const },
+  { label: "Access", to: "/admin/users/$userId/frozen" as const },
 ];
 
 function AdminUserProfile() {
