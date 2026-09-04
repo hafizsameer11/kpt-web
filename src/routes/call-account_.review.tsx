@@ -177,8 +177,8 @@ function ReviewScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
-            <section className="card-surface p-4 md:p-5">
+          <div className="space-y-4 md:grid md:grid-cols-[minmax(0,1fr)_340px] md:items-start md:gap-6 md:space-y-0">
+            <section className="card-surface p-4 md:p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Transaction summary
               </p>
@@ -200,7 +200,7 @@ function ReviewScreen() {
               </dl>
             </section>
 
-            <section className="card-surface p-4 md:p-5">
+            <section className="card-surface p-4 md:sticky md:top-6 md:p-6">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 What this earns
               </p>
@@ -222,10 +222,26 @@ function ReviewScreen() {
                 <Info className="size-3.5 shrink-0" />
                 Indicative at {CALL_ACCOUNT.rate} — accrues daily, credited monthly.
               </p>
+
+              {/* Desktop confirm lives in the sticky rail */}
+              <div className="mt-5 hidden md:block">
+                <button
+                  type="button"
+                  disabled={!valid}
+                  onClick={() => setOpen(true)}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+                >
+                  {valid ? "Confirm & add money" : "Amount not valid"}
+                  <ArrowRight className="size-4" strokeWidth={2.6} />
+                </button>
+                <p className="mt-2.5 flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
+                  <Lock className="size-3.5" /> You'll authorize with your Kipit PIN.
+                </p>
+              </div>
             </section>
           </div>
 
-          <div className="mt-5">
+          <div className="mt-5 md:hidden">
             <button
               type="button"
               disabled={!valid}
