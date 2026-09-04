@@ -84,7 +84,12 @@ function ExploreCategoryScreen() {
 
   return (
     <AppShell title={category.short} navVariant="elevated">
-      <div className="pb-2">
+      {/* ── Desktop layout ─────────────────────────────────────── */}
+      <div className="hidden md:block">
+        <DesktopCategory category={category} products={products} sort={sort} setSort={setSort} openOnly={openOnly} setOpenOnly={setOpenOnly} />
+      </div>
+      {/* ── Mobile layout (unchanged) ──────────────────────────── */}
+      <div className="pb-2 md:hidden">
         {/* ── Hero ─────────────────────────────────────────────── */}
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-16 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-16 md:pt-8 md:shadow-float">
           <span
