@@ -33,6 +33,7 @@ import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as AdminComplianceRouteImport } from './routes/admin_.compliance'
 import { Route as AdminTransactionsRouteImport } from './routes/admin_.transactions'
 import { Route as AdminUsersRouteImport } from './routes/admin_.users'
+import { Route as AdminWithdrawalsRouteImport } from './routes/admin_.withdrawals'
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
@@ -254,6 +255,11 @@ const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/admin_/users',
   path: '/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminWithdrawalsRoute = AdminWithdrawalsRouteImport.update({
+  id: '/admin_/withdrawals',
+  path: '/admin/withdrawals',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CallAccountAddMoneyRoute = CallAccountAddMoneyRouteImport.update({
@@ -816,6 +822,7 @@ export interface FileRoutesByFullPath {
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
@@ -944,6 +951,7 @@ export interface FileRoutesByTo {
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
@@ -1071,6 +1079,7 @@ export interface FileRoutesById {
   '/admin_/compliance': typeof AdminComplianceRoute
   '/admin_/transactions': typeof AdminTransactionsRoute
   '/admin_/users': typeof AdminUsersRoute
+  '/admin_/withdrawals': typeof AdminWithdrawalsRoute
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
   '/call-account_/review': typeof CallAccountReviewRoute
   '/call-account_/success': typeof CallAccountSuccessRoute
@@ -1201,6 +1210,7 @@ export interface FileRouteTypes {
     | '/admin/compliance'
     | '/admin/transactions'
     | '/admin/users'
+    | '/admin/withdrawals'
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
@@ -1329,6 +1339,7 @@ export interface FileRouteTypes {
     | '/admin/compliance'
     | '/admin/transactions'
     | '/admin/users'
+    | '/admin/withdrawals'
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
@@ -1455,6 +1466,7 @@ export interface FileRouteTypes {
     | '/admin_/compliance'
     | '/admin_/transactions'
     | '/admin_/users'
+    | '/admin_/withdrawals'
     | '/call-account_/add-money'
     | '/call-account_/review'
     | '/call-account_/success'
@@ -1584,6 +1596,7 @@ export interface RootRouteChildren {
   AdminComplianceRoute: typeof AdminComplianceRoute
   AdminTransactionsRoute: typeof AdminTransactionsRoute
   AdminUsersRoute: typeof AdminUsersRoute
+  AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
   CallAccountReviewRoute: typeof CallAccountReviewRoute
   CallAccountSuccessRoute: typeof CallAccountSuccessRoute
@@ -1842,6 +1855,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/withdrawals': {
+      id: '/admin_/withdrawals'
+      path: '/admin/withdrawals'
+      fullPath: '/admin/withdrawals'
+      preLoaderRoute: typeof AdminWithdrawalsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/call-account_/add-money': {
@@ -2632,6 +2652,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminComplianceRoute: AdminComplianceRoute,
   AdminTransactionsRoute: AdminTransactionsRoute,
   AdminUsersRoute: AdminUsersRoute,
+  AdminWithdrawalsRoute: AdminWithdrawalsRoute,
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
   CallAccountReviewRoute: CallAccountReviewRoute,
   CallAccountSuccessRoute: CallAccountSuccessRoute,
