@@ -95,48 +95,77 @@ function RequestSubmittedScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          <section className="card-surface p-4 md:p-5">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              Request details
-            </p>
-            <dl className="mt-3 divide-y divide-border text-[13px]">
-              <Row label="Reference">{reference}</Row>
-              <Row label="Product">{product.name}</Row>
-              <Row label="Issuer">{product.issuer}</Row>
-              <Row label="Intended amount">{naira(amount)}</Row>
-              <Row label="Contact via">
-                <span className="inline-flex items-center gap-1.5">
-                  <ContactIcon className="size-3.5 text-gold" />
-                  {CONTACT_META[contact].label}
-                </span>
-              </Row>
-              <Row label="Status">
-                <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[11px] font-extrabold text-gold-strong">
-                  Awaiting adviser
-                </span>
-              </Row>
-            </dl>
-            <p className="mt-3 flex items-start gap-1.5 text-[11px] text-muted-foreground">
-              <Clock className="mt-0.5 size-3.5 shrink-0" />
-              Expect a response within one business day. No funds have been debited.
-            </p>
-          </section>
+          <div className="md:grid md:grid-cols-[minmax(0,1fr)_360px] md:items-start md:gap-5">
+            <div className="min-w-0">
+              <section className="card-surface p-4 md:p-6">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Request details
+                </p>
+                <dl className="mt-3 divide-y divide-border text-[13px] md:text-[14px]">
+                  <Row label="Reference">{reference}</Row>
+                  <Row label="Product">{product.name}</Row>
+                  <Row label="Issuer">{product.issuer}</Row>
+                  <Row label="Intended amount">{naira(amount)}</Row>
+                  <Row label="Contact via">
+                    <span className="inline-flex items-center gap-1.5">
+                      <ContactIcon className="size-3.5 text-gold" />
+                      {CONTACT_META[contact].label}
+                    </span>
+                  </Row>
+                  <Row label="Status">
+                    <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[11px] font-extrabold text-gold-strong">
+                      Awaiting adviser
+                    </span>
+                  </Row>
+                </dl>
+                <p className="mt-3 flex items-start gap-1.5 text-[11px] text-muted-foreground">
+                  <Clock className="mt-0.5 size-3.5 shrink-0" />
+                  Expect a response within one business day. No funds have been debited.
+                </p>
+              </section>
 
-          <DisclosureStrip variant="marketplace" />
+              <DisclosureStrip variant="marketplace" />
+            </div>
 
-          <div className="mt-5 flex flex-col gap-2.5 md:flex-row">
-            <Link
-              to="/explore"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
-            >
-              Back to Explore <ArrowRight className="size-4" strokeWidth={2.6} />
-            </Link>
-            <Link
-              to="/portfolio"
-              className="inline-flex w-full items-center justify-center rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press md:w-auto md:px-8"
-            >
-              View portfolio
-            </Link>
+            {/* Rail — next steps (desktop) + actions */}
+            <aside className="min-w-0 space-y-4 md:sticky md:top-6">
+              <section className="card-surface hidden p-6 md:block">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  What happens next
+                </p>
+                <ol className="mt-3 space-y-3">
+                  {[
+                    "A licensed adviser reviews your request",
+                    `You get a ${CONTACT_META[contact].label.toLowerCase()} within one business day`,
+                    "Terms are confirmed and your allocation is booked",
+                  ].map((step, i) => (
+                    <li key={step} className="flex items-start gap-3">
+                      <span className="grid size-6 shrink-0 place-items-center rounded-full bg-gold/15 text-[11px] font-extrabold text-gold-strong">
+                        {i + 1}
+                      </span>
+                      <span className="text-[12.5px] font-medium text-foreground/80">
+                        {step}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+
+              <div className="mt-5 flex flex-col gap-2.5 md:mt-0">
+                <Link
+                  to="/explore"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press"
+                >
+                  Back to Explore <ArrowRight className="size-4" strokeWidth={2.6} />
+                </Link>
+                <Link
+                  to="/portfolio"
+                  className="inline-flex w-full items-center justify-center rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press"
+                >
+                  View portfolio
+                </Link>
+              </div>
+            </aside>
           </div>
         </div>
       </div>
