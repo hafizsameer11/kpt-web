@@ -222,12 +222,7 @@ function AutoInvestScreen() {
               <ArrowLeft className="size-3.5" /> Invest
             </Link>
 
-            <p className="k-rise mt-6 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
-              Investing automatically each month
-            </p>
-            <h1 className="k-rise mt-1 font-display text-[32px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[42px]">
-              <AmountCounter value={monthlyTotal} hidden={hidden} mask={mask} />
-            </h1>
+            {heroFigure}
             <p
               className="k-rise mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-bold"
               style={{ ["--d" as string]: "80ms" }}
@@ -246,102 +241,81 @@ function AutoInvestScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="flex w-full items-center gap-3 rounded-xl bg-brand px-4 py-3.5 text-brand-foreground press"
-          >
-            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-white/12">
-              <Plus className="size-[18px]" />
-            </span>
-            <span className="min-w-0 flex-1 text-left">
-              <span className="block text-[13px] font-bold">New auto-invest</span>
-              <span className="block text-[11.5px] text-brand-foreground/70">
-                Fund a plan weekly, fortnightly or monthly
-              </span>
-            </span>
-          </button>
+          {newRuleButton(
+            "flex w-full items-center gap-3 rounded-xl bg-brand px-4 py-3.5 text-brand-foreground press",
+          )}
 
           <h2 className="mb-2.5 mt-6 px-1 font-display text-[15px] font-extrabold">
             Your schedules
           </h2>
 
-          <ul className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
-            {rules.map((r, i) => (
-              <li
-                key={r.id}
-                className="k-rise card-surface p-4"
-                style={{ ["--d" as string]: `${i * 60}ms` }}
-              >
-                <div className="flex items-start gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-secondary text-brand">
-                    <Repeat className="size-[18px]" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-bold">{r.destination}</p>
-                    <p className="text-[11.5px] text-muted-foreground">
-                      {r.rate} · {r.frequency}
-                    </p>
-                  </div>
-                  <Switch
-                    checked={r.active}
-                    onCheckedChange={() => toggle(r.id)}
-                    aria-label={`${r.active ? "Pause" : "Resume"} auto-invest into ${r.destination}`}
-                  />
-                </div>
+          <ul className="space-y-3">{rules.map(ruleCard)}</ul>
 
-                <div className="mt-3.5 grid grid-cols-3 gap-2 rounded-xl bg-muted/50 p-3">
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      Amount
-                    </p>
-                    <p className="mt-0.5 text-[12.5px] font-extrabold text-num">
-                      {mask(r.amount)}
-                    </p>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      Next run
-                    </p>
-                    <p className="mt-0.5 truncate text-[12.5px] font-extrabold">
-                      {r.nextRun}
-                    </p>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      Invested
-                    </p>
-                    <p className="mt-0.5 text-[12.5px] font-extrabold text-num">
-                      {mask(r.investedToDate)}
-                    </p>
-                  </div>
-                </div>
-
-                <p className="mt-3 flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
-                  <Wallet className="size-3.5" /> Funded from {r.fundedFrom}
-                </p>
-              </li>
-            ))}
-          </ul>
-
-          <section className="mt-5 rounded-xl border border-border bg-card p-4">
-            <p className="flex items-center gap-1.5 text-[12.5px] font-bold">
-              <CalendarClock className="size-4 text-brand" /> How auto-invest works
-            </p>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
-              On each run date Kipit moves the amount from your wallet into the plan you
-              chose. If your wallet balance is short, the run is skipped and we notify you —
-              no fees, no penalty. Pause or edit any schedule at any time.
-            </p>
-            <Link
-              to="/wallet/add-money"
-              className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-[11.5px] font-bold text-brand press"
-            >
-              <Plus className="size-3.5" /> Top up wallet · {naira(WALLET)} available
-            </Link>
-          </section>
+          <div className="mt-5">{howItWorks}</div>
 
           <DisclosureStrip />
+        </div>
+      </div>
+
+      {/* ══ Desktop layout ══ */}
+      <div className="hidden pb-2 md:block">
+        <section className="relative overflow-hidden rounded-xl bg-brand-gradient px-8 py-9 text-primary-foreground shadow-float">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-24 -top-36 size-96 rounded-full bg-gold/15 blur-[80px]"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -bottom-32 left-1/3 size-72 rounded-full bg-white/10 blur-[72px]"
+          />
+          <div className="relative flex flex-wrap items-end justify-between gap-6">
+            <div className="min-w-0">
+              <Link
+                to="/invest"
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold press"
+              >
+                <ArrowLeft className="size-3.5" /> Invest
+              </Link>
+              {heroFigure}
+              <p
+                className="k-rise mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-bold"
+                style={{ ["--d" as string]: "80ms" }}
+              >
+                <Repeat className="size-3.5 text-gold" />
+                {active.length} active {active.length === 1 ? "rule" : "rules"} ·{" "}
+                {rules.length - active.length} paused
+              </p>
+            </div>
+            <div className="w-full max-w-xs shrink-0">
+              {newRuleButton(
+                "flex w-full items-center gap-3 rounded-xl bg-gold px-4 py-3.5 text-gold-foreground shadow-float press",
+              )}
+              <p className="mt-2.5 text-center text-[11px] text-primary-foreground/60">
+                Runs from your wallet · {naira(WALLET)} available
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <div className="mt-6 grid grid-cols-[minmax(0,1fr)_340px] items-start gap-6">
+          <section className="min-w-0">
+            <div className="flex items-end justify-between">
+              <div>
+                <h2 className="font-display text-[18px] font-extrabold tracking-[-0.01em]">
+                  Your schedules
+                </h2>
+                <p className="mt-0.5 text-[12px] text-muted-foreground">
+                  {rules.length} {rules.length === 1 ? "rule" : "rules"} · toggle to pause or resume
+                </p>
+              </div>
+            </div>
+            <ul className="mt-4 grid gap-4">{rules.map(ruleCard)}</ul>
+          </section>
+
+          <aside className="sticky top-6 space-y-4">
+            {howItWorks}
+            <DisclosureStrip />
+          </aside>
         </div>
       </div>
 
