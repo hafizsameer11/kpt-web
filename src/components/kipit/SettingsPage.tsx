@@ -101,7 +101,7 @@ export function Field({
   hint?: string;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 px-4 py-3.5">
+    <div className="flex items-start justify-between gap-4 px-4 py-3.5 md:px-5 md:py-4">
       <div className="min-w-0">
         <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
           {label}
