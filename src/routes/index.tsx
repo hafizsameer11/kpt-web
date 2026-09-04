@@ -8,8 +8,6 @@ import {
   EyeOff,
   Lightbulb,
   Wallet,
-  Moon,
-  Sun,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { Logo } from "@/components/kipit/Logo";
@@ -17,7 +15,6 @@ import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
 import { ForYouFeature } from "@/components/kipit/ForYouVariants";
 import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
 import { GreetingText } from "@/components/kipit/SpecBlocks";
-import { useTheme } from "@/lib/theme";
 import { AmountCounter } from "@/components/kipit/motion";
 import {
   HOLDINGS,
@@ -115,7 +112,6 @@ function HomeV2Screen() {
 
 function MobileHome() {
   const { hidden, toggle, mask } = useBalanceVisibility();
-  const { isDark, toggle: toggleTheme } = useTheme();
   const [lens, setLens] = useState<LensKey>("total");
   const active = LENSES.find((l) => l.key === lens) ?? LENSES[0];
 
@@ -141,18 +137,7 @@ function MobileHome() {
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-2.5">
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-                  className="grid size-10 place-items-center rounded-full border border-white/20 bg-white/10 press"
-                >
-                  {isDark ? (
-                    <Sun className="size-[18px]" strokeWidth={1.8} />
-                  ) : (
-                    <Moon className="size-[18px]" strokeWidth={1.8} />
-                  )}
-                </button>
+
                 <Link
                   to="/notifications"
                   aria-label="Notifications"
