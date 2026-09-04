@@ -93,9 +93,9 @@ function CalculatorScreen() {
 
   return (
     <AppShell title="Calculator" navVariant="elevated">
-      <div className="pb-2">
+      <div className="pb-2 md:mx-auto md:w-full md:max-w-6xl md:pb-10">
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-16 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-16 md:pt-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-16 pt-6 text-primary-foreground md:mx-0 md:rounded-2xl md:px-9 md:pb-9 md:pt-9 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
@@ -114,7 +114,166 @@ function CalculatorScreen() {
         </section>
 
         {/* ── Sheet ────────────────────────────────────────────── */}
-        <div className="relative -mx-4 -mt-10 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
+        {/* ── Desktop workspace ──────────────────────────────── */}
+        <div className="mt-6 hidden md:grid md:grid-cols-[minmax(0,1fr)_400px] md:items-start md:gap-6">
+          <div className="space-y-5">
+            <section className="card-surface p-6">
+              <label
+                htmlFor="calc-amount-d"
+                className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground"
+              >
+                Amount to invest
+              </label>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="font-display text-[30px] font-extrabold text-muted-foreground">
+                  ₦
+                </span>
+                <input
+                  id="calc-amount-d"
+                  type="text"
+                  inputMode="numeric"
+                  value={input}
+                  onChange={(e) => handleAmount(e.target.value)}
+                  placeholder="0"
+                  className="w-full min-w-0 bg-transparent font-display text-[40px] font-extrabold leading-none tracking-[-0.03em] text-num outline-none placeholder:text-muted-foreground/40"
+                />
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {QUICK_AMOUNTS.map((q) => (
+                  <button
+                    key={q}
+                    type="button"
+                    onClick={() => setInput(q.toLocaleString("en-NG"))}
+                    className={`rounded-full border px-3.5 py-1.5 text-[12px] font-bold transition-colors ${
+                      amount === q
+                        ? "border-transparent bg-primary text-gold"
+                        : "border-border bg-card text-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    {naira(q)}
+                  </button>
+                ))}
+              </div>
+              {belowMin && (
+                <p className="mt-4 rounded-xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
+                  Minimum for {option.name} is {naira(option.minimum)}.
+                </p>
+              )}
+            </section>
+
+            <section>
+              <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Where to put it
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                {OPTIONS.map((o) => {
+                  const active = o.id === option.id;
+                  const gross = Math.round(amount * (o.rate / 100) * (o.days / 365));
+                  return (
+                    <button
+                      key={o.id}
+                      type="button"
+                      onClick={() => setOptionId(o.id)}
+                      aria-pressed={active}
+                      className={`rounded-2xl border p-4 text-left transition-all ${
+                        active
+                          ? "border-gold bg-primary/[0.05] shadow-card"
+                          : "border-border bg-card hover:border-primary/30 hover:shadow-card"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`grid size-9 shrink-0 place-items-center rounded-xl ${
+                            active ? "bg-gold text-gold-foreground" : "bg-secondary text-foreground"
+                          }`}
+                        >
+                          {o.id === "call" ? (
+                            <Wallet className="size-4" />
+                          ) : (
+                            <CalendarClock className="size-4" />
+                          )}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate font-display text-[14.5px] font-extrabold tracking-[-0.01em]">
+                            {o.name}
+                          </span>
+                          <span className="mt-0.5 block truncate text-[11.5px] text-muted-foreground">
+                            min {naira(o.minimum)}
+                          </span>
+                        </span>
+                        <span className="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[12.5px] font-extrabold text-gold text-num">
+                          {o.rate}%
+                        </span>
+                      </div>
+                      <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-3">
+                        <span className="text-[11.5px] text-muted-foreground">{o.liquidity}</span>
+                        <span className="text-[13px] font-extrabold text-num">+{naira(gross)}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          </div>
+
+          <aside className="space-y-4 md:sticky md:top-6">
+            <section className="relative overflow-hidden rounded-2xl bg-primary p-6 text-primary-foreground shadow-float">
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -right-16 -top-20 size-52 rounded-full bg-gold/20 blur-[52px]"
+              />
+              <div className="relative">
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                  Estimated payout{" "}
+                  {isCall ? "after 12 months" : `on ${maturityLabel(option.days)}`}
+                </p>
+                <p className="mt-2 font-display text-[36px] font-extrabold leading-none tracking-[-0.03em] text-num">
+                  {naira(payout)}
+                </p>
+                <dl className="mt-5 space-y-3 border-t border-white/10 pt-4 text-[12.5px]">
+                  <div className="flex items-center justify-between">
+                    <dt className="text-primary-foreground/60">Interest earned</dt>
+                    <dd className="font-extrabold text-gold text-num">{naira(interest)}</dd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <dt className="text-primary-foreground/60">Per day</dt>
+                    <dd className="font-extrabold text-num">{naira(perDay)}</dd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <dt className="text-primary-foreground/60">Rate</dt>
+                    <dd className="font-extrabold text-num">{option.rate}% p.a.</dd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <dt className="text-primary-foreground/60">Tenor</dt>
+                    <dd className="font-extrabold text-num">{option.days} days</dd>
+                  </div>
+                </dl>
+              </div>
+            </section>
+
+            <Link
+              to="/fixed-plans/create"
+              search={{ plan: isCall ? undefined : String(option.id) }}
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-[14px] font-extrabold text-gold transition hover:opacity-95"
+            >
+              <TrendingUp className="size-4" />
+              Invest {naira(amount)}
+            </Link>
+            <Link
+              to="/invest"
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card text-[14px] font-bold transition hover:bg-muted/50"
+            >
+              See all plans <ArrowRight className="size-4" />
+            </Link>
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              Estimates use simple interest and current indicative rates. Returns are not
+              guaranteed. Kipit works with SEC-licensed partners.
+            </p>
+          </aside>
+        </div>
+
+        {/* ── Mobile sheet ───────────────────────────────────── */}
+        <div className="relative -mx-4 -mt-10 rounded-t-[2rem] bg-background px-4 pt-5 md:hidden">
           <span
             aria-hidden
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
