@@ -145,6 +145,7 @@ import { Route as AdminTeamRolesRouteImport } from './routes/admin_.team_.roles'
 import { Route as AdminTransactionsTxnIdRouteImport } from './routes/admin_.transactions_.$txnId'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin_.users_.$userId'
 import { Route as AdminWithdrawalsWithdrawalIdRouteImport } from './routes/admin_.withdrawals_.$withdrawalId'
+import { Route as CallAccountWithdrawWalletRouteImport } from './routes/call-account_.withdraw_.wallet'
 import { Route as ExploreProductIdCalculatorRouteImport } from './routes/explore_.$productId_.calculator'
 import { Route as ExploreProductIdProcessingRouteImport } from './routes/explore_.$productId_.processing'
 import { Route as ExploreProductIdRequestRouteImport } from './routes/explore_.$productId_.request'
@@ -872,6 +873,12 @@ const AdminWithdrawalsWithdrawalIdRoute =
     path: '/admin/withdrawals/$withdrawalId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const CallAccountWithdrawWalletRoute =
+  CallAccountWithdrawWalletRouteImport.update({
+    id: '/call-account_/withdraw_/wallet',
+    path: '/call-account/withdraw/wallet',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ExploreProductIdCalculatorRoute =
   ExploreProductIdCalculatorRouteImport.update({
     id: '/explore_/$productId_/calculator',
@@ -1223,6 +1230,7 @@ export interface FileRoutesByFullPath {
   '/admin/transactions/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/admin/withdrawals/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
+  '/call-account/withdraw/wallet': typeof CallAccountWithdrawWalletRoute
   '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
@@ -1397,6 +1405,7 @@ export interface FileRoutesByTo {
   '/admin/team/roles': typeof AdminTeamRolesRoute
   '/admin/transactions/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin/withdrawals/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
+  '/call-account/withdraw/wallet': typeof CallAccountWithdrawWalletRoute
   '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore/$productId/processing': typeof ExploreProductIdProcessingRoute
   '/explore/$productId/request': typeof ExploreProductIdRequestRoute
@@ -1574,6 +1583,7 @@ export interface FileRoutesById {
   '/admin_/transactions_/$txnId': typeof AdminTransactionsTxnIdRoute
   '/admin_/users_/$userId': typeof AdminUsersUserIdRouteWithChildren
   '/admin_/withdrawals_/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
+  '/call-account_/withdraw_/wallet': typeof CallAccountWithdrawWalletRoute
   '/explore_/$productId_/calculator': typeof ExploreProductIdCalculatorRoute
   '/explore_/$productId_/processing': typeof ExploreProductIdProcessingRoute
   '/explore_/$productId_/request': typeof ExploreProductIdRequestRoute
@@ -1752,6 +1762,7 @@ export interface FileRouteTypes {
     | '/admin/transactions/$txnId'
     | '/admin/users/$userId'
     | '/admin/withdrawals/$withdrawalId'
+    | '/call-account/withdraw/wallet'
     | '/explore/$productId/calculator'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
@@ -1926,6 +1937,7 @@ export interface FileRouteTypes {
     | '/admin/team/roles'
     | '/admin/transactions/$txnId'
     | '/admin/withdrawals/$withdrawalId'
+    | '/call-account/withdraw/wallet'
     | '/explore/$productId/calculator'
     | '/explore/$productId/processing'
     | '/explore/$productId/request'
@@ -2102,6 +2114,7 @@ export interface FileRouteTypes {
     | '/admin_/transactions_/$txnId'
     | '/admin_/users_/$userId'
     | '/admin_/withdrawals_/$withdrawalId'
+    | '/call-account_/withdraw_/wallet'
     | '/explore_/$productId_/calculator'
     | '/explore_/$productId_/processing'
     | '/explore_/$productId_/request'
@@ -2279,6 +2292,7 @@ export interface RootRouteChildren {
   AdminTransactionsTxnIdRoute: typeof AdminTransactionsTxnIdRoute
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRouteWithChildren
   AdminWithdrawalsWithdrawalIdRoute: typeof AdminWithdrawalsWithdrawalIdRoute
+  CallAccountWithdrawWalletRoute: typeof CallAccountWithdrawWalletRoute
   ExploreProductIdCalculatorRoute: typeof ExploreProductIdCalculatorRoute
   ExploreProductIdProcessingRoute: typeof ExploreProductIdProcessingRoute
   ExploreProductIdRequestRoute: typeof ExploreProductIdRequestRoute
@@ -3258,6 +3272,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWithdrawalsWithdrawalIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/call-account_/withdraw_/wallet': {
+      id: '/call-account_/withdraw_/wallet'
+      path: '/call-account/withdraw/wallet'
+      fullPath: '/call-account/withdraw/wallet'
+      preLoaderRoute: typeof CallAccountWithdrawWalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore_/$productId_/calculator': {
       id: '/explore_/$productId_/calculator'
       path: '/explore/$productId/calculator'
@@ -3712,6 +3733,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminTransactionsTxnIdRoute: AdminTransactionsTxnIdRoute,
   AdminUsersUserIdRoute: AdminUsersUserIdRouteWithChildren,
   AdminWithdrawalsWithdrawalIdRoute: AdminWithdrawalsWithdrawalIdRoute,
+  CallAccountWithdrawWalletRoute: CallAccountWithdrawWalletRoute,
   ExploreProductIdCalculatorRoute: ExploreProductIdCalculatorRoute,
   ExploreProductIdProcessingRoute: ExploreProductIdProcessingRoute,
   ExploreProductIdRequestRoute: ExploreProductIdRequestRoute,
