@@ -29,7 +29,7 @@ function ProfileScreen() {
       eyebrow="MOB-141"
       subtitle="Your identity on Kipit. Fields confirmed during verification are locked and can only be changed by support."
     >
-      <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+      <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_300px] lg:gap-5">
         <FieldCard label="Identity">
           <Field label="First name" value={PROFILE.firstName} locked />
           <Field label="Middle name" value={PROFILE.middleName} />
