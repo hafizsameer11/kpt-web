@@ -339,10 +339,16 @@ function FixedPlansScreen() {
                       <li
                         key={h.name}
                         style={{ ["--d" as string]: `${i * 90}ms` }}
-                        className="k-rise card-surface relative overflow-hidden p-4 transition-shadow hover:shadow-md"
+                        className="k-rise card-surface relative overflow-hidden transition-shadow hover:shadow-md"
                       >
                         <span className="absolute inset-y-0 left-0 w-1 bg-accent" aria-hidden />
+                        <Link
+                          to="/portfolio/$holdingId"
+                          params={{ holdingId: h.id }}
+                          className="block p-4 press"
+                        >
                         <div className="flex items-start justify-between gap-3 pl-2">
+
                           <div className="min-w-0">
                             <p className="truncate text-sm font-bold">{h.name}</p>
                             <p className="mt-1 text-[11px] text-muted-foreground">
