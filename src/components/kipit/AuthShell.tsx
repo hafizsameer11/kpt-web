@@ -3,6 +3,8 @@ import { ArrowLeft, Delete } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { Logo } from "@/components/kipit/Logo";
+import authBrandImage from "@/assets/auth-brand.jpg";
+
 
 /**
  * Full-screen navy shell used by every onboarding / auth screen (MOB-001–017).
@@ -31,42 +33,29 @@ export function AuthShell({
       <div className="pointer-events-none absolute -right-20 top-40 size-80 rounded-full bg-white/10 blur-3xl" />
 
       <div className="relative mx-auto grid min-h-dvh w-full max-w-md lg:max-w-none lg:grid-cols-2 lg:items-stretch lg:gap-0 lg:px-0">
-        {/* WEB-001 — desktop brand / illustration panel (split screen, left half) */}
-        <aside className="hidden lg:flex lg:flex-col lg:justify-center lg:gap-8 lg:px-16 lg:py-16">
-          <Logo tone="light" className="text-3xl" />
-          <div>
-            <p className="inline-flex items-center rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-gold">
-              Wealth, simplified
-            </p>
-            <h2 className="mt-5 max-w-md text-4xl font-semibold leading-tight tracking-tight">
-              Your money, working every day.
+        {/* WEB-001 — desktop brand image panel (split screen, right half) */}
+        <aside className="relative order-2 hidden overflow-hidden lg:flex lg:flex-col lg:justify-end">
+          <img
+            src={authBrandImage}
+            alt="Kipit customer checking her investments"
+            width={1024}
+            height={1536}
+            className="absolute inset-0 size-full object-cover object-center"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[oklch(0.19_0.06_260)] via-[oklch(0.19_0.06_260)]/45 to-transparent" />
+          <div className="relative px-14 pb-14">
+            <Logo tone="light" className="text-2xl" />
+            <h2 className="mt-5 max-w-sm text-3xl font-semibold leading-tight tracking-tight">
+              Wealth, simplified.
             </h2>
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-brand-foreground/70">
-              Save, invest in fixed-return plans, and track everything in one simple account.
+            <p className="mt-2 max-w-sm text-sm leading-relaxed text-brand-foreground/70">
+              Save, invest and track your returns in one account.
             </p>
           </div>
-          <div className="grid max-w-md gap-3">
-            {[
-              ["Up to 22% p.a.", "Fixed-return plans with clear tenors"],
-              ["Daily interest", "Call Account interest accrues every day"],
-              ["SEC-licensed partners", "Regulated custody and product issuers"],
-            ].map(([t, d]) => (
-              <div
-                key={t}
-                className="rounded-2xl border border-white/12 bg-white/8 px-4 py-3 backdrop-blur-sm"
-              >
-                <p className="text-sm font-semibold">{t}</p>
-                <p className="mt-0.5 text-xs text-brand-foreground/65">{d}</p>
-              </div>
-            ))}
-          </div>
-          <p className="max-w-md text-[11.5px] leading-relaxed text-brand-foreground/50">
-            Kipit works with SEC-licensed partners. Returns shown are indicative and subject to
-            issuer terms.
-          </p>
         </aside>
 
-        <div className="flex min-h-dvh w-full flex-col px-5 pb-8 pt-6 lg:mx-auto lg:min-h-dvh lg:w-full lg:max-w-none lg:justify-center lg:border-l lg:border-white/10 lg:bg-white/[0.06] lg:px-16 lg:py-16 lg:backdrop-blur-md lg:[&>*]:mx-auto lg:[&>*]:w-full lg:[&>*]:max-w-md">
+        <div className="order-1 flex min-h-dvh w-full flex-col px-5 pb-8 pt-6 lg:mx-auto lg:min-h-dvh lg:w-full lg:max-w-none lg:justify-center lg:px-16 lg:py-16 lg:[&>*]:mx-auto lg:[&>*]:w-full lg:[&>*]:max-w-md">
+
           <div className={`flex items-center justify-between ${back ? "" : "lg:hidden"}`}>
             {back ? (
               <Link
