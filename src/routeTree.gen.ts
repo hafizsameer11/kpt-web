@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AutoInvestRouteImport } from './routes/auto-invest'
 import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as CallAccountRouteImport } from './routes/call-account'
@@ -119,6 +120,11 @@ import { Route as PortfolioTransactionsTxnIdReceiptRouteImport } from './routes/
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AutoInvestRoute = AutoInvestRouteImport.update({
@@ -665,6 +671,7 @@ const PortfolioTransactionsTxnIdReceiptRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
@@ -773,6 +780,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
@@ -881,6 +889,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
@@ -991,6 +1000,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/auto-invest'
     | '/calculator'
     | '/call-account'
@@ -1099,6 +1109,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/auto-invest'
     | '/calculator'
     | '/call-account'
@@ -1206,6 +1217,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/auto-invest'
     | '/calculator'
     | '/call-account'
@@ -1315,6 +1327,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   AutoInvestRoute: typeof AutoInvestRoute
   CalculatorRoute: typeof CalculatorRoute
   CallAccountRoute: typeof CallAccountRoute
@@ -1423,6 +1436,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auto-invest': {
@@ -2186,6 +2206,7 @@ const FixedPlansCreateRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   AutoInvestRoute: AutoInvestRoute,
   CalculatorRoute: CalculatorRoute,
   CallAccountRoute: CallAccountRoute,
