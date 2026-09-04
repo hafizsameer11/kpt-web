@@ -49,24 +49,50 @@ function TrackerScreen() {
   return (
     <AppShell title="Withdrawal Tracker" navVariant="elevated">
       <div className="pb-2">
-        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-8 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:shadow-float">
+        <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-8 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:py-10 md:shadow-float">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
           />
-          <div className="relative md:max-w-3xl">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
-              <Clock className="size-3.5" /> Processing
-            </span>
-            <p className="mt-5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
-              Withdrawal amount
-            </p>
-            <p className="mt-2 font-display text-[38px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[46px]">
-              {naira(amount)}
-            </p>
-            <p className="mt-3 text-[12px] font-medium text-primary-foreground/60">
-              Ref {reference} · {account.bank} {maskAccount(account.accountNumber)}
-            </p>
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -bottom-28 -left-20 hidden size-64 rounded-full bg-white/10 blur-[56px] md:block"
+          />
+          <div className="relative md:flex md:items-end md:justify-between md:gap-10">
+            <div className="md:max-w-xl">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
+                <Clock className="size-3.5" /> Processing
+              </span>
+              <p className="mt-5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
+                Withdrawal amount
+              </p>
+              <p className="mt-2 font-display text-[38px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[52px]">
+                {naira(amount)}
+              </p>
+              <p className="mt-3 text-[12px] font-medium text-primary-foreground/60">
+                Ref {reference} · {account.bank} {maskAccount(account.accountNumber)}
+              </p>
+            </div>
+
+            {/* Desktop status panel */}
+            <div className="hidden w-72 shrink-0 rounded-xl border border-white/12 bg-white/8 p-4 backdrop-blur-md md:block">
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-primary-foreground/55">
+                Estimated settlement
+              </p>
+              <p className="mt-1.5 text-[13px] font-bold">{payoutEta}</p>
+              <div className="mt-3 border-t border-white/12 pt-3">
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-primary-foreground/55">
+                  Fee
+                </p>
+                <p className="mt-1.5 text-[13px] font-bold text-gold">Free</p>
+              </div>
+              <div className="mt-3 border-t border-white/12 pt-3">
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-primary-foreground/55">
+                  Reference
+                </p>
+                <p className="mt-1.5 text-[13px] font-bold">{reference}</p>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -76,7 +102,7 @@ function TrackerScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+          <div className="space-y-4 md:grid md:grid-cols-[minmax(0,1fr)_360px] md:items-start md:gap-6 md:space-y-0">
             <section className="card-surface p-4 md:p-5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Status timeline
@@ -136,6 +162,25 @@ function TrackerScreen() {
                 Most payouts settle within minutes. If your bank delays it, the
                 amount is returned to your Kipit wallet automatically.
               </p>
+            </section>
+
+            {/* Desktop rail extras */}
+            <section className="card-surface hidden p-5 md:block">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                What happens next
+              </p>
+              <ul className="mt-3 space-y-2.5">
+                {[
+                  "You'll get a notification the moment it settles",
+                  "The receipt is saved to your transaction history",
+                  "Delays? Funds return to your wallet automatically",
+                ].map((t) => (
+                  <li key={t} className="flex items-start gap-2.5 text-[12.5px] text-foreground">
+                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" />
+                    {t}
+                  </li>
+                ))}
+              </ul>
             </section>
           </div>
 
