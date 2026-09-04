@@ -76,29 +76,33 @@ function MobileInvest() {
             </p>
 
             {/* Call Account glass card (MOB-061 entry) */}
-            <section className="mt-6 rounded-xl border border-white/12 bg-white/8 p-5 backdrop-blur-md md:p-6">
-              <div className="flex items-start justify-between gap-3">
-                <Link
-                  to="/call-account"
-                  className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary-foreground/75 underline-offset-4 hover:underline"
-                >
+            <section className="relative mt-6 rounded-xl border border-white/12 bg-white/8 p-5 backdrop-blur-md md:p-6">
+              <Link
+                to="/call-account"
+                aria-label={`Open ${CALL_ACCOUNT.name}`}
+                className="absolute inset-0 z-0 rounded-xl"
+              />
+              <div className="pointer-events-none relative z-10 flex items-start justify-between gap-3">
+                <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary-foreground/75">
                   {CALL_ACCOUNT.name}
-                </Link>
+                </span>
                 <span className="shrink-0 rounded-full bg-gold-gradient px-3 py-1 text-[11px] font-extrabold text-gold-foreground">
                   {CALL_ACCOUNT.rate}
                 </span>
               </div>
 
-              <p className="mt-4 text-[13px] text-primary-foreground/70">Balance</p>
-              <p className="mt-0.5 font-display text-[34px] font-extrabold leading-none tracking-[-0.03em] text-num md:text-[40px]">
-                <AmountCounter value={CALL_ACCOUNT.balance} hidden={hidden} mask={mask} />
-              </p>
-              <p className="mt-2 text-[12px] text-primary-foreground/60">
-                {CALL_ACCOUNT.liquidity} &middot; min {naira(CALL_ACCOUNT.minimum)} &middot; earned
-                today {mask(CALL_ACCOUNT.accruedToday)}
-              </p>
+              <div className="pointer-events-none relative z-10">
+                <p className="mt-4 text-[13px] text-primary-foreground/70">Balance</p>
+                <p className="mt-0.5 font-display text-[34px] font-extrabold leading-none tracking-[-0.03em] text-num md:text-[40px]">
+                  <AmountCounter value={CALL_ACCOUNT.balance} hidden={hidden} mask={mask} />
+                </p>
+                <p className="mt-2 text-[12px] text-primary-foreground/60">
+                  {CALL_ACCOUNT.liquidity} &middot; min {naira(CALL_ACCOUNT.minimum)} &middot; earned
+                  today {mask(CALL_ACCOUNT.accruedToday)}
+                </p>
+              </div>
 
-              <div className="mt-5 flex flex-wrap gap-2.5">
+              <div className="relative z-10 mt-5 flex flex-wrap gap-2.5">
                 <Link
                   to="/call-account/add-money"
                   className="inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-gold-gradient px-3 py-3 text-[11px] font-extrabold text-gold-foreground press"
@@ -119,6 +123,7 @@ function MobileInvest() {
                 </Link>
               </div>
             </section>
+
 
 
           </div>
@@ -350,7 +355,12 @@ function DesktopInvest() {
               aria-hidden
               className="pointer-events-none absolute -left-24 bottom-[-6rem] size-72 rounded-full bg-white/10 blur-3xl"
             />
-            <div className="relative">
+            <Link
+              to="/call-account"
+              aria-label={`Open ${CALL_ACCOUNT.name}`}
+              className="absolute inset-0 z-0"
+            />
+            <div className="pointer-events-none relative z-10">
               <div className="flex items-start justify-between gap-6">
                 <div className="min-w-0">
                   <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary-foreground/60">
@@ -367,7 +377,7 @@ function DesktopInvest() {
                       type="button"
                       onClick={toggle}
                       aria-label={hidden ? "Show balances" : "Hide balances"}
-                      className="mb-1.5 grid size-9 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 press hover:bg-white/20"
+                      className="pointer-events-auto mb-1.5 grid size-9 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 press hover:bg-white/20"
                     >
                       {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                     </button>
@@ -386,7 +396,7 @@ function DesktopInvest() {
                 </div>
                 <Link
                   to="/call-account"
-                  className="hidden shrink-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold press hover:bg-white/20 lg:inline-flex"
+                  className="pointer-events-auto hidden shrink-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold press hover:bg-white/20 lg:inline-flex"
                 >
                   Account activity <ChevronRight className="size-3.5" />
                 </Link>
@@ -395,19 +405,19 @@ function DesktopInvest() {
               <div className="mt-6 flex flex-wrap gap-2.5">
                 <Link
                   to="/call-account/add-money"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-gold-gradient px-5 py-2.5 text-xs font-extrabold text-gold-foreground press"
+                  className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-gold-gradient px-5 py-2.5 text-xs font-extrabold text-gold-foreground press"
                 >
                   Add money <ArrowUpRight className="size-3.5" />
                 </Link>
                 <Link
                   to="/withdraw"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-xs font-bold press hover:bg-white/20"
+                  className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-xs font-bold press hover:bg-white/20"
                 >
                   Withdraw <ArrowDownLeft className="size-3.5" />
                 </Link>
                 <Link
                   to="/fixed-plans/create"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-xs font-bold press hover:bg-white/20"
+                  className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-xs font-bold press hover:bg-white/20"
                 >
                   <Plus className="size-3.5" strokeWidth={2.6} /> New fixed plan
                 </Link>
