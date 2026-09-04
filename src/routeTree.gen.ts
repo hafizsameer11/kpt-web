@@ -32,6 +32,7 @@ import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as AdminAdjustmentsRouteImport } from './routes/admin_.adjustments'
 import { Route as AdminComplianceRouteImport } from './routes/admin_.compliance'
+import { Route as AdminMarketingRouteImport } from './routes/admin_.marketing'
 import { Route as AdminProductsRouteImport } from './routes/admin_.products'
 import { Route as AdminRatesRouteImport } from './routes/admin_.rates'
 import { Route as AdminReconciliationRouteImport } from './routes/admin_.reconciliation'
@@ -108,6 +109,7 @@ import { Route as AdminComplianceAmlRouteImport } from './routes/admin_.complian
 import { Route as AdminComplianceMonitoringRouteImport } from './routes/admin_.compliance_.monitoring'
 import { Route as AdminComplianceQueueRouteImport } from './routes/admin_.compliance_.queue'
 import { Route as AdminComplianceReportingRouteImport } from './routes/admin_.compliance_.reporting'
+import { Route as AdminMarketingCampaignsRouteImport } from './routes/admin_.marketing_.campaigns'
 import { Route as AdminProductsProductIdRouteImport } from './routes/admin_.products_.$productId'
 import { Route as AdminProductsNewRouteImport } from './routes/admin_.products_.new'
 import { Route as AdminProductsPublishedRouteImport } from './routes/admin_.products_.published'
@@ -265,6 +267,11 @@ const AdminAdjustmentsRoute = AdminAdjustmentsRouteImport.update({
 const AdminComplianceRoute = AdminComplianceRouteImport.update({
   id: '/admin_/compliance',
   path: '/admin/compliance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminMarketingRoute = AdminMarketingRouteImport.update({
+  id: '/admin_/marketing',
+  path: '/admin/marketing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminProductsRoute = AdminProductsRouteImport.update({
@@ -653,6 +660,11 @@ const AdminComplianceReportingRoute =
     path: '/admin/compliance/reporting',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminMarketingCampaignsRoute = AdminMarketingCampaignsRouteImport.update({
+  id: '/admin_/marketing_/campaigns',
+  path: '/admin/marketing/campaigns',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProductsProductIdRoute = AdminProductsProductIdRouteImport.update({
   id: '/admin_/products_/$productId',
   path: '/admin/products/$productId',
@@ -916,6 +928,7 @@ export interface FileRoutesByFullPath {
   '/withdraw': typeof WithdrawRoute
   '/admin/adjustments': typeof AdminAdjustmentsRoute
   '/admin/compliance': typeof AdminComplianceRoute
+  '/admin/marketing': typeof AdminMarketingRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/rates': typeof AdminRatesRoute
   '/admin/reconciliation': typeof AdminReconciliationRoute
@@ -992,6 +1005,7 @@ export interface FileRoutesByFullPath {
   '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin/compliance/queue': typeof AdminComplianceQueueRoute
   '/admin/compliance/reporting': typeof AdminComplianceReportingRoute
+  '/admin/marketing/campaigns': typeof AdminMarketingCampaignsRoute
   '/admin/products/$productId': typeof AdminProductsProductIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/products/published': typeof AdminProductsPublishedRoute
@@ -1060,6 +1074,7 @@ export interface FileRoutesByTo {
   '/withdraw': typeof WithdrawRoute
   '/admin/adjustments': typeof AdminAdjustmentsRoute
   '/admin/compliance': typeof AdminComplianceRoute
+  '/admin/marketing': typeof AdminMarketingRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/rates': typeof AdminRatesRoute
   '/admin/reconciliation': typeof AdminReconciliationRoute
@@ -1135,6 +1150,7 @@ export interface FileRoutesByTo {
   '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin/compliance/queue': typeof AdminComplianceQueueRoute
   '/admin/compliance/reporting': typeof AdminComplianceReportingRoute
+  '/admin/marketing/campaigns': typeof AdminMarketingCampaignsRoute
   '/admin/products/$productId': typeof AdminProductsProductIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/admin/products/published': typeof AdminProductsPublishedRoute
@@ -1203,6 +1219,7 @@ export interface FileRoutesById {
   '/withdraw': typeof WithdrawRoute
   '/admin_/adjustments': typeof AdminAdjustmentsRoute
   '/admin_/compliance': typeof AdminComplianceRoute
+  '/admin_/marketing': typeof AdminMarketingRoute
   '/admin_/products': typeof AdminProductsRoute
   '/admin_/rates': typeof AdminRatesRoute
   '/admin_/reconciliation': typeof AdminReconciliationRoute
@@ -1279,6 +1296,7 @@ export interface FileRoutesById {
   '/admin_/compliance_/monitoring': typeof AdminComplianceMonitoringRoute
   '/admin_/compliance_/queue': typeof AdminComplianceQueueRoute
   '/admin_/compliance_/reporting': typeof AdminComplianceReportingRoute
+  '/admin_/marketing_/campaigns': typeof AdminMarketingCampaignsRoute
   '/admin_/products_/$productId': typeof AdminProductsProductIdRoute
   '/admin_/products_/new': typeof AdminProductsNewRoute
   '/admin_/products_/published': typeof AdminProductsPublishedRoute
@@ -1349,6 +1367,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin/adjustments'
     | '/admin/compliance'
+    | '/admin/marketing'
     | '/admin/products'
     | '/admin/rates'
     | '/admin/reconciliation'
@@ -1425,6 +1444,7 @@ export interface FileRouteTypes {
     | '/admin/compliance/monitoring'
     | '/admin/compliance/queue'
     | '/admin/compliance/reporting'
+    | '/admin/marketing/campaigns'
     | '/admin/products/$productId'
     | '/admin/products/new'
     | '/admin/products/published'
@@ -1493,6 +1513,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin/adjustments'
     | '/admin/compliance'
+    | '/admin/marketing'
     | '/admin/products'
     | '/admin/rates'
     | '/admin/reconciliation'
@@ -1568,6 +1589,7 @@ export interface FileRouteTypes {
     | '/admin/compliance/monitoring'
     | '/admin/compliance/queue'
     | '/admin/compliance/reporting'
+    | '/admin/marketing/campaigns'
     | '/admin/products/$productId'
     | '/admin/products/new'
     | '/admin/products/published'
@@ -1635,6 +1657,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin_/adjustments'
     | '/admin_/compliance'
+    | '/admin_/marketing'
     | '/admin_/products'
     | '/admin_/rates'
     | '/admin_/reconciliation'
@@ -1711,6 +1734,7 @@ export interface FileRouteTypes {
     | '/admin_/compliance_/monitoring'
     | '/admin_/compliance_/queue'
     | '/admin_/compliance_/reporting'
+    | '/admin_/marketing_/campaigns'
     | '/admin_/products_/$productId'
     | '/admin_/products_/new'
     | '/admin_/products_/published'
@@ -1780,6 +1804,7 @@ export interface RootRouteChildren {
   WithdrawRoute: typeof WithdrawRoute
   AdminAdjustmentsRoute: typeof AdminAdjustmentsRoute
   AdminComplianceRoute: typeof AdminComplianceRoute
+  AdminMarketingRoute: typeof AdminMarketingRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminRatesRoute: typeof AdminRatesRoute
   AdminReconciliationRoute: typeof AdminReconciliationRoute
@@ -1856,6 +1881,7 @@ export interface RootRouteChildren {
   AdminComplianceMonitoringRoute: typeof AdminComplianceMonitoringRoute
   AdminComplianceQueueRoute: typeof AdminComplianceQueueRoute
   AdminComplianceReportingRoute: typeof AdminComplianceReportingRoute
+  AdminMarketingCampaignsRoute: typeof AdminMarketingCampaignsRoute
   AdminProductsProductIdRoute: typeof AdminProductsProductIdRoute
   AdminProductsNewRoute: typeof AdminProductsNewRoute
   AdminProductsPublishedRoute: typeof AdminProductsPublishedRoute
@@ -2048,6 +2074,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/compliance'
       fullPath: '/admin/compliance'
       preLoaderRoute: typeof AdminComplianceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/marketing': {
+      id: '/admin_/marketing'
+      path: '/admin/marketing'
+      fullPath: '/admin/marketing'
+      preLoaderRoute: typeof AdminMarketingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/products': {
@@ -2582,6 +2615,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminComplianceReportingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/marketing_/campaigns': {
+      id: '/admin_/marketing_/campaigns'
+      path: '/admin/marketing/campaigns'
+      fullPath: '/admin/marketing/campaigns'
+      preLoaderRoute: typeof AdminMarketingCampaignsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/products_/$productId': {
       id: '/admin_/products_/$productId'
       path: '/admin/products/$productId'
@@ -2956,6 +2996,7 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawRoute: WithdrawRoute,
   AdminAdjustmentsRoute: AdminAdjustmentsRoute,
   AdminComplianceRoute: AdminComplianceRoute,
+  AdminMarketingRoute: AdminMarketingRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminRatesRoute: AdminRatesRoute,
   AdminReconciliationRoute: AdminReconciliationRoute,
@@ -3032,6 +3073,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminComplianceMonitoringRoute: AdminComplianceMonitoringRoute,
   AdminComplianceQueueRoute: AdminComplianceQueueRoute,
   AdminComplianceReportingRoute: AdminComplianceReportingRoute,
+  AdminMarketingCampaignsRoute: AdminMarketingCampaignsRoute,
   AdminProductsProductIdRoute: AdminProductsProductIdRoute,
   AdminProductsNewRoute: AdminProductsNewRoute,
   AdminProductsPublishedRoute: AdminProductsPublishedRoute,
