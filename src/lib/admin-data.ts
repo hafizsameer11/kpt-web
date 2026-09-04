@@ -233,3 +233,54 @@ export const TODAY_FLOWS = {
   interestCredits: 4_120_000,
   withdrawals: 18_900_000,
 };
+
+/* ── Chart series (prototype) ────────────────────────────────────────── */
+
+/** FUM trend in ₦m, split by pool, for the stacked area chart. */
+export const FUM_TREND = FUM_LABELS.map((month, i) => {
+  const total = FUM_SERIES[i];
+  return {
+    month,
+    total,
+    fixed: Math.round(total * 0.525),
+    explore: Math.round(total * 0.233),
+    call: Math.round(total * 0.167),
+    wallet: Math.round(total * 0.075),
+  };
+});
+
+/** Last 7 days of money movement in ₦m. */
+export const FLOW_TREND = [
+  { day: "Fri", deposits: 31.2, withdrawals: 12.4 },
+  { day: "Sat", deposits: 18.7, withdrawals: 6.1 },
+  { day: "Sun", deposits: 14.3, withdrawals: 4.8 },
+  { day: "Mon", deposits: 46.9, withdrawals: 22.6 },
+  { day: "Tue", deposits: 38.4, withdrawals: 15.9 },
+  { day: "Wed", deposits: 44.1, withdrawals: 19.3 },
+  { day: "Thu", deposits: 42.8, withdrawals: 18.9 },
+];
+
+/** Interest accrued vs paid out, ₦m per month. */
+export const INTEREST_TREND = FUM_LABELS.map((month, i) => ({
+  month,
+  accrued: Math.round((70 + i * 4.6) * 10) / 10,
+  paid: Math.round((52 + i * 3.4) * 10) / 10,
+}));
+
+/** Maturities due, ₦m per week. */
+export const MATURITY_SCHEDULE = [
+  { week: "W1", value: 148.6 },
+  { week: "W2", value: 92.4 },
+  { week: "W3", value: 214.8 },
+  { week: "W4", value: 121.5 },
+  { week: "W5", value: 176.2 },
+  { week: "W6", value: 88.9 },
+];
+
+/** Small sparkline series keyed by metric id (₦m). */
+export const METRIC_SPARKS: Record<string, number[]> = {
+  wallet: [162, 168, 171, 175, 178, 181, 184.5],
+  call: [352, 366, 375, 388, 396, 404, 412.8],
+  fixed: [1064, 1102, 1148, 1189, 1224, 1258, 1286.4],
+  explore: [452, 476, 498, 517, 538, 557, 574.3],
+};
