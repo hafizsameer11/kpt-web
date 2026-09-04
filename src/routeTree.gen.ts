@@ -33,6 +33,7 @@ import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
 import { Route as AdminAccessHelpRouteImport } from './routes/admin_.access-help'
 import { Route as AdminAdjustmentsRouteImport } from './routes/admin_.adjustments'
+import { Route as AdminAuditRouteImport } from './routes/admin_.audit'
 import { Route as AdminComplianceRouteImport } from './routes/admin_.compliance'
 import { Route as AdminLockedRouteImport } from './routes/admin_.locked'
 import { Route as AdminLoginRouteImport } from './routes/admin_.login'
@@ -289,6 +290,11 @@ const AdminAccessHelpRoute = AdminAccessHelpRouteImport.update({
 const AdminAdjustmentsRoute = AdminAdjustmentsRouteImport.update({
   id: '/admin_/adjustments',
   path: '/admin/adjustments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/admin_/audit',
+  path: '/admin/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminComplianceRoute = AdminComplianceRouteImport.update({
@@ -1033,6 +1039,7 @@ export interface FileRoutesByFullPath {
   '/withdraw': typeof WithdrawRoute
   '/admin/access-help': typeof AdminAccessHelpRoute
   '/admin/adjustments': typeof AdminAdjustmentsRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/locked': typeof AdminLockedRoute
   '/admin/login': typeof AdminLoginRoute
@@ -1196,6 +1203,7 @@ export interface FileRoutesByTo {
   '/withdraw': typeof WithdrawRoute
   '/admin/access-help': typeof AdminAccessHelpRoute
   '/admin/adjustments': typeof AdminAdjustmentsRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/compliance': typeof AdminComplianceRoute
   '/admin/locked': typeof AdminLockedRoute
   '/admin/login': typeof AdminLoginRoute
@@ -1358,6 +1366,7 @@ export interface FileRoutesById {
   '/withdraw': typeof WithdrawRoute
   '/admin_/access-help': typeof AdminAccessHelpRoute
   '/admin_/adjustments': typeof AdminAdjustmentsRoute
+  '/admin_/audit': typeof AdminAuditRoute
   '/admin_/compliance': typeof AdminComplianceRoute
   '/admin_/locked': typeof AdminLockedRoute
   '/admin_/login': typeof AdminLoginRoute
@@ -1523,6 +1532,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin/access-help'
     | '/admin/adjustments'
+    | '/admin/audit'
     | '/admin/compliance'
     | '/admin/locked'
     | '/admin/login'
@@ -1686,6 +1696,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin/access-help'
     | '/admin/adjustments'
+    | '/admin/audit'
     | '/admin/compliance'
     | '/admin/locked'
     | '/admin/login'
@@ -1847,6 +1858,7 @@ export interface FileRouteTypes {
     | '/withdraw'
     | '/admin_/access-help'
     | '/admin_/adjustments'
+    | '/admin_/audit'
     | '/admin_/compliance'
     | '/admin_/locked'
     | '/admin_/login'
@@ -2011,6 +2023,7 @@ export interface RootRouteChildren {
   WithdrawRoute: typeof WithdrawRoute
   AdminAccessHelpRoute: typeof AdminAccessHelpRoute
   AdminAdjustmentsRoute: typeof AdminAdjustmentsRoute
+  AdminAuditRoute: typeof AdminAuditRoute
   AdminComplianceRoute: typeof AdminComplianceRoute
   AdminLockedRoute: typeof AdminLockedRoute
   AdminLoginRoute: typeof AdminLoginRoute
@@ -2304,6 +2317,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/adjustments'
       fullPath: '/admin/adjustments'
       preLoaderRoute: typeof AdminAdjustmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/audit': {
+      id: '/admin_/audit'
+      path: '/admin/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/compliance': {
@@ -3339,6 +3359,7 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawRoute: WithdrawRoute,
   AdminAccessHelpRoute: AdminAccessHelpRoute,
   AdminAdjustmentsRoute: AdminAdjustmentsRoute,
+  AdminAuditRoute: AdminAuditRoute,
   AdminComplianceRoute: AdminComplianceRoute,
   AdminLockedRoute: AdminLockedRoute,
   AdminLoginRoute: AdminLoginRoute,

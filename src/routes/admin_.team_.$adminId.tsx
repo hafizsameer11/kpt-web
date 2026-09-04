@@ -143,7 +143,7 @@ function AdminMemberPage() {
 
       <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="space-y-5">
-          <Panel title="Effective permissions" eyebrow={role?.summary} icon={ShieldCheck}>
+          <Panel title="Effective permissions" eyebrow={role?.summary ?? "Role grants"} icon={ShieldCheck}>
             <div className="grid gap-4 sm:grid-cols-2">
               {PERMISSION_GROUPS.map((group) => {
                 const granted = group.permissions.filter((p) => role?.grants.includes(p.id));
