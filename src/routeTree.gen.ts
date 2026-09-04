@@ -138,6 +138,7 @@ import { Route as SettingsStatementsGeneratedRouteImport } from './routes/settin
 import { Route as AdminComplianceAmlAlertIdRouteImport } from './routes/admin_.compliance_.aml_.$alertId'
 import { Route as AdminComplianceQueueCaseIdRouteImport } from './routes/admin_.compliance_.queue_.$caseId'
 import { Route as AdminRatesApprovalsRequestIdRouteImport } from './routes/admin_.rates_.approvals_.$requestId'
+import { Route as AdminReconciliationRecordsRecordIdRouteImport } from './routes/admin_.reconciliation_.records_.$recordId'
 import { Route as AdminUsersUserIdIndexRouteImport } from './routes/admin_.users_.$userId.index'
 import { Route as AdminUsersUserIdAuditRouteImport } from './routes/admin_.users_.$userId.audit'
 import { Route as AdminUsersUserIdBalancesRouteImport } from './routes/admin_.users_.$userId.balances'
@@ -815,6 +816,12 @@ const AdminRatesApprovalsRequestIdRoute =
     path: '/admin/rates/approvals/$requestId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminReconciliationRecordsRecordIdRoute =
+  AdminReconciliationRecordsRecordIdRouteImport.update({
+    id: '/admin_/reconciliation_/records_/$recordId',
+    path: '/admin/reconciliation/records/$recordId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminUsersUserIdIndexRoute = AdminUsersUserIdIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -996,6 +1003,7 @@ export interface FileRoutesByFullPath {
   '/admin/compliance/aml/$alertId': typeof AdminComplianceAmlAlertIdRoute
   '/admin/compliance/queue/$caseId': typeof AdminComplianceQueueCaseIdRoute
   '/admin/rates/approvals/$requestId': typeof AdminRatesApprovalsRequestIdRoute
+  '/admin/reconciliation/records/$recordId': typeof AdminReconciliationRecordsRecordIdRoute
   '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -1134,6 +1142,7 @@ export interface FileRoutesByTo {
   '/admin/compliance/aml/$alertId': typeof AdminComplianceAmlAlertIdRoute
   '/admin/compliance/queue/$caseId': typeof AdminComplianceQueueCaseIdRoute
   '/admin/rates/approvals/$requestId': typeof AdminRatesApprovalsRequestIdRoute
+  '/admin/reconciliation/records/$recordId': typeof AdminReconciliationRecordsRecordIdRoute
   '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -1275,6 +1284,7 @@ export interface FileRoutesById {
   '/admin_/compliance_/aml_/$alertId': typeof AdminComplianceAmlAlertIdRoute
   '/admin_/compliance_/queue_/$caseId': typeof AdminComplianceQueueCaseIdRoute
   '/admin_/rates_/approvals_/$requestId': typeof AdminRatesApprovalsRequestIdRoute
+  '/admin_/reconciliation_/records_/$recordId': typeof AdminReconciliationRecordsRecordIdRoute
   '/admin_/users_/$userId/audit': typeof AdminUsersUserIdAuditRoute
   '/admin_/users_/$userId/balances': typeof AdminUsersUserIdBalancesRoute
   '/admin_/users_/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
@@ -1417,6 +1427,7 @@ export interface FileRouteTypes {
     | '/admin/compliance/aml/$alertId'
     | '/admin/compliance/queue/$caseId'
     | '/admin/rates/approvals/$requestId'
+    | '/admin/reconciliation/records/$recordId'
     | '/admin/users/$userId/audit'
     | '/admin/users/$userId/balances'
     | '/admin/users/$userId/investments'
@@ -1555,6 +1566,7 @@ export interface FileRouteTypes {
     | '/admin/compliance/aml/$alertId'
     | '/admin/compliance/queue/$caseId'
     | '/admin/rates/approvals/$requestId'
+    | '/admin/reconciliation/records/$recordId'
     | '/admin/users/$userId/audit'
     | '/admin/users/$userId/balances'
     | '/admin/users/$userId/investments'
@@ -1695,6 +1707,7 @@ export interface FileRouteTypes {
     | '/admin_/compliance_/aml_/$alertId'
     | '/admin_/compliance_/queue_/$caseId'
     | '/admin_/rates_/approvals_/$requestId'
+    | '/admin_/reconciliation_/records_/$recordId'
     | '/admin_/users_/$userId/audit'
     | '/admin_/users_/$userId/balances'
     | '/admin_/users_/$userId/investments'
@@ -1830,6 +1843,7 @@ export interface RootRouteChildren {
   AdminComplianceAmlAlertIdRoute: typeof AdminComplianceAmlAlertIdRoute
   AdminComplianceQueueCaseIdRoute: typeof AdminComplianceQueueCaseIdRoute
   AdminRatesApprovalsRequestIdRoute: typeof AdminRatesApprovalsRequestIdRoute
+  AdminReconciliationRecordsRecordIdRoute: typeof AdminReconciliationRecordsRecordIdRoute
   PortfolioTransactionsTxnIdReceiptRoute: typeof PortfolioTransactionsTxnIdReceiptRoute
 }
 
@@ -2738,6 +2752,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRatesApprovalsRequestIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/reconciliation_/records_/$recordId': {
+      id: '/admin_/reconciliation_/records_/$recordId'
+      path: '/admin/reconciliation/records/$recordId'
+      fullPath: '/admin/reconciliation/records/$recordId'
+      preLoaderRoute: typeof AdminReconciliationRecordsRecordIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/users_/$userId/': {
       id: '/admin_/users_/$userId/'
       path: '/'
@@ -2974,6 +2995,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminComplianceAmlAlertIdRoute: AdminComplianceAmlAlertIdRoute,
   AdminComplianceQueueCaseIdRoute: AdminComplianceQueueCaseIdRoute,
   AdminRatesApprovalsRequestIdRoute: AdminRatesApprovalsRequestIdRoute,
+  AdminReconciliationRecordsRecordIdRoute:
+    AdminReconciliationRecordsRecordIdRoute,
   PortfolioTransactionsTxnIdReceiptRoute:
     PortfolioTransactionsTxnIdReceiptRoute,
 }

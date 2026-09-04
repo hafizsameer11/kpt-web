@@ -34,7 +34,7 @@ const GROUPS: Group[] = [
       { label: "Compliance & KYC", to: "/admin/compliance", icon: ShieldCheck },
       { label: "Transactions", to: "/admin/transactions", icon: ArrowLeftRight },
       { label: "Withdrawals", to: "/admin/withdrawals", icon: Banknote },
-      { label: "Reconciliation", to: "/admin", icon: Scale, soon: true },
+      { label: "Reconciliation", to: "/admin/reconciliation", icon: Scale },
     ],
   },
   {
