@@ -372,7 +372,9 @@ function ChatScreen() {
               </header>
 
 
-              <div className="flex-1 space-y-4 overflow-y-auto px-6 py-5">{transcript}</div>
+              <div ref={desktopScrollRef} className="flex-1 space-y-4 overflow-y-auto px-6 py-5">
+                {transcript}
+              </div>
 
               <form
                 onSubmit={(event) => {
