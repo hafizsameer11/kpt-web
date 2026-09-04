@@ -40,6 +40,7 @@ import {
   type ChatMessage,
   type ChatProduct,
 } from "@/lib/chat-data";
+import { WHATSAPP_URL } from "@/lib/terms-acceptance";
 
 export const Route = createFileRoute("/chat")({
   head: () => ({
@@ -443,6 +444,22 @@ function ChatScreen() {
                     Every investment, funding and withdrawal is completed in Kipit's standard
                     authorized flow with your transaction PIN.
                   </p>
+                </div>
+
+                <div className="rounded-2xl border border-emerald-600/25 bg-emerald-500/10 p-5">
+                  <p className="text-[13px] font-bold text-emerald-700">Prefer WhatsApp?</p>
+                  <p className="mt-1 text-[12px] text-muted-foreground">
+                    Ask the same questions on WhatsApp and a Kipit agent picks up where the
+                    assistant stops.
+                  </p>
+                  <a
+                    href={WHATSAPP_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-3 flex items-center justify-center gap-1.5 rounded-full bg-emerald-600 py-2 text-[12.5px] font-bold text-white press hover:bg-emerald-700"
+                  >
+                    Chat on WhatsApp <ArrowRight className="size-3.5" />
+                  </a>
                 </div>
               </div>
             </aside>

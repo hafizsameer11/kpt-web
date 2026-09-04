@@ -29,6 +29,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { naira, WALLET } from "@/lib/home-data";
 import { getExploreProduct } from "@/lib/explore-data";
+import { productTermsVersion, recordTermsAcceptance } from "@/lib/terms-acceptance";
 
 export const Route = createFileRoute("/explore_/$productId_/review")({
   head: () => ({
@@ -86,6 +87,8 @@ function SubscriptionReviewScreen() {
   const [error, setError] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const termsVersion = productTermsVersion(product.id);
 
   const ratePct = Number(product.rate.match(/[\d.]+/)?.[0]) || 0;
   const days = Number(product.tenor.match(/\d+/)?.[0]) || 365;
@@ -97,7 +100,10 @@ function SubscriptionReviewScreen() {
   );
 
   const locked = attempts >= MAX_ATTEMPTS;
-  const valid = amount >= product.minimum && product.availability !== "closed";
+  const valid =
+    amount >= product.minimum &&
+    product.availability !== "closed" &&
+    (isMobile || acceptedTerms);
   const SourceIcon = SOURCE_META[source].icon;
 
   function press(key: string) {
@@ -116,6 +122,12 @@ function SubscriptionReviewScreen() {
           if (next === CORRECT_PIN) {
             setOpen(false);
             setPin("");
+            recordTermsAcceptance({
+              productId: product.id,
+              productName: product.name,
+              version: termsVersion,
+              amount,
+            });
             void navigate({
               to: "/explore/$productId/processing",
               params: { productId: product.id },
@@ -320,6 +332,23 @@ function SubscriptionReviewScreen() {
                 <DisclosureStrip variant="marketplace" />
               </div>
 
+              <label className="hidden cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-4 md:flex">
+                <input
+                  type="checkbox"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  className="mt-0.5 size-4 shrink-0 accent-[var(--gold,#c9a227)]"
+                />
+                <span className="text-[12.5px] leading-relaxed text-muted-foreground">
+                  I have read and accept the{" "}
+                  <span className="font-bold text-foreground">
+                    {product.name} offer terms ({termsVersion})
+                  </span>{" "}
+                  and the Kipit Risk Disclosure. Kipit records the version, date and time of your
+                  acceptance.
+                </span>
+              </label>
+
               <div>
                 <button
                   type="button"
@@ -329,7 +358,11 @@ function SubscriptionReviewScreen() {
                     valid ? "k-glow" : "opacity-40 shadow-none"
                   }`}
                 >
-                  {valid ? "Confirm subscription" : "Details incomplete"}
+                  {valid
+                    ? "Confirm subscription"
+                    : !isMobile && !acceptedTerms && amount >= product.minimum
+                      ? "Accept the offer terms"
+                      : "Details incomplete"}
                   <ArrowRight className="size-4" strokeWidth={2.6} />
                 </button>
                 <p className="mt-2.5 flex items-center justify-center gap-1.5 whitespace-nowrap text-[11.5px] text-muted-foreground md:justify-start">
