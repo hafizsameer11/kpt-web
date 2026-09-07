@@ -1,14 +1,22 @@
-# Welcome to your Lovable project
+# Kipitapp
+
+http://www.mykipit.com/
+
+I want to create an interactive prototype for web and mobile app, that on mobile view it looks like a mobile app. for branding, i have attached our logo and also our old website so you can pick the colour.
+
+I want us to build screen by screen, start with the home screen
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://kipitapp.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/650fcd5e-a755-40ec-b87f-b4a4447122c3).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +28,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
