@@ -1,15 +1,16 @@
 /**
- * Live wallet balance for the prototype.
- * Persists to localStorage so deposits and withdrawals actually move the balance.
+ * Live wallet balance from kipit-api. Defaults to 0 — never seed demo money.
  */
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { fetchWallet, isAuthenticated, sandboxDeposit } from "@/lib/api";
 
 const KEY = "kipit:wallet-balance";
 const LEDGER_KEY = "kipit:wallet-ledger";
-export const STARTING_WALLET = 500_000;
+export const STARTING_WALLET = 0;
 
 let current = STARTING_WALLET;
 let hydrated = false;
+let syncing = false;
 const listeners = new Set<() => void>();
 
 const isBrowser = () => typeof window !== "undefined";
@@ -17,9 +18,31 @@ const isBrowser = () => typeof window !== "undefined";
 function hydrate() {
   if (hydrated || !isBrowser()) return;
   hydrated = true;
-  const raw = window.localStorage.getItem(KEY);
-  const parsed = raw === null ? NaN : Number(raw);
-  if (Number.isFinite(parsed) && parsed >= 0) current = parsed;
+  if (isAuthenticated()) {
+    const raw = window.localStorage.getItem(KEY);
+    const parsed = raw === null ? NaN : Number(raw);
+    if (Number.isFinite(parsed) && parsed >= 0) current = parsed;
+    void refreshWalletFromApi();
+  } else {
+    current = 0;
+  }
+}
+
+/** Pull latest balance from API (no-op if logged out). */
+export async function refreshWalletFromApi() {
+  if (!isBrowser() || !isAuthenticated() || syncing) return current;
+  syncing = true;
+  try {
+    const wallet = await fetchWallet();
+    current = Math.max(0, Math.round(wallet.balance));
+    persist();
+    emit();
+  } catch {
+    // Keep local cache if API is unreachable.
+  } finally {
+    syncing = false;
+  }
+  return current;
 }
 
 function persist() {
@@ -46,8 +69,14 @@ export function setWalletBalance(next: number) {
 }
 
 export function resetWalletBalance() {
-  if (isBrowser()) window.localStorage.removeItem(LEDGER_KEY);
-  return setWalletBalance(STARTING_WALLET);
+  if (isBrowser()) {
+    window.localStorage.removeItem(LEDGER_KEY);
+    window.localStorage.removeItem(KEY);
+  }
+  hydrated = true;
+  current = 0;
+  emit();
+  return current;
 }
 
 function ledger(): string[] {
@@ -64,6 +93,7 @@ function ledger(): string[] {
 /**
  * Applies a one-off movement. `ref` makes it idempotent so a success screen
  * refresh or re-visit does not double-count the same deposit/withdrawal.
+ * When authenticated, deposits go through the sandbox funding API.
  */
 export function applyWalletMovement(ref: string, delta: number) {
   hydrate();
@@ -72,6 +102,12 @@ export function applyWalletMovement(ref: string, delta: number) {
   if (seen.includes(ref)) return current;
   if (isBrowser()) {
     window.localStorage.setItem(LEDGER_KEY, JSON.stringify([...seen.slice(-49), ref]));
+  }
+  if (isAuthenticated() && delta > 0) {
+    void sandboxDeposit(Math.abs(delta), ref)
+      .then((res) => setWalletBalance(res.wallet.balance))
+      .catch(() => setWalletBalance(current + delta));
+    return current + Math.abs(delta);
   }
   return setWalletBalance(current + delta);
 }
@@ -94,8 +130,8 @@ export const subscribeWallet = (listener: (value: number) => void) =>
 
 /** Reactive wallet balance for components (hydration safe). */
 export function useWalletBalance() {
-  const value = useSyncExternalStore(subscribe, getWalletBalance, () => STARTING_WALLET);
+  const value = useSyncExternalStore(subscribe, getWalletBalance, () => 0);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  return mounted ? value : STARTING_WALLET;
+  return mounted ? value : 0;
 }

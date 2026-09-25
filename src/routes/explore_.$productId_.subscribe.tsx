@@ -1,5 +1,5 @@
 import { KycGuard } from "@/components/kipit/KycGate";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
   ArrowRight,
@@ -14,8 +14,9 @@ import { useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { Rise, useCountUp } from "@/components/kipit/motion";
-import { naira, WALLET } from "@/lib/home-data";
-import { getExploreProduct } from "@/lib/explore-data";
+import { naira } from "@/lib/home-data";
+import { ensureExploreHydrated, getExploreProduct } from "@/lib/explore-data";
+import { useWalletBalance } from "@/lib/wallet-balance";
 
 export const Route = createFileRoute("/explore_/$productId_/subscribe")({
   head: () => ({
@@ -42,7 +43,8 @@ export const Route = createFileRoute("/explore_/$productId_/subscribe")({
         ? Number(search['amount']) || undefined
         : undefined,
   }),
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
+    await ensureExploreHydrated();
     const product = getExploreProduct(params.productId);
     if (!product) throw notFound();
     return { product };
@@ -59,6 +61,8 @@ type Source = "wallet" | "add" | "card";
 function SubscribeScreen() {
   const { product } = Route.useLoaderData();
   const { amount: initialAmount } = Route.useSearch();
+  const navigate = useNavigate();
+  const WALLET = useWalletBalance();
   const [raw, setRaw] = useState(
     String(initialAmount && initialAmount > 0 ? initialAmount : product.minimum),
   );
@@ -79,6 +83,24 @@ function SubscribeScreen() {
   const earn = useCountUp(interest, 500);
 
   const quick = [product.minimum, product.minimum * 2, product.minimum * 5];
+
+  const continueSubscribe = () => {
+    if (!valid || closed) return;
+    // Subscribe only debits wallet — top up first when short.
+    if (walletShort && source === "add") {
+      void navigate({ to: "/wallet/transfer", search: { amount: shortfall } });
+      return;
+    }
+    if (walletShort && source === "card") {
+      void navigate({ to: "/wallet/card", search: { amount: shortfall } });
+      return;
+    }
+    void navigate({
+      to: "/explore/$productId/review",
+      params: { productId: product.id },
+      search: { amount, source: "wallet" },
+    });
+  };
 
   return (
     <AppShell title="Subscribe" navVariant="elevated">
@@ -271,20 +293,27 @@ function SubscribeScreen() {
 
                   {/* Desktop CTA lives in the sticky rail */}
                   <div className="mt-5 hidden md:block">
-                    <Link
-                      to="/explore/$productId/review"
-                      params={{ productId: product.id }}
-                      search={{ amount, source }}
+                    <button
+                      type="button"
                       disabled={!valid}
+                      onClick={continueSubscribe}
                       className={`flex w-full items-center justify-center gap-2 rounded-xl bg-gold-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-gold-foreground shadow-float press ${
                         valid ? "" : "pointer-events-none opacity-40 shadow-none"
                       }`}
                     >
-                      {closed ? "Fully subscribed" : "Continue"}
+                      {closed
+                        ? "Fully subscribed"
+                        : walletShort && source !== "wallet"
+                          ? source === "card"
+                            ? `Top up ${naira(shortfall)} by card`
+                            : `Top up ${naira(shortfall)} by transfer`
+                          : "Continue"}
                       {!closed && <ArrowRight className="size-4" strokeWidth={2.6} />}
-                    </Link>
+                    </button>
                     <p className="mt-2.5 text-[11.5px] text-primary-foreground/60">
-                      Review product, amount and funding method before confirming.
+                      {walletShort && source !== "wallet"
+                        ? "Fund your wallet first, then return to subscribe."
+                        : "Review product, amount and funding method before confirming."}
                     </p>
                   </div>
                 </div>
@@ -296,20 +325,27 @@ function SubscribeScreen() {
 
           {/* CTA (mobile) */}
           <div className="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom)+0.75rem)] z-30 mt-5 md:hidden">
-            <Link
-              to="/explore/$productId/review"
-              params={{ productId: product.id }}
-              search={{ amount, source }}
+            <button
+              type="button"
               disabled={!valid}
-              className={`flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
+              onClick={continueSubscribe}
+              className={`flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press ${
                 valid ? "" : "pointer-events-none opacity-40 shadow-none"
               }`}
             >
-              {closed ? "Fully subscribed" : "Continue"}
+              {closed
+                ? "Fully subscribed"
+                : walletShort && source !== "wallet"
+                  ? source === "card"
+                    ? `Top up ${naira(shortfall)} by card`
+                    : `Top up ${naira(shortfall)} by transfer`
+                  : "Continue"}
               {!closed && <ArrowRight className="size-4" strokeWidth={2.6} />}
-            </Link>
-            <p className="mt-2.5 whitespace-nowrap text-center text-[11.5px] text-muted-foreground md:text-left">
-              Review product, amount and funding method before confirming.
+            </button>
+            <p className="mt-2.5 whitespace-nowrap text-center text-[11.5px] text-muted-foreground">
+              {walletShort && source !== "wallet"
+                ? "Fund your wallet first, then return to subscribe."
+                : "Review product, amount and funding method before confirming."}
             </p>
           </div>
         </div>

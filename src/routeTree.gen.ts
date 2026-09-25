@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AutoInvestRouteImport } from './routes/auto-invest'
 import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as CallAccountRouteImport } from './routes/call-account'
@@ -31,29 +30,6 @@ import { Route as SplashRouteImport } from './routes/splash'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
-import { Route as AdminAccessHelpRouteImport } from './routes/admin_.access-help'
-import { Route as AdminAdjustmentsRouteImport } from './routes/admin_.adjustments'
-import { Route as AdminAiChatRouteImport } from './routes/admin_.ai-chat'
-import { Route as AdminAnalyticsRouteImport } from './routes/admin_.analytics'
-import { Route as AdminAuditRouteImport } from './routes/admin_.audit'
-import { Route as AdminComplianceRouteImport } from './routes/admin_.compliance'
-import { Route as AdminLockedRouteImport } from './routes/admin_.locked'
-import { Route as AdminLoginRouteImport } from './routes/admin_.login'
-import { Route as AdminMarketingRouteImport } from './routes/admin_.marketing'
-import { Route as AdminNotificationsRouteImport } from './routes/admin_.notifications'
-import { Route as AdminProductsRouteImport } from './routes/admin_.products'
-import { Route as AdminProfileRouteImport } from './routes/admin_.profile'
-import { Route as AdminRatesRouteImport } from './routes/admin_.rates'
-import { Route as AdminReconciliationRouteImport } from './routes/admin_.reconciliation'
-import { Route as AdminReportsRouteImport } from './routes/admin_.reports'
-import { Route as AdminSearchRouteImport } from './routes/admin_.search'
-import { Route as AdminSettingsRouteImport } from './routes/admin_.settings'
-import { Route as AdminSupportRouteImport } from './routes/admin_.support'
-import { Route as AdminTeamRouteImport } from './routes/admin_.team'
-import { Route as AdminTransactionsRouteImport } from './routes/admin_.transactions'
-import { Route as AdminUsersRouteImport } from './routes/admin_.users'
-import { Route as AdminVerifyRouteImport } from './routes/admin_.verify'
-import { Route as AdminWithdrawalsRouteImport } from './routes/admin_.withdrawals'
 import { Route as CallAccountAddMoneyRouteImport } from './routes/call-account_.add-money'
 import { Route as CallAccountReviewRouteImport } from './routes/call-account_.review'
 import { Route as CallAccountSuccessRouteImport } from './routes/call-account_.success'
@@ -106,6 +82,7 @@ import { Route as VerificationTier2RouteImport } from './routes/verification_/ti
 import { Route as WalletAddMoneyRouteImport } from './routes/wallet_/add-money'
 import { Route as WalletCardRouteImport } from './routes/wallet_/card'
 import { Route as WalletFailedRouteImport } from './routes/wallet_/failed'
+import { Route as WalletPaystackCheckoutRouteImport } from './routes/wallet_/paystack-checkout'
 import { Route as WalletProcessingRouteImport } from './routes/wallet_/processing'
 import { Route as WalletSuccessRouteImport } from './routes/wallet_/success'
 import { Route as WalletTransferRouteImport } from './routes/wallet_/transfer'
@@ -118,32 +95,6 @@ import { Route as WithdrawRestrictedRouteImport } from './routes/withdraw_/restr
 import { Route as WithdrawReviewRouteImport } from './routes/withdraw_/review'
 import { Route as WithdrawSuccessRouteImport } from './routes/withdraw_/success'
 import { Route as WithdrawTrackerRouteImport } from './routes/withdraw_/tracker'
-import { Route as AdminAdjustmentsRequestIdRouteImport } from './routes/admin_.adjustments_.$requestId'
-import { Route as AdminAdjustmentsNewRouteImport } from './routes/admin_.adjustments_.new'
-import { Route as AdminAiChatSessionIdRouteImport } from './routes/admin_.ai-chat_.$sessionId'
-import { Route as AdminComplianceAmlRouteImport } from './routes/admin_.compliance_.aml'
-import { Route as AdminComplianceFrozenRouteImport } from './routes/admin_.compliance_.frozen'
-import { Route as AdminComplianceMonitoringRouteImport } from './routes/admin_.compliance_.monitoring'
-import { Route as AdminComplianceQueueRouteImport } from './routes/admin_.compliance_.queue'
-import { Route as AdminComplianceReportingRouteImport } from './routes/admin_.compliance_.reporting'
-import { Route as AdminMarketingAudienceRouteImport } from './routes/admin_.marketing_.audience'
-import { Route as AdminMarketingCampaignsRouteImport } from './routes/admin_.marketing_.campaigns'
-import { Route as AdminMarketingDigestRouteImport } from './routes/admin_.marketing_.digest'
-import { Route as AdminMarketingFeedRouteImport } from './routes/admin_.marketing_.feed'
-import { Route as AdminMarketingReferralsRouteImport } from './routes/admin_.marketing_.referrals'
-import { Route as AdminProductsProductIdRouteImport } from './routes/admin_.products_.$productId'
-import { Route as AdminProductsNewRouteImport } from './routes/admin_.products_.new'
-import { Route as AdminProductsPublishedRouteImport } from './routes/admin_.products_.published'
-import { Route as AdminRatesApprovalsRouteImport } from './routes/admin_.rates_.approvals'
-import { Route as AdminRatesProposeRouteImport } from './routes/admin_.rates_.propose'
-import { Route as AdminReconciliationRecordsRouteImport } from './routes/admin_.reconciliation_.records'
-import { Route as AdminSupportTicketIdRouteImport } from './routes/admin_.support_.$ticketId'
-import { Route as AdminTeamAdminIdRouteImport } from './routes/admin_.team_.$adminId'
-import { Route as AdminTeamNewRouteImport } from './routes/admin_.team_.new'
-import { Route as AdminTeamRolesRouteImport } from './routes/admin_.team_.roles'
-import { Route as AdminTransactionsTxnIdRouteImport } from './routes/admin_.transactions_.$txnId'
-import { Route as AdminUsersUserIdRouteImport } from './routes/admin_.users_.$userId'
-import { Route as AdminWithdrawalsWithdrawalIdRouteImport } from './routes/admin_.withdrawals_.$withdrawalId'
 import { Route as CallAccountWithdrawSuccessRouteImport } from './routes/call-account_.withdraw_.success'
 import { Route as CallAccountWithdrawWalletRouteImport } from './routes/call-account_.withdraw_.wallet'
 import { Route as ExploreProductIdCalculatorRouteImport } from './routes/explore_.$productId_.calculator'
@@ -161,38 +112,20 @@ import { Route as FixedPlansCreateProcessingRouteImport } from './routes/fixed-p
 import { Route as FixedPlansCreateReviewRouteImport } from './routes/fixed-plans_/create/review'
 import { Route as FixedPlansCreateSuccessRouteImport } from './routes/fixed-plans_/create/success'
 import { Route as FixedPlansCreateTenorRouteImport } from './routes/fixed-plans_/create/tenor'
+import { Route as GiftsClaimCodeRouteImport } from './routes/gifts_.claim_.$code'
 import { Route as PortfolioTransactionsTxnIdRouteImport } from './routes/portfolio_.transactions_.$txnId'
 import { Route as SettingsHelpTicketRouteImport } from './routes/settings_/help_/ticket'
+import { Route as SettingsHelpTicketsRouteImport } from './routes/settings_/help_/tickets'
 import { Route as SettingsSecurityChangePinRouteImport } from './routes/settings_/security_/change-pin'
 import { Route as SettingsSecurityResetPinRouteImport } from './routes/settings_/security_/reset-pin'
 import { Route as SettingsSecuritySessionsRouteImport } from './routes/settings_/security_/sessions'
 import { Route as SettingsStatementsGeneratedRouteImport } from './routes/settings_/statements_/generated'
-import { Route as AdminComplianceAmlAlertIdRouteImport } from './routes/admin_.compliance_.aml_.$alertId'
-import { Route as AdminComplianceQueueCaseIdRouteImport } from './routes/admin_.compliance_.queue_.$caseId'
-import { Route as AdminMarketingCampaignsCampaignIdRouteImport } from './routes/admin_.marketing_.campaigns_.$campaignId'
-import { Route as AdminMarketingCampaignsNewRouteImport } from './routes/admin_.marketing_.campaigns_.new'
-import { Route as AdminMarketingFeedNewRouteImport } from './routes/admin_.marketing_.feed_.new'
-import { Route as AdminRatesApprovalsRequestIdRouteImport } from './routes/admin_.rates_.approvals_.$requestId'
-import { Route as AdminReconciliationRecordsRecordIdRouteImport } from './routes/admin_.reconciliation_.records_.$recordId'
-import { Route as AdminUsersUserIdIndexRouteImport } from './routes/admin_.users_.$userId.index'
-import { Route as AdminUsersUserIdAuditRouteImport } from './routes/admin_.users_.$userId.audit'
-import { Route as AdminUsersUserIdBalancesRouteImport } from './routes/admin_.users_.$userId.balances'
-import { Route as AdminUsersUserIdFrozenRouteImport } from './routes/admin_.users_.$userId.frozen'
-import { Route as AdminUsersUserIdInvestmentsRouteImport } from './routes/admin_.users_.$userId.investments'
-import { Route as AdminUsersUserIdKycRouteImport } from './routes/admin_.users_.$userId.kyc'
-import { Route as AdminUsersUserIdSessionsRouteImport } from './routes/admin_.users_.$userId.sessions'
-import { Route as AdminUsersUserIdSupportRouteImport } from './routes/admin_.users_.$userId.support'
-import { Route as AdminUsersUserIdTransactionsRouteImport } from './routes/admin_.users_.$userId.transactions'
 import { Route as PortfolioTransactionsTxnIdReceiptRouteImport } from './routes/portfolio_.transactions_.$txnId_.receipt'
+import { Route as SettingsHelpTicketsTicketIdRouteImport } from './routes/settings_/help_/tickets_.$ticketId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AutoInvestRoute = AutoInvestRouteImport.update({
@@ -293,121 +226,6 @@ const WelcomeRoute = WelcomeRouteImport.update({
 const WithdrawRoute = WithdrawRouteImport.update({
   id: '/withdraw',
   path: '/withdraw',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminAccessHelpRoute = AdminAccessHelpRouteImport.update({
-  id: '/admin_/access-help',
-  path: '/admin/access-help',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminAdjustmentsRoute = AdminAdjustmentsRouteImport.update({
-  id: '/admin_/adjustments',
-  path: '/admin/adjustments',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminAiChatRoute = AdminAiChatRouteImport.update({
-  id: '/admin_/ai-chat',
-  path: '/admin/ai-chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
-  id: '/admin_/analytics',
-  path: '/admin/analytics',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminAuditRoute = AdminAuditRouteImport.update({
-  id: '/admin_/audit',
-  path: '/admin/audit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminComplianceRoute = AdminComplianceRouteImport.update({
-  id: '/admin_/compliance',
-  path: '/admin/compliance',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminLockedRoute = AdminLockedRouteImport.update({
-  id: '/admin_/locked',
-  path: '/admin/locked',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/admin_/login',
-  path: '/admin/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminMarketingRoute = AdminMarketingRouteImport.update({
-  id: '/admin_/marketing',
-  path: '/admin/marketing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminNotificationsRoute = AdminNotificationsRouteImport.update({
-  id: '/admin_/notifications',
-  path: '/admin/notifications',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminProductsRoute = AdminProductsRouteImport.update({
-  id: '/admin_/products',
-  path: '/admin/products',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminProfileRoute = AdminProfileRouteImport.update({
-  id: '/admin_/profile',
-  path: '/admin/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRatesRoute = AdminRatesRouteImport.update({
-  id: '/admin_/rates',
-  path: '/admin/rates',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminReconciliationRoute = AdminReconciliationRouteImport.update({
-  id: '/admin_/reconciliation',
-  path: '/admin/reconciliation',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminReportsRoute = AdminReportsRouteImport.update({
-  id: '/admin_/reports',
-  path: '/admin/reports',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminSearchRoute = AdminSearchRouteImport.update({
-  id: '/admin_/search',
-  path: '/admin/search',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminSettingsRoute = AdminSettingsRouteImport.update({
-  id: '/admin_/settings',
-  path: '/admin/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminSupportRoute = AdminSupportRouteImport.update({
-  id: '/admin_/support',
-  path: '/admin/support',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminTeamRoute = AdminTeamRouteImport.update({
-  id: '/admin_/team',
-  path: '/admin/team',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
-  id: '/admin_/transactions',
-  path: '/admin/transactions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/admin_/users',
-  path: '/admin/users',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminVerifyRoute = AdminVerifyRouteImport.update({
-  id: '/admin_/verify',
-  path: '/admin/verify',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminWithdrawalsRoute = AdminWithdrawalsRouteImport.update({
-  id: '/admin_/withdrawals',
-  path: '/admin/withdrawals',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CallAccountAddMoneyRoute = CallAccountAddMoneyRouteImport.update({
@@ -673,6 +491,11 @@ const WalletFailedRoute = WalletFailedRouteImport.update({
   path: '/wallet/failed',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WalletPaystackCheckoutRoute = WalletPaystackCheckoutRouteImport.update({
+  id: '/wallet_/paystack-checkout',
+  path: '/wallet/paystack-checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WalletProcessingRoute = WalletProcessingRouteImport.update({
   id: '/wallet_/processing',
   path: '/wallet/processing',
@@ -733,141 +556,6 @@ const WithdrawTrackerRoute = WithdrawTrackerRouteImport.update({
   path: '/withdraw/tracker',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminAdjustmentsRequestIdRoute =
-  AdminAdjustmentsRequestIdRouteImport.update({
-    id: '/admin_/adjustments_/$requestId',
-    path: '/admin/adjustments/$requestId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminAdjustmentsNewRoute = AdminAdjustmentsNewRouteImport.update({
-  id: '/admin_/adjustments_/new',
-  path: '/admin/adjustments/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminAiChatSessionIdRoute = AdminAiChatSessionIdRouteImport.update({
-  id: '/admin_/ai-chat_/$sessionId',
-  path: '/admin/ai-chat/$sessionId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminComplianceAmlRoute = AdminComplianceAmlRouteImport.update({
-  id: '/admin_/compliance_/aml',
-  path: '/admin/compliance/aml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminComplianceFrozenRoute = AdminComplianceFrozenRouteImport.update({
-  id: '/admin_/compliance_/frozen',
-  path: '/admin/compliance/frozen',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminComplianceMonitoringRoute =
-  AdminComplianceMonitoringRouteImport.update({
-    id: '/admin_/compliance_/monitoring',
-    path: '/admin/compliance/monitoring',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminComplianceQueueRoute = AdminComplianceQueueRouteImport.update({
-  id: '/admin_/compliance_/queue',
-  path: '/admin/compliance/queue',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminComplianceReportingRoute =
-  AdminComplianceReportingRouteImport.update({
-    id: '/admin_/compliance_/reporting',
-    path: '/admin/compliance/reporting',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminMarketingAudienceRoute = AdminMarketingAudienceRouteImport.update({
-  id: '/admin_/marketing_/audience',
-  path: '/admin/marketing/audience',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminMarketingCampaignsRoute = AdminMarketingCampaignsRouteImport.update({
-  id: '/admin_/marketing_/campaigns',
-  path: '/admin/marketing/campaigns',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminMarketingDigestRoute = AdminMarketingDigestRouteImport.update({
-  id: '/admin_/marketing_/digest',
-  path: '/admin/marketing/digest',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminMarketingFeedRoute = AdminMarketingFeedRouteImport.update({
-  id: '/admin_/marketing_/feed',
-  path: '/admin/marketing/feed',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminMarketingReferralsRoute = AdminMarketingReferralsRouteImport.update({
-  id: '/admin_/marketing_/referrals',
-  path: '/admin/marketing/referrals',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminProductsProductIdRoute = AdminProductsProductIdRouteImport.update({
-  id: '/admin_/products_/$productId',
-  path: '/admin/products/$productId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminProductsNewRoute = AdminProductsNewRouteImport.update({
-  id: '/admin_/products_/new',
-  path: '/admin/products/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminProductsPublishedRoute = AdminProductsPublishedRouteImport.update({
-  id: '/admin_/products_/published',
-  path: '/admin/products/published',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRatesApprovalsRoute = AdminRatesApprovalsRouteImport.update({
-  id: '/admin_/rates_/approvals',
-  path: '/admin/rates/approvals',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRatesProposeRoute = AdminRatesProposeRouteImport.update({
-  id: '/admin_/rates_/propose',
-  path: '/admin/rates/propose',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminReconciliationRecordsRoute =
-  AdminReconciliationRecordsRouteImport.update({
-    id: '/admin_/reconciliation_/records',
-    path: '/admin/reconciliation/records',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminSupportTicketIdRoute = AdminSupportTicketIdRouteImport.update({
-  id: '/admin_/support_/$ticketId',
-  path: '/admin/support/$ticketId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminTeamAdminIdRoute = AdminTeamAdminIdRouteImport.update({
-  id: '/admin_/team_/$adminId',
-  path: '/admin/team/$adminId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminTeamNewRoute = AdminTeamNewRouteImport.update({
-  id: '/admin_/team_/new',
-  path: '/admin/team/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminTeamRolesRoute = AdminTeamRolesRouteImport.update({
-  id: '/admin_/team_/roles',
-  path: '/admin/team/roles',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminTransactionsTxnIdRoute = AdminTransactionsTxnIdRouteImport.update({
-  id: '/admin_/transactions_/$txnId',
-  path: '/admin/transactions/$txnId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
-  id: '/admin_/users_/$userId',
-  path: '/admin/users/$userId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminWithdrawalsWithdrawalIdRoute =
-  AdminWithdrawalsWithdrawalIdRouteImport.update({
-    id: '/admin_/withdrawals_/$withdrawalId',
-    path: '/admin/withdrawals/$withdrawalId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const CallAccountWithdrawSuccessRoute =
   CallAccountWithdrawSuccessRouteImport.update({
     id: '/call-account_/withdraw_/success',
@@ -962,6 +650,11 @@ const FixedPlansCreateTenorRoute = FixedPlansCreateTenorRouteImport.update({
   path: '/tenor',
   getParentRoute: () => FixedPlansCreateRoute,
 } as any)
+const GiftsClaimCodeRoute = GiftsClaimCodeRouteImport.update({
+  id: '/gifts_/claim_/$code',
+  path: '/gifts/claim/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortfolioTransactionsTxnIdRoute =
   PortfolioTransactionsTxnIdRouteImport.update({
     id: '/portfolio_/transactions_/$txnId',
@@ -971,6 +664,11 @@ const PortfolioTransactionsTxnIdRoute =
 const SettingsHelpTicketRoute = SettingsHelpTicketRouteImport.update({
   id: '/settings_/help_/ticket',
   path: '/settings/help/ticket',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsHelpTicketsRoute = SettingsHelpTicketsRouteImport.update({
+  id: '/settings_/help_/tickets',
+  path: '/settings/help/tickets',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsSecurityChangePinRoute =
@@ -997,106 +695,21 @@ const SettingsStatementsGeneratedRoute =
     path: '/settings/statements/generated',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AdminComplianceAmlAlertIdRoute =
-  AdminComplianceAmlAlertIdRouteImport.update({
-    id: '/admin_/compliance_/aml_/$alertId',
-    path: '/admin/compliance/aml/$alertId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminComplianceQueueCaseIdRoute =
-  AdminComplianceQueueCaseIdRouteImport.update({
-    id: '/admin_/compliance_/queue_/$caseId',
-    path: '/admin/compliance/queue/$caseId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminMarketingCampaignsCampaignIdRoute =
-  AdminMarketingCampaignsCampaignIdRouteImport.update({
-    id: '/admin_/marketing_/campaigns_/$campaignId',
-    path: '/admin/marketing/campaigns/$campaignId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminMarketingCampaignsNewRoute =
-  AdminMarketingCampaignsNewRouteImport.update({
-    id: '/admin_/marketing_/campaigns_/new',
-    path: '/admin/marketing/campaigns/new',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminMarketingFeedNewRoute = AdminMarketingFeedNewRouteImport.update({
-  id: '/admin_/marketing_/feed_/new',
-  path: '/admin/marketing/feed/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRatesApprovalsRequestIdRoute =
-  AdminRatesApprovalsRequestIdRouteImport.update({
-    id: '/admin_/rates_/approvals_/$requestId',
-    path: '/admin/rates/approvals/$requestId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminReconciliationRecordsRecordIdRoute =
-  AdminReconciliationRecordsRecordIdRouteImport.update({
-    id: '/admin_/reconciliation_/records_/$recordId',
-    path: '/admin/reconciliation/records/$recordId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminUsersUserIdIndexRoute = AdminUsersUserIdIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminUsersUserIdRoute,
-} as any)
-const AdminUsersUserIdAuditRoute = AdminUsersUserIdAuditRouteImport.update({
-  id: '/audit',
-  path: '/audit',
-  getParentRoute: () => AdminUsersUserIdRoute,
-} as any)
-const AdminUsersUserIdBalancesRoute =
-  AdminUsersUserIdBalancesRouteImport.update({
-    id: '/balances',
-    path: '/balances',
-    getParentRoute: () => AdminUsersUserIdRoute,
-  } as any)
-const AdminUsersUserIdFrozenRoute = AdminUsersUserIdFrozenRouteImport.update({
-  id: '/frozen',
-  path: '/frozen',
-  getParentRoute: () => AdminUsersUserIdRoute,
-} as any)
-const AdminUsersUserIdInvestmentsRoute =
-  AdminUsersUserIdInvestmentsRouteImport.update({
-    id: '/investments',
-    path: '/investments',
-    getParentRoute: () => AdminUsersUserIdRoute,
-  } as any)
-const AdminUsersUserIdKycRoute = AdminUsersUserIdKycRouteImport.update({
-  id: '/kyc',
-  path: '/kyc',
-  getParentRoute: () => AdminUsersUserIdRoute,
-} as any)
-const AdminUsersUserIdSessionsRoute =
-  AdminUsersUserIdSessionsRouteImport.update({
-    id: '/sessions',
-    path: '/sessions',
-    getParentRoute: () => AdminUsersUserIdRoute,
-  } as any)
-const AdminUsersUserIdSupportRoute = AdminUsersUserIdSupportRouteImport.update({
-  id: '/support',
-  path: '/support',
-  getParentRoute: () => AdminUsersUserIdRoute,
-} as any)
-const AdminUsersUserIdTransactionsRoute =
-  AdminUsersUserIdTransactionsRouteImport.update({
-    id: '/transactions',
-    path: '/transactions',
-    getParentRoute: () => AdminUsersUserIdRoute,
-  } as any)
 const PortfolioTransactionsTxnIdReceiptRoute =
   PortfolioTransactionsTxnIdReceiptRouteImport.update({
     id: '/portfolio_/transactions_/$txnId_/receipt',
     path: '/portfolio/transactions/$txnId/receipt',
     getParentRoute: () => rootRouteImport,
   } as any)
+const SettingsHelpTicketsTicketIdRoute =
+  SettingsHelpTicketsTicketIdRouteImport.update({
+    id: '/settings_/help_/tickets_/$ticketId',
+    path: '/settings/help/tickets/$ticketId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
@@ -1117,29 +730,6 @@ export interface FileRoutesByFullPath {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
-  '/admin/access-help': typeof AdminAccessHelpRoute
-  '/admin/adjustments': typeof AdminAdjustmentsRoute
-  '/admin/ai-chat': typeof AdminAiChatRoute
-  '/admin/analytics': typeof AdminAnalyticsRoute
-  '/admin/audit': typeof AdminAuditRoute
-  '/admin/compliance': typeof AdminComplianceRoute
-  '/admin/locked': typeof AdminLockedRoute
-  '/admin/login': typeof AdminLoginRoute
-  '/admin/marketing': typeof AdminMarketingRoute
-  '/admin/notifications': typeof AdminNotificationsRoute
-  '/admin/products': typeof AdminProductsRoute
-  '/admin/profile': typeof AdminProfileRoute
-  '/admin/rates': typeof AdminRatesRoute
-  '/admin/reconciliation': typeof AdminReconciliationRoute
-  '/admin/reports': typeof AdminReportsRoute
-  '/admin/search': typeof AdminSearchRoute
-  '/admin/settings': typeof AdminSettingsRoute
-  '/admin/support': typeof AdminSupportRoute
-  '/admin/team': typeof AdminTeamRoute
-  '/admin/transactions': typeof AdminTransactionsRoute
-  '/admin/users': typeof AdminUsersRoute
-  '/admin/verify': typeof AdminVerifyRoute
-  '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
@@ -1192,6 +782,7 @@ export interface FileRoutesByFullPath {
   '/wallet/add-money': typeof WalletAddMoneyRoute
   '/wallet/card': typeof WalletCardRoute
   '/wallet/failed': typeof WalletFailedRoute
+  '/wallet/paystack-checkout': typeof WalletPaystackCheckoutRoute
   '/wallet/processing': typeof WalletProcessingRoute
   '/wallet/success': typeof WalletSuccessRoute
   '/wallet/transfer': typeof WalletTransferRoute
@@ -1204,32 +795,6 @@ export interface FileRoutesByFullPath {
   '/withdraw/review': typeof WithdrawReviewRoute
   '/withdraw/success': typeof WithdrawSuccessRoute
   '/withdraw/tracker': typeof WithdrawTrackerRoute
-  '/admin/adjustments/$requestId': typeof AdminAdjustmentsRequestIdRoute
-  '/admin/adjustments/new': typeof AdminAdjustmentsNewRoute
-  '/admin/ai-chat/$sessionId': typeof AdminAiChatSessionIdRoute
-  '/admin/compliance/aml': typeof AdminComplianceAmlRoute
-  '/admin/compliance/frozen': typeof AdminComplianceFrozenRoute
-  '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
-  '/admin/compliance/queue': typeof AdminComplianceQueueRoute
-  '/admin/compliance/reporting': typeof AdminComplianceReportingRoute
-  '/admin/marketing/audience': typeof AdminMarketingAudienceRoute
-  '/admin/marketing/campaigns': typeof AdminMarketingCampaignsRoute
-  '/admin/marketing/digest': typeof AdminMarketingDigestRoute
-  '/admin/marketing/feed': typeof AdminMarketingFeedRoute
-  '/admin/marketing/referrals': typeof AdminMarketingReferralsRoute
-  '/admin/products/$productId': typeof AdminProductsProductIdRoute
-  '/admin/products/new': typeof AdminProductsNewRoute
-  '/admin/products/published': typeof AdminProductsPublishedRoute
-  '/admin/rates/approvals': typeof AdminRatesApprovalsRoute
-  '/admin/rates/propose': typeof AdminRatesProposeRoute
-  '/admin/reconciliation/records': typeof AdminReconciliationRecordsRoute
-  '/admin/support/$ticketId': typeof AdminSupportTicketIdRoute
-  '/admin/team/$adminId': typeof AdminTeamAdminIdRoute
-  '/admin/team/new': typeof AdminTeamNewRoute
-  '/admin/team/roles': typeof AdminTeamRolesRoute
-  '/admin/transactions/$txnId': typeof AdminTransactionsTxnIdRoute
-  '/admin/users/$userId': typeof AdminUsersUserIdRouteWithChildren
-  '/admin/withdrawals/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
   '/call-account/withdraw/success': typeof CallAccountWithdrawSuccessRoute
   '/call-account/withdraw/wallet': typeof CallAccountWithdrawWalletRoute
   '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
@@ -1246,34 +811,20 @@ export interface FileRoutesByFullPath {
   '/fixed-plans/create/review': typeof FixedPlansCreateReviewRoute
   '/fixed-plans/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
+  '/gifts/claim/$code': typeof GiftsClaimCodeRoute
   '/portfolio/transactions/$txnId': typeof PortfolioTransactionsTxnIdRoute
   '/settings/help/ticket': typeof SettingsHelpTicketRoute
+  '/settings/help/tickets': typeof SettingsHelpTicketsRoute
   '/settings/security/change-pin': typeof SettingsSecurityChangePinRoute
   '/settings/security/reset-pin': typeof SettingsSecurityResetPinRoute
   '/settings/security/sessions': typeof SettingsSecuritySessionsRoute
   '/settings/statements/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans/create/': typeof FixedPlansCreateIndexRoute
-  '/admin/compliance/aml/$alertId': typeof AdminComplianceAmlAlertIdRoute
-  '/admin/compliance/queue/$caseId': typeof AdminComplianceQueueCaseIdRoute
-  '/admin/marketing/campaigns/$campaignId': typeof AdminMarketingCampaignsCampaignIdRoute
-  '/admin/marketing/campaigns/new': typeof AdminMarketingCampaignsNewRoute
-  '/admin/marketing/feed/new': typeof AdminMarketingFeedNewRoute
-  '/admin/rates/approvals/$requestId': typeof AdminRatesApprovalsRequestIdRoute
-  '/admin/reconciliation/records/$recordId': typeof AdminReconciliationRecordsRecordIdRoute
-  '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
-  '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
-  '/admin/users/$userId/frozen': typeof AdminUsersUserIdFrozenRoute
-  '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
-  '/admin/users/$userId/kyc': typeof AdminUsersUserIdKycRoute
-  '/admin/users/$userId/sessions': typeof AdminUsersUserIdSessionsRoute
-  '/admin/users/$userId/support': typeof AdminUsersUserIdSupportRoute
-  '/admin/users/$userId/transactions': typeof AdminUsersUserIdTransactionsRoute
   '/portfolio/transactions/$txnId/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
-  '/admin/users/$userId/': typeof AdminUsersUserIdIndexRoute
+  '/settings/help/tickets/$ticketId': typeof SettingsHelpTicketsTicketIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
@@ -1294,29 +845,6 @@ export interface FileRoutesByTo {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
-  '/admin/access-help': typeof AdminAccessHelpRoute
-  '/admin/adjustments': typeof AdminAdjustmentsRoute
-  '/admin/ai-chat': typeof AdminAiChatRoute
-  '/admin/analytics': typeof AdminAnalyticsRoute
-  '/admin/audit': typeof AdminAuditRoute
-  '/admin/compliance': typeof AdminComplianceRoute
-  '/admin/locked': typeof AdminLockedRoute
-  '/admin/login': typeof AdminLoginRoute
-  '/admin/marketing': typeof AdminMarketingRoute
-  '/admin/notifications': typeof AdminNotificationsRoute
-  '/admin/products': typeof AdminProductsRoute
-  '/admin/profile': typeof AdminProfileRoute
-  '/admin/rates': typeof AdminRatesRoute
-  '/admin/reconciliation': typeof AdminReconciliationRoute
-  '/admin/reports': typeof AdminReportsRoute
-  '/admin/search': typeof AdminSearchRoute
-  '/admin/settings': typeof AdminSettingsRoute
-  '/admin/support': typeof AdminSupportRoute
-  '/admin/team': typeof AdminTeamRoute
-  '/admin/transactions': typeof AdminTransactionsRoute
-  '/admin/users': typeof AdminUsersRoute
-  '/admin/verify': typeof AdminVerifyRoute
-  '/admin/withdrawals': typeof AdminWithdrawalsRoute
   '/call-account/add-money': typeof CallAccountAddMoneyRoute
   '/call-account/review': typeof CallAccountReviewRoute
   '/call-account/success': typeof CallAccountSuccessRoute
@@ -1368,6 +896,7 @@ export interface FileRoutesByTo {
   '/wallet/add-money': typeof WalletAddMoneyRoute
   '/wallet/card': typeof WalletCardRoute
   '/wallet/failed': typeof WalletFailedRoute
+  '/wallet/paystack-checkout': typeof WalletPaystackCheckoutRoute
   '/wallet/processing': typeof WalletProcessingRoute
   '/wallet/success': typeof WalletSuccessRoute
   '/wallet/transfer': typeof WalletTransferRoute
@@ -1380,31 +909,6 @@ export interface FileRoutesByTo {
   '/withdraw/review': typeof WithdrawReviewRoute
   '/withdraw/success': typeof WithdrawSuccessRoute
   '/withdraw/tracker': typeof WithdrawTrackerRoute
-  '/admin/adjustments/$requestId': typeof AdminAdjustmentsRequestIdRoute
-  '/admin/adjustments/new': typeof AdminAdjustmentsNewRoute
-  '/admin/ai-chat/$sessionId': typeof AdminAiChatSessionIdRoute
-  '/admin/compliance/aml': typeof AdminComplianceAmlRoute
-  '/admin/compliance/frozen': typeof AdminComplianceFrozenRoute
-  '/admin/compliance/monitoring': typeof AdminComplianceMonitoringRoute
-  '/admin/compliance/queue': typeof AdminComplianceQueueRoute
-  '/admin/compliance/reporting': typeof AdminComplianceReportingRoute
-  '/admin/marketing/audience': typeof AdminMarketingAudienceRoute
-  '/admin/marketing/campaigns': typeof AdminMarketingCampaignsRoute
-  '/admin/marketing/digest': typeof AdminMarketingDigestRoute
-  '/admin/marketing/feed': typeof AdminMarketingFeedRoute
-  '/admin/marketing/referrals': typeof AdminMarketingReferralsRoute
-  '/admin/products/$productId': typeof AdminProductsProductIdRoute
-  '/admin/products/new': typeof AdminProductsNewRoute
-  '/admin/products/published': typeof AdminProductsPublishedRoute
-  '/admin/rates/approvals': typeof AdminRatesApprovalsRoute
-  '/admin/rates/propose': typeof AdminRatesProposeRoute
-  '/admin/reconciliation/records': typeof AdminReconciliationRecordsRoute
-  '/admin/support/$ticketId': typeof AdminSupportTicketIdRoute
-  '/admin/team/$adminId': typeof AdminTeamAdminIdRoute
-  '/admin/team/new': typeof AdminTeamNewRoute
-  '/admin/team/roles': typeof AdminTeamRolesRoute
-  '/admin/transactions/$txnId': typeof AdminTransactionsTxnIdRoute
-  '/admin/withdrawals/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
   '/call-account/withdraw/success': typeof CallAccountWithdrawSuccessRoute
   '/call-account/withdraw/wallet': typeof CallAccountWithdrawWalletRoute
   '/explore/$productId/calculator': typeof ExploreProductIdCalculatorRoute
@@ -1421,35 +925,21 @@ export interface FileRoutesByTo {
   '/fixed-plans/create/review': typeof FixedPlansCreateReviewRoute
   '/fixed-plans/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans/create/tenor': typeof FixedPlansCreateTenorRoute
+  '/gifts/claim/$code': typeof GiftsClaimCodeRoute
   '/portfolio/transactions/$txnId': typeof PortfolioTransactionsTxnIdRoute
   '/settings/help/ticket': typeof SettingsHelpTicketRoute
+  '/settings/help/tickets': typeof SettingsHelpTicketsRoute
   '/settings/security/change-pin': typeof SettingsSecurityChangePinRoute
   '/settings/security/reset-pin': typeof SettingsSecurityResetPinRoute
   '/settings/security/sessions': typeof SettingsSecuritySessionsRoute
   '/settings/statements/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans/create': typeof FixedPlansCreateIndexRoute
-  '/admin/compliance/aml/$alertId': typeof AdminComplianceAmlAlertIdRoute
-  '/admin/compliance/queue/$caseId': typeof AdminComplianceQueueCaseIdRoute
-  '/admin/marketing/campaigns/$campaignId': typeof AdminMarketingCampaignsCampaignIdRoute
-  '/admin/marketing/campaigns/new': typeof AdminMarketingCampaignsNewRoute
-  '/admin/marketing/feed/new': typeof AdminMarketingFeedNewRoute
-  '/admin/rates/approvals/$requestId': typeof AdminRatesApprovalsRequestIdRoute
-  '/admin/reconciliation/records/$recordId': typeof AdminReconciliationRecordsRecordIdRoute
-  '/admin/users/$userId/audit': typeof AdminUsersUserIdAuditRoute
-  '/admin/users/$userId/balances': typeof AdminUsersUserIdBalancesRoute
-  '/admin/users/$userId/frozen': typeof AdminUsersUserIdFrozenRoute
-  '/admin/users/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
-  '/admin/users/$userId/kyc': typeof AdminUsersUserIdKycRoute
-  '/admin/users/$userId/sessions': typeof AdminUsersUserIdSessionsRoute
-  '/admin/users/$userId/support': typeof AdminUsersUserIdSupportRoute
-  '/admin/users/$userId/transactions': typeof AdminUsersUserIdTransactionsRoute
   '/portfolio/transactions/$txnId/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
-  '/admin/users/$userId': typeof AdminUsersUserIdIndexRoute
+  '/settings/help/tickets/$ticketId': typeof SettingsHelpTicketsTicketIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
@@ -1470,29 +960,6 @@ export interface FileRoutesById {
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
-  '/admin_/access-help': typeof AdminAccessHelpRoute
-  '/admin_/adjustments': typeof AdminAdjustmentsRoute
-  '/admin_/ai-chat': typeof AdminAiChatRoute
-  '/admin_/analytics': typeof AdminAnalyticsRoute
-  '/admin_/audit': typeof AdminAuditRoute
-  '/admin_/compliance': typeof AdminComplianceRoute
-  '/admin_/locked': typeof AdminLockedRoute
-  '/admin_/login': typeof AdminLoginRoute
-  '/admin_/marketing': typeof AdminMarketingRoute
-  '/admin_/notifications': typeof AdminNotificationsRoute
-  '/admin_/products': typeof AdminProductsRoute
-  '/admin_/profile': typeof AdminProfileRoute
-  '/admin_/rates': typeof AdminRatesRoute
-  '/admin_/reconciliation': typeof AdminReconciliationRoute
-  '/admin_/reports': typeof AdminReportsRoute
-  '/admin_/search': typeof AdminSearchRoute
-  '/admin_/settings': typeof AdminSettingsRoute
-  '/admin_/support': typeof AdminSupportRoute
-  '/admin_/team': typeof AdminTeamRoute
-  '/admin_/transactions': typeof AdminTransactionsRoute
-  '/admin_/users': typeof AdminUsersRoute
-  '/admin_/verify': typeof AdminVerifyRoute
-  '/admin_/withdrawals': typeof AdminWithdrawalsRoute
   '/call-account_/add-money': typeof CallAccountAddMoneyRoute
   '/call-account_/review': typeof CallAccountReviewRoute
   '/call-account_/success': typeof CallAccountSuccessRoute
@@ -1545,6 +1012,7 @@ export interface FileRoutesById {
   '/wallet_/add-money': typeof WalletAddMoneyRoute
   '/wallet_/card': typeof WalletCardRoute
   '/wallet_/failed': typeof WalletFailedRoute
+  '/wallet_/paystack-checkout': typeof WalletPaystackCheckoutRoute
   '/wallet_/processing': typeof WalletProcessingRoute
   '/wallet_/success': typeof WalletSuccessRoute
   '/wallet_/transfer': typeof WalletTransferRoute
@@ -1557,32 +1025,6 @@ export interface FileRoutesById {
   '/withdraw_/review': typeof WithdrawReviewRoute
   '/withdraw_/success': typeof WithdrawSuccessRoute
   '/withdraw_/tracker': typeof WithdrawTrackerRoute
-  '/admin_/adjustments_/$requestId': typeof AdminAdjustmentsRequestIdRoute
-  '/admin_/adjustments_/new': typeof AdminAdjustmentsNewRoute
-  '/admin_/ai-chat_/$sessionId': typeof AdminAiChatSessionIdRoute
-  '/admin_/compliance_/aml': typeof AdminComplianceAmlRoute
-  '/admin_/compliance_/frozen': typeof AdminComplianceFrozenRoute
-  '/admin_/compliance_/monitoring': typeof AdminComplianceMonitoringRoute
-  '/admin_/compliance_/queue': typeof AdminComplianceQueueRoute
-  '/admin_/compliance_/reporting': typeof AdminComplianceReportingRoute
-  '/admin_/marketing_/audience': typeof AdminMarketingAudienceRoute
-  '/admin_/marketing_/campaigns': typeof AdminMarketingCampaignsRoute
-  '/admin_/marketing_/digest': typeof AdminMarketingDigestRoute
-  '/admin_/marketing_/feed': typeof AdminMarketingFeedRoute
-  '/admin_/marketing_/referrals': typeof AdminMarketingReferralsRoute
-  '/admin_/products_/$productId': typeof AdminProductsProductIdRoute
-  '/admin_/products_/new': typeof AdminProductsNewRoute
-  '/admin_/products_/published': typeof AdminProductsPublishedRoute
-  '/admin_/rates_/approvals': typeof AdminRatesApprovalsRoute
-  '/admin_/rates_/propose': typeof AdminRatesProposeRoute
-  '/admin_/reconciliation_/records': typeof AdminReconciliationRecordsRoute
-  '/admin_/support_/$ticketId': typeof AdminSupportTicketIdRoute
-  '/admin_/team_/$adminId': typeof AdminTeamAdminIdRoute
-  '/admin_/team_/new': typeof AdminTeamNewRoute
-  '/admin_/team_/roles': typeof AdminTeamRolesRoute
-  '/admin_/transactions_/$txnId': typeof AdminTransactionsTxnIdRoute
-  '/admin_/users_/$userId': typeof AdminUsersUserIdRouteWithChildren
-  '/admin_/withdrawals_/$withdrawalId': typeof AdminWithdrawalsWithdrawalIdRoute
   '/call-account_/withdraw_/success': typeof CallAccountWithdrawSuccessRoute
   '/call-account_/withdraw_/wallet': typeof CallAccountWithdrawWalletRoute
   '/explore_/$productId_/calculator': typeof ExploreProductIdCalculatorRoute
@@ -1599,36 +1041,22 @@ export interface FileRoutesById {
   '/fixed-plans_/create/review': typeof FixedPlansCreateReviewRoute
   '/fixed-plans_/create/success': typeof FixedPlansCreateSuccessRoute
   '/fixed-plans_/create/tenor': typeof FixedPlansCreateTenorRoute
+  '/gifts_/claim_/$code': typeof GiftsClaimCodeRoute
   '/portfolio_/transactions_/$txnId': typeof PortfolioTransactionsTxnIdRoute
   '/settings_/help_/ticket': typeof SettingsHelpTicketRoute
+  '/settings_/help_/tickets': typeof SettingsHelpTicketsRoute
   '/settings_/security_/change-pin': typeof SettingsSecurityChangePinRoute
   '/settings_/security_/reset-pin': typeof SettingsSecurityResetPinRoute
   '/settings_/security_/sessions': typeof SettingsSecuritySessionsRoute
   '/settings_/statements_/generated': typeof SettingsStatementsGeneratedRoute
   '/fixed-plans_/create/': typeof FixedPlansCreateIndexRoute
-  '/admin_/compliance_/aml_/$alertId': typeof AdminComplianceAmlAlertIdRoute
-  '/admin_/compliance_/queue_/$caseId': typeof AdminComplianceQueueCaseIdRoute
-  '/admin_/marketing_/campaigns_/$campaignId': typeof AdminMarketingCampaignsCampaignIdRoute
-  '/admin_/marketing_/campaigns_/new': typeof AdminMarketingCampaignsNewRoute
-  '/admin_/marketing_/feed_/new': typeof AdminMarketingFeedNewRoute
-  '/admin_/rates_/approvals_/$requestId': typeof AdminRatesApprovalsRequestIdRoute
-  '/admin_/reconciliation_/records_/$recordId': typeof AdminReconciliationRecordsRecordIdRoute
-  '/admin_/users_/$userId/audit': typeof AdminUsersUserIdAuditRoute
-  '/admin_/users_/$userId/balances': typeof AdminUsersUserIdBalancesRoute
-  '/admin_/users_/$userId/frozen': typeof AdminUsersUserIdFrozenRoute
-  '/admin_/users_/$userId/investments': typeof AdminUsersUserIdInvestmentsRoute
-  '/admin_/users_/$userId/kyc': typeof AdminUsersUserIdKycRoute
-  '/admin_/users_/$userId/sessions': typeof AdminUsersUserIdSessionsRoute
-  '/admin_/users_/$userId/support': typeof AdminUsersUserIdSupportRoute
-  '/admin_/users_/$userId/transactions': typeof AdminUsersUserIdTransactionsRoute
   '/portfolio_/transactions_/$txnId_/receipt': typeof PortfolioTransactionsTxnIdReceiptRoute
-  '/admin_/users_/$userId/': typeof AdminUsersUserIdIndexRoute
+  '/settings_/help_/tickets_/$ticketId': typeof SettingsHelpTicketsTicketIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/auto-invest'
     | '/calculator'
     | '/call-account'
@@ -1649,29 +1077,6 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
-    | '/admin/access-help'
-    | '/admin/adjustments'
-    | '/admin/ai-chat'
-    | '/admin/analytics'
-    | '/admin/audit'
-    | '/admin/compliance'
-    | '/admin/locked'
-    | '/admin/login'
-    | '/admin/marketing'
-    | '/admin/notifications'
-    | '/admin/products'
-    | '/admin/profile'
-    | '/admin/rates'
-    | '/admin/reconciliation'
-    | '/admin/reports'
-    | '/admin/search'
-    | '/admin/settings'
-    | '/admin/support'
-    | '/admin/team'
-    | '/admin/transactions'
-    | '/admin/users'
-    | '/admin/verify'
-    | '/admin/withdrawals'
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
@@ -1724,6 +1129,7 @@ export interface FileRouteTypes {
     | '/wallet/add-money'
     | '/wallet/card'
     | '/wallet/failed'
+    | '/wallet/paystack-checkout'
     | '/wallet/processing'
     | '/wallet/success'
     | '/wallet/transfer'
@@ -1736,32 +1142,6 @@ export interface FileRouteTypes {
     | '/withdraw/review'
     | '/withdraw/success'
     | '/withdraw/tracker'
-    | '/admin/adjustments/$requestId'
-    | '/admin/adjustments/new'
-    | '/admin/ai-chat/$sessionId'
-    | '/admin/compliance/aml'
-    | '/admin/compliance/frozen'
-    | '/admin/compliance/monitoring'
-    | '/admin/compliance/queue'
-    | '/admin/compliance/reporting'
-    | '/admin/marketing/audience'
-    | '/admin/marketing/campaigns'
-    | '/admin/marketing/digest'
-    | '/admin/marketing/feed'
-    | '/admin/marketing/referrals'
-    | '/admin/products/$productId'
-    | '/admin/products/new'
-    | '/admin/products/published'
-    | '/admin/rates/approvals'
-    | '/admin/rates/propose'
-    | '/admin/reconciliation/records'
-    | '/admin/support/$ticketId'
-    | '/admin/team/$adminId'
-    | '/admin/team/new'
-    | '/admin/team/roles'
-    | '/admin/transactions/$txnId'
-    | '/admin/users/$userId'
-    | '/admin/withdrawals/$withdrawalId'
     | '/call-account/withdraw/success'
     | '/call-account/withdraw/wallet'
     | '/explore/$productId/calculator'
@@ -1778,34 +1158,20 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/review'
     | '/fixed-plans/create/success'
     | '/fixed-plans/create/tenor'
+    | '/gifts/claim/$code'
     | '/portfolio/transactions/$txnId'
     | '/settings/help/ticket'
+    | '/settings/help/tickets'
     | '/settings/security/change-pin'
     | '/settings/security/reset-pin'
     | '/settings/security/sessions'
     | '/settings/statements/generated'
     | '/fixed-plans/create/'
-    | '/admin/compliance/aml/$alertId'
-    | '/admin/compliance/queue/$caseId'
-    | '/admin/marketing/campaigns/$campaignId'
-    | '/admin/marketing/campaigns/new'
-    | '/admin/marketing/feed/new'
-    | '/admin/rates/approvals/$requestId'
-    | '/admin/reconciliation/records/$recordId'
-    | '/admin/users/$userId/audit'
-    | '/admin/users/$userId/balances'
-    | '/admin/users/$userId/frozen'
-    | '/admin/users/$userId/investments'
-    | '/admin/users/$userId/kyc'
-    | '/admin/users/$userId/sessions'
-    | '/admin/users/$userId/support'
-    | '/admin/users/$userId/transactions'
     | '/portfolio/transactions/$txnId/receipt'
-    | '/admin/users/$userId/'
+    | '/settings/help/tickets/$ticketId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/auto-invest'
     | '/calculator'
     | '/call-account'
@@ -1826,29 +1192,6 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
-    | '/admin/access-help'
-    | '/admin/adjustments'
-    | '/admin/ai-chat'
-    | '/admin/analytics'
-    | '/admin/audit'
-    | '/admin/compliance'
-    | '/admin/locked'
-    | '/admin/login'
-    | '/admin/marketing'
-    | '/admin/notifications'
-    | '/admin/products'
-    | '/admin/profile'
-    | '/admin/rates'
-    | '/admin/reconciliation'
-    | '/admin/reports'
-    | '/admin/search'
-    | '/admin/settings'
-    | '/admin/support'
-    | '/admin/team'
-    | '/admin/transactions'
-    | '/admin/users'
-    | '/admin/verify'
-    | '/admin/withdrawals'
     | '/call-account/add-money'
     | '/call-account/review'
     | '/call-account/success'
@@ -1900,6 +1243,7 @@ export interface FileRouteTypes {
     | '/wallet/add-money'
     | '/wallet/card'
     | '/wallet/failed'
+    | '/wallet/paystack-checkout'
     | '/wallet/processing'
     | '/wallet/success'
     | '/wallet/transfer'
@@ -1912,31 +1256,6 @@ export interface FileRouteTypes {
     | '/withdraw/review'
     | '/withdraw/success'
     | '/withdraw/tracker'
-    | '/admin/adjustments/$requestId'
-    | '/admin/adjustments/new'
-    | '/admin/ai-chat/$sessionId'
-    | '/admin/compliance/aml'
-    | '/admin/compliance/frozen'
-    | '/admin/compliance/monitoring'
-    | '/admin/compliance/queue'
-    | '/admin/compliance/reporting'
-    | '/admin/marketing/audience'
-    | '/admin/marketing/campaigns'
-    | '/admin/marketing/digest'
-    | '/admin/marketing/feed'
-    | '/admin/marketing/referrals'
-    | '/admin/products/$productId'
-    | '/admin/products/new'
-    | '/admin/products/published'
-    | '/admin/rates/approvals'
-    | '/admin/rates/propose'
-    | '/admin/reconciliation/records'
-    | '/admin/support/$ticketId'
-    | '/admin/team/$adminId'
-    | '/admin/team/new'
-    | '/admin/team/roles'
-    | '/admin/transactions/$txnId'
-    | '/admin/withdrawals/$withdrawalId'
     | '/call-account/withdraw/success'
     | '/call-account/withdraw/wallet'
     | '/explore/$productId/calculator'
@@ -1953,34 +1272,20 @@ export interface FileRouteTypes {
     | '/fixed-plans/create/review'
     | '/fixed-plans/create/success'
     | '/fixed-plans/create/tenor'
+    | '/gifts/claim/$code'
     | '/portfolio/transactions/$txnId'
     | '/settings/help/ticket'
+    | '/settings/help/tickets'
     | '/settings/security/change-pin'
     | '/settings/security/reset-pin'
     | '/settings/security/sessions'
     | '/settings/statements/generated'
     | '/fixed-plans/create'
-    | '/admin/compliance/aml/$alertId'
-    | '/admin/compliance/queue/$caseId'
-    | '/admin/marketing/campaigns/$campaignId'
-    | '/admin/marketing/campaigns/new'
-    | '/admin/marketing/feed/new'
-    | '/admin/rates/approvals/$requestId'
-    | '/admin/reconciliation/records/$recordId'
-    | '/admin/users/$userId/audit'
-    | '/admin/users/$userId/balances'
-    | '/admin/users/$userId/frozen'
-    | '/admin/users/$userId/investments'
-    | '/admin/users/$userId/kyc'
-    | '/admin/users/$userId/sessions'
-    | '/admin/users/$userId/support'
-    | '/admin/users/$userId/transactions'
     | '/portfolio/transactions/$txnId/receipt'
-    | '/admin/users/$userId'
+    | '/settings/help/tickets/$ticketId'
   id:
     | '__root__'
     | '/'
-    | '/admin'
     | '/auto-invest'
     | '/calculator'
     | '/call-account'
@@ -2001,29 +1306,6 @@ export interface FileRouteTypes {
     | '/verification'
     | '/welcome'
     | '/withdraw'
-    | '/admin_/access-help'
-    | '/admin_/adjustments'
-    | '/admin_/ai-chat'
-    | '/admin_/analytics'
-    | '/admin_/audit'
-    | '/admin_/compliance'
-    | '/admin_/locked'
-    | '/admin_/login'
-    | '/admin_/marketing'
-    | '/admin_/notifications'
-    | '/admin_/products'
-    | '/admin_/profile'
-    | '/admin_/rates'
-    | '/admin_/reconciliation'
-    | '/admin_/reports'
-    | '/admin_/search'
-    | '/admin_/settings'
-    | '/admin_/support'
-    | '/admin_/team'
-    | '/admin_/transactions'
-    | '/admin_/users'
-    | '/admin_/verify'
-    | '/admin_/withdrawals'
     | '/call-account_/add-money'
     | '/call-account_/review'
     | '/call-account_/success'
@@ -2076,6 +1358,7 @@ export interface FileRouteTypes {
     | '/wallet_/add-money'
     | '/wallet_/card'
     | '/wallet_/failed'
+    | '/wallet_/paystack-checkout'
     | '/wallet_/processing'
     | '/wallet_/success'
     | '/wallet_/transfer'
@@ -2088,32 +1371,6 @@ export interface FileRouteTypes {
     | '/withdraw_/review'
     | '/withdraw_/success'
     | '/withdraw_/tracker'
-    | '/admin_/adjustments_/$requestId'
-    | '/admin_/adjustments_/new'
-    | '/admin_/ai-chat_/$sessionId'
-    | '/admin_/compliance_/aml'
-    | '/admin_/compliance_/frozen'
-    | '/admin_/compliance_/monitoring'
-    | '/admin_/compliance_/queue'
-    | '/admin_/compliance_/reporting'
-    | '/admin_/marketing_/audience'
-    | '/admin_/marketing_/campaigns'
-    | '/admin_/marketing_/digest'
-    | '/admin_/marketing_/feed'
-    | '/admin_/marketing_/referrals'
-    | '/admin_/products_/$productId'
-    | '/admin_/products_/new'
-    | '/admin_/products_/published'
-    | '/admin_/rates_/approvals'
-    | '/admin_/rates_/propose'
-    | '/admin_/reconciliation_/records'
-    | '/admin_/support_/$ticketId'
-    | '/admin_/team_/$adminId'
-    | '/admin_/team_/new'
-    | '/admin_/team_/roles'
-    | '/admin_/transactions_/$txnId'
-    | '/admin_/users_/$userId'
-    | '/admin_/withdrawals_/$withdrawalId'
     | '/call-account_/withdraw_/success'
     | '/call-account_/withdraw_/wallet'
     | '/explore_/$productId_/calculator'
@@ -2130,35 +1387,21 @@ export interface FileRouteTypes {
     | '/fixed-plans_/create/review'
     | '/fixed-plans_/create/success'
     | '/fixed-plans_/create/tenor'
+    | '/gifts_/claim_/$code'
     | '/portfolio_/transactions_/$txnId'
     | '/settings_/help_/ticket'
+    | '/settings_/help_/tickets'
     | '/settings_/security_/change-pin'
     | '/settings_/security_/reset-pin'
     | '/settings_/security_/sessions'
     | '/settings_/statements_/generated'
     | '/fixed-plans_/create/'
-    | '/admin_/compliance_/aml_/$alertId'
-    | '/admin_/compliance_/queue_/$caseId'
-    | '/admin_/marketing_/campaigns_/$campaignId'
-    | '/admin_/marketing_/campaigns_/new'
-    | '/admin_/marketing_/feed_/new'
-    | '/admin_/rates_/approvals_/$requestId'
-    | '/admin_/reconciliation_/records_/$recordId'
-    | '/admin_/users_/$userId/audit'
-    | '/admin_/users_/$userId/balances'
-    | '/admin_/users_/$userId/frozen'
-    | '/admin_/users_/$userId/investments'
-    | '/admin_/users_/$userId/kyc'
-    | '/admin_/users_/$userId/sessions'
-    | '/admin_/users_/$userId/support'
-    | '/admin_/users_/$userId/transactions'
     | '/portfolio_/transactions_/$txnId_/receipt'
-    | '/admin_/users_/$userId/'
+    | '/settings_/help_/tickets_/$ticketId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
   AutoInvestRoute: typeof AutoInvestRoute
   CalculatorRoute: typeof CalculatorRoute
   CallAccountRoute: typeof CallAccountRoute
@@ -2179,29 +1422,6 @@ export interface RootRouteChildren {
   VerificationRoute: typeof VerificationRoute
   WelcomeRoute: typeof WelcomeRoute
   WithdrawRoute: typeof WithdrawRoute
-  AdminAccessHelpRoute: typeof AdminAccessHelpRoute
-  AdminAdjustmentsRoute: typeof AdminAdjustmentsRoute
-  AdminAiChatRoute: typeof AdminAiChatRoute
-  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
-  AdminAuditRoute: typeof AdminAuditRoute
-  AdminComplianceRoute: typeof AdminComplianceRoute
-  AdminLockedRoute: typeof AdminLockedRoute
-  AdminLoginRoute: typeof AdminLoginRoute
-  AdminMarketingRoute: typeof AdminMarketingRoute
-  AdminNotificationsRoute: typeof AdminNotificationsRoute
-  AdminProductsRoute: typeof AdminProductsRoute
-  AdminProfileRoute: typeof AdminProfileRoute
-  AdminRatesRoute: typeof AdminRatesRoute
-  AdminReconciliationRoute: typeof AdminReconciliationRoute
-  AdminReportsRoute: typeof AdminReportsRoute
-  AdminSearchRoute: typeof AdminSearchRoute
-  AdminSettingsRoute: typeof AdminSettingsRoute
-  AdminSupportRoute: typeof AdminSupportRoute
-  AdminTeamRoute: typeof AdminTeamRoute
-  AdminTransactionsRoute: typeof AdminTransactionsRoute
-  AdminUsersRoute: typeof AdminUsersRoute
-  AdminVerifyRoute: typeof AdminVerifyRoute
-  AdminWithdrawalsRoute: typeof AdminWithdrawalsRoute
   CallAccountAddMoneyRoute: typeof CallAccountAddMoneyRoute
   CallAccountReviewRoute: typeof CallAccountReviewRoute
   CallAccountSuccessRoute: typeof CallAccountSuccessRoute
@@ -2254,6 +1474,7 @@ export interface RootRouteChildren {
   WalletAddMoneyRoute: typeof WalletAddMoneyRoute
   WalletCardRoute: typeof WalletCardRoute
   WalletFailedRoute: typeof WalletFailedRoute
+  WalletPaystackCheckoutRoute: typeof WalletPaystackCheckoutRoute
   WalletProcessingRoute: typeof WalletProcessingRoute
   WalletSuccessRoute: typeof WalletSuccessRoute
   WalletTransferRoute: typeof WalletTransferRoute
@@ -2266,32 +1487,6 @@ export interface RootRouteChildren {
   WithdrawReviewRoute: typeof WithdrawReviewRoute
   WithdrawSuccessRoute: typeof WithdrawSuccessRoute
   WithdrawTrackerRoute: typeof WithdrawTrackerRoute
-  AdminAdjustmentsRequestIdRoute: typeof AdminAdjustmentsRequestIdRoute
-  AdminAdjustmentsNewRoute: typeof AdminAdjustmentsNewRoute
-  AdminAiChatSessionIdRoute: typeof AdminAiChatSessionIdRoute
-  AdminComplianceAmlRoute: typeof AdminComplianceAmlRoute
-  AdminComplianceFrozenRoute: typeof AdminComplianceFrozenRoute
-  AdminComplianceMonitoringRoute: typeof AdminComplianceMonitoringRoute
-  AdminComplianceQueueRoute: typeof AdminComplianceQueueRoute
-  AdminComplianceReportingRoute: typeof AdminComplianceReportingRoute
-  AdminMarketingAudienceRoute: typeof AdminMarketingAudienceRoute
-  AdminMarketingCampaignsRoute: typeof AdminMarketingCampaignsRoute
-  AdminMarketingDigestRoute: typeof AdminMarketingDigestRoute
-  AdminMarketingFeedRoute: typeof AdminMarketingFeedRoute
-  AdminMarketingReferralsRoute: typeof AdminMarketingReferralsRoute
-  AdminProductsProductIdRoute: typeof AdminProductsProductIdRoute
-  AdminProductsNewRoute: typeof AdminProductsNewRoute
-  AdminProductsPublishedRoute: typeof AdminProductsPublishedRoute
-  AdminRatesApprovalsRoute: typeof AdminRatesApprovalsRoute
-  AdminRatesProposeRoute: typeof AdminRatesProposeRoute
-  AdminReconciliationRecordsRoute: typeof AdminReconciliationRecordsRoute
-  AdminSupportTicketIdRoute: typeof AdminSupportTicketIdRoute
-  AdminTeamAdminIdRoute: typeof AdminTeamAdminIdRoute
-  AdminTeamNewRoute: typeof AdminTeamNewRoute
-  AdminTeamRolesRoute: typeof AdminTeamRolesRoute
-  AdminTransactionsTxnIdRoute: typeof AdminTransactionsTxnIdRoute
-  AdminUsersUserIdRoute: typeof AdminUsersUserIdRouteWithChildren
-  AdminWithdrawalsWithdrawalIdRoute: typeof AdminWithdrawalsWithdrawalIdRoute
   CallAccountWithdrawSuccessRoute: typeof CallAccountWithdrawSuccessRoute
   CallAccountWithdrawWalletRoute: typeof CallAccountWithdrawWalletRoute
   ExploreProductIdCalculatorRoute: typeof ExploreProductIdCalculatorRoute
@@ -2303,20 +1498,16 @@ export interface RootRouteChildren {
   ExploreProductIdSuccessRoute: typeof ExploreProductIdSuccessRoute
   ExploreProductIdUnavailableRoute: typeof ExploreProductIdUnavailableRoute
   ExploreCategoryCategoryIdRoute: typeof ExploreCategoryCategoryIdRoute
+  GiftsClaimCodeRoute: typeof GiftsClaimCodeRoute
   PortfolioTransactionsTxnIdRoute: typeof PortfolioTransactionsTxnIdRoute
   SettingsHelpTicketRoute: typeof SettingsHelpTicketRoute
+  SettingsHelpTicketsRoute: typeof SettingsHelpTicketsRoute
   SettingsSecurityChangePinRoute: typeof SettingsSecurityChangePinRoute
   SettingsSecurityResetPinRoute: typeof SettingsSecurityResetPinRoute
   SettingsSecuritySessionsRoute: typeof SettingsSecuritySessionsRoute
   SettingsStatementsGeneratedRoute: typeof SettingsStatementsGeneratedRoute
-  AdminComplianceAmlAlertIdRoute: typeof AdminComplianceAmlAlertIdRoute
-  AdminComplianceQueueCaseIdRoute: typeof AdminComplianceQueueCaseIdRoute
-  AdminMarketingCampaignsCampaignIdRoute: typeof AdminMarketingCampaignsCampaignIdRoute
-  AdminMarketingCampaignsNewRoute: typeof AdminMarketingCampaignsNewRoute
-  AdminMarketingFeedNewRoute: typeof AdminMarketingFeedNewRoute
-  AdminRatesApprovalsRequestIdRoute: typeof AdminRatesApprovalsRequestIdRoute
-  AdminReconciliationRecordsRecordIdRoute: typeof AdminReconciliationRecordsRecordIdRoute
   PortfolioTransactionsTxnIdReceiptRoute: typeof PortfolioTransactionsTxnIdReceiptRoute
+  SettingsHelpTicketsTicketIdRoute: typeof SettingsHelpTicketsTicketIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -2326,13 +1517,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auto-invest': {
@@ -2473,167 +1657,6 @@ declare module '@tanstack/react-router' {
       path: '/withdraw'
       fullPath: '/withdraw'
       preLoaderRoute: typeof WithdrawRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/access-help': {
-      id: '/admin_/access-help'
-      path: '/admin/access-help'
-      fullPath: '/admin/access-help'
-      preLoaderRoute: typeof AdminAccessHelpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/adjustments': {
-      id: '/admin_/adjustments'
-      path: '/admin/adjustments'
-      fullPath: '/admin/adjustments'
-      preLoaderRoute: typeof AdminAdjustmentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/ai-chat': {
-      id: '/admin_/ai-chat'
-      path: '/admin/ai-chat'
-      fullPath: '/admin/ai-chat'
-      preLoaderRoute: typeof AdminAiChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/analytics': {
-      id: '/admin_/analytics'
-      path: '/admin/analytics'
-      fullPath: '/admin/analytics'
-      preLoaderRoute: typeof AdminAnalyticsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/audit': {
-      id: '/admin_/audit'
-      path: '/admin/audit'
-      fullPath: '/admin/audit'
-      preLoaderRoute: typeof AdminAuditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/compliance': {
-      id: '/admin_/compliance'
-      path: '/admin/compliance'
-      fullPath: '/admin/compliance'
-      preLoaderRoute: typeof AdminComplianceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/locked': {
-      id: '/admin_/locked'
-      path: '/admin/locked'
-      fullPath: '/admin/locked'
-      preLoaderRoute: typeof AdminLockedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/login': {
-      id: '/admin_/login'
-      path: '/admin/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/marketing': {
-      id: '/admin_/marketing'
-      path: '/admin/marketing'
-      fullPath: '/admin/marketing'
-      preLoaderRoute: typeof AdminMarketingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/notifications': {
-      id: '/admin_/notifications'
-      path: '/admin/notifications'
-      fullPath: '/admin/notifications'
-      preLoaderRoute: typeof AdminNotificationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/products': {
-      id: '/admin_/products'
-      path: '/admin/products'
-      fullPath: '/admin/products'
-      preLoaderRoute: typeof AdminProductsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/profile': {
-      id: '/admin_/profile'
-      path: '/admin/profile'
-      fullPath: '/admin/profile'
-      preLoaderRoute: typeof AdminProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/rates': {
-      id: '/admin_/rates'
-      path: '/admin/rates'
-      fullPath: '/admin/rates'
-      preLoaderRoute: typeof AdminRatesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/reconciliation': {
-      id: '/admin_/reconciliation'
-      path: '/admin/reconciliation'
-      fullPath: '/admin/reconciliation'
-      preLoaderRoute: typeof AdminReconciliationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/reports': {
-      id: '/admin_/reports'
-      path: '/admin/reports'
-      fullPath: '/admin/reports'
-      preLoaderRoute: typeof AdminReportsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/search': {
-      id: '/admin_/search'
-      path: '/admin/search'
-      fullPath: '/admin/search'
-      preLoaderRoute: typeof AdminSearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/settings': {
-      id: '/admin_/settings'
-      path: '/admin/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/support': {
-      id: '/admin_/support'
-      path: '/admin/support'
-      fullPath: '/admin/support'
-      preLoaderRoute: typeof AdminSupportRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/team': {
-      id: '/admin_/team'
-      path: '/admin/team'
-      fullPath: '/admin/team'
-      preLoaderRoute: typeof AdminTeamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/transactions': {
-      id: '/admin_/transactions'
-      path: '/admin/transactions'
-      fullPath: '/admin/transactions'
-      preLoaderRoute: typeof AdminTransactionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/users': {
-      id: '/admin_/users'
-      path: '/admin/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/verify': {
-      id: '/admin_/verify'
-      path: '/admin/verify'
-      fullPath: '/admin/verify'
-      preLoaderRoute: typeof AdminVerifyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/withdrawals': {
-      id: '/admin_/withdrawals'
-      path: '/admin/withdrawals'
-      fullPath: '/admin/withdrawals'
-      preLoaderRoute: typeof AdminWithdrawalsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/call-account_/add-money': {
@@ -3000,6 +2023,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WalletFailedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wallet_/paystack-checkout': {
+      id: '/wallet_/paystack-checkout'
+      path: '/wallet/paystack-checkout'
+      fullPath: '/wallet/paystack-checkout'
+      preLoaderRoute: typeof WalletPaystackCheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/wallet_/processing': {
       id: '/wallet_/processing'
       path: '/wallet/processing'
@@ -3082,188 +2112,6 @@ declare module '@tanstack/react-router' {
       path: '/withdraw/tracker'
       fullPath: '/withdraw/tracker'
       preLoaderRoute: typeof WithdrawTrackerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/adjustments_/$requestId': {
-      id: '/admin_/adjustments_/$requestId'
-      path: '/admin/adjustments/$requestId'
-      fullPath: '/admin/adjustments/$requestId'
-      preLoaderRoute: typeof AdminAdjustmentsRequestIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/adjustments_/new': {
-      id: '/admin_/adjustments_/new'
-      path: '/admin/adjustments/new'
-      fullPath: '/admin/adjustments/new'
-      preLoaderRoute: typeof AdminAdjustmentsNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/ai-chat_/$sessionId': {
-      id: '/admin_/ai-chat_/$sessionId'
-      path: '/admin/ai-chat/$sessionId'
-      fullPath: '/admin/ai-chat/$sessionId'
-      preLoaderRoute: typeof AdminAiChatSessionIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/compliance_/aml': {
-      id: '/admin_/compliance_/aml'
-      path: '/admin/compliance/aml'
-      fullPath: '/admin/compliance/aml'
-      preLoaderRoute: typeof AdminComplianceAmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/compliance_/frozen': {
-      id: '/admin_/compliance_/frozen'
-      path: '/admin/compliance/frozen'
-      fullPath: '/admin/compliance/frozen'
-      preLoaderRoute: typeof AdminComplianceFrozenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/compliance_/monitoring': {
-      id: '/admin_/compliance_/monitoring'
-      path: '/admin/compliance/monitoring'
-      fullPath: '/admin/compliance/monitoring'
-      preLoaderRoute: typeof AdminComplianceMonitoringRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/compliance_/queue': {
-      id: '/admin_/compliance_/queue'
-      path: '/admin/compliance/queue'
-      fullPath: '/admin/compliance/queue'
-      preLoaderRoute: typeof AdminComplianceQueueRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/compliance_/reporting': {
-      id: '/admin_/compliance_/reporting'
-      path: '/admin/compliance/reporting'
-      fullPath: '/admin/compliance/reporting'
-      preLoaderRoute: typeof AdminComplianceReportingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/marketing_/audience': {
-      id: '/admin_/marketing_/audience'
-      path: '/admin/marketing/audience'
-      fullPath: '/admin/marketing/audience'
-      preLoaderRoute: typeof AdminMarketingAudienceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/marketing_/campaigns': {
-      id: '/admin_/marketing_/campaigns'
-      path: '/admin/marketing/campaigns'
-      fullPath: '/admin/marketing/campaigns'
-      preLoaderRoute: typeof AdminMarketingCampaignsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/marketing_/digest': {
-      id: '/admin_/marketing_/digest'
-      path: '/admin/marketing/digest'
-      fullPath: '/admin/marketing/digest'
-      preLoaderRoute: typeof AdminMarketingDigestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/marketing_/feed': {
-      id: '/admin_/marketing_/feed'
-      path: '/admin/marketing/feed'
-      fullPath: '/admin/marketing/feed'
-      preLoaderRoute: typeof AdminMarketingFeedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/marketing_/referrals': {
-      id: '/admin_/marketing_/referrals'
-      path: '/admin/marketing/referrals'
-      fullPath: '/admin/marketing/referrals'
-      preLoaderRoute: typeof AdminMarketingReferralsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/products_/$productId': {
-      id: '/admin_/products_/$productId'
-      path: '/admin/products/$productId'
-      fullPath: '/admin/products/$productId'
-      preLoaderRoute: typeof AdminProductsProductIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/products_/new': {
-      id: '/admin_/products_/new'
-      path: '/admin/products/new'
-      fullPath: '/admin/products/new'
-      preLoaderRoute: typeof AdminProductsNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/products_/published': {
-      id: '/admin_/products_/published'
-      path: '/admin/products/published'
-      fullPath: '/admin/products/published'
-      preLoaderRoute: typeof AdminProductsPublishedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/rates_/approvals': {
-      id: '/admin_/rates_/approvals'
-      path: '/admin/rates/approvals'
-      fullPath: '/admin/rates/approvals'
-      preLoaderRoute: typeof AdminRatesApprovalsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/rates_/propose': {
-      id: '/admin_/rates_/propose'
-      path: '/admin/rates/propose'
-      fullPath: '/admin/rates/propose'
-      preLoaderRoute: typeof AdminRatesProposeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/reconciliation_/records': {
-      id: '/admin_/reconciliation_/records'
-      path: '/admin/reconciliation/records'
-      fullPath: '/admin/reconciliation/records'
-      preLoaderRoute: typeof AdminReconciliationRecordsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/support_/$ticketId': {
-      id: '/admin_/support_/$ticketId'
-      path: '/admin/support/$ticketId'
-      fullPath: '/admin/support/$ticketId'
-      preLoaderRoute: typeof AdminSupportTicketIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/team_/$adminId': {
-      id: '/admin_/team_/$adminId'
-      path: '/admin/team/$adminId'
-      fullPath: '/admin/team/$adminId'
-      preLoaderRoute: typeof AdminTeamAdminIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/team_/new': {
-      id: '/admin_/team_/new'
-      path: '/admin/team/new'
-      fullPath: '/admin/team/new'
-      preLoaderRoute: typeof AdminTeamNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/team_/roles': {
-      id: '/admin_/team_/roles'
-      path: '/admin/team/roles'
-      fullPath: '/admin/team/roles'
-      preLoaderRoute: typeof AdminTeamRolesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/transactions_/$txnId': {
-      id: '/admin_/transactions_/$txnId'
-      path: '/admin/transactions/$txnId'
-      fullPath: '/admin/transactions/$txnId'
-      preLoaderRoute: typeof AdminTransactionsTxnIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/users_/$userId': {
-      id: '/admin_/users_/$userId'
-      path: '/admin/users/$userId'
-      fullPath: '/admin/users/$userId'
-      preLoaderRoute: typeof AdminUsersUserIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/withdrawals_/$withdrawalId': {
-      id: '/admin_/withdrawals_/$withdrawalId'
-      path: '/admin/withdrawals/$withdrawalId'
-      fullPath: '/admin/withdrawals/$withdrawalId'
-      preLoaderRoute: typeof AdminWithdrawalsWithdrawalIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/call-account_/withdraw_/success': {
@@ -3385,6 +2233,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FixedPlansCreateTenorRouteImport
       parentRoute: typeof FixedPlansCreateRoute
     }
+    '/gifts_/claim_/$code': {
+      id: '/gifts_/claim_/$code'
+      path: '/gifts/claim/$code'
+      fullPath: '/gifts/claim/$code'
+      preLoaderRoute: typeof GiftsClaimCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio_/transactions_/$txnId': {
       id: '/portfolio_/transactions_/$txnId'
       path: '/portfolio/transactions/$txnId'
@@ -3397,6 +2252,13 @@ declare module '@tanstack/react-router' {
       path: '/settings/help/ticket'
       fullPath: '/settings/help/ticket'
       preLoaderRoute: typeof SettingsHelpTicketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/help_/tickets': {
+      id: '/settings_/help_/tickets'
+      path: '/settings/help/tickets'
+      fullPath: '/settings/help/tickets'
+      preLoaderRoute: typeof SettingsHelpTicketsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings_/security_/change-pin': {
@@ -3427,123 +2289,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsStatementsGeneratedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/compliance_/aml_/$alertId': {
-      id: '/admin_/compliance_/aml_/$alertId'
-      path: '/admin/compliance/aml/$alertId'
-      fullPath: '/admin/compliance/aml/$alertId'
-      preLoaderRoute: typeof AdminComplianceAmlAlertIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/compliance_/queue_/$caseId': {
-      id: '/admin_/compliance_/queue_/$caseId'
-      path: '/admin/compliance/queue/$caseId'
-      fullPath: '/admin/compliance/queue/$caseId'
-      preLoaderRoute: typeof AdminComplianceQueueCaseIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/marketing_/campaigns_/$campaignId': {
-      id: '/admin_/marketing_/campaigns_/$campaignId'
-      path: '/admin/marketing/campaigns/$campaignId'
-      fullPath: '/admin/marketing/campaigns/$campaignId'
-      preLoaderRoute: typeof AdminMarketingCampaignsCampaignIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/marketing_/campaigns_/new': {
-      id: '/admin_/marketing_/campaigns_/new'
-      path: '/admin/marketing/campaigns/new'
-      fullPath: '/admin/marketing/campaigns/new'
-      preLoaderRoute: typeof AdminMarketingCampaignsNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/marketing_/feed_/new': {
-      id: '/admin_/marketing_/feed_/new'
-      path: '/admin/marketing/feed/new'
-      fullPath: '/admin/marketing/feed/new'
-      preLoaderRoute: typeof AdminMarketingFeedNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/rates_/approvals_/$requestId': {
-      id: '/admin_/rates_/approvals_/$requestId'
-      path: '/admin/rates/approvals/$requestId'
-      fullPath: '/admin/rates/approvals/$requestId'
-      preLoaderRoute: typeof AdminRatesApprovalsRequestIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/reconciliation_/records_/$recordId': {
-      id: '/admin_/reconciliation_/records_/$recordId'
-      path: '/admin/reconciliation/records/$recordId'
-      fullPath: '/admin/reconciliation/records/$recordId'
-      preLoaderRoute: typeof AdminReconciliationRecordsRecordIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin_/users_/$userId/': {
-      id: '/admin_/users_/$userId/'
-      path: '/'
-      fullPath: '/admin/users/$userId/'
-      preLoaderRoute: typeof AdminUsersUserIdIndexRouteImport
-      parentRoute: typeof AdminUsersUserIdRoute
-    }
-    '/admin_/users_/$userId/audit': {
-      id: '/admin_/users_/$userId/audit'
-      path: '/audit'
-      fullPath: '/admin/users/$userId/audit'
-      preLoaderRoute: typeof AdminUsersUserIdAuditRouteImport
-      parentRoute: typeof AdminUsersUserIdRoute
-    }
-    '/admin_/users_/$userId/balances': {
-      id: '/admin_/users_/$userId/balances'
-      path: '/balances'
-      fullPath: '/admin/users/$userId/balances'
-      preLoaderRoute: typeof AdminUsersUserIdBalancesRouteImport
-      parentRoute: typeof AdminUsersUserIdRoute
-    }
-    '/admin_/users_/$userId/frozen': {
-      id: '/admin_/users_/$userId/frozen'
-      path: '/frozen'
-      fullPath: '/admin/users/$userId/frozen'
-      preLoaderRoute: typeof AdminUsersUserIdFrozenRouteImport
-      parentRoute: typeof AdminUsersUserIdRoute
-    }
-    '/admin_/users_/$userId/investments': {
-      id: '/admin_/users_/$userId/investments'
-      path: '/investments'
-      fullPath: '/admin/users/$userId/investments'
-      preLoaderRoute: typeof AdminUsersUserIdInvestmentsRouteImport
-      parentRoute: typeof AdminUsersUserIdRoute
-    }
-    '/admin_/users_/$userId/kyc': {
-      id: '/admin_/users_/$userId/kyc'
-      path: '/kyc'
-      fullPath: '/admin/users/$userId/kyc'
-      preLoaderRoute: typeof AdminUsersUserIdKycRouteImport
-      parentRoute: typeof AdminUsersUserIdRoute
-    }
-    '/admin_/users_/$userId/sessions': {
-      id: '/admin_/users_/$userId/sessions'
-      path: '/sessions'
-      fullPath: '/admin/users/$userId/sessions'
-      preLoaderRoute: typeof AdminUsersUserIdSessionsRouteImport
-      parentRoute: typeof AdminUsersUserIdRoute
-    }
-    '/admin_/users_/$userId/support': {
-      id: '/admin_/users_/$userId/support'
-      path: '/support'
-      fullPath: '/admin/users/$userId/support'
-      preLoaderRoute: typeof AdminUsersUserIdSupportRouteImport
-      parentRoute: typeof AdminUsersUserIdRoute
-    }
-    '/admin_/users_/$userId/transactions': {
-      id: '/admin_/users_/$userId/transactions'
-      path: '/transactions'
-      fullPath: '/admin/users/$userId/transactions'
-      preLoaderRoute: typeof AdminUsersUserIdTransactionsRouteImport
-      parentRoute: typeof AdminUsersUserIdRoute
-    }
     '/portfolio_/transactions_/$txnId_/receipt': {
       id: '/portfolio_/transactions_/$txnId_/receipt'
       path: '/portfolio/transactions/$txnId/receipt'
       fullPath: '/portfolio/transactions/$txnId/receipt'
       preLoaderRoute: typeof PortfolioTransactionsTxnIdReceiptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings_/help_/tickets_/$ticketId': {
+      id: '/settings_/help_/tickets_/$ticketId'
+      path: '/settings/help/tickets/$ticketId'
+      fullPath: '/settings/help/tickets/$ticketId'
+      preLoaderRoute: typeof SettingsHelpTicketsTicketIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -3570,36 +2327,8 @@ const FixedPlansCreateRouteChildren: FixedPlansCreateRouteChildren = {
 const FixedPlansCreateRouteWithChildren =
   FixedPlansCreateRoute._addFileChildren(FixedPlansCreateRouteChildren)
 
-interface AdminUsersUserIdRouteChildren {
-  AdminUsersUserIdAuditRoute: typeof AdminUsersUserIdAuditRoute
-  AdminUsersUserIdBalancesRoute: typeof AdminUsersUserIdBalancesRoute
-  AdminUsersUserIdFrozenRoute: typeof AdminUsersUserIdFrozenRoute
-  AdminUsersUserIdInvestmentsRoute: typeof AdminUsersUserIdInvestmentsRoute
-  AdminUsersUserIdKycRoute: typeof AdminUsersUserIdKycRoute
-  AdminUsersUserIdSessionsRoute: typeof AdminUsersUserIdSessionsRoute
-  AdminUsersUserIdSupportRoute: typeof AdminUsersUserIdSupportRoute
-  AdminUsersUserIdTransactionsRoute: typeof AdminUsersUserIdTransactionsRoute
-  AdminUsersUserIdIndexRoute: typeof AdminUsersUserIdIndexRoute
-}
-
-const AdminUsersUserIdRouteChildren: AdminUsersUserIdRouteChildren = {
-  AdminUsersUserIdAuditRoute: AdminUsersUserIdAuditRoute,
-  AdminUsersUserIdBalancesRoute: AdminUsersUserIdBalancesRoute,
-  AdminUsersUserIdFrozenRoute: AdminUsersUserIdFrozenRoute,
-  AdminUsersUserIdInvestmentsRoute: AdminUsersUserIdInvestmentsRoute,
-  AdminUsersUserIdKycRoute: AdminUsersUserIdKycRoute,
-  AdminUsersUserIdSessionsRoute: AdminUsersUserIdSessionsRoute,
-  AdminUsersUserIdSupportRoute: AdminUsersUserIdSupportRoute,
-  AdminUsersUserIdTransactionsRoute: AdminUsersUserIdTransactionsRoute,
-  AdminUsersUserIdIndexRoute: AdminUsersUserIdIndexRoute,
-}
-
-const AdminUsersUserIdRouteWithChildren =
-  AdminUsersUserIdRoute._addFileChildren(AdminUsersUserIdRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
   AutoInvestRoute: AutoInvestRoute,
   CalculatorRoute: CalculatorRoute,
   CallAccountRoute: CallAccountRoute,
@@ -3620,29 +2349,6 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationRoute: VerificationRoute,
   WelcomeRoute: WelcomeRoute,
   WithdrawRoute: WithdrawRoute,
-  AdminAccessHelpRoute: AdminAccessHelpRoute,
-  AdminAdjustmentsRoute: AdminAdjustmentsRoute,
-  AdminAiChatRoute: AdminAiChatRoute,
-  AdminAnalyticsRoute: AdminAnalyticsRoute,
-  AdminAuditRoute: AdminAuditRoute,
-  AdminComplianceRoute: AdminComplianceRoute,
-  AdminLockedRoute: AdminLockedRoute,
-  AdminLoginRoute: AdminLoginRoute,
-  AdminMarketingRoute: AdminMarketingRoute,
-  AdminNotificationsRoute: AdminNotificationsRoute,
-  AdminProductsRoute: AdminProductsRoute,
-  AdminProfileRoute: AdminProfileRoute,
-  AdminRatesRoute: AdminRatesRoute,
-  AdminReconciliationRoute: AdminReconciliationRoute,
-  AdminReportsRoute: AdminReportsRoute,
-  AdminSearchRoute: AdminSearchRoute,
-  AdminSettingsRoute: AdminSettingsRoute,
-  AdminSupportRoute: AdminSupportRoute,
-  AdminTeamRoute: AdminTeamRoute,
-  AdminTransactionsRoute: AdminTransactionsRoute,
-  AdminUsersRoute: AdminUsersRoute,
-  AdminVerifyRoute: AdminVerifyRoute,
-  AdminWithdrawalsRoute: AdminWithdrawalsRoute,
   CallAccountAddMoneyRoute: CallAccountAddMoneyRoute,
   CallAccountReviewRoute: CallAccountReviewRoute,
   CallAccountSuccessRoute: CallAccountSuccessRoute,
@@ -3695,6 +2401,7 @@ const rootRouteChildren: RootRouteChildren = {
   WalletAddMoneyRoute: WalletAddMoneyRoute,
   WalletCardRoute: WalletCardRoute,
   WalletFailedRoute: WalletFailedRoute,
+  WalletPaystackCheckoutRoute: WalletPaystackCheckoutRoute,
   WalletProcessingRoute: WalletProcessingRoute,
   WalletSuccessRoute: WalletSuccessRoute,
   WalletTransferRoute: WalletTransferRoute,
@@ -3707,32 +2414,6 @@ const rootRouteChildren: RootRouteChildren = {
   WithdrawReviewRoute: WithdrawReviewRoute,
   WithdrawSuccessRoute: WithdrawSuccessRoute,
   WithdrawTrackerRoute: WithdrawTrackerRoute,
-  AdminAdjustmentsRequestIdRoute: AdminAdjustmentsRequestIdRoute,
-  AdminAdjustmentsNewRoute: AdminAdjustmentsNewRoute,
-  AdminAiChatSessionIdRoute: AdminAiChatSessionIdRoute,
-  AdminComplianceAmlRoute: AdminComplianceAmlRoute,
-  AdminComplianceFrozenRoute: AdminComplianceFrozenRoute,
-  AdminComplianceMonitoringRoute: AdminComplianceMonitoringRoute,
-  AdminComplianceQueueRoute: AdminComplianceQueueRoute,
-  AdminComplianceReportingRoute: AdminComplianceReportingRoute,
-  AdminMarketingAudienceRoute: AdminMarketingAudienceRoute,
-  AdminMarketingCampaignsRoute: AdminMarketingCampaignsRoute,
-  AdminMarketingDigestRoute: AdminMarketingDigestRoute,
-  AdminMarketingFeedRoute: AdminMarketingFeedRoute,
-  AdminMarketingReferralsRoute: AdminMarketingReferralsRoute,
-  AdminProductsProductIdRoute: AdminProductsProductIdRoute,
-  AdminProductsNewRoute: AdminProductsNewRoute,
-  AdminProductsPublishedRoute: AdminProductsPublishedRoute,
-  AdminRatesApprovalsRoute: AdminRatesApprovalsRoute,
-  AdminRatesProposeRoute: AdminRatesProposeRoute,
-  AdminReconciliationRecordsRoute: AdminReconciliationRecordsRoute,
-  AdminSupportTicketIdRoute: AdminSupportTicketIdRoute,
-  AdminTeamAdminIdRoute: AdminTeamAdminIdRoute,
-  AdminTeamNewRoute: AdminTeamNewRoute,
-  AdminTeamRolesRoute: AdminTeamRolesRoute,
-  AdminTransactionsTxnIdRoute: AdminTransactionsTxnIdRoute,
-  AdminUsersUserIdRoute: AdminUsersUserIdRouteWithChildren,
-  AdminWithdrawalsWithdrawalIdRoute: AdminWithdrawalsWithdrawalIdRoute,
   CallAccountWithdrawSuccessRoute: CallAccountWithdrawSuccessRoute,
   CallAccountWithdrawWalletRoute: CallAccountWithdrawWalletRoute,
   ExploreProductIdCalculatorRoute: ExploreProductIdCalculatorRoute,
@@ -3744,23 +2425,17 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreProductIdSuccessRoute: ExploreProductIdSuccessRoute,
   ExploreProductIdUnavailableRoute: ExploreProductIdUnavailableRoute,
   ExploreCategoryCategoryIdRoute: ExploreCategoryCategoryIdRoute,
+  GiftsClaimCodeRoute: GiftsClaimCodeRoute,
   PortfolioTransactionsTxnIdRoute: PortfolioTransactionsTxnIdRoute,
   SettingsHelpTicketRoute: SettingsHelpTicketRoute,
+  SettingsHelpTicketsRoute: SettingsHelpTicketsRoute,
   SettingsSecurityChangePinRoute: SettingsSecurityChangePinRoute,
   SettingsSecurityResetPinRoute: SettingsSecurityResetPinRoute,
   SettingsSecuritySessionsRoute: SettingsSecuritySessionsRoute,
   SettingsStatementsGeneratedRoute: SettingsStatementsGeneratedRoute,
-  AdminComplianceAmlAlertIdRoute: AdminComplianceAmlAlertIdRoute,
-  AdminComplianceQueueCaseIdRoute: AdminComplianceQueueCaseIdRoute,
-  AdminMarketingCampaignsCampaignIdRoute:
-    AdminMarketingCampaignsCampaignIdRoute,
-  AdminMarketingCampaignsNewRoute: AdminMarketingCampaignsNewRoute,
-  AdminMarketingFeedNewRoute: AdminMarketingFeedNewRoute,
-  AdminRatesApprovalsRequestIdRoute: AdminRatesApprovalsRequestIdRoute,
-  AdminReconciliationRecordsRecordIdRoute:
-    AdminReconciliationRecordsRecordIdRoute,
   PortfolioTransactionsTxnIdReceiptRoute:
     PortfolioTransactionsTxnIdReceiptRoute,
+  SettingsHelpTicketsTicketIdRoute: SettingsHelpTicketsTicketIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

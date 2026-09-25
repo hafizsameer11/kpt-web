@@ -3,12 +3,13 @@ import { AlertTriangle, Building2, LifeBuoy, RefreshCw } from "lucide-react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
-import { CARD_DECLINE_REASONS, depositReference } from "@/lib/wallet-data";
+import { CARD_DECLINE_REASONS } from "@/lib/wallet-data";
 
 export const Route = createFileRoute("/wallet_/failed")({
   validateSearch: z.object({
     amount: z.number().catch(0),
     reason: z.string().catch("insufficient"),
+    ref: z.string().optional().catch(undefined),
   }),
   head: () => ({
     meta: [
@@ -31,9 +32,15 @@ export const Route = createFileRoute("/wallet_/failed")({
 });
 
 function DepositFailed() {
-  const { amount, reason } = Route.useSearch();
+  const { amount, reason, ref } = Route.useSearch();
   const message = CARD_DECLINE_REASONS[reason] ?? CARD_DECLINE_REASONS["insufficient"]!;
-  const reference = depositReference(amount);
+  const reference =
+    ref ||
+    (typeof window !== "undefined"
+      ? window.sessionStorage.getItem("kipit:card-ref") ||
+        window.sessionStorage.getItem("kipit:last-deposit-ref")
+      : null) ||
+    "—";
 
   return (
     <AppShell title="Payment Failed" navVariant="elevated">

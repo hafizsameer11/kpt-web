@@ -1,9 +1,14 @@
 import { KycGuard } from "@/components/kipit/KycGate";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, BadgeCheck, Landmark, Loader2, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
-import { BANKS, SAVED_ACCOUNTS } from "@/lib/withdraw-data";
+import {
+  addPayoutAccount,
+  BANKS,
+  hydratePayoutFromApi,
+  type PayoutBank,
+} from "@/lib/withdraw-data";
 
 export const Route = createFileRoute("/withdraw_/add-account")({
   head: () => ({
@@ -32,20 +37,35 @@ export const Route = createFileRoute("/withdraw_/add-account")({
 
 type Stage = "form" | "verifying" | "confirm";
 
-const VERIFIED_NAME = "Adebayo O. Ilesanmi";
-
 function AddAccountScreen() {
   const navigate = useNavigate();
+  const [banks, setBanks] = useState<PayoutBank[]>([]);
   const [bank, setBank] = useState("");
   const [number, setNumber] = useState("");
   const [stage, setStage] = useState<Stage>("form");
+  const [verifiedName, setVerifiedName] = useState("");
+  const [createdId, setCreatedId] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  const bankName = BANKS.find((b) => b.code === bank)?.name ?? "";
+  useEffect(() => {
+    void hydratePayoutFromApi().then(() => setBanks([...BANKS]));
+  }, []);
+
+  const bankName = banks.find((b) => b.code === bank)?.name ?? "";
   const valid = bank !== "" && number.length === 10;
 
-  function verify() {
+  async function verify() {
+    setError(null);
     setStage("verifying");
-    window.setTimeout(() => setStage("confirm"), 1600);
+    try {
+      const account = await addPayoutAccount(bank, number);
+      setVerifiedName(account.accountName);
+      setCreatedId(account.id);
+      setStage("confirm");
+    } catch (err) {
+      setStage("form");
+      setError(err instanceof Error ? err.message : "Could not verify account.");
+    }
   }
 
   return (
@@ -90,7 +110,7 @@ function AddAccountScreen() {
                 </span>
                 <div className="min-w-0">
                   <p className="truncate text-[14px] font-extrabold text-foreground">
-                    {VERIFIED_NAME}
+                    {verifiedName}
                   </p>
                   <p className="text-[12px] text-muted-foreground">
                     {bankName} · {number}
@@ -104,7 +124,7 @@ function AddAccountScreen() {
                   onClick={() =>
                     void navigate({
                       to: "/withdraw/amount",
-                      search: { acct: SAVED_ACCOUNTS[0]?.id ?? "pa1" },
+                      search: { acct: createdId },
                     })
                   }
                   className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
@@ -134,8 +154,10 @@ function AddAccountScreen() {
                     disabled={stage === "verifying"}
                     className="w-full bg-transparent py-3 text-[13.5px] font-semibold text-foreground outline-none"
                   >
-                    <option value="">Select your bank</option>
-                    {BANKS.map((b) => (
+                    <option value="">
+                      {banks.length ? "Select your bank" : "Loading banks…"}
+                    </option>
+                    {banks.map((b) => (
                       <option key={b.code} value={b.code}>
                         {b.name}
                       </option>
@@ -160,6 +182,12 @@ function AddAccountScreen() {
                 />
               </label>
 
+              {error ? (
+                <p className="mt-3 rounded-xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
+                  {error}
+                </p>
+              ) : null}
+
               {stage === "verifying" ? (
                 <p className="mt-5 flex items-center justify-center gap-2 rounded-xl bg-secondary py-3.5 text-[13px] font-bold text-muted-foreground">
                   <Loader2 className="size-4 animate-spin" /> Verifying account…
@@ -168,7 +196,7 @@ function AddAccountScreen() {
                 <button
                   type="button"
                   disabled={!valid}
-                  onClick={verify}
+                  onClick={() => void verify()}
                   className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40 disabled:shadow-none"
                 >
                   Verify account <ArrowRight className="size-4" strokeWidth={2.6} />

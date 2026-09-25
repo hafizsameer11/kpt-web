@@ -2,7 +2,13 @@ import { Link, useRouter } from "@tanstack/react-router";
 import { ArrowRight, Check, Lock, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { GATE_COPY, useHydrated, useKycTier } from "@/lib/kyc-state";
+import {
+  GATE_COPY,
+  PENDING_COPY,
+  useBvnPendingReview,
+  useHydrated,
+  useKycTier,
+} from "@/lib/kyc-state";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 
@@ -19,11 +25,12 @@ export function KycGuard({
   children: ReactNode;
 }) {
   const tier = useKycTier();
+  const pending = useBvnPendingReview();
   const hydrated = useHydrated();
   const isMobile = useIsMobile();
   const router = useRouter();
   const open = hydrated && tier < required;
-  const copy = GATE_COPY[required];
+  const copy = required === 1 && pending ? PENDING_COPY : GATE_COPY[required];
 
   const dismiss = () => router.history.back();
 

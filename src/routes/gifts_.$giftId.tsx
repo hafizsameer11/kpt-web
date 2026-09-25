@@ -14,11 +14,11 @@ import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
-import { getGift } from "@/lib/gift-data";
+import { getGift, hydrateGiftFromApi } from "@/lib/gift-data";
 
 export const Route = createFileRoute("/gifts_/$giftId")({
-  loader: ({ params }) => {
-    const gift = getGift(params.giftId);
+  loader: async ({ params }) => {
+    const gift = (await hydrateGiftFromApi(params.giftId)) ?? getGift(params.giftId);
     if (!gift) throw notFound();
     return { gift };
   },
@@ -105,14 +105,23 @@ function GiftDetailScreen() {
               {!claimed && !expired && (
                 <button
                   type="button"
-                  onClick={() =>
-                    toast.success("Claim link resent", {
-                      description: `We sent the link to ${gift.recipient} again.`,
-                    })
-                  }
+                  onClick={() => {
+                    const code = gift.claimCode || gift.id;
+                    const link =
+                      gift.claimLink ||
+                      `${window.location.origin}/gifts/claim/${encodeURIComponent(code)}`;
+                    const text = `You've received a Kipit gift investment of ₦${gift.amount.toLocaleString("en-NG")}.\n\nOpen this link to get Kipit and claim it — the investment lands in your portfolio after signup:\n${link}\n\nClaim code: ${code}`;
+                    void navigator.clipboard?.writeText(text).then(
+                      () =>
+                        toast.success("Invite link copied", {
+                          description: `Share with ${gift.recipient} — they can download Kipit and claim.`,
+                        }),
+                      () => toast.info("Claim link", { description: link }),
+                    );
+                  }}
                   className="press inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3 text-[13px] font-extrabold text-brand shadow-float"
                 >
-                  <Share2 className="size-4" strokeWidth={2.4} /> Resend claim link
+                  <Share2 className="size-4" strokeWidth={2.4} /> Copy invite link
                 </button>
               )}
               {expired && (
@@ -371,14 +380,23 @@ function GiftDetailScreen() {
           {!claimed && !expired && (
             <button
               type="button"
-              onClick={() =>
-                toast.success("Claim link resent", {
-                  description: `We sent the link to ${gift.recipient} again.`,
-                })
-              }
+              onClick={() => {
+                const code = gift.claimCode || gift.id;
+                const link =
+                  gift.claimLink ||
+                  `${window.location.origin}/gifts/claim/${encodeURIComponent(code)}`;
+                const text = `You've received a Kipit gift investment of ₦${gift.amount.toLocaleString("en-NG")}.\n\nOpen this link to get Kipit and claim it — the investment lands in your portfolio after signup:\n${link}\n\nClaim code: ${code}`;
+                void navigator.clipboard?.writeText(text).then(
+                  () =>
+                    toast.success("Invite link copied", {
+                      description: `Share with ${gift.recipient}.`,
+                    }),
+                  () => toast.info("Claim link", { description: link }),
+                );
+              }}
               className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3.5 text-[13px] font-bold text-brand-foreground press"
             >
-              <Share2 className="size-4" /> Resend claim link
+              <Share2 className="size-4" /> Copy invite link
             </button>
           )}
           {expired && (

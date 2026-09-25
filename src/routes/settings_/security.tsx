@@ -1,14 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ChevronRight,
-  Fingerprint,
   KeyRound,
   Monitor,
+  MonitorSmartphone,
   RotateCcw,
-  ScanFace,
   ShieldCheck,
 } from "lucide-react";
-import { useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
 
 export const Route = createFileRoute("/settings_/security")({
@@ -18,10 +16,10 @@ export const Route = createFileRoute("/settings_/security")({
       {
         name: "description",
         content:
-          "Change your Kipit password or transaction PIN, manage biometric login and authorization, and review active sessions.",
+          "Change your Kipit password or transaction PIN and review active sessions.",
       },
       { property: "og:title", content: "Security | Kipit Settings" },
-      { property: "og:description", content: "PIN, password, biometrics and session controls." },
+      { property: "og:description", content: "PIN, password and session controls." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -30,9 +28,6 @@ export const Route = createFileRoute("/settings_/security")({
 });
 
 function SecurityScreen() {
-  const [bioLogin, setBioLogin] = useState(true);
-  const [bioAuth, setBioAuth] = useState(true);
-
   const links = [
     {
       to: "/settings/security/change-pin" as const,
@@ -76,7 +71,7 @@ function SecurityScreen() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[13.5px] font-bold">Change password</p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">Last changed 4 months ago</p>
+                  <p className="mt-0.5 text-[11px] text-muted-foreground">Reset via email OTP</p>
                 </div>
                 <ChevronRight className="size-4 text-muted-foreground" />
               </Link>
@@ -102,30 +97,20 @@ function SecurityScreen() {
         </section>
 
         <div className="space-y-4">
-          <section className="card-surface overflow-hidden">
-            <p className="border-b border-border/60 px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
-              Biometrics
+          <section className="card-surface p-5">
+            <div className="flex items-center gap-2.5">
+              <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25">
+                <MonitorSmartphone className="size-[18px]" strokeWidth={2} />
+              </span>
+              <h2 className="font-display text-[14px] font-extrabold">Biometrics on web</h2>
+            </div>
+            <p className="mt-3 text-[12.5px] leading-relaxed text-muted-foreground">
+              Face ID and fingerprint are not available in the browser. Use your transaction PIN to
+              authorize investments and withdrawals. Enable biometrics in the Kipit mobile app.
             </p>
-            <ul className="divide-y divide-border/60">
-              <Toggle
-                icon={ScanFace}
-                title="Biometric login"
-                sub="Sign in with Face ID or fingerprint"
-                on={bioLogin}
-                onChange={setBioLogin}
-              />
-              <Toggle
-                icon={Fingerprint}
-                title="Biometric transaction authorization"
-                sub="Approve payouts and investments without typing your PIN"
-                on={bioAuth}
-                onChange={setBioAuth}
-              />
-            </ul>
           </section>
 
-          {/* Desktop-only guidance */}
-          <section className="hidden card-surface p-5 md:block">
+          <section className="card-surface p-5">
             <div className="flex items-center gap-2.5">
               <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25">
                 <ShieldCheck className="size-[18px]" strokeWidth={2} />
@@ -148,43 +133,5 @@ function SecurityScreen() {
         </div>
       </div>
     </SettingsPage>
-  );
-}
-
-function Toggle({
-  icon: Icon,
-  title,
-  sub,
-  on,
-  onChange,
-}: {
-  icon: typeof ScanFace;
-  title: string;
-  sub: string;
-  on: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <li className="flex items-center gap-3.5 px-4 py-3.5">
-      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25">
-        <Icon className="size-[18px]" strokeWidth={2} />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-[13.5px] font-bold">{title}</p>
-        <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">{sub}</p>
-      </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={on}
-        aria-label={title}
-        onClick={() => onChange(!on)}
-        className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${on ? "bg-brand" : "bg-border"}`}
-      >
-        <span
-          className={`absolute top-0.5 size-5 rounded-full bg-white shadow transition-all ${on ? "left-[22px]" : "left-0.5"}`}
-        />
-      </button>
-    </li>
   );
 }

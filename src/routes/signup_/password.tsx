@@ -1,13 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Check, Eye, EyeOff, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AuthField,
   AuthShell,
   PrimaryButton,
   authInputClass,
 } from "@/components/kipit/AuthShell";
-import { passwordChecks, passwordStrength } from "@/lib/auth-data";
+import { passwordChecks, passwordStrength, signupDraft } from "@/lib/auth-data";
+import { logSignupFunnel } from "@/lib/api";
 
 export const Route = createFileRoute("/signup_/password")({
   head: () => ({
@@ -25,14 +26,28 @@ export const Route = createFileRoute("/signup_/password")({
 
 function CreatePassword() {
   const navigate = useNavigate();
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(signupDraft.password);
   const [confirm, setConfirm] = useState("");
   const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    void logSignupFunnel({
+      step: "password",
+      email: signupDraft.email || undefined,
+      deviceId: signupDraft.deviceId,
+    });
+  }, []);
 
   const checks = passwordChecks(password);
   const strength = passwordStrength(password);
   const allOk = checks.every((c) => c.ok);
   const match = confirm.length > 0 && confirm === password;
+
+  const continueSignup = () => {
+    if (!allOk || !match) return;
+    signupDraft.password = password;
+    void navigate({ to: "/signup/pin" });
+  };
 
   return (
     <AuthShell
@@ -51,6 +66,7 @@ function CreatePassword() {
               onChange={(e) => setPassword(e.target.value)}
               className={`${authInputClass} pr-12`}
               placeholder="••••••••"
+              autoComplete="new-password"
             />
             <button
               type="button"
@@ -100,12 +116,13 @@ function CreatePassword() {
             onChange={(e) => setConfirm(e.target.value)}
             className={authInputClass}
             placeholder="••••••••"
+            autoComplete="new-password"
           />
         </AuthField>
       </div>
 
       <div className="mt-8">
-        <PrimaryButton disabled={!allOk || !match} onClick={() => navigate({ to: "/signup/pin" })}>
+        <PrimaryButton disabled={!allOk || !match} onClick={continueSignup}>
           Continue
         </PrimaryButton>
       </div>

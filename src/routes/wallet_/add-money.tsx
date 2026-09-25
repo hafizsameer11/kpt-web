@@ -10,12 +10,13 @@ import {
   Wallet,
   Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
-import { useWalletBalance } from "@/lib/wallet-balance";
+import { refreshWalletFromApi, useWalletBalance } from "@/lib/wallet-balance";
 import {
   cardFee,
+  hydrateWalletFundingFromApi,
   MAX_CARD_DEPOSIT,
   MIN_DEPOSIT,
   QUICK_DEPOSITS,
@@ -53,6 +54,13 @@ function WalletAddMoney() {
   const [raw, setRaw] = useState("");
   const [method, setMethod] = useState<DepositMethod>("transfer");
   const amount = Number(raw.replace(/[^0-9]/g, "")) || 0;
+
+  useEffect(() => {
+    void (async () => {
+      await refreshWalletFromApi();
+      await hydrateWalletFundingFromApi();
+    })();
+  }, []);
 
   const belowMin = amount > 0 && amount < MIN_DEPOSIT;
   const overCardLimit = method === "card" && amount > MAX_CARD_DEPOSIT;

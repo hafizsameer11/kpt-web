@@ -8,6 +8,10 @@ import {
   authInputClass,
 } from "@/components/kipit/AuthShell";
 import { passwordChecks, passwordStrength } from "@/lib/auth-data";
+import { ApiError, resetPassword } from "@/lib/api";
+
+const RESET_TARGET_KEY = "kipit:password-reset-target";
+const RESET_CODE_KEY = "kipit:password-reset-code";
 
 export const Route = createFileRoute("/forgot-password_/new")({
   head: () => ({
@@ -15,7 +19,6 @@ export const Route = createFileRoute("/forgot-password_/new")({
       { title: "Set a new password — Kipit" },
       { name: "description", content: "Choose a new password for your Kipit account." },
       { property: "og:title", content: "Set a new password — Kipit" },
-      { property: "og:description", content: "Choose a new password for your Kipit account." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -29,11 +32,31 @@ function NewPassword() {
   const [confirm, setConfirm] = useState("");
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const checks = passwordChecks(password);
   const strength = passwordStrength(password);
   const allOk = checks.every((c) => c.ok);
   const match = confirm.length > 0 && confirm === password;
+
+  const submit = async () => {
+    if (!allOk || !match || busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const target = window.sessionStorage.getItem(RESET_TARGET_KEY) || "";
+      const code = window.sessionStorage.getItem(RESET_CODE_KEY) || "";
+      if (!target || !code) throw new Error("Reset session expired. Start again.");
+      await resetPassword({ target, code, password });
+      window.sessionStorage.removeItem(RESET_TARGET_KEY);
+      window.sessionStorage.removeItem(RESET_CODE_KEY);
+      navigate({ to: "/forgot-password/success" });
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : err instanceof Error ? err.message : "Could not reset password.");
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <AuthShell
@@ -94,16 +117,11 @@ function NewPassword() {
             placeholder="••••••••"
           />
         </AuthField>
+        {error ? <p className="text-xs [color:oklch(0.8_0.14_25)]">{error}</p> : null}
       </div>
 
       <div className="mt-8">
-        <PrimaryButton
-          disabled={!allOk || !match || busy}
-          onClick={() => {
-            setBusy(true);
-            setTimeout(() => navigate({ to: "/forgot-password/success" }), 600);
-          }}
-        >
+        <PrimaryButton disabled={!allOk || !match || busy} onClick={() => void submit()}>
           {busy ? "Updating…" : "Reset password"}
         </PrimaryButton>
       </div>

@@ -1,14 +1,24 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Landmark, RotateCcw, Wallet, XCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
-import { findAccount, maskAccount, withdrawalReference } from "@/lib/withdraw-data";
+import {
+  findAccount,
+  hydratePayoutFromApi,
+  maskAccount,
+  type PayoutAccount,
+  withdrawalReference,
+} from "@/lib/withdraw-data";
 
 export const Route = createFileRoute("/withdraw_/declined")({
   validateSearch: z.object({
-    acct: z.string().catch("pa1"),
+    acct: z.string().catch(""),
     amount: z.number().catch(0),
+    ref: z.string().optional().catch(undefined),
+    id: z.string().optional().catch(undefined),
+    reason: z.string().optional().catch(undefined),
   }),
   head: () => ({
     meta: [
@@ -31,9 +41,24 @@ export const Route = createFileRoute("/withdraw_/declined")({
 });
 
 function WithdrawDeclined() {
-  const { acct, amount } = Route.useSearch();
-  const account = findAccount(acct);
-  const reference = withdrawalReference(amount);
+  const { acct, amount, ref, reason } = Route.useSearch();
+  const [account, setAccount] = useState<PayoutAccount | undefined>();
+  const reference = ref || withdrawalReference(amount);
+  const declineReason = reason?.trim() || "Bank rejected the transfer";
+
+  useEffect(() => {
+    void hydratePayoutFromApi().then((rows) => {
+      setAccount(findAccount(acct) ?? rows[0]);
+    });
+  }, [acct]);
+
+  if (!account) {
+    return (
+      <AppShell title="Withdrawal Declined" navVariant="elevated">
+        <p className="px-4 py-10 text-[13px] text-muted-foreground">Loading…</p>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell title="Withdrawal Declined" navVariant="elevated">
@@ -42,6 +67,7 @@ function WithdrawDeclined() {
           amount={amount}
           account={account}
           reference={reference}
+          reason={declineReason}
         />
       </div>
       <div className="hidden md:block">
@@ -49,6 +75,7 @@ function WithdrawDeclined() {
           amount={amount}
           account={account}
           reference={reference}
+          reason={declineReason}
         />
       </div>
     </AppShell>
@@ -59,10 +86,12 @@ function MobileWithdrawDeclined({
   amount,
   account,
   reference,
+  reason,
 }: {
   amount: number;
-  account: ReturnType<typeof findAccount>;
+  account: PayoutAccount;
   reference: string;
+  reason: string;
 }) {
   return (
     <div className="pb-2">
@@ -102,7 +131,7 @@ function MobileWithdrawDeclined({
               <Row label="Status">
                 <StatusBadge />
               </Row>
-              <Row label="Reason">Bank rejected the transfer</Row>
+              <Row label="Reason">{reason}</Row>
               <Row label="Reference">{reference}</Row>
             </dl>
             <p className="mt-3 rounded-xl bg-secondary px-3 py-2.5 text-[12px] text-muted-foreground">
@@ -163,10 +192,12 @@ function DesktopWithdrawDeclined({
   amount,
   account,
   reference,
+  reason,
 }: {
   amount: number;
-  account: ReturnType<typeof findAccount>;
+  account: PayoutAccount;
   reference: string;
+  reason: string;
 }) {
   return (
     <div className="mx-auto max-w-5xl pb-8">
@@ -199,7 +230,7 @@ function DesktopWithdrawDeclined({
             </p>
             <dl className="mt-4 divide-y divide-border text-[13.5px]">
               <Row label="Status"><StatusBadge /></Row>
-              <Row label="Reason">Bank rejected the transfer</Row>
+              <Row label="Reason">{reason}</Row>
               <Row label="Reference">{reference}</Row>
             </dl>
             <p className="mt-4 rounded-xl bg-secondary px-4 py-3 text-[12.5px] leading-relaxed text-muted-foreground">

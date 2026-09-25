@@ -3,8 +3,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Info, ShieldCheck, Wallet } from "lucide-react";
 import { useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
-import { naira, WALLET } from "@/lib/home-data";
+import { naira } from "@/lib/home-data";
 import { CALL_ACCOUNT } from "@/lib/invest-data";
+import { useCallAccountLive } from "@/lib/live-balances";
+import { useWalletBalance } from "@/lib/wallet-balance";
 import { useCountUp } from "@/components/kipit/motion";
 
 export const Route = createFileRoute("/call-account_/add-money")({
@@ -35,17 +37,18 @@ export const Route = createFileRoute("/call-account_/add-money")({
 
 const QUICK = [100_000, 250_000, 500_000];
 
-const RATE = 0.145;
-
 function AddMoneyScreen() {
+  const WALLET = useWalletBalance();
+  const { rateLabel: callRate, ratePct } = useCallAccountLive();
+  const rateDecimal = ratePct > 0 ? ratePct / 100 : 0;
   const [raw, setRaw] = useState("");
   const amount = Number(raw.replace(/[^0-9]/g, "")) || 0;
   const belowMin = amount > 0 && amount < CALL_ACCOUNT.minimum;
   const overWallet = amount > WALLET;
   const valid = amount > 0 && !belowMin && !overWallet;
 
-  const dailyInterest = useCountUp(Math.round((amount * RATE) / 365), 500);
-  const monthlyInterest = useCountUp(Math.round((amount * RATE) / 12), 500);
+  const dailyInterest = useCountUp(Math.round((amount * rateDecimal) / 365), 500);
+  const monthlyInterest = useCountUp(Math.round((amount * rateDecimal) / 12), 500);
 
   return (
     <AppShell title="Add Money" navVariant="elevated">
@@ -70,7 +73,7 @@ function AddMoneyScreen() {
                 <ArrowLeft className="size-3.5" /> Call Account
               </Link>
               <span className="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
-                {CALL_ACCOUNT.rate}
+                {callRate}
               </span>
             </div>
 
@@ -180,7 +183,7 @@ function AddMoneyScreen() {
               </div>
               <p className="mt-3 flex items-center gap-1.5 whitespace-nowrap text-[11px] text-muted-foreground">
                 <Info className="size-3.5 shrink-0" />
-                Indicative at {CALL_ACCOUNT.rate} — accrues daily, credited monthly.
+                Indicative at {callRate} — accrues daily, credited monthly.
               </p>
 
               {/* Desktop CTA lives in the sticky rail */}

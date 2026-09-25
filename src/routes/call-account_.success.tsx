@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Info, TrendingUp } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
-import { CALL_ACCOUNT } from "@/lib/invest-data";
+import { useCallAccountLive } from "@/lib/live-balances";
 
 export const Route = createFileRoute("/call-account_/success")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -28,12 +28,12 @@ export const Route = createFileRoute("/call-account_/success")({
   component: SuccessScreen,
 });
 
-const RATE = 0.145;
-
 function SuccessScreen() {
   const { amount } = Route.useSearch();
-  const dailyInterest = Math.round((amount * RATE) / 365);
-  const monthlyInterest = Math.round((amount * RATE) / 12);
+  const { rateLabel: callRate, ratePct } = useCallAccountLive();
+  const rateDecimal = ratePct > 0 ? ratePct / 100 : 0;
+  const dailyInterest = Math.round((amount * rateDecimal) / 365);
+  const monthlyInterest = Math.round((amount * rateDecimal) / 12);
   const reference = `KPT-CA-${String(Math.abs(amount) % 100000).padStart(5, "0")}`;
 
   return (
@@ -70,7 +70,7 @@ function SuccessScreen() {
               {naira(amount)}
             </p>
             <p className="k-success-fade mt-3 text-[12.5px] font-medium text-primary-foreground/70">
-              Interest starts accruing today at {CALL_ACCOUNT.rate}
+              Interest starts accruing today at {callRate}
             </p>
           </div>
         </section>

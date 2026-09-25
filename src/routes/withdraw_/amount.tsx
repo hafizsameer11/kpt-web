@@ -1,22 +1,24 @@
 import { KycGuard } from "@/components/kipit/KycGate";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Clock, Landmark, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
 import { useWalletBalance } from "@/lib/wallet-balance";
 import {
   findAccount,
+  hydratePayoutFromApi,
   maskAccount,
   MIN_WITHDRAWAL,
   payoutEta,
+  type PayoutAccount,
   TIER,
   WITHDRAWAL_FEE,
 } from "@/lib/withdraw-data";
 
 export const Route = createFileRoute("/withdraw_/amount")({
-  validateSearch: z.object({ acct: z.string().catch("pa1") }),
+  validateSearch: z.object({ acct: z.string().catch("") }),
   head: () => ({
     meta: [
       { title: "Enter Withdrawal Amount | Kipit" },
@@ -46,15 +48,34 @@ const QUICK = [50_000, 100_000, 250_000];
 function AmountScreen() {
   const WALLET = useWalletBalance();
   const { acct } = Route.useSearch();
-  const account = findAccount(acct);
   const navigate = useNavigate();
+  const [account, setAccount] = useState<PayoutAccount | undefined>();
   const [raw, setRaw] = useState("");
   const amount = Number(raw.replace(/[^0-9]/g, "")) || 0;
+
+  useEffect(() => {
+    void hydratePayoutFromApi().then(() => {
+      const found = findAccount(acct);
+      if (!found) {
+        void navigate({ to: "/withdraw/accounts", replace: true });
+        return;
+      }
+      setAccount(found);
+    });
+  }, [acct, navigate]);
 
   const belowMin = amount > 0 && amount < MIN_WITHDRAWAL;
   const overWallet = amount > WALLET;
   const overLimit = amount > TIER.singleLimit;
   const valid = amount > 0 && !belowMin && !overWallet && !overLimit;
+
+  if (!account) {
+    return (
+      <AppShell title="Withdrawal Amount" navVariant="elevated">
+        <p className="px-4 py-10 text-[13px] text-muted-foreground">Loading account…</p>
+      </AppShell>
+    );
+  }
 
   return (
     <>

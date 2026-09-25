@@ -257,9 +257,11 @@ export function PinDots({ length, filled }: { length: number; filled: number }) 
 export function Keypad({
   onDigit,
   onBackspace,
+  disabled = false,
 }: {
   onDigit: (d: string) => void;
   onBackspace: () => void;
+  disabled?: boolean;
 }) {
   const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "del"];
   return (
@@ -271,8 +273,9 @@ export function Keypad({
           <button
             key={i}
             type="button"
+            disabled={disabled}
             onClick={() => (k === "del" ? onBackspace() : onDigit(k))}
-            className="flex h-14 items-center justify-center rounded-xl border border-white/12 bg-white/8 text-xl font-semibold text-brand-foreground transition active:scale-95 hover:bg-white/14"
+            className="flex h-14 items-center justify-center rounded-xl border border-white/12 bg-white/8 text-xl font-semibold text-brand-foreground transition active:scale-95 hover:bg-white/14 disabled:pointer-events-none disabled:opacity-40"
             aria-label={k === "del" ? "Delete" : k}
           >
             {k === "del" ? <Delete className="size-5" /> : k}

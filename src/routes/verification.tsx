@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { TIERS } from "@/lib/kyc-data";
-import { setKycTier, TIER_LABEL, useKycTier, type KycTier } from "@/lib/kyc-state";
+import { TIER_LABEL, useKycTier } from "@/lib/kyc-state";
 
 export const Route = createFileRoute("/verification")({
   head: () => ({
@@ -179,29 +179,6 @@ function VerificationCentre() {
             <p className="mt-3 px-1 text-[11.5px] text-muted-foreground">
               Your data is encrypted and only used to verify your identity as required by law.
             </p>
-
-            <div className="card-surface mt-5 p-4">
-              <p className="text-[12.5px] font-extrabold text-foreground">Demo controls</p>
-              <p className="mt-1 text-[11.5px] text-muted-foreground">
-                Switch tier to preview how the just-in-time gates behave across the app.
-              </p>
-              <div className="mt-3 grid grid-cols-3 gap-2">
-                {([0, 1, 2] as KycTier[]).map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setKycTier(t)}
-                    className={`rounded-xl px-3 py-2.5 text-[12px] font-extrabold press ${
-                      tierLevel === t
-                        ? "bg-brand-gradient text-primary-foreground shadow-float"
-                        : "bg-secondary text-muted-foreground"
-                    }`}
-                  >
-                    {t === 0 ? "Tier 0" : `Tier ${t}`}
-                  </button>
-                ))}
-              </div>
-            </div>
           </section>
           </div>
         </div>

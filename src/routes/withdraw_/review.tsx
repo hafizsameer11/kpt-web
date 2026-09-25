@@ -4,12 +4,11 @@ import {
   ArrowRight,
   Clock,
   Delete,
-  Fingerprint,
   Landmark,
   Lock,
   ShieldCheck,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import {
@@ -25,19 +24,22 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { createWithdrawal, isAuthenticated } from "@/lib/api";
 import { naira } from "@/lib/home-data";
-import { useWalletBalance } from "@/lib/wallet-balance";
+import { refreshWalletFromApi, useWalletBalance } from "@/lib/wallet-balance";
 import {
   findAccount,
+  hydratePayoutFromApi,
   maskAccount,
   MIN_WITHDRAWAL,
   payoutEta,
+  type PayoutAccount,
   WITHDRAWAL_FEE,
 } from "@/lib/withdraw-data";
 
 export const Route = createFileRoute("/withdraw_/review")({
   validateSearch: z.object({
-    acct: z.string().catch("pa1"),
+    acct: z.string().catch(""),
     amount: z.number().catch(0),
   }),
   head: () => ({
@@ -61,23 +63,39 @@ export const Route = createFileRoute("/withdraw_/review")({
 });
 
 const PIN_LENGTH = 4;
-const CORRECT_PIN = "1234";
 
 function ReviewWithdrawal() {
   const WALLET = useWalletBalance();
   const { acct, amount } = Route.useSearch();
-  const account = findAccount(acct);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const [account, setAccount] = useState<PayoutAccount | undefined>();
 
   const [open, setOpen] = useState(false);
   const [pin, setPin] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [orderKey] = useState(() =>
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `wd-web-${amount}-${Math.random().toString(36).slice(2, 10)}`,
+  );
+
+  useEffect(() => {
+    void hydratePayoutFromApi().then(() => {
+      const found = findAccount(acct);
+      if (!found) {
+        void navigate({ to: "/withdraw/accounts", replace: true });
+        return;
+      }
+      setAccount(found);
+    });
+  }, [acct, navigate]);
 
   const valid = amount >= MIN_WITHDRAWAL && amount <= WALLET;
 
   function press(key: string) {
+    if (!account || busy) return;
     setError(null);
     if (key === "del") {
       setPin((p) => p.slice(0, -1));
@@ -87,23 +105,47 @@ function ReviewWithdrawal() {
       const next = (p + key).slice(0, PIN_LENGTH);
       if (next.length === PIN_LENGTH) {
         setBusy(true);
-        window.setTimeout(() => {
-          setBusy(false);
-          if (next === CORRECT_PIN) {
+        void (async () => {
+          try {
+            if (!isAuthenticated()) throw new Error("Sign in to continue.");
+            const result = await createWithdrawal({
+              payoutBankId: account.id,
+              amount,
+              pin: next,
+              idempotencyKey: orderKey,
+            });
+            await refreshWalletFromApi();
             setOpen(false);
             setPin("");
             void navigate({
               to: "/withdraw/processing",
-              search: { acct: account.id, amount },
+              search: {
+                acct: account.id,
+                amount,
+                ref: result.reference,
+                id: result.id,
+              },
             });
-          } else {
+          } catch (err) {
             setPin("");
-            setError("Incorrect PIN. Try again.");
+            setError(
+              err instanceof Error ? err.message : "Could not authorize withdrawal.",
+            );
+          } finally {
+            setBusy(false);
           }
-        }, 700);
+        })();
       }
       return next;
     });
+  }
+
+  if (!account) {
+    return (
+      <AppShell title="Review Withdrawal" navVariant="elevated">
+        <p className="px-4 py-10 text-[13px] text-muted-foreground">Loading…</p>
+      </AppShell>
+    );
   }
 
   const pinPad = (
@@ -139,22 +181,7 @@ function ReviewWithdrawal() {
             {k}
           </Key>
         ))}
-        <Key
-          onClick={() => {
-            setBusy(true);
-            window.setTimeout(() => {
-              setBusy(false);
-              setOpen(false);
-              void navigate({
-                to: "/withdraw/processing",
-                search: { acct: account.id, amount },
-              });
-            }, 900);
-          }}
-          aria-label="Use biometrics"
-        >
-          <Fingerprint className="mx-auto size-5 text-gold" />
-        </Key>
+        <span />
         <Key onClick={() => press("0")}>0</Key>
         <Key onClick={() => press("del")} aria-label="Delete">
           <Delete className="mx-auto size-5" />
@@ -324,7 +351,7 @@ function MobileReview({
             <ArrowRight className="size-4" strokeWidth={2.6} />
           </button>
           <p className="mt-2.5 flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
-            <Lock className="size-3.5" /> Authorize with your PIN or biometrics.
+            <Lock className="size-3.5" /> Authorize with your transaction PIN.
           </p>
         </div>
       </div>
@@ -446,10 +473,10 @@ function DesktopReview({
 
             <div className="mt-5 rounded-2xl border border-border bg-muted/40 p-4">
               <p className="flex items-center gap-2 text-[12px] font-bold text-foreground">
-                <Lock className="size-4 text-primary" /> PIN or biometrics
+                <Lock className="size-4 text-primary" /> Transaction PIN
               </p>
               <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
-                Confirm with your 4-digit PIN, or tap the fingerprint button in the PIN screen.
+                Confirm with your 4-digit transaction PIN.
               </p>
             </div>
 

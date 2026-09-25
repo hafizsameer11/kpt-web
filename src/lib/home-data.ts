@@ -5,86 +5,62 @@ import {
   PlusCircle,
   type LucideIcon,
 } from "lucide-react";
-import { LEARN_ARTICLES } from "@/lib/learn-data";
 import { getWalletBalance, subscribeWallet } from "@/lib/wallet-balance";
 
 
 /**
  * Single source of truth for the Home Dashboard (MOB-020 / WEB-002).
- * Every home concept renders the same reconciled figures.
+ * Money figures hydrate from kipit-api via live-balances / wallet-balance.
  */
 /** Live wallet balance — moves when the user funds or withdraws. */
 export let WALLET = getWalletBalance();
-export const INVESTED = 2_450_000;
+/** Invested total — updated by hydrateLiveBalances. */
+export let INVESTED = 0;
 export let TOTAL = WALLET + INVESTED;
 
 subscribeWallet((value) => {
   WALLET = value;
   TOTAL = WALLET + INVESTED;
 });
-export const WEEK_EARNINGS = 12_480;
-export const MONTH_CHANGE = 38_200;
-export const MONTH_CHANGE_PCT = 1.58;
+
+export function setInvestedTotal(value: number) {
+  INVESTED = Math.max(0, Math.round(value));
+  TOTAL = WALLET + INVESTED;
+}
+
+export const WEEK_EARNINGS = 0;
+export const MONTH_CHANGE = 0;
+export const MONTH_CHANGE_PCT = 0;
 
 export const naira = (value: number) =>
   `₦${value.toLocaleString("en-NG", { maximumFractionDigits: 0 })}`;
 
-/** Next maturity — name, amount, maturity date, days remaining (MOB-020). */
-export const NEXT_MATURITY = {
-  name: "Kipit Fixed Income",
-  tenor: "90 days",
-  amount: 750_000,
-  rate: "19.2% p.a.",
-  date: "24 Sep 2026",
-  daysLeft: 22,
-  totalDays: 90,
-  expectedPayout: 785_500,
+/** Next maturity — filled from API; empty until hydrate. */
+export let NEXT_MATURITY = {
+  name: "",
+  tenor: "",
+  amount: 0,
+  rate: "",
+  date: "",
+  daysLeft: 0,
+  totalDays: 0,
+  expectedPayout: 0,
 };
 
-export const HOLDINGS = [
-  {
-    id: "f1",
-    name: "Kipit Fixed Income",
-    rate: "19.2% p.a.",
-    amount: 750_000,
-    date: "24 Sep 2026",
-    daysLeft: 22,
-    totalDays: 90,
-    expectedPayout: 785_500,
-    autoRenew: true,
-  },
-  {
-    id: "f2",
-    name: "Kipit Target Savings",
-    rate: "16.0% p.a.",
-    amount: 900_000,
-    date: "12 Dec 2026",
-    daysLeft: 101,
-    totalDays: 180,
-    expectedPayout: 971_000,
-    autoRenew: false,
-  },
-  {
-    id: "f3",
-    name: "Kipit Vault (365d)",
-    rate: "21.5% p.a.",
-    amount: 800_000,
-    date: "03 Jun 2027",
-    daysLeft: 274,
-    totalDays: 365,
-    expectedPayout: 972_000,
-    autoRenew: false,
-  },
-];
+export let HOLDINGS: {
+  id: string;
+  name: string;
+  rate: string;
+  amount: number;
+  date: string;
+  daysLeft: number;
+  totalDays: number;
+  expectedPayout: number;
+  autoRenew: boolean;
+}[] = [];
 
-
-/** Upcoming interest / maturity payouts. */
-export const PAYOUTS = [
-  { label: "Interest credit · Fixed Income", date: "08 Sep 2026", amount: 11_840 },
-  { label: "Interest credit · Target Savings", date: "15 Sep 2026", amount: 12_000 },
-  { label: "Maturity · Kipit Fixed Income", date: "24 Sep 2026", amount: 785_500 },
-  { label: "Interest credit · Vault", date: "03 Oct 2026", amount: 14_330 },
-];
+/** Upcoming interest / maturity payouts — filled from live holdings when available. */
+export let PAYOUTS: { label: string; date: string; amount: number }[] = [];
 
 export type QuickAction = {
   label: string;
@@ -106,15 +82,58 @@ export const QUICK_ACTIONS: QuickAction[] = [
   { label: "Statements", icon: FileText, to: "/portfolio/transactions" },
 ];
 
-/** Content feed — product updates, education, announcements. */
-export const FEED = LEARN_ARTICLES.slice(0, 3).map((a) => ({
-  id: a.id,
-  tag: a.tag,
-  title: a.title,
-  body: a.body,
-}));
+/** Content feed — empty until /v1/home/feed or /v1/me/home hydrate. */
+export let FEED: { id: string; tag: string; title: string; body: string }[] = [];
 
+const feedListeners = new Set<() => void>();
+export function subscribeFeed(listener: () => void) {
+  feedListeners.add(listener);
+  return () => {
+    feedListeners.delete(listener);
+  };
+}
+function emitFeed() {
+  feedListeners.forEach((l) => l());
+}
 
-/** Weekly interest series used by the earnings chart (Mon–Sun). */
-export const WEEK_SERIES = [1_320, 1_610, 1_540, 2_010, 1_880, 2_150, 1_970];
+export function setHomeFeed(
+  items: { id: string; tag?: string | null; title: string; body?: string | null }[],
+) {
+  FEED = items.map((a) => ({
+    id: a.id,
+    tag: a.tag || "Update",
+    title: a.title,
+    body: a.body || "",
+  }));
+  emitFeed();
+}
+
+export async function hydrateHomeFeedFromApi() {
+  try {
+    const { fetchHome, fetchHomeFeed, isAuthenticated } = await import("@/lib/api");
+    if (!isAuthenticated()) {
+      FEED = [];
+      emitFeed();
+      return FEED;
+    }
+    try {
+      const cards = await fetchHomeFeed();
+      if (Array.isArray(cards) && cards.length) {
+        setHomeFeed(cards);
+        return FEED;
+      }
+    } catch {
+      /* fall through to /v1/me/home */
+    }
+    const home = await fetchHome();
+    setHomeFeed(home.feed ?? []);
+  } catch {
+    FEED = [];
+    emitFeed();
+  }
+  return FEED;
+}
+
+/** Weekly interest series — zeros until API provides a chart series. */
+export const WEEK_SERIES = [0, 0, 0, 0, 0, 0, 0];
 export const WEEK_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];

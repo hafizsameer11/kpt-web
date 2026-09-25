@@ -1,18 +1,30 @@
 /**
  * MOB-060 — Invest landing data.
  * Rate, liquidity/tenor and minimum always travel together (Global rule 3.3).
+ * Tenor bands hydrate from /v1/invest/rates — empty with loading until then.
  */
+import { useEffect, useSyncExternalStore } from "react";
+import { fetchInvestRates, type ApiRateBand } from "@/lib/api";
+
 export const CALL_ACCOUNT = {
   name: "Kipit Call Account",
-  rate: "14.5% p.a.",
+  rate: "—",
   liquidity: "Withdraw anytime",
   minimum: 5_000,
-  balance: 25_000_000,
-  accruedToday: 9_932,
-  accruedThisMonth: 298_450,
+  balance: 0,
+  accruedToday: 0,
+  accruedThisMonth: 0,
   blurb:
     "Interest accrues daily on your idle cash and is credited monthly. No lock-in, no penalty.",
 };
+
+/** Sync call balance/rate labels after hydrateLiveBalances. */
+export function syncCallAccountFromLive(balance: number, ratePct: number) {
+  CALL_ACCOUNT.balance = Math.max(0, Math.round(balance));
+  CALL_ACCOUNT.rate = ratePct ? `${ratePct}% p.a.` : "—";
+  CALL_ACCOUNT.accruedToday = 0;
+  CALL_ACCOUNT.accruedThisMonth = 0;
+}
 
 export type FixedPlan = {
   name: string;
@@ -23,46 +35,85 @@ export type FixedPlan = {
   blurb: string;
 };
 
-export const FIXED_PLANS: FixedPlan[] = [
-  {
-    name: "Kipit Fixed Income",
-    rate: "19.2% p.a.",
-    tenor: "90 days",
-    minimum: 100_000,
-    tag: "Most popular",
-    blurb: "A short, predictable tenor with interest paid at maturity.",
-  },
-  {
-    name: "Kipit Target Savings",
-    rate: "16.0% p.a.",
-    tenor: "180 days",
-    minimum: 50_000,
-    blurb: "Set a goal and fund it on a schedule with auto-invest.",
-  },
-  {
-    name: "Kipit Vault",
-    rate: "21.5% p.a.",
-    tenor: "365 days",
-    minimum: 250_000,
-    tag: "Highest rate",
-    blurb: "Our longest tenor and best rate for money you can lock away.",
-  },
-  {
-    name: "Kipit Starter",
-    rate: "12.8% p.a.",
-    tenor: "30 days",
-    minimum: 10_000,
-    blurb: "A one-month plan to try a fixed investment with a small amount.",
-  },
-];
+export type TenorBand = {
+  name: string;
+  days: string;
+  rate: string;
+  minimum: number;
+  featured?: boolean;
+};
 
-/** Tenor bands surfaced on the Fixed plan landing (MOB-065 / MOB-067). */
-export const TENOR_BANDS = [
-  { name: "Kipit Starter", days: "30 days", rate: "12.8%", minimum: 10_000 },
-  { name: "Kipit Fixed Income", days: "90 days", rate: "19.2%", minimum: 100_000 },
-  { name: "Kipit Target Savings", days: "180 days", rate: "16.0%", minimum: 50_000 },
-  { name: "Kipit Vault", days: "365 days", rate: "21.5%", minimum: 250_000 },
-];
+export let FIXED_PLANS: FixedPlan[] = [];
+export let TENOR_BANDS: TenorBand[] = [];
+export let ratesLoading = true;
+
+const rateListeners = new Set<() => void>();
+function emitRates() {
+  rateListeners.forEach((l) => l());
+}
+export function subscribeRates(listener: () => void) {
+  rateListeners.add(listener);
+  return () => {
+    rateListeners.delete(listener);
+  };
+}
+
+function mapBands(bands: ApiRateBand[]) {
+  const fixed = bands.filter((b) => b.code !== "CALL" && b.minDays > 0);
+  TENOR_BANDS = fixed.map((b, i) => {
+    const days = b.maxDays ?? b.minDays;
+    return {
+      name: b.label,
+      days: `${days} days`,
+      rate: `${b.ratePct}%`,
+      minimum: 0,
+      featured: i === 0,
+    };
+  });
+  FIXED_PLANS = fixed.map((b) => {
+    const days = b.maxDays ?? b.minDays;
+    return {
+      name: b.label,
+      rate: `${b.ratePct}% p.a.`,
+      tenor: `${days} days`,
+      minimum: 0,
+      blurb: `${b.label} at ${b.ratePct}% p.a.`,
+    };
+  });
+  const call = bands.find((b) => b.code === "CALL");
+  if (call) {
+    CALL_ACCOUNT.rate = `${call.ratePct}% p.a.`;
+  }
+}
+
+export async function hydrateInvestRatesFromApi() {
+  ratesLoading = true;
+  emitRates();
+  try {
+    const bands = await fetchInvestRates();
+    mapBands(Array.isArray(bands) ? bands : []);
+  } catch {
+    TENOR_BANDS = [];
+    FIXED_PLANS = [];
+  } finally {
+    ratesLoading = false;
+    emitRates();
+  }
+  return TENOR_BANDS;
+}
+
+export function useTenorBands() {
+  const tick = useSyncExternalStore(
+    subscribeRates,
+    () => `${ratesLoading}:${TENOR_BANDS.length}:${TENOR_BANDS.map((b) => b.rate).join(",")}`,
+    () => "0",
+  );
+  useEffect(() => {
+    void hydrateInvestRatesFromApi();
+  }, []);
+  void tick;
+  return { bands: TENOR_BANDS, loading: ratesLoading, plans: FIXED_PLANS };
+}
 
 /** MOB-061 — Call Account detail: how interest is earned. */
 export const CALL_ACCOUNT_FACTS = [
@@ -83,42 +134,111 @@ export type CallActivity = {
   status: CallActivityStatus;
 };
 
-/** Recent Call Account activity (MOB-061). */
-export const CALL_ACTIVITY: CallActivity[] = [
-  { id: "a1", kind: "interest", label: "Daily interest", date: "Today", amount: 9_932, status: "successful" },
-  { id: "a2", kind: "deposit", label: "Added from wallet", date: "Today", amount: 250_000, status: "processing" },
-  { id: "a3", kind: "interest", label: "Daily interest", date: "Yesterday", amount: 9_863, status: "successful" },
-  { id: "a4", kind: "deposit", label: "Added from wallet", date: "28 Aug 2026", amount: 5_000_000, status: "successful" },
-  { id: "a5", kind: "withdrawal", label: "Withdrawn to wallet", date: "21 Aug 2026", amount: 2_000_000, status: "failed" },
-  { id: "a6", kind: "interest", label: "Monthly interest credited", date: "01 Aug 2026", amount: 298_450, status: "successful" },
-];
+/** Recent Call Account activity — empty until API hydrate. */
+export const CALL_ACTIVITY: CallActivity[] = [];
 
-/** 14-day accrual trend (₦ per day) for the detail sparkline. */
-export const CALL_ACCRUAL_TREND = [
-  8_580, 8_720, 8_690, 8_910, 9_050, 9_120, 9_080, 9_340, 9_410, 9_520, 9_680, 9_750, 9_860, 9_932,
-];
+/** Accrual trend (14 daily interest amounts, oldest → today). */
+export const CALL_ACCRUAL_TREND: number[] = Array.from({ length: 14 }, () => 0);
 
-/** MOB-065 — matured fixed plans shown under the "Matured" filter. */
-export const MATURED_PLANS = [
-  {
-    name: "Kipit Fixed Income",
-    rate: "18.4% p.a.",
-    principal: 500_000,
-    payout: 522_600,
-    tenor: "90 days",
-    maturedOn: "12 Jul 2026",
-    status: "Paid to wallet",
-  },
-  {
-    name: "Kipit Starter",
-    rate: "12.8% p.a.",
-    principal: 150_000,
-    payout: 151_600,
-    tenor: "30 days",
-    maturedOn: "02 Apr 2026",
-    status: "Rolled over",
-  },
-];
+const TREND_DAYS = 14;
+
+function localYmd(d: Date) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/** Parse API `YYYY-MM-DD` (or ISO) as a civil calendar key — no UTC shift. */
+export function activityDateKey(raw: string) {
+  const day = (raw || "").slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : "";
+}
+
+/**
+ * Last `days` of daily Call interest (oldest → today), matching activity rows.
+ * Dedupes by id so a journal entry can't inflate the chart.
+ */
+export function buildCallAccrualTrend(
+  rows: CallActivity[],
+  days = TREND_DAYS,
+): number[] {
+  const byDate = new Map<string, number>();
+  const seen = new Set<string>();
+  for (const row of rows) {
+    if (row.kind !== "interest" || row.status === "failed") continue;
+    if (seen.has(row.id)) continue;
+    seen.add(row.id);
+    const key = activityDateKey(row.date);
+    if (!key) continue;
+    byDate.set(key, (byDate.get(key) ?? 0) + Math.max(0, Math.round(row.amount)));
+  }
+
+  const today = new Date();
+  today.setHours(12, 0, 0, 0);
+  const series: number[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    series.push(byDate.get(localYmd(d)) ?? 0);
+  }
+  return series;
+}
+
+function applyAccrualTotals(rows: CallActivity[], series: number[]) {
+  CALL_ACCRUAL_TREND.length = 0;
+  CALL_ACCRUAL_TREND.push(...series);
+
+  const todayKey = localYmd(new Date());
+  const byDate = new Map<string, number>();
+  const seen = new Set<string>();
+  for (const row of rows) {
+    if (row.kind !== "interest" || row.status === "failed") continue;
+    if (seen.has(row.id)) continue;
+    seen.add(row.id);
+    const key = activityDateKey(row.date);
+    if (!key) continue;
+    byDate.set(key, (byDate.get(key) ?? 0) + Math.max(0, Math.round(row.amount)));
+  }
+
+  CALL_ACCOUNT.accruedToday = byDate.get(todayKey) ?? 0;
+
+  const now = new Date();
+  const monthKey = localYmd(new Date(now.getFullYear(), now.getMonth(), 1));
+  let monthTotal = 0;
+  for (const [key, amt] of byDate) {
+    if (key >= monthKey && key <= todayKey) monthTotal += amt;
+  }
+  CALL_ACCOUNT.accruedThisMonth = monthTotal;
+}
+
+/**
+ * Hydrate Call activity. Chart + totals use the same interest rows as the list
+ * (interest prioritized so a busy ledger can't hide credits from the series).
+ */
+export function setCallActivityFromApi(rows: CallActivity[]) {
+  const interest = rows.filter((r) => r.kind === "interest");
+  const other = rows.filter((r) => r.kind !== "interest");
+  const display = [...interest, ...other].slice(0, 20);
+
+  CALL_ACTIVITY.length = 0;
+  CALL_ACTIVITY.push(...display);
+
+  // Full interest history from this fetch powers the 14-day series.
+  const series = buildCallAccrualTrend(interest, TREND_DAYS);
+  applyAccrualTotals(interest, series);
+}
+
+/** Matured fixed plans — empty until API hydrate. */
+export const MATURED_PLANS: {
+  name: string;
+  rate: string;
+  principal: number;
+  payout: number;
+  tenor: string;
+  maturedOn: string;
+  status: string;
+}[] = [];
 
 /** Auto-invest rules — recurring funding schedules for Kipit plans. */
 export type AutoInvestFrequency = "Weekly" | "Every 2 weeks" | "Monthly";
@@ -141,45 +261,8 @@ export const AUTO_INVEST_FREQUENCIES: AutoInvestFrequency[] = [
   "Monthly",
 ];
 
-export const AUTO_INVEST_DESTINATIONS = [
-  { name: "Kipit Call Account", rate: "14.5% p.a.", minimum: 5_000 },
-  { name: "Kipit Fixed Income", rate: "19.2% p.a.", minimum: 100_000 },
-  { name: "Kipit Target Savings", rate: "16.0% p.a.", minimum: 50_000 },
-  { name: "Kipit Vault", rate: "21.5% p.a.", minimum: 250_000 },
+export let AUTO_INVEST_DESTINATIONS: { name: string; rate: string; minimum: number }[] = [
+  { name: "Kipit Call Account", rate: "—", minimum: 5_000 },
 ];
 
-export const AUTO_INVEST_RULES: AutoInvestRule[] = [
-  {
-    id: "ai1",
-    destination: "Kipit Call Account",
-    rate: "14.5% p.a.",
-    amount: 150_000,
-    frequency: "Monthly",
-    nextRun: "01 Oct 2026",
-    fundedFrom: "Kipit wallet",
-    investedToDate: 1_350_000,
-    active: true,
-  },
-  {
-    id: "ai2",
-    destination: "Kipit Target Savings",
-    rate: "16.0% p.a.",
-    amount: 50_000,
-    frequency: "Weekly",
-    nextRun: "08 Sep 2026",
-    fundedFrom: "Kipit wallet",
-    investedToDate: 600_000,
-    active: true,
-  },
-  {
-    id: "ai3",
-    destination: "Kipit Fixed Income",
-    rate: "19.2% p.a.",
-    amount: 100_000,
-    frequency: "Monthly",
-    nextRun: "Paused",
-    fundedFrom: "Kipit wallet",
-    investedToDate: 300_000,
-    active: false,
-  },
-];
+export const AUTO_INVEST_RULES: AutoInvestRule[] = [];

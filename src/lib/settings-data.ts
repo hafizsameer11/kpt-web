@@ -1,33 +1,32 @@
 /**
- * Prototype fixtures for the Settings section (MOB-140 – MOB-154).
- * No backend: values are static so flows can be demonstrated end to end.
+ * Settings helpers — static catalogs only. Identity/money come from the API.
  */
 
-export const PROFILE = {
-  firstName: "Adaeze",
-  middleName: "Chidinma",
-  lastName: "Okonkwo",
-  dob: "14 March 1993",
-  gender: "Female",
-  email: "adaeze.okonkwo@gmail.com",
-  phone: "+234 803 214 8890",
-  tier: "Tier 2",
-  memberSince: "Jan 2025",
-  initials: "AO",
-} as const;
+export let PROFILE = {
+  firstName: "",
+  middleName: "",
+  lastName: "",
+  dob: "",
+  gender: "",
+  email: "",
+  phone: "",
+  tier: "Tier 0",
+  memberSince: "",
+  initials: "",
+};
 
 /** KYC-locked fields cannot be edited in-app (MOB-141). */
 export const KYC_LOCKED = ["firstName", "lastName", "dob", "gender"] as const;
 
-export const ADDRESS = {
-  street: "18B Admiralty Way",
-  city: "Lekki Phase 1",
-  state: "Lagos",
-  lga: "Eti-Osa",
-  occupation: "Product Designer",
-  employment: "Employed (full-time)",
-  sourceOfFunds: "Salary & business income",
-} as const;
+export let ADDRESS = {
+  street: "",
+  city: "",
+  state: "",
+  lga: "",
+  occupation: "",
+  employment: "",
+  sourceOfFunds: "",
+};
 
 export type StatementKind = "Account statement" | "Transaction statement" | "Portfolio statement";
 
@@ -45,29 +44,7 @@ export type Session = {
   current: boolean;
 };
 
-export const SESSIONS: Session[] = [
-  {
-    id: "s1",
-    device: "iPhone 15 Pro · Kipit iOS",
-    context: "Lagos, NG · 105.112.x.x",
-    lastActive: "Active now",
-    current: true,
-  },
-  {
-    id: "s2",
-    device: "MacBook Pro · Chrome",
-    context: "Lagos, NG · 197.210.x.x",
-    lastActive: "2 hours ago",
-    current: false,
-  },
-  {
-    id: "s3",
-    device: "Samsung S23 · Kipit Android",
-    context: "Abuja, NG · 41.203.x.x",
-    lastActive: "3 days ago",
-    current: false,
-  },
-];
+export const SESSIONS: Session[] = [];
 
 export type LinkedCard = {
   id: string;
@@ -77,17 +54,14 @@ export type LinkedCard = {
   expiry: string;
 };
 
-export const LINKED_CARDS: LinkedCard[] = [
-  { id: "c1", nickname: "Everyday card", masked: "•••• 4412", type: "Visa", expiry: "08/28" },
-  { id: "c2", nickname: "Business card", masked: "•••• 7730", type: "Mastercard", expiry: "01/27" },
-];
+export const LINKED_CARDS: LinkedCard[] = [];
 
 export const REFERRALS = {
-  code: "ADAEZE-K9F2",
-  link: "https://mykipit.com/join/ADAEZE-K9F2",
-  total: 14,
-  successful: 9,
-  rewards: 45_000,
+  code: "",
+  link: "",
+  total: 0,
+  successful: 0,
+  rewards: 0,
 } as const;
 
 export type ReferralStatus = "rewarded" | "pending" | "expired";
@@ -101,14 +75,7 @@ export type ReferralEntry = {
   note: string;
 };
 
-export const REFERRAL_LIST: ReferralEntry[] = [
-  { id: "r1", name: "Chidi O.", joined: "28 Aug 2026", status: "rewarded", reward: 5_000, note: "Funded a 90-day plan" },
-  { id: "r2", name: "Ngozi A.", joined: "24 Aug 2026", status: "rewarded", reward: 5_000, note: "Funded Call Account" },
-  { id: "r3", name: "Tunde B.", joined: "21 Aug 2026", status: "pending", reward: 5_000, note: "Signed up, not funded yet" },
-  { id: "r4", name: "Amaka N.", joined: "17 Aug 2026", status: "rewarded", reward: 5_000, note: "Funded a 180-day plan" },
-  { id: "r5", name: "Segun T.", joined: "09 Aug 2026", status: "pending", reward: 5_000, note: "Verification in progress" },
-  { id: "r6", name: "Halima Y.", joined: "02 Aug 2026", status: "expired", reward: 0, note: "Invite expired after 30 days" },
-];
+export const REFERRAL_LIST: ReferralEntry[] = [];
 
 export const REFERRAL_STATUS_META: Record<ReferralStatus, { label: string; className: string }> = {
   rewarded: { label: "Reward earned", className: "bg-emerald-50 text-emerald-700 ring-emerald-600/20" },
@@ -133,6 +100,66 @@ export const EMAIL_TOGGLES: ToggleItem[] = [
   { id: "e-dig", label: "Portfolio digest", desc: "Weekly performance summary", on: true },
   { id: "e-mkt", label: "Marketing communications", desc: "Offers and announcements", on: false },
 ];
+
+/** Map API notification prefs onto the static toggle catalogs (ids stay stable). */
+export function applyNotificationPrefs<T extends ToggleItem>(
+  prefs: {
+    emailDeposits: boolean;
+    emailWithdrawals: boolean;
+    emailInvestments: boolean;
+    emailMaturities: boolean;
+    emailDigest: boolean;
+    pushProducts: boolean;
+    pushMaturities: boolean;
+  },
+  push: T[],
+  email: T[],
+): { push: T[]; email: T[] } {
+  const txn =
+    prefs.emailDeposits &&
+    prefs.emailWithdrawals &&
+    prefs.emailInvestments &&
+    prefs.emailMaturities;
+  return {
+    push: push.map((item) => {
+      if (item.id === "p-mat") return { ...item, on: prefs.pushMaturities };
+      if (item.id === "p-prd") return { ...item, on: prefs.pushProducts };
+      return item;
+    }),
+    email: email.map((item) => {
+      if (item.id === "e-txn") return { ...item, on: txn };
+      if (item.id === "e-dig") return { ...item, on: prefs.emailDigest };
+      return item;
+    }),
+  };
+}
+
+/** Build a PATCH body for a single toggle id. Returns null when the toggle is local-only. */
+export function notificationPatchForToggle(
+  id: string,
+  on: boolean,
+): Partial<{
+  emailDeposits: boolean;
+  emailWithdrawals: boolean;
+  emailInvestments: boolean;
+  emailMaturities: boolean;
+  emailDigest: boolean;
+  pushProducts: boolean;
+  pushMaturities: boolean;
+}> | null {
+  if (id === "p-mat") return { pushMaturities: on };
+  if (id === "p-prd") return { pushProducts: on };
+  if (id === "e-dig") return { emailDigest: on };
+  if (id === "e-txn") {
+    return {
+      emailDeposits: on,
+      emailWithdrawals: on,
+      emailInvestments: on,
+      emailMaturities: on,
+    };
+  }
+  return null;
+}
 
 export type Faq = { q: string; a: string; category: string };
 

@@ -7,7 +7,7 @@ import {
   Repeat,
   Wallet,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
@@ -27,11 +27,17 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { naira, WALLET } from "@/lib/home-data";
+import { naira } from "@/lib/home-data";
+import { useWalletBalance } from "@/lib/wallet-balance";
+import {
+  createAutoInvestRule,
+  fetchAutoInvestRules,
+  patchAutoInvestRule,
+  type ApiAutoInvestRule,
+} from "@/lib/api";
 import {
   AUTO_INVEST_DESTINATIONS,
   AUTO_INVEST_FREQUENCIES,
-  AUTO_INVEST_RULES,
   type AutoInvestFrequency,
   type AutoInvestRule,
 } from "@/lib/invest-data";
@@ -58,6 +64,35 @@ export const Route = createFileRoute("/auto-invest")({
   component: AutoInvestScreen,
 });
 
+function nextRunLabel(dayOfMonth: number, active: boolean) {
+  if (!active) return "Paused";
+  const now = new Date();
+  let year = now.getFullYear();
+  let month = now.getMonth();
+  if (now.getDate() >= dayOfMonth) month += 1;
+  if (month > 11) {
+    month = 0;
+    year += 1;
+  }
+  const d = new Date(year, month, Math.min(dayOfMonth, 28));
+  return d.toLocaleDateString("en-NG", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function mapApiRule(r: ApiAutoInvestRule): AutoInvestRule {
+  const dest = AUTO_INVEST_DESTINATIONS.find((d) => d.name === r.label);
+  return {
+    id: r.id,
+    destination: r.label,
+    rate: dest?.rate ?? "—",
+    amount: r.amount,
+    frequency: "Monthly",
+    nextRun: nextRunLabel(r.dayOfMonth, r.active),
+    fundedFrom: "Kipit wallet",
+    investedToDate: 0,
+    active: r.active,
+  };
+}
+
 /** Approximate monthly commitment from a rule's frequency. */
 const monthlyValue = (r: AutoInvestRule) =>
   r.frequency === "Weekly"
@@ -69,30 +104,95 @@ const monthlyValue = (r: AutoInvestRule) =>
 function AutoInvestScreen() {
   const { hidden, mask } = useBalanceVisibility();
   const isMobile = useIsMobile();
-  const [rules, setRules] = useState<AutoInvestRule[]>(AUTO_INVEST_RULES);
+  const WALLET = useWalletBalance();
+  const [rules, setRules] = useState<AutoInvestRule[]>([]);
   const [open, setOpen] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  useEffect(() => {
+    void fetchAutoInvestRules()
+      .then((data) => setRules((data ?? []).map(mapApiRule)))
+      .catch(() => setRules([]));
+  }, []);
 
   const active = rules.filter((r) => r.active);
   const monthlyTotal = active.reduce((s, r) => s + monthlyValue(r), 0);
 
   const toggle = (id: string) => {
+    const rule = rules.find((r) => r.id === id);
+    if (!rule || busyId) return;
+    const nextActive = !rule.active;
+    setBusyId(id);
     setRules((prev) =>
-      prev.map((r) => {
-        if (r.id !== id) return r;
-        toast(r.active ? "Auto-invest paused" : "Auto-invest resumed", {
-          description: `${r.destination} · ${naira(r.amount)} ${r.frequency.toLowerCase()}`,
-        });
-        return { ...r, active: !r.active, nextRun: r.active ? "Paused" : "01 Oct 2026" };
-      }),
+      prev.map((r) =>
+        r.id === id
+          ? {
+              ...r,
+              active: nextActive,
+              nextRun: nextActive ? nextRunLabel(1, true) : "Paused",
+            }
+          : r,
+      ),
     );
+    void patchAutoInvestRule(id, { active: nextActive })
+      .then((updated) => {
+        setRules((prev) =>
+          prev.map((r) => (r.id === id ? mapApiRule(updated) : r)),
+        );
+        toast(nextActive ? "Auto-invest resumed" : "Auto-invest paused", {
+          description: `${rule.destination} · ${naira(rule.amount)} ${rule.frequency.toLowerCase()}`,
+        });
+      })
+      .catch((err: { message?: string }) => {
+        setRules((prev) =>
+          prev.map((r) =>
+            r.id === id
+              ? { ...r, active: rule.active, nextRun: rule.nextRun }
+              : r,
+          ),
+        );
+        toast.error(err?.message ?? "Could not update auto-invest");
+      })
+      .finally(() => setBusyId(null));
   };
 
-  const addRule = (rule: AutoInvestRule) => {
-    setRules((prev) => [rule, ...prev]);
-    setOpen(false);
-    toast("Auto-invest created", {
-      description: `${naira(rule.amount)} into ${rule.destination}, ${rule.frequency.toLowerCase()}.`,
-    });
+  const addRule = async (input: {
+    destination: string;
+    rate: string;
+    amount: number;
+    frequency: AutoInvestFrequency;
+  }) => {
+    const dayOfMonth = Math.min(Math.max(new Date().getDate(), 1), 28);
+    try {
+      const created = await createAutoInvestRule({
+        label: input.destination,
+        amount: input.amount,
+        dayOfMonth,
+      });
+      const rule: AutoInvestRule = {
+        id: created.id,
+        destination: input.destination,
+        rate: input.rate,
+        amount: input.amount,
+        frequency: input.frequency,
+        nextRun: nextRunLabel(dayOfMonth, true),
+        fundedFrom: "Kipit wallet",
+        investedToDate: 0,
+        active: true,
+      };
+      setRules((prev) => [rule, ...prev]);
+      setOpen(false);
+      toast("Auto-invest created", {
+        description: `${naira(rule.amount)} into ${rule.destination}, ${rule.frequency.toLowerCase()}.`,
+      });
+      void fetchAutoInvestRules()
+        .then((data) => setRules((data ?? []).map(mapApiRule)))
+        .catch(() => undefined);
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Could not create auto-invest",
+      );
+    }
   };
 
   const heroFigure = (
@@ -143,6 +243,7 @@ function AutoInvestScreen() {
         <Switch
           checked={r.active}
           onCheckedChange={() => toggle(r.id)}
+          disabled={busyId === r.id}
           aria-label={`${r.active ? "Pause" : "Resume"} auto-invest into ${r.destination}`}
         />
       </div>
@@ -249,7 +350,13 @@ function AutoInvestScreen() {
             Your schedules
           </h2>
 
-          <ul className="space-y-3">{rules.map(ruleCard)}</ul>
+          {rules.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-border px-4 py-8 text-center text-[12.5px] text-muted-foreground">
+              No auto-invest schedules yet. Create one to fund a plan automatically.
+            </p>
+          ) : (
+            <ul className="space-y-3">{rules.map(ruleCard)}</ul>
+          )}
 
           <div className="mt-5">{howItWorks}</div>
 
@@ -309,7 +416,13 @@ function AutoInvestScreen() {
                 </p>
               </div>
             </div>
-            <ul className="mt-4 grid gap-4">{rules.map(ruleCard)}</ul>
+            {rules.length === 0 ? (
+              <p className="mt-4 rounded-xl border border-dashed border-border px-4 py-10 text-center text-[12.5px] text-muted-foreground">
+                No auto-invest schedules yet. Create one to fund a plan automatically.
+              </p>
+            ) : (
+              <ul className="mt-4 grid gap-4">{rules.map(ruleCard)}</ul>
+            )}
           </section>
 
           <aside className="sticky top-6 space-y-4">
@@ -339,12 +452,18 @@ function NewRuleForm({
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  onCreate: (rule: AutoInvestRule) => void;
+  onCreate: (rule: {
+    destination: string;
+    rate: string;
+    amount: number;
+    frequency: AutoInvestFrequency;
+  }) => void | Promise<void>;
   isMobile: boolean;
 }) {
   const [destination, setDestination] = useState(AUTO_INVEST_DESTINATIONS[0]!.name);
   const [frequency, setFrequency] = useState<AutoInvestFrequency>("Monthly");
   const [raw, setRaw] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const dest =
     AUTO_INVEST_DESTINATIONS.find((d) => d.name === destination) ??
@@ -354,19 +473,18 @@ function NewRuleForm({
   const valid = amount > 0 && !belowMin;
 
   const submit = () => {
-    if (!valid) return;
-    onCreate({
-      id: `ai-${Date.now()}`,
-      destination: dest.name,
-      rate: dest.rate,
-      amount,
-      frequency,
-      nextRun: "01 Oct 2026",
-      fundedFrom: "Kipit wallet",
-      investedToDate: 0,
-      active: true,
-    });
-    setRaw("");
+    if (!valid || submitting) return;
+    setSubmitting(true);
+    void Promise.resolve(
+      onCreate({
+        destination: dest.name,
+        rate: dest.rate,
+        amount,
+        frequency,
+      }),
+    )
+      .then(() => setRaw(""))
+      .finally(() => setSubmitting(false));
   };
 
   const body = (
@@ -444,14 +562,14 @@ function NewRuleForm({
 
       <button
         type="button"
-        disabled={!valid}
+        disabled={!valid || submitting}
         onClick={submit}
         className="mt-6 w-full rounded-xl bg-brand py-3.5 text-[13.5px] font-bold text-brand-foreground disabled:opacity-40 press"
       >
         Create auto-invest
       </button>
       <p className="mt-2.5 text-center text-[11px] text-muted-foreground">
-        First run on 01 Oct 2026 · cancel anytime
+        First run on {nextRunLabel(Math.min(Math.max(new Date().getDate(), 1), 28), true)} · cancel anytime
       </p>
     </div>
   );

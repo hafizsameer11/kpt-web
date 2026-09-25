@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Bell,
   Compass,
@@ -16,6 +16,8 @@ import {
 import { Logo } from "./Logo";
 import { GreetingText } from "@/components/kipit/SpecBlocks";
 import { useTheme } from "@/lib/theme";
+import { useWalletBalance } from "@/lib/wallet-balance";
+import { displayInitials, displayName, signOut, tierLabel } from "@/lib/auth-session";
 
 export type SidebarItem = { label: string; to: string; icon: LucideIcon };
 
@@ -27,8 +29,6 @@ export const SIDEBAR_NAV: SidebarItem[] = [
   { label: "Ask AI", to: "/chat", icon: MessageCircle },
   { label: "Settings", to: "/settings", icon: Settings },
 ];
-
-import { useWalletBalance } from "@/lib/wallet-balance";
 
 const naira = (value: number) =>
   `₦${value.toLocaleString("en-NG", { maximumFractionDigits: 0 })}`;
@@ -49,7 +49,15 @@ export function DashboardSidebar({
   const liveWallet = useWalletBalance();
   const balance = walletBalance ?? liveWallet;
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
   const current = activePath ?? pathname;
+  const name = displayName();
+  const initials = displayInitials();
+
+  async function handleSignOut() {
+    await signOut();
+    void navigate({ to: "/welcome", replace: true });
+  }
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-[17rem] flex-col overflow-hidden border-r border-white/10 bg-brand-gradient text-primary-foreground md:flex">
@@ -116,19 +124,20 @@ export function DashboardSidebar({
 
       <div className="relative flex items-center gap-3 border-t border-white/10 px-5 py-4">
         <div className="grid size-9 place-items-center rounded-full bg-white/15 text-xs font-bold text-primary-foreground">
-          AO
+          {initials}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[13px] font-semibold">Adaeze Okafor</p>
-          <p className="text-[11px] text-primary-foreground/60">Tier 2 verified</p>
+          <p className="truncate text-[13px] font-semibold">{name}</p>
+          <p className="text-[11px] text-primary-foreground/60">{tierLabel()}</p>
         </div>
-        <Link
-          to="/login"
+        <button
+          type="button"
+          onClick={() => void handleSignOut()}
           aria-label="Sign out"
           className="grid size-8 place-items-center rounded-full text-primary-foreground/70 press hover:bg-white/10 hover:text-primary-foreground"
         >
           <LogOut className="size-4" />
-        </Link>
+        </button>
       </div>
     </aside>
   );
@@ -137,12 +146,15 @@ export function DashboardSidebar({
 /** Desktop dashboard top bar that sits above page content, next to the sidebar. */
 export function DashboardTopBar({ title = "Dashboard" }: { title?: string }) {
   const { isDark, toggle } = useTheme();
+  const name = displayName();
+  const firstName = name.split(" ")[0] || "there";
+  const initials = displayInitials();
   return (
     <header className="sticky top-0 z-30 hidden h-[72px] items-center gap-4 border-b border-border bg-background/80 px-8 backdrop-blur-xl md:flex">
       <div>
         <h1 className="text-[17px] font-bold tracking-tight">{title}</h1>
         <p className="text-[12.5px] text-muted-foreground">
-          <GreetingText />, Adaeze
+          <GreetingText />, {firstName}
         </p>
       </div>
       <div className="ml-auto flex items-center gap-2">
@@ -167,7 +179,7 @@ export function DashboardTopBar({ title = "Dashboard" }: { title?: string }) {
           aria-label="Profile"
           className="grid size-10 place-items-center rounded-full bg-brand text-xs font-bold text-brand-foreground press"
         >
-          AO
+          {initials}
         </Link>
       </div>
     </header>

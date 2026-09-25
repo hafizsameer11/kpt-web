@@ -1,19 +1,24 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, Check, Clock, Landmark, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
+import { fetchWithdrawal } from "@/lib/api";
 import {
   findAccount,
+  hydratePayoutFromApi,
   maskAccount,
   payoutEta,
-  withdrawalReference,
+  type PayoutAccount,
 } from "@/lib/withdraw-data";
 
 export const Route = createFileRoute("/withdraw_/tracker")({
   validateSearch: z.object({
-    acct: z.string().catch("pa1"),
+    acct: z.string().catch(""),
     amount: z.number().catch(0),
+    ref: z.string().optional().catch(undefined),
+    id: z.string().optional().catch(undefined),
   }),
   head: () => ({
     meta: [
@@ -35,16 +40,123 @@ export const Route = createFileRoute("/withdraw_/tracker")({
   component: TrackerScreen,
 });
 
-function TrackerScreen() {
-  const { acct, amount } = Route.useSearch();
-  const account = findAccount(acct);
-  const reference = withdrawalReference(amount);
+type StepState = "done" | "active" | "pending";
 
-  const steps = [
-    { label: "Requested", detail: "Today · 14:02", state: "done" as const },
-    { label: "Processing", detail: "Sent to your bank", state: "active" as const },
-    { label: "Successful / Declined", detail: payoutEta, state: "pending" as const },
+function TrackerScreen() {
+  const { acct, amount, ref, id } = Route.useSearch();
+  const navigate = useNavigate();
+  const [account, setAccount] = useState<PayoutAccount | undefined>();
+  const [status, setStatus] = useState("PROCESSING");
+  const [reference, setReference] = useState(ref || "—");
+  const [note, setNote] = useState("Sent to your bank");
+  const [createdLabel, setCreatedLabel] = useState("Requested");
+
+  useEffect(() => {
+    void hydratePayoutFromApi().then(() => setAccount(findAccount(acct)));
+  }, [acct]);
+
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+    const poll = async () => {
+      for (let attempt = 0; attempt < 60; attempt++) {
+        if (cancelled) return;
+        try {
+          const row = await fetchWithdrawal(id);
+          if (cancelled) return;
+          setStatus(row.status);
+          setReference(row.reference || ref || "—");
+          if (row.createdAt) {
+            setCreatedLabel(
+              new Date(row.createdAt).toLocaleString("en-NG", {
+                day: "numeric",
+                month: "short",
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+            );
+          }
+          const u = row.status.toUpperCase();
+          if (u === "SUCCESSFUL" || u === "COMPLETED" || u === "SUCCESS") {
+            setNote("Settled in your bank");
+            await sleep(600);
+            if (!cancelled) {
+              void navigate({
+                to: "/withdraw/success",
+                search: {
+                  acct,
+                  amount: row.amount || amount,
+                  ref: row.reference,
+                  id: row.id,
+                },
+                replace: true,
+              });
+            }
+            return;
+          }
+          if (u === "DECLINED" || u === "FAILED" || u === "REJECTED") {
+            setNote(row.declineReason || "Payout declined");
+            await sleep(600);
+            if (!cancelled) {
+              void navigate({
+                to: "/withdraw/declined",
+                search: {
+                  acct,
+                  amount: row.amount || amount,
+                  ref: row.reference,
+                  id: row.id,
+                  reason: row.declineReason || undefined,
+                },
+                replace: true,
+              });
+            }
+            return;
+          }
+          if (attempt === 10) setNote("Still processing with your bank…");
+          if (attempt === 30) setNote("Taking longer than usual — hang tight.");
+        } catch {
+          /* keep polling */
+        }
+        await sleep(3000);
+      }
+      if (!cancelled) setNote("Still pending — check back from Transaction history.");
+    };
+
+    void poll();
+    return () => {
+      cancelled = true;
+    };
+  }, [acct, amount, id, navigate, ref]);
+
+  const upper = status.toUpperCase();
+  const settled =
+    upper === "SUCCESSFUL" || upper === "COMPLETED" || upper === "SUCCESS";
+  const declined =
+    upper === "DECLINED" || upper === "FAILED" || upper === "REJECTED";
+
+  const steps: { label: string; detail: string; state: StepState }[] = [
+    { label: "Requested", detail: createdLabel, state: "done" },
+    {
+      label: "Processing",
+      detail: note,
+      state: settled || declined ? "done" : "active",
+    },
+    {
+      label: settled ? "Successful" : declined ? "Declined" : "Successful / Declined",
+      detail: settled || declined ? note : payoutEta,
+      state: settled || declined ? "done" : "pending",
+    },
   ];
+
+  if (!account) {
+    return (
+      <AppShell title="Withdrawal Tracker" navVariant="elevated">
+        <p className="px-4 py-10 text-[13px] text-muted-foreground">Loading…</p>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell title="Withdrawal Tracker" navVariant="elevated">
@@ -54,14 +166,11 @@ function TrackerScreen() {
             aria-hidden
             className="pointer-events-none absolute -right-20 -top-32 size-72 rounded-full bg-gold/15 blur-[64px]"
           />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -bottom-28 -left-20 hidden size-64 rounded-full bg-white/10 blur-[56px] md:block"
-          />
           <div className="relative md:flex md:items-end md:justify-between md:gap-10">
             <div className="md:max-w-xl">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
-                <Clock className="size-3.5" /> Processing
+                <Clock className="size-3.5" />{" "}
+                {settled ? "Successful" : declined ? "Declined" : "Processing"}
               </span>
               <p className="mt-5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
                 Withdrawal amount
@@ -74,7 +183,6 @@ function TrackerScreen() {
               </p>
             </div>
 
-            {/* Desktop status panel */}
             <div className="hidden w-72 shrink-0 rounded-xl border border-white/12 bg-white/8 p-4 backdrop-blur-md md:block">
               <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-primary-foreground/55">
                 Estimated settlement
@@ -102,39 +210,34 @@ function TrackerScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          <div className="space-y-4 md:grid md:grid-cols-[minmax(0,1fr)_360px] md:items-start md:gap-6 md:space-y-0">
+          <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
             <section className="card-surface p-4 md:p-5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Status timeline
+                Progress
               </p>
-              <ol className="mt-4 space-y-0">
-                {steps.map((s, i) => (
-                  <li key={s.label} className="flex gap-3">
-                    <div className="flex flex-col items-center">
-                      <span
-                        className={`grid size-7 shrink-0 place-items-center rounded-full border ${
-                          s.state === "done"
-                            ? "border-emerald-500 bg-emerald-500 text-white"
-                            : s.state === "active"
-                              ? "border-gold bg-gold text-gold-foreground"
-                              : "border-border bg-card text-muted-foreground"
-                        }`}
-                      >
-                        {s.state === "done" ? (
-                          <Check className="size-3.5" strokeWidth={3} />
-                        ) : s.state === "active" ? (
-                          <Loader2 className="size-3.5 animate-spin" strokeWidth={3} />
-                        ) : (
-                          <span className="size-1.5 rounded-full bg-current" />
-                        )}
-                      </span>
-                      {i < steps.length - 1 && (
-                        <span className="my-1 w-px flex-1 bg-border" />
+              <ol className="mt-4 space-y-4">
+                {steps.map((step) => (
+                  <li key={step.label} className="flex items-start gap-3">
+                    <span
+                      className={`mt-0.5 grid size-7 shrink-0 place-items-center rounded-full ${
+                        step.state === "done"
+                          ? "bg-brand text-primary-foreground"
+                          : step.state === "active"
+                            ? "bg-gold/20 text-gold"
+                            : "bg-secondary text-muted-foreground"
+                      }`}
+                    >
+                      {step.state === "done" ? (
+                        <Check className="size-3.5" strokeWidth={2.6} />
+                      ) : step.state === "active" ? (
+                        <Loader2 className="size-3.5 animate-spin" />
+                      ) : (
+                        <Clock className="size-3.5" />
                       )}
-                    </div>
-                    <div className="pb-5">
-                      <p className="text-[13.5px] font-bold text-foreground">{s.label}</p>
-                      <p className="text-[12px] text-muted-foreground">{s.detail}</p>
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-[13.5px] font-bold">{step.label}</p>
+                      <p className="mt-0.5 text-[12px] text-muted-foreground">{step.detail}</p>
                     </div>
                   </li>
                 ))}
@@ -143,55 +246,40 @@ function TrackerScreen() {
 
             <section className="card-surface p-4 md:p-5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Payout account
+                Destination
               </p>
               <div className="mt-3 flex items-center gap-3">
                 <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
                   <Landmark className="size-5" strokeWidth={2.2} />
                 </span>
                 <div className="min-w-0">
-                  <p className="truncate text-[13.5px] font-bold text-foreground">
-                    {account.accountName}
-                  </p>
-                  <p className="truncate text-[12px] text-muted-foreground">
-                    {account.bank} · {maskAccount(account.accountNumber)}
+                  <p className="text-[13.5px] font-bold">{account.bank}</p>
+                  <p className="text-[12px] text-muted-foreground">
+                    {maskAccount(account.accountNumber)} · {account.accountName}
                   </p>
                 </div>
               </div>
-              <p className="mt-4 rounded-xl bg-secondary px-3 py-2.5 text-[12px] text-muted-foreground">
-                Most payouts settle within minutes. If your bank delays it, the
-                amount is returned to your Kipit wallet automatically.
+              <p className="mt-3 text-[11.5px] leading-relaxed text-muted-foreground">
+                If the bank declines the payout, the amount is returned to your Kipit wallet
+                automatically.
               </p>
-            </section>
-
-            {/* Desktop rail extras */}
-            <section className="card-surface hidden p-5 md:block">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                What happens next
-              </p>
-              <ul className="mt-3 space-y-2.5">
-                {[
-                  "You'll get a notification the moment it settles",
-                  "The receipt is saved to your transaction history",
-                  "Delays? Funds return to your wallet automatically",
-                ].map((t) => (
-                  <li key={t} className="flex items-start gap-2.5 text-[12.5px] text-foreground">
-                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" />
-                    {t}
-                  </li>
-                ))}
-              </ul>
             </section>
           </div>
 
           <div className="mt-5 flex flex-col gap-2.5 md:flex-row">
-            <Link
-              to="/withdraw/success"
-              search={{ acct: account.id, amount }}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
-            >
-              View outcome <ArrowRight className="size-4" strokeWidth={2.6} />
-            </Link>
+            {!id ? (
+              <Link
+                to="/withdraw/success"
+                search={{ acct: account.id, amount, ref: reference }}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
+              >
+                View outcome <ArrowRight className="size-4" strokeWidth={2.6} />
+              </Link>
+            ) : (
+              <p className="text-[12.5px] text-muted-foreground">
+                We&apos;ll move you to the outcome as soon as your bank responds.
+              </p>
+            )}
             <Link
               to="/portfolio/transactions"
               className="inline-flex w-full items-center justify-center rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press md:w-auto md:px-8"
@@ -199,17 +287,6 @@ function TrackerScreen() {
               Transaction history
             </Link>
           </div>
-          <p className="mt-2.5 text-[11.5px] text-muted-foreground">
-            Prototype: if a payout fails you'll see the{" "}
-            <Link
-              to="/withdraw/declined"
-              search={{ acct: account.id, amount }}
-              className="font-bold text-primary underline underline-offset-2"
-            >
-              declined state
-            </Link>
-            .
-          </p>
         </div>
       </div>
     </AppShell>

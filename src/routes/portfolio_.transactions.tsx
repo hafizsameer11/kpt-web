@@ -10,7 +10,7 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
@@ -28,11 +28,13 @@ import {
   DrawerDescription,
 } from "@/components/ui/drawer";
 import {
-  TRANSACTIONS,
   TXN_TYPES,
+  mapApiPortfolioTransaction,
+  type Transaction,
   type TxnStatus,
   type TxnType,
 } from "@/lib/portfolio-data";
+import { fetchPortfolioTransactions, getAccessToken } from "@/lib/api";
 
 export const Route = createFileRoute("/portfolio_/transactions")({
   head: () => ({
@@ -66,13 +68,13 @@ const statusTone: Record<TxnStatus, string> = {
   Failed: "bg-destructive/10 text-destructive",
 };
 
-/** Prototype period filter — parses the "DD Mon YYYY" display dates. */
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const parse = (d: string) => {
   const [day, mon, year] = d.split(" ");
-  return new Date(Number(year), MONTHS.indexOf(mon ?? ""), Number(day)).getTime();
+  const month = MONTHS.indexOf(mon ?? "");
+  if (month < 0) return Number.NaN;
+  return new Date(Number(year), month, Number(day)).getTime();
 };
-const NOW = parse("03 Sep 2026");
 
 function TransactionHistoryScreen() {
   const { mask, hidden } = useBalanceVisibility();
@@ -82,15 +84,44 @@ function TransactionHistoryScreen() {
   const [period, setPeriod] = useState<(typeof PERIODS)[number]>("All time");
   const [query, setQuery] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [rows, setRows] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      if (!getAccessToken()) {
+        if (alive) setRows([]);
+        return;
+      }
+      try {
+        const apiRows = await fetchPortfolioTransactions();
+        const seen = new Set<string>();
+        const mapped: Transaction[] = [];
+        for (const row of apiRows ?? []) {
+          if (!row?.id || seen.has(row.id)) continue;
+          seen.add(row.id);
+          mapped.push(mapApiPortfolioTransaction(row));
+        }
+        if (alive) setRows(mapped);
+      } catch {
+        if (alive) setRows([]);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return TRANSACTIONS.filter((t) => {
+    const now = Date.now();
+    return rows.filter((t) => {
       if (type !== "All" && t.type !== type) return false;
       if (status !== "All" && t.status !== status) return false;
       if (period !== "All time") {
         const days = period === "Last 30 days" ? 30 : 90;
-        if (NOW - parse(t.date) > days * 864e5) return false;
+        const ts = parse(t.date);
+        if (Number.isNaN(ts) || now - ts > days * 864e5) return false;
       }
       if (q) {
         const haystack = [
@@ -108,7 +139,7 @@ function TransactionHistoryScreen() {
       }
       return true;
     });
-  }, [type, status, period, query]);
+  }, [rows, type, status, period, query]);
 
   const inflow = list
     .filter((t) => t.direction === "in" && t.status !== "Failed")

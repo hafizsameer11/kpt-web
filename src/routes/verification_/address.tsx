@@ -3,6 +3,7 @@ import { ArrowRight, MapPin } from "lucide-react";
 import { useState } from "react";
 import { KycStep, kycCta, kycField, kycLabel } from "@/components/kipit/KycStep";
 import { NIGERIAN_STATES } from "@/lib/kyc-data";
+import { getTier2Draft, patchTier2Draft } from "@/lib/tier2-draft";
 
 export const Route = createFileRoute("/verification_/address")({
   head: () => ({
@@ -11,10 +12,9 @@ export const Route = createFileRoute("/verification_/address")({
       {
         name: "description",
         content:
-          "Tell Kipit where you live so we can verify your residence for Tier 2 verification.",
+          "Tell Kipit where you live so we can store your residence for Tier 2 verification.",
       },
       { property: "og:title", content: "Your Residential Address | Kipit" },
-      { property: "og:description", content: "Enter your residential address for Kipit KYC." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -24,45 +24,21 @@ export const Route = createFileRoute("/verification_/address")({
 
 function AddressStep() {
   const navigate = useNavigate();
-  const [street, setStreet] = useState("");
-  const [city, setCity] = useState("");
-  const [lga, setLga] = useState("");
-  const [state, setState] = useState("");
+  const d = getTier2Draft();
+  const [street, setStreet] = useState(d.addressStreet);
+  const [city, setCity] = useState(d.addressCity);
+  const [lga, setLga] = useState(d.addressLga);
+  const [state, setState] = useState(d.addressState);
   const valid = street.trim().length > 4 && city.trim() !== "" && lga.trim() !== "" && state !== "";
 
   return (
     <KycStep
       navTitle="Address"
-      backTo="/verification"
-      backLabel="Verification"
+      backTo="/verification/selfie"
+      backLabel="Selfie"
       eyebrow="Tier 2"
       title="Where do you live?"
       subtitle="Use your current residential address — a PO Box or office address can't be accepted."
-      aside={
-        <>
-          <section className="card-surface p-5">
-            <p className="text-[12.5px] font-extrabold text-foreground">Accepted proof</p>
-            <ul className="mt-2 space-y-2">
-              {[
-                "Utility bill issued in the last 3 months.",
-                "Bank statement showing your address.",
-                "Tenancy agreement or government letter.",
-              ].map((t) => (
-                <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
-                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </section>
-          <section className="card-surface p-5">
-            <p className="text-[12.5px] font-extrabold text-foreground">Keep it current</p>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
-              Your address must match the documents you upload, otherwise the review may be delayed.
-            </p>
-          </section>
-        </>
-      }
       step={3}
       totalSteps={4}
     >
@@ -122,7 +98,15 @@ function AddressStep() {
         <button
           type="button"
           disabled={!valid}
-          onClick={() => void navigate({ to: "/verification/address-upload" })}
+          onClick={() => {
+            patchTier2Draft({
+              addressStreet: street.trim(),
+              addressCity: city.trim(),
+              addressLga: lga.trim(),
+              addressState: state,
+            });
+            void navigate({ to: "/verification/address-upload" });
+          }}
           className={`mt-5 ${kycCta}`}
         >
           Continue <ArrowRight className="size-4" strokeWidth={2.6} />

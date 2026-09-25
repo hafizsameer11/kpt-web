@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
+import { ApiError, changeTransactionPin } from "@/lib/api";
 
 export const Route = createFileRoute("/settings_/security_/change-pin")({
   head: () => ({
@@ -13,15 +14,12 @@ export const Route = createFileRoute("/settings_/security_/change-pin")({
           "Set a new 4-digit Kipit transaction PIN by confirming your current PIN first.",
       },
       { property: "og:title", content: "Change Transaction PIN | Kipit" },
-      { property: "og:description", content: "Update the PIN that authorizes your transactions." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ChangePinScreen,
 });
-
-const CURRENT_PIN = "1234";
 
 function ChangePinScreen() {
   const navigate = useNavigate();
@@ -30,6 +28,7 @@ function ChangePinScreen() {
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
 
   const value = step === 0 ? current : step === 1 ? next : confirm;
@@ -41,19 +40,15 @@ function ChangePinScreen() {
     { title: "Confirm your new PIN", sub: "Type the new PIN again" },
   ] as const;
 
-  function submit() {
+  async function submit() {
     setError(null);
     if (step === 0) {
-      if (current !== CURRENT_PIN) {
-        setError("That PIN is incorrect. Try again.");
-        setCurrent("");
-        return;
-      }
+      if (current.length !== 4) return;
       setStep(1);
       return;
     }
     if (step === 1) {
-      if (/^(\d)\1{3}$/.test(next) || next === "1234") {
+      if (/^(\d)\1{3}$/.test(next) || next === "1234" || next === "0000") {
         setError("Choose a less predictable PIN.");
         setNext("");
         return;
@@ -66,8 +61,24 @@ function ChangePinScreen() {
       setConfirm("");
       return;
     }
-    setDone(true);
-    setTimeout(() => navigate({ to: "/settings/security" }), 1600);
+    setBusy(true);
+    try {
+      await changeTransactionPin({
+        currentPin: current,
+        newPin: next,
+        confirmPin: confirm,
+      });
+      setDone(true);
+      window.setTimeout(() => navigate({ to: "/settings/security" }), 1600);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not update PIN.");
+      setStep(0);
+      setCurrent("");
+      setNext("");
+      setConfirm("");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -80,72 +91,71 @@ function ChangePinScreen() {
     >
       <div className="mx-auto max-w-md md:max-w-4xl md:grid md:grid-cols-[minmax(0,1fr)_320px] md:items-start md:gap-6">
         <div className="min-w-0">
+          {done ? (
+            <section className="card-surface flex flex-col items-center p-8 text-center">
+              <span className="grid size-16 place-items-center rounded-full bg-emerald-500/12 text-emerald-600">
+                <CheckCircle2 className="size-9" strokeWidth={2.2} />
+              </span>
+              <p className="mt-4 font-display text-[18px] font-extrabold">PIN updated</p>
+              <p className="mt-1.5 text-[12.5px] text-muted-foreground">
+                Use your new PIN the next time you authorize a transaction.
+              </p>
+            </section>
+          ) : (
+            <section className="card-surface p-5">
+              <div className="flex items-center gap-2">
+                {[0, 1, 2].map((i) => (
+                  <span
+                    key={i}
+                    className={`h-1 flex-1 rounded-full transition-colors ${i <= step ? "bg-gold" : "bg-border"}`}
+                  />
+                ))}
+              </div>
 
-        {done ? (
-          <section className="card-surface flex flex-col items-center p-8 text-center">
-            <span className="grid size-16 place-items-center rounded-full bg-emerald-500/12 text-emerald-600">
-              <CheckCircle2 className="size-9" strokeWidth={2.2} />
-            </span>
-            <p className="mt-4 font-display text-[18px] font-extrabold">PIN updated</p>
-            <p className="mt-1.5 text-[12.5px] text-muted-foreground">
-              Use your new PIN the next time you authorize a transaction.
-            </p>
-          </section>
-        ) : (
-          <section className="card-surface p-5">
-            <div className="flex items-center gap-2">
-              {[0, 1, 2].map((i) => (
-                <span
-                  key={i}
-                  className={`h-1 flex-1 rounded-full transition-colors ${i <= step ? "bg-gold" : "bg-border"}`}
-                />
-              ))}
-            </div>
+              <p className="mt-5 font-display text-[17px] font-extrabold">{labels[step].title}</p>
+              <p className="mt-1 text-[12.5px] text-muted-foreground">{labels[step].sub}</p>
 
-            <p className="mt-5 font-display text-[17px] font-extrabold">{labels[step].title}</p>
-            <p className="mt-1 text-[12.5px] text-muted-foreground">{labels[step].sub}</p>
+              <div className="mt-6 flex justify-center gap-3">
+                {[0, 1, 2, 3].map((i) => (
+                  <span
+                    key={i}
+                    className={`size-12 rounded-xl border text-center font-display text-[22px] font-extrabold leading-[46px] ${
+                      value.length > i ? "border-brand bg-secondary text-foreground" : "border-border"
+                    }`}
+                  >
+                    {value.length > i ? "•" : ""}
+                  </span>
+                ))}
+              </div>
 
-            <div className="mt-6 flex justify-center gap-3">
-              {[0, 1, 2, 3].map((i) => (
-                <span
-                  key={i}
-                  className={`size-12 rounded-xl border text-center font-display text-[22px] font-extrabold leading-[46px] ${
-                    value.length > i ? "border-brand bg-secondary text-foreground" : "border-border"
-                  }`}
-                >
-                  {value.length > i ? "•" : ""}
-                </span>
-              ))}
-            </div>
+              <input
+                autoFocus
+                inputMode="numeric"
+                aria-label={labels[step].title}
+                value={value}
+                onChange={(e) => {
+                  setError(null);
+                  setValue(e.target.value.replace(/\D/g, "").slice(0, 4));
+                }}
+                className="mt-4 w-full rounded-xl border border-border bg-secondary px-4 py-3 text-center text-[15px] font-bold tracking-[0.5em] outline-none focus:border-brand"
+                placeholder="••••"
+              />
 
-            <input
-              autoFocus
-              inputMode="numeric"
-              aria-label={labels[step].title}
-              value={value}
-              onChange={(e) => {
-                setError(null);
-                setValue(e.target.value.replace(/\D/g, "").slice(0, 4));
-              }}
-              className="mt-4 w-full rounded-xl border border-border bg-secondary px-4 py-3 text-center text-[15px] font-bold tracking-[0.5em] outline-none focus:border-brand"
-              placeholder="••••"
-            />
+              {error ? (
+                <p className="mt-3 text-center text-[12px] font-bold text-destructive">{error}</p>
+              ) : null}
 
-            {error ? (
-              <p className="mt-3 text-center text-[12px] font-bold text-destructive">{error}</p>
-            ) : null}
-
-            <button
-              type="button"
-              disabled={value.length !== 4}
-              onClick={submit}
-              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40"
-            >
-              <ShieldCheck className="size-4" strokeWidth={2.6} />
-              {step === 2 ? "Update PIN" : "Continue"}
-            </button>
-          </section>
-        )}
+              <button
+                type="button"
+                disabled={value.length !== 4 || busy}
+                onClick={() => void submit()}
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40"
+              >
+                <ShieldCheck className="size-4" strokeWidth={2.6} />
+                {busy ? "Updating…" : step === 2 ? "Update PIN" : "Continue"}
+              </button>
+            </section>
+          )}
         </div>
 
         <aside className="hidden space-y-4 md:block">
@@ -180,6 +190,5 @@ function ChangePinScreen() {
         </aside>
       </div>
     </SettingsPage>
-
   );
 }

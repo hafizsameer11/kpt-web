@@ -1,15 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Check, Copy, Share2, Users } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
 import { naira } from "@/lib/home-data";
-import {
-  REFERRAL_LIST,
-  REFERRAL_STATUS_META,
-  REFERRALS,
-  type ReferralStatus,
-} from "@/lib/settings-data";
+import { fetchReferrals } from "@/lib/api";
+import { REFERRAL_STATUS_META, type ReferralStatus } from "@/lib/settings-data";
 
 export const Route = createFileRoute("/settings_/referrals")({
   head: () => ({
@@ -29,8 +25,56 @@ export const Route = createFileRoute("/settings_/referrals")({
   component: ReferralsScreen,
 });
 
+type ReferralRow = {
+  id: string;
+  name: string;
+  note: string;
+  joined: string;
+  status: ReferralStatus;
+  reward: number;
+};
+
 function ReferralsScreen() {
   const [copied, setCopied] = useState<"code" | "link" | null>(null);
+  const [code, setCode] = useState("");
+  const [link, setLink] = useState("");
+  const [successful, setSuccessful] = useState(0);
+  const [rewards, setRewards] = useState(0);
+  const [tab, setTab] = useState<"all" | ReferralStatus>("all");
+  const [list, setList] = useState<ReferralRow[]>([]);
+
+  useEffect(() => {
+    void fetchReferrals()
+      .then((data) => {
+        setCode(data.code || "");
+        setLink(data.link || "");
+        setSuccessful(data.successfulReferrals ?? 0);
+        setRewards(data.rewardsEarned ?? 0);
+        setList(
+          (data.people ?? []).map((p) => ({
+            id: p.id,
+            name: p.name,
+            note: p.note,
+            joined: new Date(p.joined).toLocaleDateString("en-NG", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            }),
+            status: (p.status === "rewarded" ? "rewarded" : "pending") as ReferralStatus,
+            reward: p.reward ?? 0,
+          })),
+        );
+      })
+      .catch(() => {
+        setCode("");
+        setLink("");
+        setSuccessful(0);
+        setRewards(0);
+        setList([]);
+      });
+  }, []);
+
+  const filtered = list.filter((r) => tab === "all" || r.status === tab);
 
   function copy(kind: "code" | "link", value: string) {
     void navigator.clipboard?.writeText(value);
@@ -38,13 +82,10 @@ function ReferralsScreen() {
     setTimeout(() => setCopied(null), 1600);
   }
 
-  const [tab, setTab] = useState<"all" | ReferralStatus>("all");
-  const list = REFERRAL_LIST.filter((r) => tab === "all" || r.status === tab);
-
   const stats = [
-    { label: "Total referrals", value: String(REFERRALS.total) },
-    { label: "Successful referrals", value: String(REFERRALS.successful) },
-    { label: "Rewards earned", value: naira(REFERRALS.rewards) },
+    { label: "Total referrals", value: String(successful) },
+    { label: "Successful referrals", value: String(successful) },
+    { label: "Rewards earned", value: naira(rewards) },
   ];
 
   return (
@@ -60,12 +101,13 @@ function ReferralsScreen() {
         </p>
         <div className="mt-2.5 flex items-center gap-3">
           <span className="flex-1 rounded-xl border border-dashed border-brand/40 bg-secondary px-4 py-3 text-center font-display text-[20px] font-extrabold tracking-[0.12em] text-brand">
-            {REFERRALS.code}
+            {code || "—"}
           </span>
           <button
             type="button"
             aria-label="Copy referral code"
-            onClick={() => copy("code", REFERRALS.code)}
+            disabled={!code}
+            onClick={() => copy("code", code)}
             className="grid size-11 shrink-0 place-items-center rounded-xl border border-border press hover:bg-secondary"
           >
             {copied === "code" ? (
@@ -78,11 +120,12 @@ function ReferralsScreen() {
 
         <button
           type="button"
-          onClick={() => copy("link", REFERRALS.link)}
+          disabled={!link}
+          onClick={() => copy("link", link)}
           className="mt-3 flex w-full items-center gap-2 rounded-xl bg-secondary px-3.5 py-3 text-left press"
         >
           <span className="min-w-0 flex-1 truncate text-[12px] font-semibold text-muted-foreground">
-            {REFERRALS.link}
+            {link || "—"}
           </span>
           <span className="shrink-0 text-[11.5px] font-extrabold text-brand">
             {copied === "link" ? "Copied" : "Copy link"}
@@ -105,13 +148,12 @@ function ReferralsScreen() {
         </div>
       </section>
 
-
       <section className="card-surface mt-4 overflow-hidden p-0">
         <div className="flex items-center justify-between gap-3 px-4 pt-4">
           <p className="text-[13px] font-extrabold tracking-[-0.01em] text-foreground">
             People you referred
           </p>
-          <span className="text-[11px] font-bold text-muted-foreground">{list.length} shown</span>
+          <span className="text-[11px] font-bold text-muted-foreground">{filtered.length} shown</span>
         </div>
 
         <div className="mt-3 flex gap-1.5 overflow-x-auto px-4 pb-3 no-scrollbar">
@@ -139,7 +181,7 @@ function ReferralsScreen() {
         </div>
 
         <ul className="divide-y divide-border/70 border-t border-border/70">
-          {list.map((r) => {
+          {filtered.map((r) => {
             const meta = REFERRAL_STATUS_META[r.status];
             return (
               <li key={r.id} className="flex items-center gap-3 px-4 py-3.5">
@@ -165,7 +207,7 @@ function ReferralsScreen() {
               </li>
             );
           })}
-          {list.length === 0 ? (
+          {filtered.length === 0 ? (
             <li className="px-4 py-8 text-center text-[12px] text-muted-foreground">
               No referrals in this status yet.
             </li>
@@ -185,9 +227,10 @@ function ReferralsScreen() {
 
       <button
         type="button"
+        disabled={!link}
         onClick={() => {
-          void navigator.clipboard?.writeText(REFERRALS.link);
-          toast.success("Invite link copied", { description: REFERRALS.link });
+          void navigator.clipboard?.writeText(link);
+          toast.success("Invite link copied", { description: link });
         }}
         className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press"
       >
@@ -195,7 +238,6 @@ function ReferralsScreen() {
       </button>
       </div>
 
-      {/* ---------- Desktop ---------- */}
       <div className="hidden md:grid md:grid-cols-[minmax(0,1fr)_340px] md:items-start md:gap-6">
         <section className="card-surface overflow-hidden p-0">
           <div className="flex items-center justify-between gap-4 border-b border-border/70 px-6 py-5">
@@ -208,7 +250,7 @@ function ReferralsScreen() {
               </p>
             </div>
             <span className="shrink-0 rounded-full bg-secondary px-3 py-1.5 text-[11.5px] font-extrabold text-muted-foreground">
-              {list.length} shown
+              {filtered.length} shown
             </span>
           </div>
 
@@ -246,7 +288,7 @@ function ReferralsScreen() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/70">
-              {list.map((r) => {
+              {filtered.map((r) => {
                 const meta = REFERRAL_STATUS_META[r.status];
                 return (
                   <tr key={r.id} className="transition hover:bg-secondary/40">
@@ -279,7 +321,7 @@ function ReferralsScreen() {
                   </tr>
                 );
               })}
-              {list.length === 0 ? (
+              {filtered.length === 0 ? (
                 <tr>
                   <td
                     colSpan={4}
@@ -300,12 +342,13 @@ function ReferralsScreen() {
             </p>
             <div className="mt-3 flex items-center gap-3">
               <span className="flex-1 rounded-xl border border-dashed border-brand/40 bg-secondary px-4 py-3.5 text-center font-display text-[22px] font-extrabold tracking-[0.12em] text-brand">
-                {REFERRALS.code}
+                {code || "—"}
               </span>
               <button
                 type="button"
                 aria-label="Copy referral code"
-                onClick={() => copy("code", REFERRALS.code)}
+                disabled={!code}
+                onClick={() => copy("code", code)}
                 className="grid size-12 shrink-0 place-items-center rounded-xl border border-border press hover:bg-secondary"
               >
                 {copied === "code" ? (
@@ -318,11 +361,12 @@ function ReferralsScreen() {
 
             <button
               type="button"
-              onClick={() => copy("link", REFERRALS.link)}
+              disabled={!link}
+              onClick={() => copy("link", link)}
               className="mt-3 flex w-full items-center gap-2 rounded-xl bg-secondary px-3.5 py-3 text-left press hover:bg-secondary/70"
             >
               <span className="min-w-0 flex-1 truncate text-[12px] font-semibold text-muted-foreground">
-                {REFERRALS.link}
+                {link || "—"}
               </span>
               <span className="shrink-0 text-[11.5px] font-extrabold text-brand">
                 {copied === "link" ? "Copied" : "Copy link"}
@@ -331,9 +375,10 @@ function ReferralsScreen() {
 
             <button
               type="button"
+              disabled={!link}
               onClick={() => {
-                void navigator.clipboard?.writeText(REFERRALS.link);
-                toast.success("Invite link copied", { description: REFERRALS.link });
+                void navigator.clipboard?.writeText(link);
+                toast.success("Invite link copied", { description: link });
               }}
               className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press"
             >

@@ -1,13 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { AuthShell, OtpInput, PrimaryButton } from "@/components/kipit/AuthShell";
-import { DEMO_OTP, signupDraft } from "@/lib/auth-data";
+import { ApiError, logSignupFunnel, requestOtp, verifySignupOtp } from "@/lib/api";
+import { signupDraft } from "@/lib/auth-data";
 
 export const Route = createFileRoute("/signup_/otp")({
   head: () => ({
     meta: [
       { title: "Verify your email — Kipit" },
-      { name: "description", content: "Enter the six-digit code we sent to your email to verify your Kipit sign-up." },
+      {
+        name: "description",
+        content: "Enter the six-digit code we sent to your email to verify your Kipit sign-up.",
+      },
       { property: "og:title", content: "Verify your email — Kipit" },
       { property: "og:description", content: "Enter your six-digit verification code." },
       { property: "og:type", content: "website" },
@@ -24,25 +28,38 @@ function SignupOtp() {
   const [seconds, setSeconds] = useState(45);
 
   useEffect(() => {
+    void logSignupFunnel({
+      step: "otp",
+      email: signupDraft.email || undefined,
+      deviceId: signupDraft.deviceId,
+    });
+  }, []);
+
+  useEffect(() => {
     if (seconds <= 0) return;
     const t = setTimeout(() => setSeconds((s) => s - 1), 1000);
     return () => clearTimeout(t);
   }, [seconds]);
 
-  const verifyCode = useCallback((value: string) => {
-    if (value.length !== 6) return;
-    if (value === DEMO_OTP) {
+  const verifyCode = useCallback(
+    async (value: string) => {
+      if (value.length !== 6 || !signupDraft.email) return;
       setStatus("validating");
-      navigate({ to: "/signup/details" });
-      return;
-    }
-    setStatus(seconds <= 0 ? "expired" : "invalid");
-  }, [navigate, seconds]);
+      signupDraft.otp = value;
+      try {
+        await verifySignupOtp(signupDraft.email, value);
+        void navigate({ to: "/signup/details" });
+      } catch {
+        setStatus(seconds <= 0 ? "expired" : "invalid");
+      }
+    },
+    [navigate, seconds],
+  );
 
   const updateCode = (value: string) => {
     setCode(value);
     setStatus("idle");
-    if (value.length === 6) verifyCode(value);
+    if (value.length === 6) void verifyCode(value);
   };
 
   const masked = signupDraft.email || "your email";
@@ -65,21 +82,38 @@ function SignupOtp() {
         ) : status === "expired" ? (
           <span className="[color:oklch(0.8_0.14_25)]">This code has expired. Request a new one.</span>
         ) : (
-          <span className="text-brand-foreground/55">Demo code: {DEMO_OTP}</span>
+          <span className="text-brand-foreground/55">Enter the six-digit code from your email.</span>
         )}
       </p>
 
       <div className="mt-7 space-y-4">
-        <PrimaryButton disabled={code.length !== 6 || status === "validating"} onClick={() => verifyCode(code)}>
+        <PrimaryButton disabled={code.length !== 6 || status === "validating"} onClick={() => void verifyCode(code)}>
           Verify
         </PrimaryButton>
         <div className="flex items-center justify-between text-xs">
           {seconds > 0 ? (
-            <span className="text-brand-foreground/55">Resend code in 0:{String(seconds).padStart(2, "0")}</span>
+            <span className="text-brand-foreground/55">
+              Resend code in 0:{String(seconds).padStart(2, "0")}
+            </span>
           ) : (
             <button
               type="button"
-              onClick={() => { setSeconds(45); setCode(""); setStatus("idle"); }}
+              onClick={() => {
+                void (async () => {
+                  if (!signupDraft.email) return;
+                  try {
+                    await requestOtp(signupDraft.email, "SIGNUP");
+                    setSeconds(45);
+                    setCode("");
+                    setStatus("idle");
+                  } catch (err) {
+                    setStatus("invalid");
+                    if (err instanceof ApiError) {
+                      /* keep invalid state */
+                    }
+                  }
+                })();
+              }}
               className="font-semibold text-gold"
             >
               Resend code

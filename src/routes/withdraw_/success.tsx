@@ -1,21 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
-import { debitWallet } from "@/lib/wallet-balance";
+import { useEffect, useState } from "react";
 import { ArrowRight, Landmark } from "lucide-react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
+import { refreshWalletFromApi } from "@/lib/wallet-balance";
 import {
   findAccount,
+  hydratePayoutFromApi,
   maskAccount,
+  type PayoutAccount,
   withdrawalReference,
   WITHDRAWAL_FEE,
 } from "@/lib/withdraw-data";
 
 export const Route = createFileRoute("/withdraw_/success")({
   validateSearch: z.object({
-    acct: z.string().catch("pa1"),
+    acct: z.string().catch(""),
     amount: z.number().catch(0),
+    ref: z.string().optional().catch(undefined),
+    id: z.string().optional().catch(undefined),
   }),
   head: () => ({
     meta: [
@@ -38,17 +42,24 @@ export const Route = createFileRoute("/withdraw_/success")({
 });
 
 function WithdrawSuccess() {
-  const { acct, amount } = Route.useSearch();
-  const applied = useRef(false);
+  const { acct, amount, ref } = Route.useSearch();
+  const [account, setAccount] = useState<PayoutAccount | undefined>();
+  const reference = ref || withdrawalReference(amount);
 
   useEffect(() => {
-    if (applied.current || amount <= 0) return;
-    applied.current = true;
-    debitWallet(`withdrawal-${Date.now()}-${amount}`, amount);
-  }, [amount]);
+    void hydratePayoutFromApi().then((rows) => {
+      setAccount(findAccount(acct) ?? rows[0]);
+    });
+    void refreshWalletFromApi();
+  }, [acct]);
 
-  const account = findAccount(acct);
-  const reference = withdrawalReference(amount);
+  if (!account) {
+    return (
+      <AppShell title="Withdrawal Successful" navVariant="elevated">
+        <p className="px-4 py-10 text-[13px] text-muted-foreground">Loading…</p>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell title="Withdrawal Successful" navVariant="elevated">
@@ -76,7 +87,7 @@ function MobileWithdrawSuccess({
   reference,
 }: {
   amount: number;
-  account: ReturnType<typeof findAccount>;
+  account: PayoutAccount;
   reference: string;
 }) {
   return (
@@ -188,7 +199,7 @@ function DesktopWithdrawSuccess({
   reference,
 }: {
   amount: number;
-  account: ReturnType<typeof findAccount>;
+  account: PayoutAccount;
   reference: string;
 }) {
   return (

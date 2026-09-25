@@ -1,7 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, BadgeCheck, Info } from "lucide-react";
+import { useState } from "react";
 import { KycStep, KycRow, kycCta, kycGhost } from "@/components/kipit/KycStep";
-import { BVN_MATCH } from "@/lib/kyc-data";
+import { getLastBvnMatch } from "@/lib/kyc-data";
+import { confirmBvn, isAuthenticated, tierNumber } from "@/lib/api";
+import { setKycTier } from "@/lib/kyc-state";
 
 export const Route = createFileRoute("/verification_/bvn-match")({
   head: () => ({
@@ -21,6 +24,27 @@ export const Route = createFileRoute("/verification_/bvn-match")({
 });
 
 function BvnMatch() {
+  const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
+  const match = getLastBvnMatch();
+  const bvnName = match.name || "—";
+
+  const confirm = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      if (isAuthenticated()) {
+        const status = await confirmBvn();
+        setKycTier(tierNumber(status.tier));
+      } else {
+        setKycTier(1);
+      }
+      void navigate({ to: "/verification/tier1-verified" });
+    } catch {
+      setBusy(false);
+    }
+  };
+
   return (
     <KycStep
       navTitle="BVN Match"
@@ -64,17 +88,15 @@ function BvnMatch() {
             <BadgeCheck className="size-5" strokeWidth={2.2} />
           </span>
           <div className="min-w-0">
-            <p className="truncate text-[14px] font-extrabold text-foreground">
-              {BVN_MATCH.name}
-            </p>
+            <p className="truncate text-[14px] font-extrabold text-foreground">{bvnName}</p>
             <p className="text-[12px] text-muted-foreground">BVN record matched</p>
           </div>
         </div>
 
         <dl className="mt-3 divide-y divide-border text-[13px]">
-          <KycRow label="Full name">{BVN_MATCH.name}</KycRow>
-          <KycRow label="Date of birth">{BVN_MATCH.dob}</KycRow>
-          <KycRow label="Phone">{BVN_MATCH.phone}</KycRow>
+          <KycRow label="Full name">{bvnName}</KycRow>
+          {match.dob ? <KycRow label="Date of birth">{match.dob}</KycRow> : null}
+          {match.phone ? <KycRow label="Phone">{match.phone}</KycRow> : null}
         </dl>
 
         <p className="mt-3 flex items-start gap-1.5 text-[11.5px] text-muted-foreground">
@@ -84,9 +106,9 @@ function BvnMatch() {
       </section>
 
       <div className="mt-5 flex flex-col gap-2.5 md:flex-row">
-        <Link to="/verification/tier1-verified" className={kycCta}>
+        <button type="button" disabled={busy} onClick={() => void confirm()} className={kycCta}>
           Yes, that's me <ArrowRight className="size-4" strokeWidth={2.6} />
-        </Link>
+        </button>
         <Link to="/verification/bvn" className={kycGhost}>
           Not me — re-enter BVN
         </Link>

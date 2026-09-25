@@ -1,15 +1,22 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Banknote } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
-import { findAccount, withdrawalReference } from "@/lib/withdraw-data";
+import {
+  findAccount,
+  hydratePayoutFromApi,
+  type PayoutAccount,
+  withdrawalReference,
+} from "@/lib/withdraw-data";
 
 export const Route = createFileRoute("/withdraw_/processing")({
   validateSearch: z.object({
-    acct: z.string().catch("pa1"),
+    acct: z.string().catch(""),
     amount: z.number().catch(0),
+    ref: z.string().optional().catch(undefined),
+    id: z.string().optional().catch(undefined),
   }),
   head: () => ({
     meta: [
@@ -34,21 +41,26 @@ export const Route = createFileRoute("/withdraw_/processing")({
 const STEPS = ["Debiting your wallet", "Sending to your bank", "Awaiting settlement"];
 
 function ProcessingScreen() {
-  const { acct, amount } = Route.useSearch();
-  const account = findAccount(acct);
+  const { acct, amount, ref, id } = Route.useSearch();
   const navigate = useNavigate();
-  const reference = withdrawalReference(amount);
+  const [account, setAccount] = useState<PayoutAccount | undefined>();
+  const reference = ref || withdrawalReference(amount);
 
   useEffect(() => {
+    void hydratePayoutFromApi().then(() => setAccount(findAccount(acct)));
+  }, [acct]);
+
+  useEffect(() => {
+    if (!account) return;
     const t = window.setTimeout(() => {
       void navigate({
         to: "/withdraw/tracker",
-        search: { acct: account.id, amount },
+        search: { acct: account.id, amount, ref: reference, id },
         replace: true,
       });
     }, 2600);
     return () => window.clearTimeout(t);
-  }, [account.id, amount, navigate]);
+  }, [account, amount, id, navigate, reference]);
 
   return (
     <AppShell title="Processing" navVariant="elevated">
@@ -77,7 +89,7 @@ function ProcessingScreen() {
               Your withdrawal request is being processed
             </p>
             <p className="k-success-fade mt-2 text-[12.5px] text-primary-foreground/65">
-              {naira(amount)} to {account.bank} · Ref {reference}
+              {naira(amount)} to {account?.bank ?? "your bank"} · Ref {reference}
             </p>
 
             <ul className="mx-auto mt-7 w-full max-w-xs space-y-2.5 text-left">

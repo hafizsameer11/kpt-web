@@ -10,14 +10,16 @@ import {
   ShieldCheck,
   Wallet,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
 import { useWalletBalance } from "@/lib/wallet-balance";
 import {
+  hydratePayoutFromApi,
   maskAccount,
   MIN_WITHDRAWAL,
   payoutEta,
-  SAVED_ACCOUNTS,
+  type PayoutAccount,
   TIER,
   WITHDRAWAL_FEE,
 } from "@/lib/withdraw-data";
@@ -49,19 +51,25 @@ export const Route = createFileRoute("/withdraw")({
 });
 
 function WithdrawEntry() {
+  const [accounts, setAccounts] = useState<PayoutAccount[]>([]);
+
+  useEffect(() => {
+    void hydratePayoutFromApi().then(setAccounts);
+  }, []);
+
   return (
     <>
       <div className="md:hidden">
-        <MobileWithdraw />
+        <MobileWithdraw accounts={accounts} />
       </div>
       <div className="hidden md:block">
-        <DesktopWithdraw />
+        <DesktopWithdraw accounts={accounts} />
       </div>
     </>
   );
 }
 
-function MobileWithdraw() {
+function MobileWithdraw({ accounts }: { accounts: PayoutAccount[] }) {
   const WALLET = useWalletBalance();
   const eligible = TIER.eligible;
 
@@ -166,8 +174,9 @@ function MobileWithdraw() {
             )}
             <p className="mt-2.5 flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
               <Wallet className="size-3.5" />
-              {SAVED_ACCOUNTS.length} saved payout account
-              {SAVED_ACCOUNTS.length === 1 ? "" : "s"} on file.
+              {accounts.length === 0
+                ? "No saved payout accounts yet."
+                : `${accounts.length} saved payout account${accounts.length === 1 ? "" : "s"} on file.`}
             </p>
           </div>
         </div>
@@ -176,7 +185,7 @@ function MobileWithdraw() {
   );
 }
 
-function DesktopWithdraw() {
+function DesktopWithdraw({ accounts }: { accounts: PayoutAccount[] }) {
   const WALLET = useWalletBalance();
   const eligible = TIER.eligible;
 
@@ -260,31 +269,37 @@ function DesktopWithdraw() {
                   Manage
                 </Link>
               </div>
-              <ul className="mt-4 divide-y divide-border">
-                {SAVED_ACCOUNTS.map((a) => (
-                  <li key={a.id} className="flex items-center gap-4 py-4">
-                    <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-navy/5 text-primary">
-                      <Landmark className="size-5" strokeWidth={2} />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-2">
-                        <span className="truncate text-[14px] font-bold text-foreground">
-                          {a.bank}
-                        </span>
-                        {a.primary ? (
-                          <span className="shrink-0 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-extrabold text-gold">
-                            Primary
+              {accounts.length === 0 ? (
+                <p className="mt-4 text-[13px] text-muted-foreground">
+                  No saved payout accounts yet. Add one when you continue.
+                </p>
+              ) : (
+                <ul className="mt-4 divide-y divide-border">
+                  {accounts.map((a) => (
+                    <li key={a.id} className="flex items-center gap-4 py-4">
+                      <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-navy/5 text-primary">
+                        <Landmark className="size-5" strokeWidth={2} />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-center gap-2">
+                          <span className="truncate text-[14px] font-bold text-foreground">
+                            {a.bank}
                           </span>
-                        ) : null}
+                          {a.primary ? (
+                            <span className="shrink-0 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-extrabold text-gold">
+                              Primary
+                            </span>
+                          ) : null}
+                        </span>
+                        <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
+                          {a.accountName} &middot; {maskAccount(a.accountNumber)}
+                        </span>
                       </span>
-                      <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-                        {a.accountName} &middot; {maskAccount(a.accountNumber)}
-                      </span>
-                    </span>
-                    <ShieldCheck className="size-4 shrink-0 text-primary" />
-                  </li>
-                ))}
-              </ul>
+                      <ShieldCheck className="size-4 shrink-0 text-primary" />
+                    </li>
+                  ))}
+                </ul>
+              )}
             </section>
           </div>
 

@@ -46,15 +46,54 @@ export const TIERS: TierInfo[] = [
   },
 ];
 
-/** Demo BVN that matches; any other 11-digit value fails. */
-export const DEMO_BVN = "22123456789";
+/** BVN match details come from the API response after submitBvn. */
+export const DEMO_BVN = "";
 export const DEMO_NIN_LENGTH = 11;
 
-export const BVN_MATCH = {
-  name: "Adaeze Chidinma Okonkwo",
-  dob: "14 March 1993",
-  phone: "0803 214 8890",
+export type BvnMatchInfo = {
+  name: string;
+  dob: string;
+  phone: string;
 };
+
+const BVN_MATCH_KEY = "kipit:bvn-match";
+
+export let BVN_MATCH: BvnMatchInfo = {
+  name: "",
+  dob: "",
+  phone: "",
+};
+
+export function setLastBvnMatch(match: BvnMatchInfo | null) {
+  BVN_MATCH = match ?? { name: "", dob: "", phone: "" };
+  if (typeof window === "undefined") return;
+  if (match?.name) {
+    window.sessionStorage.setItem(BVN_MATCH_KEY, JSON.stringify(BVN_MATCH));
+  } else {
+    window.sessionStorage.removeItem(BVN_MATCH_KEY);
+  }
+}
+
+export function getLastBvnMatch(): BvnMatchInfo {
+  if (typeof window !== "undefined") {
+    try {
+      const raw = window.sessionStorage.getItem(BVN_MATCH_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as BvnMatchInfo;
+        if (parsed?.name) {
+          BVN_MATCH = {
+            name: parsed.name,
+            dob: parsed.dob || "",
+            phone: parsed.phone || "",
+          };
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+  return BVN_MATCH;
+}
 
 export const NIGERIAN_STATES = [
   "Abia", "Abuja (FCT)", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa",

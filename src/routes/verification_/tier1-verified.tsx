@@ -26,7 +26,9 @@ export const Route = createFileRoute("/verification_/tier1-verified")({
 const tier1 = TIERS[0]!;
 
 function Tier1Verified() {
-  useEffect(() => setKycTier(1), []);
+  useEffect(() => {
+    setKycTier(1);
+  }, []);
 
   return (
     <AppShell title="Tier 1 Verified" navVariant="elevated">

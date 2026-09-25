@@ -16,20 +16,15 @@ import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
-import { HOLDINGS } from "@/lib/home-data";
 import { CALL_ACCOUNT } from "@/lib/invest-data";
+import { callRateLabel } from "@/lib/live-balances";
 import {
-  ALLOCATION,
-  EXPLORE_HOLDINGS,
   INTEREST_EARNED_YTD,
   PORTFOLIO_MONTH_CHANGE,
   PORTFOLIO_MONTH_CHANGE_PCT,
-  PORTFOLIO_TOTAL,
-  UPCOMING_MATURITIES,
-  WALLET_TOTAL,
-  pctOf,
+  usePortfolioSnapshot,
+  type Slice,
 } from "@/lib/portfolio-data";
-
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
@@ -54,11 +49,20 @@ export const Route = createFileRoute("/portfolio")({
 });
 
 /* ── Donut allocation chart ─────────────────────────────────────── */
-function AllocationDonut({ size = 156 }: { size?: number }) {
+function AllocationDonut({
+  allocation,
+  total,
+  size = 156,
+}: {
+  allocation: Slice[];
+  total: number;
+  size?: number;
+}) {
   const stroke = 18;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   let offset = 0;
+  const denom = total > 0 ? total : 1;
 
   return (
     <svg
@@ -77,8 +81,8 @@ function AllocationDonut({ size = 156 }: { size?: number }) {
         stroke="var(--muted)"
         strokeWidth={stroke}
       />
-      {ALLOCATION.map((slice) => {
-        const frac = slice.value / PORTFOLIO_TOTAL;
+      {allocation.map((slice) => {
+        const frac = slice.value / denom;
         const len = c * frac;
         const dash = `${Math.max(len - 3, 0)} ${c - Math.max(len - 3, 0)}`;
         const el = (
@@ -114,7 +118,19 @@ function PortfolioScreen() {
 
 function MobilePortfolio() {
   const { hidden, mask, toggle } = useBalanceVisibility();
-  const next = UPCOMING_MATURITIES[0];
+  const snap = usePortfolioSnapshot();
+  const {
+    total: PORTFOLIO_TOTAL,
+    wallet: WALLET_TOTAL,
+    callTotal: callBalance,
+    holdings: HOLDINGS,
+    exploreHoldings: exploreRows,
+    allocation: ALLOCATION,
+    maturities,
+    pct: pctOf,
+  } = snap;
+  const callRate = callRateLabel();
+  const next = maturities[0];
 
   return (
     <div className="md:hidden">
@@ -205,7 +221,7 @@ function MobilePortfolio() {
 
             <div className="flex flex-col items-center gap-5 md:flex-row md:gap-8">
               <div className="relative grid place-items-center">
-                <AllocationDonut />
+                <AllocationDonut allocation={ALLOCATION} total={PORTFOLIO_TOTAL} />
                 <div className="absolute text-center">
                   <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
                     Invested
@@ -251,7 +267,7 @@ function MobilePortfolio() {
             <div className="mb-3 flex items-center justify-between px-1">
               <h2 className="font-display text-base font-extrabold">Active holdings</h2>
               <span className="text-[11px] font-semibold text-muted-foreground">
-                {HOLDINGS.length + EXPLORE_HOLDINGS.length + 1} items
+                {HOLDINGS.length + exploreRows.length + 1} items
               </span>
             </div>
 
@@ -277,7 +293,7 @@ function MobilePortfolio() {
                       <div className="min-w-0">
                         <p className="text-3xl font-extrabold tracking-tight text-num">
                           <AmountCounter
-                            value={CALL_ACCOUNT.balance}
+                            value={callBalance}
                             hidden={hidden}
                             mask={mask}
                           />
@@ -289,7 +305,7 @@ function MobilePortfolio() {
                       <p className="text-right text-xs text-brand-foreground/70">
                         Interest today
                         <span className="block text-lg font-extrabold text-gold text-num">
-                          {mask(CALL_ACCOUNT.accruedToday)}
+                          {mask(0)}
                         </span>
                       </p>
                     </div>
@@ -298,7 +314,7 @@ function MobilePortfolio() {
 
                     <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <p className="text-[11px] text-brand-foreground/65">
-                        {CALL_ACCOUNT.name} · {CALL_ACCOUNT.rate} · {CALL_ACCOUNT.liquidity}
+                        {CALL_ACCOUNT.name} · {callRate} · {CALL_ACCOUNT.liquidity}
                       </p>
                       <Link
                         to="/call-account"
@@ -326,7 +342,7 @@ function MobilePortfolio() {
                   >
                     <Link
                       to="/portfolio/$holdingId"
-                      params={{ holdingId: `f${i + 1}` }}
+                      params={{ holdingId: h.id }}
                       className="card-surface relative block overflow-hidden p-4 transition-shadow hover:shadow-md"
                     >
                     <span className="absolute inset-y-0 left-0 w-1 bg-gold" aria-hidden />
@@ -362,7 +378,7 @@ function MobilePortfolio() {
               })}
 
               {/* Explore products */}
-              {EXPLORE_HOLDINGS.map((h, i) => {
+              {exploreRows.map((h, i) => {
                 const progress = Math.min(
                   100,
                   Math.max(6, Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100)),
@@ -431,7 +447,7 @@ function MobilePortfolio() {
             </div>
 
             <ul className="card-surface divide-y divide-border/60 overflow-hidden">
-              {UPCOMING_MATURITIES.map((m, i) => (
+              {maturities.map((m, i) => (
                 <li
                   key={`${m.name}-${m.date}`}
                   style={{ ["--d" as string]: `${i * 60}ms` }}
@@ -547,33 +563,6 @@ function MobilePortfolio() {
 
 /* ─────────────────────────── Desktop ─────────────────────────── */
 
-const ALL_HOLDINGS = [
-  ...HOLDINGS.map((h, i) => ({
-    id: `f${i + 1}`,
-    name: h.name,
-    kind: "Fixed plan",
-    rate: h.rate,
-    amount: h.amount,
-    payout: h.expectedPayout,
-    date: h.date,
-    daysLeft: h.daysLeft,
-    totalDays: h.totalDays,
-    accent: "bg-gold",
-  })),
-  ...EXPLORE_HOLDINGS.map((h) => ({
-    id: `e-${h.id}`,
-    name: h.name,
-    kind: h.issuer,
-    rate: h.rate,
-    amount: h.amount,
-    payout: h.expectedPayout,
-    date: h.date,
-    daysLeft: h.daysLeft,
-    totalDays: h.totalDays,
-    accent: "bg-brand/60",
-  })),
-];
-
 const RECORDS = [
   {
     to: "/portfolio/history",
@@ -607,7 +596,45 @@ const RECORDS = [
 
 function DesktopPortfolio() {
   const { hidden, mask, toggle } = useBalanceVisibility();
-  const next = UPCOMING_MATURITIES[0];
+  const snap = usePortfolioSnapshot();
+  const {
+    total: PORTFOLIO_TOTAL,
+    wallet: WALLET_TOTAL,
+    callTotal: callBalance,
+    holdings,
+    exploreHoldings,
+    allocation: ALLOCATION,
+    maturities,
+    pct: pctOf,
+  } = snap;
+  const callRate = callRateLabel();
+  const next = maturities[0];
+  const ALL_HOLDINGS = [
+    ...holdings.map((h) => ({
+      id: h.id,
+      name: h.name,
+      kind: "Fixed plan",
+      rate: h.rate,
+      amount: h.amount,
+      payout: h.expectedPayout,
+      date: h.date,
+      daysLeft: h.daysLeft,
+      totalDays: h.totalDays,
+      accent: "bg-gold",
+    })),
+    ...exploreHoldings.map((h) => ({
+      id: `e-${h.id}`,
+      name: h.name,
+      kind: h.issuer,
+      rate: h.rate,
+      amount: h.amount,
+      payout: h.expectedPayout,
+      date: h.date,
+      daysLeft: h.daysLeft,
+      totalDays: h.totalDays,
+      accent: "bg-brand/60",
+    })),
+  ];
 
   return (
     <div className="hidden pb-4 md:block">
@@ -696,12 +723,12 @@ function DesktopPortfolio() {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[13.5px] font-bold">{CALL_ACCOUNT.name}</p>
                 <p className="text-[11px] text-brand-foreground/70">
-                  {CALL_ACCOUNT.rate} · {CALL_ACCOUNT.liquidity} · earned today{" "}
-                  {mask(CALL_ACCOUNT.accruedToday)}
+                  {callRate} · {CALL_ACCOUNT.liquidity} · earned today{" "}
+                  {mask(0)}
                 </p>
               </div>
               <p className="shrink-0 text-[17px] font-extrabold text-num">
-                {mask(CALL_ACCOUNT.balance)}
+                {mask(callBalance)}
               </p>
               <ChevronRight className="size-4 shrink-0 text-brand-foreground/60" />
             </Link>
@@ -815,7 +842,7 @@ function DesktopPortfolio() {
 
             <div className="mt-5 grid place-items-center">
               <div className="relative grid place-items-center">
-                <AllocationDonut size={176} />
+                <AllocationDonut allocation={ALLOCATION} total={PORTFOLIO_TOTAL} size={176} />
                 <div className="absolute text-center">
                   <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
                     Invested
@@ -878,7 +905,7 @@ function DesktopPortfolio() {
               </div>
             )}
             <ul className="mt-3 divide-y divide-border/60">
-              {UPCOMING_MATURITIES.slice(1, 5).map((m) => (
+              {maturities.slice(1, 5).map((m) => (
                 <li key={`${m.name}-${m.date}`}>
                   <Link
                     to="/portfolio/$holdingId"

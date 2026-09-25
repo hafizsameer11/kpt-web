@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { ReceiptActions, ReceiptCard } from "@/components/kipit/ReceiptView";
-import { getTransaction } from "@/lib/portfolio-data";
+import { loadPortfolioTransaction, type Transaction } from "@/lib/portfolio-data";
 
 export const Route = createFileRoute("/portfolio_/transactions_/$txnId_/receipt")({
   head: () => ({
@@ -23,16 +23,16 @@ export const Route = createFileRoute("/portfolio_/transactions_/$txnId_/receipt"
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  loader: ({ params }) => {
-    if (!getTransaction(params.txnId)) throw notFound();
-    return null;
+  loader: async ({ params }) => {
+    const txn = await loadPortfolioTransaction(params.txnId);
+    if (!txn) throw notFound();
+    return { txn };
   },
   component: ReceiptScreen,
 });
 
 function ReceiptScreen() {
-  const { txnId } = Route.useParams();
-  const txn = getTransaction(txnId)!;
+  const { txn } = Route.useLoaderData() as { txn: Transaction };
 
   return (
     <AppShell title="Receipt" navVariant="elevated">

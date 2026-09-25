@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { Rise } from "@/components/kipit/motion";
 import { naira } from "@/lib/home-data";
-import { CALL_ACCOUNT, TENOR_BANDS } from "@/lib/invest-data";
+import { CALL_ACCOUNT, useTenorBands } from "@/lib/invest-data";
 
 export const Route = createFileRoute("/calculator")({
   head: () => ({
@@ -40,25 +40,6 @@ type Option = {
   liquidity: string;
 };
 
-const OPTIONS: Option[] = [
-  {
-    id: "call",
-    name: CALL_ACCOUNT.name,
-    days: 365,
-    rate: 14.5,
-    minimum: CALL_ACCOUNT.minimum,
-    liquidity: "Withdraw anytime",
-  },
-  ...TENOR_BANDS.map((b) => ({
-    id: b.days,
-    name: b.name,
-    days: Number(b.days.replace(/\D/g, "")),
-    rate: Number(b.rate.replace(/[^0-9.]/g, "")),
-    minimum: b.minimum,
-    liquidity: `Locked for ${b.days}`,
-  })),
-];
-
 function maturityLabel(days: number) {
   return new Date(Date.now() + days * DAY_MS).toLocaleDateString("en-NG", {
     day: "2-digit",
@@ -67,12 +48,45 @@ function maturityLabel(days: number) {
   });
 }
 
+function useCalcOptions(): Option[] {
+  const { bands } = useTenorBands();
+  return useMemo(
+    () => [
+      {
+        id: "call",
+        name: CALL_ACCOUNT.name,
+        days: 365,
+        rate: parseFloat(CALL_ACCOUNT.rate) || 0,
+        minimum: CALL_ACCOUNT.minimum,
+        liquidity: "Withdraw anytime",
+      },
+      ...bands.map((b) => ({
+        id: b.days,
+        name: b.name,
+        days: Number(b.days.replace(/\D/g, "")),
+        rate: Number(b.rate.replace(/[^0-9.]/g, "")),
+        minimum: b.minimum,
+        liquidity: `Locked for ${b.days}`,
+      })),
+    ],
+    [bands],
+  );
+}
+
 function CalculatorScreen() {
-  const [input, setInput] = useState("500,000");
-  const [optionId, setOptionId] = useState<string>("90 days");
+  const OPTIONS = useCalcOptions();
+  const [input, setInput] = useState("");
+  const [optionId, setOptionId] = useState<string>("call");
 
   const amount = Number(input.replace(/[^0-9]/g, "")) || 0;
-  const option = OPTIONS.find((o) => o.id === optionId) ?? (OPTIONS[0] as Option);
+  const option = OPTIONS.find((o) => o.id === optionId) ?? OPTIONS[0];
+  if (!option) {
+    return (
+      <AppShell title="Calculator" navVariant="elevated">
+        <p className="px-5 py-8 text-sm text-muted-foreground">Loading rates…</p>
+      </AppShell>
+    );
+  }
 
   const { interest, payout, perDay } = useMemo(() => {
     const gross = Math.round(amount * (option.rate / 100) * (option.days / 365));

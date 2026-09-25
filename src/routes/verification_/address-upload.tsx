@@ -1,8 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Check, FileText, Trash2, Upload } from "lucide-react";
+import { ArrowRight, Check, FileText, Loader2, Trash2, Upload } from "lucide-react";
 import { useState } from "react";
 import { KycStep, kycCta, kycLabel } from "@/components/kipit/KycStep";
 import { PROOF_TYPES } from "@/lib/kyc-data";
+import { ApiError, fileToBase64, uploadKycDocument } from "@/lib/api";
+import { getTier2Draft, patchTier2Draft } from "@/lib/tier2-draft";
 
 export const Route = createFileRoute("/verification_/address-upload")({
   head: () => ({
@@ -14,7 +16,6 @@ export const Route = createFileRoute("/verification_/address-upload")({
           "Upload a recent utility bill, bank statement or tenancy agreement showing your address.",
       },
       { property: "og:title", content: "Upload Proof of Address | Kipit" },
-      { property: "og:description", content: "Add a document that proves where you live." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -24,44 +25,48 @@ export const Route = createFileRoute("/verification_/address-upload")({
 
 function AddressUpload() {
   const navigate = useNavigate();
-  const [type, setType] = useState(PROOF_TYPES[0]!.id);
-  const [file, setFile] = useState<string | null>(null);
-  const valid = file !== null;
+  const d = getTier2Draft();
+  const [type, setType] = useState(d.proofType || PROOF_TYPES[0]!.id);
+  const [fileName, setFileName] = useState(d.proofName);
+  const [remoteUrl, setRemoteUrl] = useState(d.proofUrl);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const valid = Boolean(remoteUrl) && !busy;
+
+  const onFile = async (file: File | null) => {
+    if (!file) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const { contentType, dataBase64 } = await fileToBase64(file);
+      const saved = await uploadKycDocument({
+        kind: "address",
+        contentType,
+        dataBase64,
+      });
+      setFileName(file.name);
+      setRemoteUrl(saved.url);
+      patchTier2Draft({
+        proofUrl: saved.url,
+        proofName: file.name,
+        proofType: type,
+      });
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not upload document.");
+      setRemoteUrl("");
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <KycStep
       navTitle="Proof of Address"
-      backTo="/verification"
-      backLabel="Verification"
+      backTo="/verification/address"
+      backLabel="Address"
       eyebrow="Tier 2"
       title="Upload proof of address"
       subtitle="The document must show your full name and the address you entered, dated within the last 3 months."
-      aside={
-        <>
-          <section className="card-surface p-5">
-            <p className="text-[12.5px] font-extrabold text-foreground">Document checklist</p>
-            <ul className="mt-2 space-y-2">
-              {[
-                "Issued within the last 3 months.",
-                "Shows your full name and address.",
-                "All four corners visible, no glare.",
-              ].map((t) => (
-                <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
-                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </section>
-          <section className="card-surface p-5">
-            <p className="text-[12.5px] font-extrabold text-foreground">Review time</p>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
-              Uploads are usually reviewed within one business day. We'll notify you as soon as the
-              result is in.
-            </p>
-          </section>
-        </>
-      }
       step={3}
       totalSteps={4}
     >
@@ -106,20 +111,24 @@ function AddressUpload() {
 
         <div className="mt-4">
           <span className={kycLabel}>Document</span>
-          {file ? (
+          {remoteUrl ? (
             <div className="mt-2 flex items-center gap-3 rounded-xl border border-gold/40 bg-gold/[0.07] p-3.5">
               <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-gold/15 text-gold">
                 <FileText className="size-5" strokeWidth={2.2} />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[13px] font-bold text-foreground">
-                  {file}
+                  {fileName || "Proof of address"}
                 </span>
-                <span className="block text-[11.5px] text-muted-foreground">1.2 MB · Ready</span>
+                <span className="block text-[11.5px] text-muted-foreground">Uploaded</span>
               </span>
               <button
                 type="button"
-                onClick={() => setFile(null)}
+                onClick={() => {
+                  setRemoteUrl("");
+                  setFileName("");
+                  patchTier2Draft({ proofUrl: "", proofName: "" });
+                }}
                 aria-label="Remove document"
                 className="grid size-9 shrink-0 place-items-center rounded-xl bg-background text-muted-foreground press"
               >
@@ -129,28 +138,40 @@ function AddressUpload() {
           ) : (
             <label className="mt-2 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-background px-4 py-8 text-center press hover:border-gold/50">
               <span className="grid size-12 place-items-center rounded-full bg-gold/15 text-gold">
-                <Upload className="size-5" strokeWidth={2.2} />
+                {busy ? (
+                  <Loader2 className="size-5 animate-spin" strokeWidth={2.2} />
+                ) : (
+                  <Upload className="size-5" strokeWidth={2.2} />
+                )}
               </span>
               <span className="text-[13px] font-bold text-foreground">
-                Tap to upload or take a photo
+                {busy ? "Uploading…" : "Tap to upload"}
               </span>
               <span className="text-[11.5px] text-muted-foreground">
-                PDF, JPG or PNG · up to 10 MB
+                PDF, JPG or PNG · up to 6 MB
               </span>
               <input
                 type="file"
                 accept="image/*,application/pdf"
                 className="hidden"
-                onChange={(e) => setFile(e.target.files?.[0]?.name ?? "proof-of-address.pdf")}
+                disabled={busy}
+                onChange={(e) => void onFile(e.target.files?.[0] ?? null)}
               />
             </label>
           )}
         </div>
 
+        {error ? (
+          <p className="mt-3 text-[12px] font-semibold text-destructive">{error}</p>
+        ) : null}
+
         <button
           type="button"
           disabled={!valid}
-          onClick={() => void navigate({ to: "/verification/occupation" })}
+          onClick={() => {
+            patchTier2Draft({ proofType: type });
+            void navigate({ to: "/verification/occupation" });
+          }}
           className={`mt-5 ${kycCta}`}
         >
           Continue <ArrowRight className="size-4" strokeWidth={2.6} />

@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, CalendarClock, Check, ChevronRight, Info, Minus, Plus, SlidersHorizontal } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { Rise } from "@/components/kipit/motion";
 import { naira } from "@/lib/home-data";
-import { TENOR_BANDS } from "@/lib/invest-data";
+import { useTenorBands } from "@/lib/invest-data";
 
 export const Route = createFileRoute("/fixed-plans_/create/tenor")({
   validateSearch: z.object({
@@ -43,12 +43,20 @@ const TERM_LABELS: Record<string, string> = {
   "365 days": "Long Term",
 };
 
-/** Rate for any tenor length, from the configured bands (MOB-068). */
-function rateForDays(days: number): number {
-  if (days >= 365) return 21.5;
-  if (days >= 180) return 16.0;
-  if (days >= 90) return 19.2;
-  return 12.8;
+/** Rate for any tenor length, from hydrated bands (MOB-068). */
+function rateForDays(days: number, bands: { days: string; rate: string }[]): number {
+  if (!bands.length) return 0;
+  const sorted = [...bands]
+    .map((b) => ({
+      days: Number(b.days.replace(/\D/g, "")) || 0,
+      rate: Number(b.rate.replace(/[^0-9.]/g, "")) || 0,
+    }))
+    .sort((a, b) => a.days - b.days);
+  let rate = sorted[0]?.rate ?? 0;
+  for (const band of sorted) {
+    if (days >= band.days) rate = band.rate;
+  }
+  return rate;
 }
 
 function maturityLabel(days: number) {
@@ -60,10 +68,16 @@ function maturityLabel(days: number) {
 }
 
 function CreatePlanTenorScreen() {
+  const { bands: TENOR_BANDS, loading } = useTenorBands();
   const { amount, plan } = Route.useSearch();
-  const [selected, setSelected] = useState<string | null>(
-    TENOR_BANDS.some((b) => b.days === plan) ? (plan as string) : null,
-  );
+  const [selected, setSelected] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (plan && TENOR_BANDS.some((b) => b.days === plan)) {
+      setSelected(plan as string);
+    }
+  }, [plan, TENOR_BANDS]);
+
   const [customDays, setCustomDays] = useState("");
 
   const days = useMemo(() => {
@@ -73,14 +87,15 @@ function CreatePlanTenorScreen() {
     }
     const band = TENOR_BANDS.find((b) => b.days === selected);
     return band ? Number(band.days.replace(/\D/g, "")) : 0;
-  }, [selected, customDays]);
+  }, [selected, customDays, TENOR_BANDS]);
 
-  const rate = days ? rateForDays(days) : 0;
+  const rate = days ? rateForDays(days, TENOR_BANDS) : 0;
   const interest = Math.round(amount * (rate / 100) * (days / 365));
   const payout = amount + interest;
   const band = TENOR_BANDS.find((b) => b.days === selected);
   const belowBandMin = band ? amount < band.minimum : false;
   const valid = days > 0 && !belowBandMin;
+  void loading;
 
   const previewCard = days > 0 ? (
     <section className="card-surface overflow-hidden p-0">

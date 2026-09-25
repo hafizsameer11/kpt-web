@@ -1,8 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Bell, Mail } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
-import { EMAIL_TOGGLES, PUSH_TOGGLES, type ToggleItem } from "@/lib/settings-data";
+import {
+  fetchNotificationPrefs,
+  patchNotificationPrefs,
+} from "@/lib/api";
+import {
+  EMAIL_TOGGLES,
+  PUSH_TOGGLES,
+  applyNotificationPrefs,
+  notificationPatchForToggle,
+  type ToggleItem,
+} from "@/lib/settings-data";
 
 export const Route = createFileRoute("/settings_/notifications")({
   head: () => ({
@@ -26,6 +37,60 @@ function NotificationSettings() {
   const [push, setPush] = useState<ToggleItem[]>(PUSH_TOGGLES);
   const [email, setEmail] = useState<ToggleItem[]>(EMAIL_TOGGLES);
 
+  useEffect(() => {
+    void fetchNotificationPrefs()
+      .then((prefs) => {
+        const next = applyNotificationPrefs(prefs, PUSH_TOGGLES, EMAIL_TOGGLES);
+        setPush(next.push);
+        setEmail(next.email);
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const onToggle = (group: "push" | "email", id: string) => {
+    const list = group === "push" ? push : email;
+    const item = list.find((i) => i.id === id);
+    if (!item) return;
+    const nextOn = !item.on;
+    const updater = (items: ToggleItem[]) =>
+      items.map((i) => (i.id === id ? { ...i, on: nextOn } : i));
+    if (group === "push") setPush(updater);
+    else setEmail(updater);
+
+    const patch = notificationPatchForToggle(id, nextOn);
+    if (!patch) return;
+    void patchNotificationPrefs(patch).catch((err: { message?: string }) => {
+      if (group === "push") setPush((p) => p.map((i) => (i.id === id ? { ...i, on: item.on } : i)));
+      else setEmail((p) => p.map((i) => (i.id === id ? { ...i, on: item.on } : i)));
+      toast.error(err?.message ?? "Could not save notification preference");
+    });
+  };
+
+  const enableAll = () => {
+    setPush((p) => p.map((i) => ({ ...i, on: true })));
+    setEmail((p) => p.map((i) => ({ ...i, on: true })));
+    void patchNotificationPrefs({
+      pushMaturities: true,
+      pushProducts: true,
+      emailDigest: true,
+      emailDeposits: true,
+      emailWithdrawals: true,
+      emailInvestments: true,
+      emailMaturities: true,
+    }).catch(() => toast.error("Could not save notification preferences"));
+  };
+
+  const muteEmail = () => {
+    setEmail((p) => p.map((i) => ({ ...i, on: false })));
+    void patchNotificationPrefs({
+      emailDigest: false,
+      emailDeposits: false,
+      emailWithdrawals: false,
+      emailInvestments: false,
+      emailMaturities: false,
+    }).catch(() => toast.error("Could not save notification preferences"));
+  };
+
   return (
     <SettingsPage
       title="Notifications"
@@ -37,17 +102,13 @@ function NotificationSettings() {
           icon={Bell}
           label="Push notifications"
           items={push}
-          onToggle={(id) =>
-            setPush((p) => p.map((i) => (i.id === id ? { ...i, on: !i.on } : i)))
-          }
+          onToggle={(id) => onToggle("push", id)}
         />
         <Group
           icon={Mail}
           label="Email notifications"
           items={email}
-          onToggle={(id) =>
-            setEmail((p) => p.map((i) => (i.id === id ? { ...i, on: !i.on } : i)))
-          }
+          onToggle={(id) => onToggle("email", id)}
         />
 
         {/* Desktop-only delivery rail */}
@@ -79,17 +140,14 @@ function NotificationSettings() {
               <div className="grid grid-cols-2 gap-2 border-t border-border p-4">
                 <button
                   type="button"
-                  onClick={() => {
-                    setPush((p) => p.map((i) => ({ ...i, on: true })));
-                    setEmail((p) => p.map((i) => ({ ...i, on: true })));
-                  }}
+                  onClick={enableAll}
                   className="rounded-xl bg-brand-gradient px-3 py-2.5 text-[12px] font-extrabold text-primary-foreground press"
                 >
                   Enable all
                 </button>
                 <button
                   type="button"
-                  onClick={() => setEmail((p) => p.map((i) => ({ ...i, on: false })))}
+                  onClick={muteEmail}
                   className="rounded-xl border border-border bg-card px-3 py-2.5 text-[12px] font-bold text-foreground press"
                 >
                   Mute email

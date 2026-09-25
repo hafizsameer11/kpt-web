@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AuthField,
   AuthShell,
@@ -7,8 +7,12 @@ import {
   authInputClass,
 } from "@/components/kipit/AuthShell";
 import { signupDraft } from "@/lib/auth-data";
+import { ApiError, logSignupFunnel, requestOtp } from "@/lib/api";
 
 export const Route = createFileRoute("/signup_/email")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    gift: typeof search["gift"] === "string" ? search["gift"] : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Enter your email — Kipit" },
@@ -27,20 +31,40 @@ export const Route = createFileRoute("/signup_/email")({
 
 function EmailEntry() {
   const navigate = useNavigate();
+  const { gift } = Route.useSearch();
   const [email, setEmail] = useState(signupDraft.email);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  useEffect(() => {
+    if (gift && typeof window !== "undefined") {
+      window.sessionStorage.setItem("kipit:pending-gift-claim", gift);
+    }
+  }, [gift]);
+
   const valid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
 
-  const submit = () => {
-    if (!valid) {
-      setError("Enter a valid email address.");
+  const submit = async () => {
+    if (!valid || busy) {
+      if (!valid) setError("Enter a valid email address.");
       return;
     }
     setBusy(true);
-    signupDraft.email = email.trim().toLowerCase();
-    setTimeout(() => navigate({ to: "/signup/otp" }), 500);
+    setError(null);
+    const target = email.trim().toLowerCase();
+    signupDraft.email = target;
+    try {
+      await requestOtp(target, "SIGNUP");
+      void logSignupFunnel({
+        step: "email",
+        email: target,
+        deviceId: signupDraft.deviceId,
+      });
+      void navigate({ to: "/signup/otp" });
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not send verification code.");
+      setBusy(false);
+    }
   };
 
   return (
@@ -71,7 +95,7 @@ function EmailEntry() {
       </p>
 
       <div className="mt-8">
-        <PrimaryButton disabled={!valid || busy} onClick={submit}>
+        <PrimaryButton disabled={!valid || busy} onClick={() => void submit()}>
           {busy ? "Sending code…" : "Continue"}
         </PrimaryButton>
       </div>

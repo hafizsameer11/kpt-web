@@ -1,10 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Building2, Check, Clock, Copy, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
-import { VIRTUAL_ACCOUNT } from "@/lib/wallet-data";
+import { hydrateWalletFundingFromApi, VIRTUAL_ACCOUNT } from "@/lib/wallet-data";
+import { ApiError, confirmTransferFunding, isAuthenticated } from "@/lib/api";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/wallet_/transfer")({
   validateSearch: z.object({ amount: z.number().catch(0) }),
@@ -32,12 +34,53 @@ function TransferDetails() {
   const { amount } = Route.useSearch();
   const navigate = useNavigate();
   const [copied, setCopied] = useState<string | null>(null);
+  const [va, setVa] = useState({ bank: "", accountNumber: "", accountName: "" });
+  const [vaError, setVaError] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    void hydrateWalletFundingFromApi().then((ok) => {
+      if (ok) {
+        setVa({ ...VIRTUAL_ACCOUNT });
+        setVaError(false);
+      } else {
+        setVa({ bank: "", accountNumber: "", accountName: "" });
+        setVaError(true);
+      }
+    });
+  }, []);
 
   function copy(label: string, value: string) {
     void navigator.clipboard?.writeText(value);
     setCopied(label);
     window.setTimeout(() => setCopied(null), 1600);
   }
+
+  const sentTransfer = async () => {
+    if (busy) return;
+    if (!isAuthenticated()) {
+      toast.error("Sign in to confirm a transfer.");
+      void navigate({ to: "/welcome" });
+      return;
+    }
+    setBusy(true);
+    const watchAfter = new Date().toISOString();
+    try {
+      // Confirm once here (creates Monnify pending intent) — processing only polls credits.
+      await confirmTransferFunding(amount);
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem("kipit:transfer-watch-after", watchAfter);
+        window.sessionStorage.setItem("kipit:transfer-confirmed", "1");
+      }
+      void navigate({
+        to: "/wallet/processing",
+        search: { amount, method: "transfer", pending: true },
+      });
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Could not confirm transfer.");
+      setBusy(false);
+    }
+  };
 
   const steps = [
     "Open your bank app and add the account above as a beneficiary.",
@@ -75,7 +118,7 @@ function TransferDetails() {
                 </p>
               </div>
               <span className="inline-flex items-center gap-2 rounded-full bg-gold/15 px-4 py-2 text-[12.5px] font-extrabold text-gold">
-                <Building2 className="size-4" /> {VIRTUAL_ACCOUNT.bank}
+                <Building2 className="size-4" /> {va.bank}
               </span>
             </div>
           </section>
@@ -90,28 +133,33 @@ function TransferDetails() {
                   <h2 className="text-[15px] font-extrabold text-foreground">
                     Your dedicated account
                   </h2>
-                  <p className="text-[12.5px] text-muted-foreground">{VIRTUAL_ACCOUNT.bank}</p>
+                  <p className="text-[12.5px] text-muted-foreground">{va.bank}</p>
                 </div>
               </div>
               <div className="mt-5 space-y-3">
+                {vaError || !va.accountNumber ? (
+                  <p className="text-[12.5px] text-muted-foreground">
+                    Could not load your dedicated account. Please try again.
+                  </p>
+                ) : null}
                 <CopyRow
                   label="Account number"
-                  value={VIRTUAL_ACCOUNT.accountNumber}
+                  value={va.accountNumber || "—"}
                   copied={copied === "Account number"}
-                  onCopy={() => copy("Account number", VIRTUAL_ACCOUNT.accountNumber)}
+                  onCopy={() => copy("Account number", va.accountNumber)}
                   mono
                 />
                 <CopyRow
                   label="Account name"
-                  value={VIRTUAL_ACCOUNT.accountName}
+                  value={va.accountName}
                   copied={copied === "Account name"}
-                  onCopy={() => copy("Account name", VIRTUAL_ACCOUNT.accountName)}
+                  onCopy={() => copy("Account name", va.accountName)}
                 />
                 <CopyRow
                   label="Bank"
-                  value={VIRTUAL_ACCOUNT.bank}
+                  value={va.bank}
                   copied={copied === "Bank"}
-                  onCopy={() => copy("Bank", VIRTUAL_ACCOUNT.bank)}
+                  onCopy={() => copy("Bank", va.bank)}
                 />
               </div>
             </section>
@@ -139,15 +187,11 @@ function TransferDetails() {
               <div className="space-y-2.5">
                 <button
                   type="button"
-                  onClick={() =>
-                    void navigate({
-                      to: "/wallet/processing",
-                      search: { amount, method: "transfer" },
-                    })
-                  }
+                  disabled={busy}
+                  onClick={() => void sentTransfer()}
                   className="press inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float"
                 >
-                  I've sent the transfer
+                  {busy ? "Confirming…" : "I've sent the transfer"}
                 </button>
                 <Link
                   to="/"
@@ -204,30 +248,35 @@ function TransferDetails() {
                     Your dedicated account
                   </p>
                   <p className="text-[12px] text-muted-foreground">
-                    {VIRTUAL_ACCOUNT.bank}
+                    {va.bank}
                   </p>
                 </div>
               </div>
 
               <div className="mt-4 space-y-2.5">
+                {vaError || !va.accountNumber ? (
+                  <p className="text-[12px] text-muted-foreground">
+                    Could not load your dedicated account. Please try again.
+                  </p>
+                ) : null}
                 <CopyRow
                   label="Account number"
-                  value={VIRTUAL_ACCOUNT.accountNumber}
+                  value={va.accountNumber || "—"}
                   copied={copied === "Account number"}
-                  onCopy={() => copy("Account number", VIRTUAL_ACCOUNT.accountNumber)}
+                  onCopy={() => copy("Account number", va.accountNumber)}
                   mono
                 />
                 <CopyRow
                   label="Account name"
-                  value={VIRTUAL_ACCOUNT.accountName}
+                  value={va.accountName}
                   copied={copied === "Account name"}
-                  onCopy={() => copy("Account name", VIRTUAL_ACCOUNT.accountName)}
+                  onCopy={() => copy("Account name", va.accountName)}
                 />
                 <CopyRow
                   label="Bank"
-                  value={VIRTUAL_ACCOUNT.bank}
+                  value={va.bank}
                   copied={copied === "Bank"}
-                  onCopy={() => copy("Bank", VIRTUAL_ACCOUNT.bank)}
+                  onCopy={() => copy("Bank", va.bank)}
                 />
               </div>
             </section>
@@ -260,12 +309,11 @@ function TransferDetails() {
           <div className="mt-5 flex flex-col gap-2.5 md:flex-row">
             <button
               type="button"
-              onClick={() =>
-                void navigate({ to: "/wallet/processing", search: { amount, method: "transfer" } })
-              }
+              disabled={busy}
+              onClick={() => void sentTransfer()}
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
             >
-              I've sent the transfer
+              {busy ? "Confirming…" : "I've sent the transfer"}
             </button>
             <Link
               to="/"

@@ -3,7 +3,8 @@ import { Fingerprint } from "lucide-react";
 import { useEffect } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
-import { DEMO_BVN } from "@/lib/kyc-data";
+import { isAuthenticated, submitBvn } from "@/lib/api";
+import { setLastBvnMatch } from "@/lib/kyc-data";
 
 export const Route = createFileRoute("/verification_/bvn-processing")({
   validateSearch: z.object({ bvn: z.string().catch("") }),
@@ -30,13 +31,38 @@ function BvnProcessing() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const t = window.setTimeout(() => {
-      void navigate({
-        to: bvn === DEMO_BVN ? "/verification/bvn-match" : "/verification/bvn-failed",
-        replace: true,
-      });
-    }, 2600);
-    return () => window.clearTimeout(t);
+    let cancelled = false;
+    const run = async () => {
+      let next: "/verification/bvn-match" | "/verification/bvn-failed" | "/verification/pending" =
+        "/verification/bvn-failed";
+      if (isAuthenticated() && bvn) {
+        try {
+          const result = await submitBvn(bvn);
+          if (result.pending || result.match === "pending") {
+            const { setBvnPendingReview } = await import("@/lib/kyc-state");
+            setBvnPendingReview(true);
+            setLastBvnMatch(null);
+            next = "/verification/pending";
+          } else {
+            setLastBvnMatch({
+              name: result.bvnName || "—",
+              dob: "",
+              phone: "",
+            });
+            next = "/verification/bvn-match";
+          }
+        } catch {
+          next = "/verification/bvn-failed";
+        }
+      }
+      await new Promise((r) => setTimeout(r, 1800));
+      if (cancelled) return;
+      void navigate({ to: next, replace: true });
+    };
+    void run();
+    return () => {
+      cancelled = true;
+    };
   }, [bvn, navigate]);
 
   return (

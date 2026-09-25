@@ -23,8 +23,11 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { naira, WALLET } from "@/lib/home-data";
+import { naira } from "@/lib/home-data";
 import { CALL_ACCOUNT } from "@/lib/invest-data";
+import { callRateLabel, useHydrateLiveBalances } from "@/lib/live-balances";
+import { callDeposit, isAuthenticated } from "@/lib/api";
+import { refreshWalletFromApi, useWalletBalance } from "@/lib/wallet-balance";
 
 export const Route = createFileRoute("/call-account_/review")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -51,7 +54,6 @@ export const Route = createFileRoute("/call-account_/review")({
   component: ReviewScreen,
 });
 
-const RATE = 0.145;
 const PIN_LENGTH = 4;
 
 function ReviewScreen() {
@@ -62,10 +64,19 @@ function ReviewScreen() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const isMobile = useIsMobile();
+  const WALLET = useWalletBalance();
+  const { callRatePct } = useHydrateLiveBalances();
+  const rateLabel = callRateLabel(callRatePct);
+  const rateDecimal = callRatePct > 0 ? callRatePct / 100 : 0;
+  const [orderKey] = useState(() =>
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `call-web-${amount}-${Math.random().toString(36).slice(2, 10)}`,
+  );
 
   const valid = amount >= CALL_ACCOUNT.minimum && amount <= WALLET;
-  const dailyInterest = Math.round((amount * RATE) / 365);
-  const monthlyInterest = Math.round((amount * RATE) / 12);
+  const dailyInterest = Math.round((amount * rateDecimal) / 365);
+  const monthlyInterest = Math.round((amount * rateDecimal) / 12);
 
   function press(key: string) {
     setError(null);
@@ -77,12 +88,21 @@ function ReviewScreen() {
       const next = (p + key).slice(0, PIN_LENGTH);
       if (next.length === PIN_LENGTH) {
         setBusy(true);
-        window.setTimeout(() => {
-          setBusy(false);
-          setOpen(false);
-          setPin("");
-          void navigate({ to: "/call-account/success", search: { amount } });
-        }, 700);
+        void (async () => {
+          try {
+            if (!isAuthenticated()) throw new Error("Sign in to continue.");
+            await callDeposit(amount, next, orderKey);
+            await refreshWalletFromApi();
+            setOpen(false);
+            setPin("");
+            void navigate({ to: "/call-account/success", search: { amount } });
+          } catch (err) {
+            setError(err instanceof Error ? err.message : "Could not complete deposit.");
+            setPin("");
+          } finally {
+            setBusy(false);
+          }
+        })();
       }
       return next;
     });
@@ -154,7 +174,7 @@ function ReviewScreen() {
                 <ArrowLeft className="size-3.5" /> Edit amount
               </Link>
               <span className="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
-                {CALL_ACCOUNT.rate}
+                {rateLabel}
               </span>
             </div>
 
@@ -193,7 +213,7 @@ function ReviewScreen() {
                 <Row label="Fees">
                   <span className="font-bold text-foreground">₦0</span>
                 </Row>
-                <Row label="Rate">{CALL_ACCOUNT.rate}</Row>
+                <Row label="Rate">{rateLabel}</Row>
                 <Row label="Wallet after">
                   {naira(Math.max(WALLET - amount, 0))}
                 </Row>
@@ -220,7 +240,7 @@ function ReviewScreen() {
               </div>
               <p className="mt-3 flex items-center gap-1.5 whitespace-nowrap text-[11px] text-muted-foreground">
                 <Info className="size-3.5 shrink-0" />
-                Indicative at {CALL_ACCOUNT.rate} — accrues daily, credited monthly.
+                Indicative at {rateLabel} — accrues daily, credited monthly.
               </p>
 
               {/* Desktop confirm lives in the sticky rail */}

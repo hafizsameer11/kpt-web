@@ -2,8 +2,11 @@
  * MOB-120 — Portfolio overview data.
  * Reconciles wallet, call account, fixed plans and marketplace holdings.
  */
+import { useMemo } from "react";
 import { WALLET, HOLDINGS, naira } from "./home-data";
 import { CALL_ACCOUNT, CALL_ACTIVITY } from "./invest-data";
+import { useHydrateLiveBalances } from "./live-balances";
+import { useWalletBalance } from "./wallet-balance";
 
 export type ExploreHolding = {
   id: string;
@@ -17,32 +20,12 @@ export type ExploreHolding = {
   totalDays: number;
 };
 
-/** Marketplace (Explore) subscriptions currently held. */
-export const EXPLORE_HOLDINGS: ExploreHolding[] = [
-  {
-    id: "p1",
-    name: "364-Day Treasury Bill",
-    issuer: "Federal Government of Nigeria",
-    rate: "22.4% p.a.",
-    amount: 1_500_000,
-    expectedPayout: 1_836_000,
-    date: "18 Mar 2027",
-    daysLeft: 196,
-    totalDays: 364,
-  },
-  {
-    id: "p3",
-    name: "Dangote Cement CP Series 12",
-    issuer: "Dangote Cement Plc",
-    rate: "24.1% p.a.",
-    amount: 1_000_000,
-    expectedPayout: 1_119_000,
-    date: "02 Dec 2026",
-    daysLeft: 90,
-    totalDays: 180,
-  },
-];
+/** Marketplace (Explore) subscriptions currently held — empty until API hydrate. */
+export let EXPLORE_HOLDINGS: ExploreHolding[] = [];
 
+export function setExploreHoldings(rows: ExploreHolding[]) {
+  EXPLORE_HOLDINGS.splice(0, EXPLORE_HOLDINGS.length, ...rows);
+}
 export const FIXED_TOTAL = HOLDINGS.reduce((s, h) => s + h.amount, 0);
 export const EXPLORE_TOTAL = EXPLORE_HOLDINGS.reduce((s, h) => s + h.amount, 0);
 export const CALL_TOTAL = CALL_ACCOUNT.balance;
@@ -50,10 +33,10 @@ export const WALLET_TOTAL = WALLET;
 export const PORTFOLIO_TOTAL =
   WALLET_TOTAL + CALL_TOTAL + FIXED_TOTAL + EXPLORE_TOTAL;
 
-/** Growth over the trailing month (prototype figures). */
-export const PORTFOLIO_MONTH_CHANGE = 412_600;
-export const PORTFOLIO_MONTH_CHANGE_PCT = 1.44;
-export const INTEREST_EARNED_YTD = 1_284_900;
+/** Growth over the trailing month — zero until API provides figures. */
+export const PORTFOLIO_MONTH_CHANGE = 0;
+export const PORTFOLIO_MONTH_CHANGE_PCT = 0;
+export const INTEREST_EARNED_YTD = 0;
 
 export type Slice = {
   key: string;
@@ -129,8 +112,105 @@ export const UPCOMING_MATURITIES: Maturity[] = [
   })),
 ].sort((a, b) => a.daysLeft - b.daysLeft);
 
-export const pctOf = (value: number) =>
-  Math.round((value / PORTFOLIO_TOTAL) * 1000) / 10;
+export const pctOf = (value: number, total = PORTFOLIO_TOTAL) =>
+  total > 0 ? Math.round((value / total) * 1000) / 10 : 0;
+
+/** Reactive portfolio totals — wallet/call/holdings from live API hydrate. */
+export function usePortfolioSnapshot() {
+  const live = useHydrateLiveBalances();
+  const wallet = useWalletBalance();
+  return useMemo(() => {
+    const holdings = live.holdings.map((h) => {
+      const daysLeft = h.maturityDate
+        ? Math.max(
+            0,
+            Math.ceil(
+              (new Date(h.maturityDate).getTime() - Date.now()) / (24 * 60 * 60 * 1000),
+            ),
+          )
+        : 0;
+      return {
+        id: h.id,
+        name: h.name,
+        rate: `${h.ratePct}% p.a.`,
+        amount: h.amount,
+        date: h.maturityDate ?? "",
+        daysLeft,
+        totalDays: Math.max(daysLeft, 1),
+        expectedPayout: h.amount,
+        autoRenew: false,
+      };
+    });
+    const fixedTotal = holdings.reduce((s, h) => s + h.amount, 0);
+    const exploreTotal = EXPLORE_HOLDINGS.reduce((s, h) => s + h.amount, 0);
+    const callTotal = live.callBalance;
+    const total = wallet + callTotal + fixedTotal + exploreTotal;
+    const allocation: Slice[] = [
+      {
+        key: "call",
+        label: "Call Account",
+        value: callTotal,
+        color: "var(--brand)",
+        to: "/call-account",
+        note: `${live.callRatePct ? `${live.callRatePct}% p.a.` : "—"} · withdraw anytime`,
+      },
+      {
+        key: "fixed",
+        label: "Fixed Plans",
+        value: fixedTotal,
+        color: "var(--gold)",
+        to: "/fixed-plans",
+        note: `${holdings.length} active plans`,
+      },
+      {
+        key: "explore",
+        label: "Explore Products",
+        value: exploreTotal,
+        color: "color-mix(in oklab, var(--brand) 55%, white)",
+        to: "/explore",
+        note: `${EXPLORE_HOLDINGS.length} marketplace holdings`,
+      },
+      {
+        key: "wallet",
+        label: "Wallet",
+        value: wallet,
+        color: "color-mix(in oklab, var(--muted-foreground) 35%, white)",
+        to: "/invest",
+        note: "Idle cash, not earning a fixed rate",
+      },
+    ];
+    const maturities: Maturity[] = [
+      ...holdings.map((h) => ({
+        name: h.name,
+        amount: h.expectedPayout,
+        date: h.date,
+        daysLeft: h.daysLeft,
+        kind: "Fixed plan" as const,
+        holdingId: h.id,
+      })),
+      ...EXPLORE_HOLDINGS.map((h) => ({
+        name: h.name,
+        amount: h.expectedPayout,
+        date: h.date,
+        daysLeft: h.daysLeft,
+        kind: "Explore product" as const,
+        holdingId: `e-${h.id}`,
+      })),
+    ].sort((a, b) => a.daysLeft - b.daysLeft);
+    return {
+      wallet,
+      callTotal,
+      fixedTotal,
+      exploreTotal,
+      total,
+      holdings,
+      exploreHoldings: EXPLORE_HOLDINGS,
+      allocation,
+      maturities,
+      pct: (value: number) => pctOf(value, total || 1),
+    };
+  }, [live, wallet]);
+}
 
 export { naira };
 
@@ -285,53 +365,19 @@ export type InvestmentRecord = {
   holdingId?: string;
 };
 
-export const INVESTMENT_HISTORY: InvestmentRecord[] = [
-  ...HOLDING_DETAILS.map((h) => ({
-    id: `ih-${h.id}`,
-    name: h.name,
-    kind: h.kind,
-    status: "Active" as const,
-    principal: h.principal,
-    rate: h.rate,
-    startDate: h.startDate,
-    endDate: h.maturityDate,
-    interest: accruedInterest(h),
-    holdingId: h.id,
-  })),
-  {
-    id: "ih-m1",
-    name: "Kipit Fixed Income",
-    kind: "Fixed plan",
-    status: "Matured",
-    principal: 400_000,
-    rate: "18.5% p.a.",
-    startDate: "14 Feb 2026",
-    endDate: "15 May 2026",
-    interest: 18_400,
-  },
-  {
-    id: "ih-m2",
-    name: "182-Day Treasury Bill",
-    kind: "Explore product",
-    status: "Matured",
-    principal: 1_000_000,
-    rate: "21.0% p.a.",
-    startDate: "03 Dec 2025",
-    endDate: "03 Jun 2026",
-    interest: 104_800,
-  },
-  {
-    id: "ih-c1",
-    name: "Kipit Target Savings",
-    kind: "Fixed plan",
-    status: "Closed",
-    principal: 250_000,
-    rate: "16.0% p.a.",
-    startDate: "09 Jan 2026",
-    endDate: "27 Mar 2026",
-    interest: 6_120,
-  },
-];
+/** Active holdings only — matured/closed rows come from API when available. */
+export const INVESTMENT_HISTORY: InvestmentRecord[] = HOLDING_DETAILS.map((h) => ({
+  id: `ih-${h.id}`,
+  name: h.name,
+  kind: h.kind,
+  status: "Active" as const,
+  principal: h.principal,
+  rate: h.rate,
+  startDate: h.startDate,
+  endDate: h.maturityDate,
+  interest: accruedInterest(h),
+  holdingId: h.id,
+}));
 
 /* ── MOB-124 / 125 / 126 — Transactions ─────────────────────────── */
 
@@ -360,120 +406,7 @@ export type Transaction = {
   note?: string;
 };
 
-export const TRANSACTIONS: Transaction[] = [
-  {
-    id: "t1",
-    reference: "KPT-8F2K19QD",
-    type: "Interest",
-    status: "Successful",
-    label: "Interest credit · Call Account",
-    date: "01 Sep 2026",
-    time: "00:14",
-    amount: 298_450,
-    direction: "in",
-    source: "Kipit Call Account",
-    destination: "Kipit Wallet",
-    note: "Monthly interest credited on the 1st.",
-  },
-  {
-    id: "t2",
-    reference: "KPT-4LM73BXA",
-    type: "Investment",
-    status: "Successful",
-    label: "Fixed plan funded · Kipit Vault",
-    date: "28 Aug 2026",
-    time: "10:42",
-    amount: 800_000,
-    direction: "out",
-    source: "Kipit Wallet",
-    destination: "Kipit Vault (365d)",
-    related: { name: "Kipit Vault (365d)", holdingId: "f3" },
-  },
-  {
-    id: "t3",
-    reference: "KPT-9QW20TRE",
-    type: "Deposit",
-    status: "Successful",
-    label: "Wallet top-up · Bank transfer",
-    date: "27 Aug 2026",
-    time: "16:05",
-    amount: 1_500_000,
-    direction: "in",
-    source: "GTBank ****4471",
-    destination: "Kipit Wallet",
-  },
-  {
-    id: "t4",
-    reference: "KPT-1ZC58HNP",
-    type: "Investment",
-    status: "Processing",
-    label: "Subscription · 364-Day Treasury Bill",
-    date: "26 Aug 2026",
-    time: "09:20",
-    amount: 1_500_000,
-    direction: "out",
-    source: "Kipit Wallet",
-    destination: "Federal Government of Nigeria",
-    related: { name: "364-Day Treasury Bill", holdingId: "e-p1" },
-    note: "Allotment confirms at issuer settlement.",
-  },
-  {
-    id: "t5",
-    reference: "KPT-7BD41MSK",
-    type: "Withdrawal",
-    status: "Pending",
-    label: "Withdrawal to bank",
-    date: "24 Aug 2026",
-    time: "14:38",
-    amount: 250_000,
-    direction: "out",
-    source: "Kipit Wallet",
-    destination: "GTBank ****4471",
-    note: "Awaiting bank settlement — usually within 1 business day.",
-  },
-  {
-    id: "t6",
-    reference: "KPT-3XN66VLC",
-    type: "Interest",
-    status: "Successful",
-    label: "Interest accrual · Kipit Fixed Income",
-    date: "20 Aug 2026",
-    time: "00:11",
-    amount: 11_840,
-    direction: "in",
-    source: "Kipit Fixed Income",
-    destination: "Kipit Wallet",
-    related: { name: "Kipit Fixed Income", holdingId: "f1" },
-  },
-  {
-    id: "t7",
-    reference: "KPT-6HJ90PWT",
-    type: "Adjustment",
-    status: "Successful",
-    label: "Rate adjustment credit",
-    date: "12 Aug 2026",
-    time: "11:02",
-    amount: 4_250,
-    direction: "in",
-    source: "Kipit",
-    destination: "Kipit Wallet",
-    note: "Goodwill adjustment applied by support.",
-  },
-  {
-    id: "t8",
-    reference: "KPT-2RS35DFY",
-    type: "Withdrawal",
-    status: "Failed",
-    label: "Withdrawal to bank",
-    date: "05 Aug 2026",
-    time: "18:47",
-    amount: 120_000,
-    direction: "out",
-    source: "Kipit Wallet",
-    destination: "Zenith ****9032",
-    note: "Declined by the receiving bank. Funds returned to your wallet.",
-  },
-];
+export const TRANSACTIONS: Transaction[] = [];
 
 export const TXN_TYPES: TxnType[] = [
   "Deposit",
@@ -483,8 +416,67 @@ export const TXN_TYPES: TxnType[] = [
   "Adjustment",
 ];
 
+export function mapApiPortfolioTransaction(row: {
+  id: string;
+  reference: string;
+  kind: string;
+  description: string;
+  amount: number;
+  direction: "credit" | "debit" | string;
+  createdAt: string;
+}): Transaction {
+  const k = row.kind.toUpperCase();
+  let type: TxnType = "Adjustment";
+  if (k.includes("DEPOSIT") || k.includes("FUND")) type = "Deposit";
+  else if (k.includes("INTEREST") || k.includes("ACCRUAL")) type = "Interest";
+  else if (k.includes("WITHDRAW") || k.includes("PAYOUT") || k.includes("MATURITY"))
+    type = "Withdrawal";
+  else if (k.includes("PLACEMENT") || k.includes("INVEST")) type = "Investment";
+
+  const created = new Date(row.createdAt);
+  const credit = String(row.direction).toLowerCase() !== "debit";
+  return {
+    id: row.id,
+    reference: row.reference || row.id,
+    type,
+    status: "Successful",
+    label: row.description || row.kind || "Transaction",
+    date: Number.isNaN(created.getTime())
+      ? "—"
+      : created.toLocaleDateString("en-NG", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
+    time: Number.isNaN(created.getTime())
+      ? ""
+      : created.toLocaleTimeString("en-NG", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+    amount: Number(row.amount) || 0,
+    direction: credit ? "in" : "out",
+    source: credit ? "External" : "Kipit Wallet",
+    destination: credit ? "Kipit Wallet" : "External",
+  };
+}
+
 export const getTransaction = (id: string): Transaction | undefined =>
   ALL_TRANSACTIONS.find((t) => t.id === id);
+
+export async function loadPortfolioTransaction(
+  id: string,
+): Promise<Transaction | undefined> {
+  try {
+    const { fetchPortfolioTransactions } = await import("./api");
+    const rows = await fetchPortfolioTransactions();
+    const row = (rows ?? []).find((r) => r.id === id);
+    if (row) return mapApiPortfolioTransaction(row);
+  } catch {
+    /* no fixture fallback — only live API rows */
+  }
+  return undefined;
+}
 
 /* ── Derived transactions so every listed entry is tappable ─────── */
 

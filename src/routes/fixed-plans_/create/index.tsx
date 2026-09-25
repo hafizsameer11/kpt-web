@@ -5,8 +5,9 @@ import { useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { useCountUp } from "@/components/kipit/motion";
-import { naira, WALLET } from "@/lib/home-data";
-import { TENOR_BANDS } from "@/lib/invest-data";
+import { naira } from "@/lib/home-data";
+import { useTenorBands } from "@/lib/invest-data";
+import { useWalletBalance } from "@/lib/wallet-balance";
 
 export const Route = createFileRoute("/fixed-plans_/create/")({
   validateSearch: z.object({ plan: z.string().optional().catch(undefined) }),
@@ -36,16 +37,20 @@ export const Route = createFileRoute("/fixed-plans_/create/")({
 });
 
 /** Suggestions always start at (or above) the selected plan's minimum. */
-const quickAmounts = (minimum: number) => {
+const quickAmounts = (minimum: number, wallet: number) => {
   const base = [minimum, minimum * 2, minimum * 5];
-  return Array.from(new Set(base.filter((v) => v <= WALLET))).slice(0, 3);
+  return Array.from(new Set(base.filter((v) => v <= wallet))).slice(0, 3);
 };
-const LOWEST_MIN = Math.min(...TENOR_BANDS.map((b) => b.minimum));
-const TOP_RATE = Math.max(
-  ...TENOR_BANDS.map((b) => Number(b.rate.replace("%", ""))),
-);
 
 function CreatePlanAmountScreen() {
+  const { bands: TENOR_BANDS, loading } = useTenorBands();
+  const WALLET = useWalletBalance();
+  const LOWEST_MIN = TENOR_BANDS.length
+    ? Math.min(...TENOR_BANDS.map((b) => b.minimum || 0))
+    : 0;
+  const TOP_RATE = TENOR_BANDS.length
+    ? Math.max(...TENOR_BANDS.map((b) => Number(b.rate.replace("%", "")) || 0))
+    : 0;
   const { plan } = Route.useSearch();
   const band = TENOR_BANDS.find((b) => b.days === plan);
   const MINIMUM = band?.minimum ?? LOWEST_MIN;
@@ -53,6 +58,7 @@ function CreatePlanAmountScreen() {
 
   const [raw, setRaw] = useState("");
   const amount = Number(raw.replace(/[^0-9]/g, "")) || 0;
+  void loading;
   const belowMin = amount > 0 && amount < MINIMUM;
   const overWallet = amount > WALLET;
   const valid = amount > 0 && !belowMin && !overWallet;
@@ -121,7 +127,7 @@ function CreatePlanAmountScreen() {
               </p>
 
               <div className="mt-6 grid max-w-xl grid-cols-4 gap-2">
-                {quickAmounts(MINIMUM).map((q) => (
+                {quickAmounts(MINIMUM, WALLET).map((q) => (
                   <button
                     key={q}
                     type="button"
@@ -290,7 +296,7 @@ function CreatePlanAmountScreen() {
 
             {/* Quick amounts */}
             <div className="mt-5 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-              {quickAmounts(MINIMUM).map((q) => (
+              {quickAmounts(MINIMUM, WALLET).map((q) => (
                 <button
                   key={q}
                   type="button"

@@ -34,11 +34,12 @@ import { naira } from "@/lib/home-data";
 import { useWalletBalance } from "@/lib/wallet-balance";
 import {
   CALL_ACCOUNT,
-  CALL_ACCRUAL_TREND,
   CALL_ACCOUNT_FACTS,
   CALL_ACTIVITY,
+  buildCallAccrualTrend,
 } from "@/lib/invest-data";
 import { callActivityTxnId } from "@/lib/portfolio-data";
+import { useCallAccountLive } from "@/lib/live-balances";
 
 export const Route = createFileRoute("/call-account")({
   head: () => ({
@@ -47,7 +48,7 @@ export const Route = createFileRoute("/call-account")({
       {
         name: "description",
         content:
-          "Track your Kipit Call Account: current balance, 14.5% p.a. rate, daily interest accrual, recent activity, and instant add money or withdraw.",
+          "Track your Kipit Call Account: current balance, live rate, daily interest accrual, recent activity, and instant add money or withdraw.",
       },
       { property: "og:title", content: "Call Account — Daily Interest on Idle Cash | Kipit" },
       {
@@ -64,6 +65,8 @@ export const Route = createFileRoute("/call-account")({
 
 /** Smooth (Catmull-Rom → bezier) SVG path for the 14-day accrual trend. */
 function trendPoints(values: number[], w: number, h: number) {
+  if (!values.length) return [{ x: 0, y: h / 2 }];
+  if (values.length === 1) return [{ x: w / 2, y: h / 2 }];
   const min = Math.min(...values);
   const max = Math.max(...values);
   const span = max - min || 1;
@@ -92,15 +95,23 @@ function smoothPath(pts: { x: number; y: number }[]) {
 }
 
 
+function chartDateAt(i: number, total: number) {
+  const d = new Date();
+  d.setHours(12, 0, 0, 0);
+  d.setDate(d.getDate() - (total - 1 - i));
+  return d;
+}
+
+/** Compact axis label — e.g. 23 Sep */
 function dayLabel(i: number, total: number) {
-  if (i === total - 1) return "Today";
-  if (i === 0) return "14d ago";
-  return `-${total - 1 - i}d`;
+  return chartDateAt(i, total).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+  });
 }
 
 function fullDate(i: number, total: number) {
-  const d = new Date();
-  d.setDate(d.getDate() - (total - 1 - i));
+  const d = chartDateAt(i, total);
   return d.toLocaleDateString("en-NG", {
     weekday: "short",
     day: "numeric",
@@ -109,14 +120,27 @@ function fullDate(i: number, total: number) {
   });
 }
 
-function DayDetail({ day, onClose }: { day: number; onClose: () => void }) {
+function barHeightPx(value: number, peak: number) {
+  if (value <= 0) return 2;
+  return Math.round(12 + (value / peak) * 128);
+}
+
+function DayDetail({
+  day,
+  onClose,
+  trend,
+}: {
+  day: number;
+  onClose: () => void;
+  trend: number[];
+}) {
   const { mask } = useBalanceVisibility();
   const isMobile = useIsMobile();
-  const value = CALL_ACCRUAL_TREND[day]!;
-  const prev = day > 0 ? CALL_ACCRUAL_TREND[day - 1] ?? null : null;
+  const value = trend[day] ?? 0;
+  const prev = day > 0 ? trend[day - 1] ?? null : null;
   const change = prev !== null ? value - prev : 0;
-  const cumulative = CALL_ACCRUAL_TREND.slice(0, day + 1).reduce((a, b) => a + b, 0);
-  const isToday = day === CALL_ACCRUAL_TREND.length - 1;
+  const cumulative = trend.slice(0, day + 1).reduce((a, b) => a + b, 0);
+  const isToday = day === trend.length - 1;
 
   const body = (
     <div className="text-center">
@@ -130,7 +154,7 @@ function DayDetail({ day, onClose }: { day: number; onClose: () => void }) {
           <X className="size-4" />
         </button>
         <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
-          {isToday ? "Today" : fullDate(day, CALL_ACCRUAL_TREND.length)}
+          {isToday ? "Today" : fullDate(day, trend.length)}
         </p>
         <p className="mt-3 font-display text-[40px] font-extrabold leading-none tracking-[-0.03em] text-gold text-num">
           {mask(value)}
@@ -164,7 +188,7 @@ function DayDetail({ day, onClose }: { day: number; onClose: () => void }) {
         <p className="text-[12px] leading-relaxed text-muted-foreground">
           {isToday
             ? "Today's interest is based on your current Call Account balance. It will be credited with your monthly payout on the 1st."
-            : `Interest for ${fullDate(day, CALL_ACCRUAL_TREND.length)} has already been credited to your running balance.`}
+            : `Interest for ${fullDate(day, trend.length)} has already been credited to your running balance.`}
         </p>
         <button
           type="button"
@@ -183,7 +207,7 @@ function DayDetail({ day, onClose }: { day: number; onClose: () => void }) {
         <DrawerContent className="overflow-hidden rounded-t-[2rem] border-0 bg-card p-0 pb-6">
           <DrawerTitle className="sr-only">Interest details</DrawerTitle>
           <DrawerDescription className="sr-only">
-            Detailed interest information for {fullDate(day, CALL_ACCRUAL_TREND.length)}
+            Detailed interest information for {fullDate(day, trend.length)}
           </DrawerDescription>
           {body}
         </DrawerContent>
@@ -196,7 +220,7 @@ function DayDetail({ day, onClose }: { day: number; onClose: () => void }) {
       <DialogContent className="max-w-sm overflow-hidden rounded-xl border-0 bg-card p-0 shadow-2xl">
         <DialogTitle className="sr-only">Interest details</DialogTitle>
         <DialogDescription className="sr-only">
-          Detailed interest information for {fullDate(day, CALL_ACCRUAL_TREND.length)}
+          Detailed interest information for {fullDate(day, trend.length)}
         </DialogDescription>
         {body}
       </DialogContent>
@@ -206,8 +230,12 @@ function DayDetail({ day, onClose }: { day: number; onClose: () => void }) {
 
 function CallAccountScreen() {
   const WALLET = useWalletBalance();
+  const { balance: callBalance, rateLabel: callRate, ratePct } = useCallAccountLive();
+  const rateDecimal = ratePct > 0 ? ratePct / 100 : 0;
   const { mask, hidden, toggle } = useBalanceVisibility();
-  const pts = trendPoints(CALL_ACCRUAL_TREND, 300, 88);
+  // Same interest rows as the activity list — keeps chart total in sync.
+  const accrualTrend = buildCallAccrualTrend(CALL_ACTIVITY, 14);
+  const pts = trendPoints(accrualTrend, 300, 88);
   const line = smoothPath(pts);
   const last = pts[pts.length - 1] ?? { x: 300, y: 44 };
   const streakRef = useRef<HTMLDivElement>(null);
@@ -263,14 +291,14 @@ function CallAccountScreen() {
                 {CALL_ACCOUNT.name}
               </p>
               <span className="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
-                {CALL_ACCOUNT.rate}
+                {callRate}
               </span>
             </div>
 
             {/* Balance lockup */}
             <div className="mt-2 space-y-1">
               <p className="font-display text-[40px] font-extrabold leading-none tracking-[-0.035em] text-num md:text-[48px]">
-                <AmountCounter value={CALL_ACCOUNT.balance} hidden={hidden} mask={mask} />
+                <AmountCounter value={callBalance} hidden={hidden} mask={mask} />
               </p>
               <p className="flex items-center gap-1.5 text-[12px] font-medium text-primary-foreground/60">
                 <ShieldCheck className="size-3.5 text-primary-foreground/70" />
@@ -345,7 +373,7 @@ function CallAccountScreen() {
                 </p>
               </div>
               <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-accent/15 px-2.5 py-1 text-[11px] font-bold text-brand">
-                <TrendingUp className="size-3.5" /> {CALL_ACCOUNT.rate}
+                <TrendingUp className="size-3.5" /> {callRate}
               </span>
             </div>
 
@@ -356,31 +384,39 @@ function CallAccountScreen() {
                 className="flex items-end justify-between gap-2 overflow-x-auto pb-3 pt-1 scrollbar-hide"
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               >
-                {CALL_ACCRUAL_TREND.map((v, i) => {
-                  const isToday = i === CALL_ACCRUAL_TREND.length - 1;
-                  const label = dayLabel(i, CALL_ACCRUAL_TREND.length);
+                {accrualTrend.map((v, i) => {
+                  const isToday = i === accrualTrend.length - 1;
+                  const hasInterest = v > 0;
+                  const label = dayLabel(i, accrualTrend.length);
                   return (
                     <button
                       key={i}
                       type="button"
                       ref={isToday ? todayRef : undefined}
                       onClick={() => setSelectedDay(i)}
-                      style={{ ["--d" as string]: `${i * 35}ms`, minWidth: isToday ? 76 : 52 }}
+                      style={{ ["--d" as string]: `${i * 35}ms`, minWidth: hasInterest || isToday ? 76 : 52 }}
                       className={`k-rise flex shrink-0 flex-col items-center gap-2 rounded-xl px-2.5 py-3 text-left transition-transform duration-150 active:scale-95 ${
-                        isToday
+                        hasInterest
                           ? "bg-brand text-primary-foreground shadow-sm"
                           : "bg-muted/60 text-foreground hover:bg-muted"
                       }`}
-
                     >
-                      <span className={`text-[10px] font-semibold ${isToday ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                      <span
+                        className={`text-[10px] font-semibold ${
+                          hasInterest ? "text-primary-foreground/70" : "text-muted-foreground"
+                        }`}
+                      >
                         {label}
                       </span>
-                      <span className={`text-[12px] font-extrabold text-num ${isToday ? "text-gold" : ""}`}>
+                      <span
+                        className={`text-[12px] font-extrabold text-num ${
+                          hasInterest ? "text-gold" : ""
+                        }`}
+                      >
                         {mask(v)}
                       </span>
                       <span
-                        className={`h-1 w-full rounded-full ${isToday ? "bg-gold" : "bg-border"}`}
+                        className={`h-1 w-full rounded-full ${hasInterest ? "bg-gold" : "bg-border"}`}
                       />
                     </button>
                   );
@@ -390,13 +426,17 @@ function CallAccountScreen() {
 
             {/* Day detail popup */}
             {selectedDay !== null && (
-              <DayDetail day={selectedDay} onClose={() => setSelectedDay(null)} />
+              <DayDetail
+                day={selectedDay}
+                trend={accrualTrend}
+                onClose={() => setSelectedDay(null)}
+              />
             )}
 
             <div className="mt-1 flex items-center justify-between border-t border-border/70 pt-3">
               <p className="text-[11px] font-semibold text-muted-foreground">Last 14 days</p>
               <p className="text-[12.5px] font-extrabold text-num">
-                {mask(CALL_ACCRUAL_TREND.reduce((a, b) => a + b, 0))}
+                {mask(accrualTrend.reduce((a, b) => a + b, 0))}
               </p>
             </div>
           </section>
@@ -485,7 +525,7 @@ function CallAccountScreen() {
                       Wallet available
                     </p>
                     <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[10.5px] font-extrabold text-brand">
-                      {CALL_ACCOUNT.rate}
+                      {callRate}
                     </span>
                   </div>
                   <p className="mt-1 font-display text-xl font-extrabold leading-none">
@@ -512,7 +552,7 @@ function CallAccountScreen() {
               <div className="flex items-baseline justify-between gap-2">
                 <h2 className="font-display text-[15px] font-extrabold">Projected earnings</h2>
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                  At {CALL_ACCOUNT.rate}
+                  At {callRate}
                 </span>
               </div>
               <p className="mt-1 text-[11.5px] leading-snug text-muted-foreground">
@@ -520,8 +560,8 @@ function CallAccountScreen() {
               </p>
               <div className="mt-4 flex gap-4 border-t border-border/60 pt-4">
                 {[
-                  { label: "Next 30 days", value: (CALL_ACCOUNT.balance * 0.145) / 12 },
-                  { label: "Next 12 months", value: CALL_ACCOUNT.balance * 0.145 },
+                  { label: "Next 30 days", value: (callBalance * rateDecimal) / 12 },
+                  { label: "Next 12 months", value: callBalance * rateDecimal },
                 ].map((p, i, arr) => (
                   <div
                     key={p.label}
@@ -628,11 +668,13 @@ function CallAccountScreen() {
    ───────────────────────────────────────────────────────────── */
 function DesktopCallAccount() {
   const WALLET = useWalletBalance();
+  const { balance: callBalance, rateLabel: callRate, ratePct } = useCallAccountLive();
+  const rateDecimal = ratePct > 0 ? ratePct / 100 : 0;
   const { mask, hidden, toggle } = useBalanceVisibility();
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const total14 = CALL_ACCRUAL_TREND.reduce((a, b) => a + b, 0);
-  const maxTrend = Math.max(...CALL_ACCRUAL_TREND);
-  const minTrend = Math.min(...CALL_ACCRUAL_TREND);
+  const accrualTrend = buildCallAccrualTrend(CALL_ACTIVITY, 14);
+  const total14 = accrualTrend.reduce((a, b) => a + b, 0);
+  const peak = Math.max(1, ...accrualTrend);
 
   return (
     <div className="hidden md:block">
@@ -654,11 +696,11 @@ function DesktopCallAccount() {
                   {CALL_ACCOUNT.name}
                 </p>
                 <span className="rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
-                  {CALL_ACCOUNT.rate}
+                  {callRate}
                 </span>
               </div>
               <p className="mt-3 font-display text-[52px] font-extrabold leading-none tracking-[-0.035em] text-num">
-                <AmountCounter value={CALL_ACCOUNT.balance} hidden={hidden} mask={mask} />
+                <AmountCounter value={callBalance} hidden={hidden} mask={mask} />
               </p>
               <p className="mt-3 flex items-center gap-1.5 text-[12.5px] font-medium text-primary-foreground/65">
                 <ShieldCheck className="size-4 text-primary-foreground/70" />
@@ -753,30 +795,30 @@ function DesktopCallAccount() {
               </div>
 
               <div className="mt-6 flex h-[168px] items-end gap-2">
-                {CALL_ACCRUAL_TREND.map((v, i) => {
-                  const isToday = i === CALL_ACCRUAL_TREND.length - 1;
+                {accrualTrend.map((v, i) => {
+                  const hasInterest = v > 0;
                   return (
                     <button
                       key={i}
                       type="button"
                       onClick={() => setSelectedDay(i)}
-                      title={`${fullDate(i, CALL_ACCRUAL_TREND.length)} — ${naira(v)}`}
+                      title={`${fullDate(i, accrualTrend.length)} — ${naira(v)}`}
                       className="group flex h-full flex-1 flex-col justify-end gap-2 rounded-lg pb-0 outline-none focus-visible:ring-2 focus-visible:ring-gold"
                     >
                       <span
                         className={`w-full rounded-t-md transition-all duration-200 ${
-                          isToday ? "bg-brand" : "bg-accent/25 group-hover:bg-accent/45"
+                          hasInterest
+                            ? "bg-brand group-hover:bg-brand/90"
+                            : "bg-border/60 group-hover:bg-border"
                         }`}
-                        style={{
-                          height: `${28 + ((v - minTrend) / (maxTrend - minTrend || 1)) * 100}px`,
-                        }}
+                        style={{ height: `${barHeightPx(v, peak)}px` }}
                       />
                       <span
-                        className={`text-[9.5px] font-semibold ${
-                          isToday ? "text-brand" : "text-muted-foreground"
+                        className={`text-[9.5px] font-semibold leading-tight ${
+                          hasInterest ? "text-brand" : "text-muted-foreground"
                         }`}
                       >
-                        {dayLabel(i, CALL_ACCRUAL_TREND.length)}
+                        {dayLabel(i, accrualTrend.length)}
                       </span>
                     </button>
                   );
@@ -784,7 +826,11 @@ function DesktopCallAccount() {
               </div>
 
               {selectedDay !== null && (
-                <DayDetail day={selectedDay} onClose={() => setSelectedDay(null)} />
+                <DayDetail
+                  day={selectedDay}
+                  trend={accrualTrend}
+                  onClose={() => setSelectedDay(null)}
+                />
               )}
             </section>
 
@@ -880,7 +926,7 @@ function DesktopCallAccount() {
               <div className="flex items-baseline justify-between gap-2">
                 <h2 className="font-display text-[15px] font-extrabold">Projected earnings</h2>
                 <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                  At {CALL_ACCOUNT.rate}
+                  At {callRate}
                 </span>
               </div>
               <p className="mt-1 text-[11.5px] leading-snug text-muted-foreground">
@@ -888,8 +934,8 @@ function DesktopCallAccount() {
               </p>
               <div className="mt-4 space-y-3 border-t border-border/60 pt-4">
                 {[
-                  { label: "Next 30 days", value: (CALL_ACCOUNT.balance * 0.145) / 12 },
-                  { label: "Next 12 months", value: CALL_ACCOUNT.balance * 0.145 },
+                  { label: "Next 30 days", value: (callBalance * rateDecimal) / 12 },
+                  { label: "Next 12 months", value: callBalance * rateDecimal },
                 ].map((p) => (
                   <div key={p.label} className="flex items-center justify-between gap-3">
                     <p className="text-[11.5px] font-semibold text-muted-foreground">{p.label}</p>

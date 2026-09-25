@@ -1,30 +1,16 @@
-# Kipitapp
+# Kipit Web
 
-http://www.mykipit.com/
+Consumer web/mobile investment prototype for [Kipit](http://www.mykipit.com/).
 
-I want to create an interactive prototype for web and mobile app, that on mobile view it looks like a mobile app. for branding, i have attached our logo and also our old website so you can pick the colour.
-
-I want us to build screen by screen, start with the home screen
-
-This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://kipitapp.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/650fcd5e-a755-40ec-b87f-b4a4447122c3).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+On mobile viewports it is designed to feel like a native app. Admin/ops screens live in a separate project: [`../kipit-admin`](../kipit-admin).
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+bun install   # or npm i
+bun run dev
 ```
+
+## Product areas
+
+Home, wallet, invest (Call Account + fixed plans), explore marketplace, portfolio, KYC, withdrawals, gifts, learn, settings, and Chat-to-Trade.

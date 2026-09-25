@@ -3,6 +3,7 @@ import { ArrowRight, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { KycStep, kycCta, kycField, kycLabel } from "@/components/kipit/KycStep";
 import { EMPLOYMENT_STATUS, INCOME_BANDS, SOURCE_OF_FUNDS } from "@/lib/kyc-data";
+import { getTier2Draft, patchTier2Draft } from "@/lib/tier2-draft";
 
 export const Route = createFileRoute("/verification_/occupation")({
   head: () => ({
@@ -14,7 +15,6 @@ export const Route = createFileRoute("/verification_/occupation")({
           "Tell Kipit how you earn and where your investment funds come from — required by anti-money-laundering rules.",
       },
       { property: "og:title", content: "Occupation & Source of Funds | Kipit" },
-      { property: "og:description", content: "Share your occupation and source of funds." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -24,9 +24,12 @@ export const Route = createFileRoute("/verification_/occupation")({
 
 function OccupationStep() {
   const navigate = useNavigate();
-  const [employment, setEmployment] = useState("");
-  const [occupation, setOccupation] = useState("");
-  const [source, setSource] = useState<string[]>([]);
+  const d = getTier2Draft();
+  const [employment, setEmployment] = useState(d.employmentStatus);
+  const [occupation, setOccupation] = useState(d.occupation);
+  const [source, setSource] = useState<string[]>(
+    d.sourceOfFunds ? d.sourceOfFunds.split(", ").filter(Boolean) : [],
+  );
   const [income, setIncome] = useState("");
   const valid = employment !== "" && occupation.trim() !== "" && source.length > 0 && income !== "";
 
@@ -36,36 +39,11 @@ function OccupationStep() {
   return (
     <KycStep
       navTitle="Occupation"
-      backTo="/verification"
-      backLabel="Verification"
+      backTo="/verification/address-upload"
+      backLabel="Proof"
       eyebrow="Tier 2"
       title="How do you earn?"
       subtitle="Nigerian AML regulations require us to understand where the money you invest comes from."
-      aside={
-        <>
-          <section className="card-surface p-5">
-            <p className="text-[12.5px] font-extrabold text-foreground">Why we ask</p>
-            <ul className="mt-2 space-y-2">
-              {[
-                "Anti-money-laundering rules require it.",
-                "Helps us set sensible transaction limits.",
-                "Speeds up reviews on larger investments.",
-              ].map((t) => (
-                <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
-                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </section>
-          <section className="card-surface p-5">
-            <p className="text-[12.5px] font-extrabold text-foreground">Almost done</p>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
-              This is the final step. We review Tier 2 submissions within one business day.
-            </p>
-          </section>
-        </>
-      }
       step={4}
       totalSteps={4}
     >
@@ -140,7 +118,14 @@ function OccupationStep() {
         <button
           type="button"
           disabled={!valid}
-          onClick={() => void navigate({ to: "/verification/review" })}
+          onClick={() => {
+            patchTier2Draft({
+              occupation: occupation.trim(),
+              employmentStatus: employment,
+              sourceOfFunds: source.join(", "),
+            });
+            void navigate({ to: "/verification/review" });
+          }}
           className={`mt-5 ${kycCta}`}
         >
           Continue <ArrowRight className="size-4" strokeWidth={2.6} />

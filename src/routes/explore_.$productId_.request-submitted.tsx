@@ -3,7 +3,7 @@ import { ArrowRight, Clock, Mail, MessageCircle, Phone } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { naira } from "@/lib/home-data";
-import { getExploreProduct } from "@/lib/explore-data";
+import { ensureExploreHydrated, getExploreProduct } from "@/lib/explore-data";
 
 export const Route = createFileRoute("/explore_/$productId_/request-submitted")({
   head: () => ({
@@ -30,7 +30,8 @@ export const Route = createFileRoute("/explore_/$productId_/request-submitted")(
         ? (search['contact'] as "whatsapp" | "email")
         : ("call" as const),
   }),
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
+    await ensureExploreHydrated();
     const product = getExploreProduct(params.productId);
     if (!product) throw notFound();
     return { product };
