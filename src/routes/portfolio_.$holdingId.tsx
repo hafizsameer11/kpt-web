@@ -1,4 +1,5 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useCallback, useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
   ArrowDownLeft,
@@ -16,44 +17,164 @@ import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import {
-  accruedInterest,
-  getHolding,
+  ApiError,
+  fetchPortfolioHolding,
+  patchHoldingMaturity,
+} from "@/lib/api";
+import {
   holdingTxnId,
-  naira,
+  type HoldingDetail,
 } from "@/lib/portfolio-data";
 
 export const Route = createFileRoute("/portfolio_/$holdingId")({
-  loader: ({ params }) => {
-    const holding = getHolding(params.holdingId);
-    if (!holding) throw notFound();
-    return { holding };
-  },
-  head: ({ loaderData }) => {
-    if (!loaderData) {
-      return {
-        meta: [
-          { title: "Holding unavailable | Kipit" },
-          { name: "robots", content: "noindex" },
-        ],
-      };
-    }
-    const h = loaderData.holding;
-    const title = `${h.name} — Holding Detail | Kipit`;
-    const description = `${h.rate} · principal ${naira(h.principal)}, maturing ${h.maturityDate} with an expected payout of ${naira(h.expectedPayout)}.`;
-    return {
-      meta: [
-        { title },
-        { name: "description", content: description },
-        { property: "og:title", content: title },
-        { property: "og:description", content: description },
-        { property: "og:type", content: "website" },
-        { name: "twitter:card", content: "summary_large_image" },
-      ],
-    };
-  },
+  head: () => ({
+    meta: [
+      { title: "Holding Detail | Kipit" },
+      {
+        name: "description",
+        content: "View principal, rate, maturity and payout details for your Kipit holding.",
+      },
+      { property: "og:title", content: "Holding Detail | Kipit" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   notFoundComponent: HoldingNotFound,
   component: HoldingDetailScreen,
 });
+
+const MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
+function fmtDisplayDate(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return `${String(d.getDate()).padStart(2, "0")} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function daysUntil(iso: string | null | undefined): number {
+  if (!iso) return 0;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return 0;
+  return Math.max(0, Math.ceil((d.getTime() - Date.now()) / (24 * 60 * 60 * 1000)));
+}
+
+function instructionLabel(raw: string | null | undefined): string {
+  const key = String(raw ?? "WALLET").toUpperCase();
+  if (key === "ROLLOVER") return "Roll over principal + interest";
+  if (key === "PAYOUT") return "Payout to Kipit Wallet at maturity";
+  return "Pay out to Kipit Wallet";
+}
+
+function mapApiHolding(api: Awaited<ReturnType<typeof fetchPortfolioHolding>>): HoldingDetail {
+  const principal = Math.round(api.principal);
+  const accrued = Math.round(api.accrued ?? 0);
+  const totalDays = Math.max(1, api.tenorDays || 1);
+  const daysLeft = daysUntil(api.maturityDate);
+  const maturityDate = fmtDisplayDate(api.maturityDate);
+  const startDate =
+    api.maturityDate && api.tenorDays
+      ? (() => {
+          const d = new Date(api.maturityDate);
+          if (Number.isNaN(d.getTime())) return "—";
+          d.setDate(d.getDate() - api.tenorDays);
+          return fmtDisplayDate(d.toISOString().slice(0, 10));
+        })()
+      : "—";
+  const isFixed = String(api.kind).toUpperCase() === "FIXED";
+
+  return {
+    id: api.id,
+    kind: isFixed ? "Fixed plan" : "Explore product",
+    name: api.name,
+    issuer: isFixed ? "Kipit · SEC-licensed partner" : "Marketplace",
+    rate: `${api.ratePct}% p.a.`,
+    principal,
+    startDate,
+    maturityDate,
+    totalDays,
+    daysLeft,
+    expectedPayout: principal + accrued,
+    canManageMaturity: isFixed,
+    maturityInstruction: instructionLabel(api.maturityInstruction),
+    documents: [],
+    transactions: [
+      {
+        label: "Plan funded",
+        date: startDate,
+        amount: principal,
+        direction: "out",
+      },
+    ],
+  };
+}
+
+function useHoldingDetail(holdingId: string) {
+  const [holding, setHolding] = useState<HoldingDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [patching, setPatching] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setNotFound(false);
+    setHolding(null);
+    void fetchPortfolioHolding(holdingId)
+      .then((api) => {
+        if (cancelled) return;
+        setHolding(mapApiHolding(api));
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        if (err instanceof ApiError && (err.status === 404 || err.code === "NOT_FOUND")) {
+          setNotFound(true);
+        } else {
+          toast.error(err instanceof ApiError ? err.message : "Could not load holding");
+          setNotFound(true);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [holdingId]);
+
+  const setMaturity = useCallback(
+    async (instruction: "ROLLOVER" | "WALLET") => {
+      if (!holding || patching) return;
+      setPatching(true);
+      try {
+        await patchHoldingMaturity(holding.id, instruction);
+        setHolding((prev) =>
+          prev
+            ? { ...prev, maturityInstruction: instructionLabel(instruction) }
+            : prev,
+        );
+        toast.success("Maturity instruction updated", {
+          description:
+            instruction === "ROLLOVER"
+              ? "This plan will roll over at the prevailing rate."
+              : "Principal and interest will be paid to your wallet.",
+        });
+      } catch (err) {
+        toast.error(
+          err instanceof ApiError ? err.message : "Could not update maturity instruction",
+        );
+      } finally {
+        setPatching(false);
+      }
+    },
+    [holding, patching],
+  );
+
+  return { holding, loading, notFound, setMaturity, patching };
+}
 
 function HoldingNotFound() {
   return (
@@ -74,26 +195,46 @@ function HoldingNotFound() {
   );
 }
 
-function HoldingDetailScreen() {
+function HoldingLoading() {
   return (
     <AppShell title="Holding" navVariant="elevated">
-      <div className="hidden md:block">
-        <DesktopHolding />
-      </div>
-      <div className="md:hidden">
-        <MobileHolding />
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <p className="text-[13px] text-muted-foreground">Loading holding…</p>
       </div>
     </AppShell>
   );
 }
 
-function DesktopHolding() {
-  const { holding: h } = Route.useLoaderData();
+function HoldingDetailScreen() {
+  const { holdingId } = Route.useParams();
+  const { holding, loading, notFound, setMaturity } = useHoldingDetail(holdingId);
+
+  if (loading) return <HoldingLoading />;
+  if (notFound || !holding) return <HoldingNotFound />;
+
+  return (
+    <AppShell title="Holding" navVariant="elevated">
+      <div className="hidden md:block">
+        <DesktopHolding holding={holding} onSetMaturity={setMaturity} />
+      </div>
+      <div className="md:hidden">
+        <MobileHolding holding={holding} onSetMaturity={setMaturity} />
+      </div>
+    </AppShell>
+  );
+}
+
+type HoldingViewProps = {
+  holding: HoldingDetail;
+  onSetMaturity: (instruction: "ROLLOVER" | "WALLET") => void;
+};
+
+function DesktopHolding({ holding: h, onSetMaturity }: HoldingViewProps) {
   const { hidden, mask } = useBalanceVisibility();
 
   const elapsed = h.totalDays - h.daysLeft;
   const progress = Math.min(100, Math.max(4, Math.round((elapsed / h.totalDays) * 100)));
-  const accrued = accruedInterest(h);
+  const accrued = Math.round(h.expectedPayout - h.principal);
 
   return (
     <div className="mx-auto w-full max-w-[1180px] pb-10">
@@ -262,22 +403,14 @@ function DesktopHolding() {
               <div className="mt-4 grid gap-2.5">
                 <button
                   type="button"
-                  onClick={() =>
-                    toast.success("Maturity instruction updated", {
-                      description: "This plan will roll over at the prevailing rate.",
-                    })
-                  }
+                  onClick={() => onSetMaturity("ROLLOVER")}
                   className="inline-flex items-center justify-center gap-1.5 rounded-full bg-brand-gradient px-4 py-2.5 text-[12.5px] font-extrabold text-primary-foreground press"
                 >
                   <RefreshCw className="size-3.5" /> Roll over
                 </button>
                 <button
                   type="button"
-                  onClick={() =>
-                    toast.success("Maturity instruction updated", {
-                      description: "Principal and interest will be paid to your wallet.",
-                    })
-                  }
+                  onClick={() => onSetMaturity("WALLET")}
                   className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border bg-card px-4 py-2.5 text-[12.5px] font-extrabold press"
                 >
                   <Wallet className="size-3.5" /> Pay to wallet
@@ -293,28 +426,32 @@ function DesktopHolding() {
                 {h.documents.length} Files
               </span>
             </div>
-            <ul className="divide-y divide-border/60">
-              {h.documents.map((d) => (
-                <li key={d.label}>
-                  <button
-                    type="button"
-                    onClick={() => toast.success(`${d.label} downloaded`)}
-                    className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-secondary/60"
-                  >
-                    <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-gold/12 text-gold">
-                      <FileText className="size-4" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[13px] font-bold">{d.label}</p>
-                      <p className="text-[11px] text-muted-foreground">
-                        {d.kind} · {d.size}
-                      </p>
-                    </div>
-                    <Download className="size-4 shrink-0 text-gold" />
-                  </button>
-                </li>
-              ))}
-            </ul>
+            {h.documents.length === 0 ? (
+              <p className="px-5 py-4 text-[12.5px] text-muted-foreground">No documents yet.</p>
+            ) : (
+              <ul className="divide-y divide-border/60">
+                {h.documents.map((d) => (
+                  <li key={d.label}>
+                    <button
+                      type="button"
+                      onClick={() => toast.success(`${d.label} downloaded`)}
+                      className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-secondary/60"
+                    >
+                      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-gold/12 text-gold">
+                        <FileText className="size-4" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[13px] font-bold">{d.label}</p>
+                        <p className="text-[11px] text-muted-foreground">
+                          {d.kind} · {d.size}
+                        </p>
+                      </div>
+                      <Download className="size-4 shrink-0 text-gold" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
 
           <DisclosureStrip variant={h.kind === "Fixed plan" ? "fixed" : "marketplace"} />
@@ -324,13 +461,12 @@ function DesktopHolding() {
   );
 }
 
-function MobileHolding() {
-  const { holding: h } = Route.useLoaderData();
+function MobileHolding({ holding: h, onSetMaturity }: HoldingViewProps) {
   const { hidden, mask } = useBalanceVisibility();
 
   const elapsed = h.totalDays - h.daysLeft;
   const progress = Math.min(100, Math.max(4, Math.round((elapsed / h.totalDays) * 100)));
-  const accrued = accruedInterest(h);
+  const accrued = Math.round(h.expectedPayout - h.principal);
 
   return (
       <div className="pb-2">
@@ -459,22 +595,14 @@ function MobileHolding() {
               <div className="mt-4 grid grid-cols-2 gap-2.5">
                 <button
                   type="button"
-                  onClick={() =>
-                    toast.success("Maturity instruction updated", {
-                      description: "This plan will roll over at the prevailing rate.",
-                    })
-                  }
+                  onClick={() => onSetMaturity("ROLLOVER")}
                   className="inline-flex items-center justify-center gap-1.5 rounded-full bg-brand-gradient px-4 py-3 text-[12px] font-extrabold text-primary-foreground press"
                 >
                   <RefreshCw className="size-3.5" /> Roll over
                 </button>
                 <button
                   type="button"
-                  onClick={() =>
-                    toast.success("Maturity instruction updated", {
-                      description: "Principal and interest will be paid to your wallet.",
-                    })
-                  }
+                  onClick={() => onSetMaturity("WALLET")}
                   className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border bg-card px-4 py-3 text-[12px] font-extrabold press"
                 >
                   <Wallet className="size-3.5" /> Pay to wallet
@@ -536,29 +664,35 @@ function MobileHolding() {
                 {h.documents.length} Files
               </span>
             </div>
-            <ul className="card-surface divide-y divide-border/60 overflow-hidden">
-              {h.documents.map((d, i) => (
-                <li key={d.label} style={{ ["--d" as string]: `${i * 60}ms` }} className="k-rise">
-                  <button
-                    type="button"
-                    onClick={() => toast.success(`${d.label} downloaded`)}
-                    className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-secondary/60"
-                  >
-                    <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-gold/12 text-gold">
-                      <FileText className="size-4" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[13px] font-bold">{d.label}</p>
-                      <p className="text-[11px] text-muted-foreground">
-                        {d.kind} · {d.size}
-                      </p>
-                    </div>
-                    <Download className="size-4 shrink-0 text-gold" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-2 px-1 text-[11px] text-muted-foreground">Tap to download PDF</p>
+            {h.documents.length === 0 ? (
+              <p className="px-1 text-[12px] text-muted-foreground">No documents yet.</p>
+            ) : (
+              <ul className="card-surface divide-y divide-border/60 overflow-hidden">
+                {h.documents.map((d, i) => (
+                  <li key={d.label} style={{ ["--d" as string]: `${i * 60}ms` }} className="k-rise">
+                    <button
+                      type="button"
+                      onClick={() => toast.success(`${d.label} downloaded`)}
+                      className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-secondary/60"
+                    >
+                      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-gold/12 text-gold">
+                        <FileText className="size-4" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[13px] font-bold">{d.label}</p>
+                        <p className="text-[11px] text-muted-foreground">
+                          {d.kind} · {d.size}
+                        </p>
+                      </div>
+                      <Download className="size-4 shrink-0 text-gold" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {h.documents.length > 0 ? (
+              <p className="mt-2 px-1 text-[11px] text-muted-foreground">Tap to download PDF</p>
+            ) : null}
           </section>
 
           <DisclosureStrip variant={h.kind === "Fixed plan" ? "fixed" : "marketplace"} />

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowUpRight,
   Bell,
@@ -18,18 +18,21 @@ import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility
 import { GreetingText } from "@/components/kipit/SpecBlocks";
 import { AmountCounter } from "@/components/kipit/motion";
 import {
-  HOLDINGS,
-  INVESTED,
   MONTH_CHANGE,
   MONTH_CHANGE_PCT,
-  NEXT_MATURITY,
   PAYOUTS,
   QUICK_ACTIONS,
-  WEEK_EARNINGS,
   WEEK_LABELS,
   WEEK_SERIES,
   naira,
 } from "@/lib/home-data";
+import { displayInitials, displayName } from "@/lib/auth-session";
+import {
+  hydrateLiveBalances,
+  useLiveBalances,
+  type LiveHolding,
+  type LiveNextMaturity,
+} from "@/lib/live-balances";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -53,24 +56,82 @@ export const Route = createFileRoute("/")({
   component: HomeV2Screen,
 });
 
-const lenses = (wallet: number) =>
+const lenses = (wallet: number, invested: number) =>
   [
     {
       key: "total",
       label: "Total",
-      value: wallet + INVESTED,
+      value: wallet + invested,
       note: "Wallet + all active plans",
     },
     {
       key: "invested",
       label: "Invested",
-      value: INVESTED,
-      note: "Across 3 active plans",
+      value: invested,
+      note: invested > 0 ? "Across your active plans" : "No active plans yet",
     },
     { key: "wallet", label: "Wallet", value: wallet, note: "Available to invest now" },
   ] as const;
 
 type LensKey = ReturnType<typeof lenses>[number]["key"];
+
+function mapHolding(h: LiveHolding) {
+  const daysLeft = h.maturityDate
+    ? Math.max(
+        0,
+        Math.ceil((new Date(h.maturityDate).getTime() - Date.now()) / (24 * 60 * 60 * 1000)),
+      )
+    : 0;
+  const date = h.maturityDate
+    ? new Date(h.maturityDate).toLocaleDateString("en-NG", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : "—";
+  return {
+    id: h.id,
+    name: h.name,
+    rate: `${h.ratePct}% p.a.`,
+    amount: h.amount,
+    date,
+    daysLeft,
+    totalDays: Math.max(daysLeft, 1),
+    expectedPayout: h.amount,
+  };
+}
+
+function mapNextMaturity(nm: LiveNextMaturity) {
+  if (!nm) {
+    return {
+      id: "",
+      name: "No upcoming maturity",
+      tenor: "",
+      rate: "",
+      date: "—",
+      daysLeft: 0,
+      totalDays: 1,
+      amount: 0,
+      expectedPayout: 0,
+    };
+  }
+  const date = new Date(nm.date).toLocaleDateString("en-NG", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+  return {
+    id: nm.id,
+    name: nm.name,
+    tenor: "",
+    rate: "",
+    date,
+    daysLeft: nm.daysLeft,
+    totalDays: Math.max(nm.daysLeft, 1),
+    amount: nm.amount,
+    expectedPayout: nm.amount,
+  };
+}
 
 function WeekStrip() {
   const max = Math.max(...WEEK_SERIES);
@@ -103,6 +164,9 @@ function WeekStrip() {
 
 function HomeV2Screen() {
   const isNewUser = useIsNewUser();
+  useEffect(() => {
+    void hydrateLiveBalances();
+  }, []);
 
   return (
     <AppShell title="Home" navVariant="elevated">
@@ -122,7 +186,13 @@ function HomeV2Screen() {
 
 function MobileHome() {
   const WALLET = useWalletBalance();
-  const LENSES = lenses(WALLET);
+  const live = useLiveBalances();
+  const INVESTED = live.invested;
+  const HOLDINGS = useMemo(() => live.holdings.map(mapHolding), [live.holdings]);
+  const NEXT_MATURITY = useMemo(() => mapNextMaturity(live.nextMaturity), [live.nextMaturity]);
+  const firstName = live.greetingName || displayName().split(" ")[0] || "";
+  const initials = displayInitials();
+  const LENSES = lenses(WALLET, INVESTED);
   const { hidden, toggle, mask } = useBalanceVisibility();
   const [lens, setLens] = useState<LensKey>("total");
   const active = LENSES.find((l) => l.key === lens) ?? LENSES[0];
@@ -145,7 +215,7 @@ function MobileHome() {
               <div className="min-w-0">
                 <Logo tone="light" className="font-display text-xl" />
                 <p className="mt-1 truncate text-[11px] text-primary-foreground/70">
-                  <GreetingText />, Adaeze
+                  <GreetingText />, {firstName}
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-2.5">
@@ -163,7 +233,7 @@ function MobileHome() {
                   aria-label="Profile"
                   className="grid size-10 place-items-center rounded-full bg-white/15 text-xs font-bold press"
                 >
-                  AO
+                  {initials}
                 </Link>
               </div>
             </header>
@@ -206,7 +276,7 @@ function MobileHome() {
                 </div>
                 <p className="mt-2 text-[11px] text-primary-foreground/70">{active.note}</p>
                 <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-[11px] font-bold text-gold">
-                  <ArrowUpRight className="size-3.5" /> +{naira(WEEK_EARNINGS)} interest this week
+                  <ArrowUpRight className="size-3.5" /> +{naira(live.interestThisWeek)} interest this week
                 </p>
 
                 {/* Desktop-only split of balances */}
@@ -258,7 +328,7 @@ function MobileHome() {
               {/* Maturity countdown */}
               <Link
                 to="/portfolio/$holdingId"
-                params={{ holdingId: "f1" }}
+                params={{ holdingId: NEXT_MATURITY.id || "none" }}
                 className="card-surface block p-4 press md:p-6 lg:col-span-2"
               >
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
@@ -308,7 +378,7 @@ function MobileHome() {
                   Interest this week
                 </p>
                 <p className="mt-1.5 font-display text-2xl font-extrabold text-num">
-                  {mask(WEEK_EARNINGS)}
+                  {mask(live.interestThisWeek)}
                 </p>
                 <div className="mt-4">
                   <WeekStrip />
@@ -335,9 +405,9 @@ function MobileHome() {
                   const rail = i === 0 ? "bg-gold" : i === 1 ? "bg-brand" : "bg-teal";
                   return (
                     <Link
-                      key={h.name}
+                      key={h.id || h.name}
                       to="/portfolio/$holdingId"
-                      params={{ holdingId: `f${i + 1}` }}
+                      params={{ holdingId: h.id || `plan-${i}` }}
                       style={{ ["--d" as string]: `${150 + i * 90}ms` }}
                       className="k-rise card-surface flex items-center gap-3 p-4 press md:block md:p-5 md:transition-all md:hover:-translate-y-0.5 md:hover:shadow-float"
                     >
@@ -518,9 +588,13 @@ function DesktopWeekChart({ hidden }: { hidden: boolean }) {
 
 function DesktopHome() {
   const WALLET = useWalletBalance();
-  const TOTAL = WALLET + INVESTED;
+  const live = useLiveBalances();
+  const INVESTED = live.invested;
+  const HOLDINGS = useMemo(() => live.holdings.map(mapHolding), [live.holdings]);
+  const NEXT_MATURITY = useMemo(() => mapNextMaturity(live.nextMaturity), [live.nextMaturity]);
+  const TOTAL = WALLET + INVESTED || 1;
   const { hidden, toggle, mask } = useBalanceVisibility();
-  const investedPct = Math.round((INVESTED / TOTAL) * 100);
+  const investedPct = TOTAL > 0 ? Math.round((INVESTED / TOTAL) * 100) : 0;
 
   return (
     <div className="hidden pb-4 md:block">
@@ -559,7 +633,7 @@ function DesktopHome() {
                 </div>
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1.5 text-[11px] font-bold text-gold">
-                    <ArrowUpRight className="size-3.5" /> +{naira(WEEK_EARNINGS)} this week
+                    <ArrowUpRight className="size-3.5" /> +{naira(live.interestThisWeek)} this week
                   </span>
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-primary-foreground/75">
                     +{naira(MONTH_CHANGE)} ({MONTH_CHANGE_PCT}%) this month
@@ -618,7 +692,7 @@ function DesktopHome() {
                 Interest this week
               </p>
               <p className="mt-1.5 font-display text-2xl font-extrabold text-num">
-                {mask(WEEK_EARNINGS)}
+                {mask(live.interestThisWeek)}
               </p>
             </div>
             <Link
@@ -688,7 +762,7 @@ function DesktopHome() {
           </section>
         <Link
           to="/portfolio/$holdingId"
-          params={{ holdingId: "f1" }}
+          params={{ holdingId: NEXT_MATURITY.id || "none" }}
           className="card-surface block p-6 press hover:-translate-y-0.5 hover:shadow-float"
         >
           <div className="flex items-start justify-between gap-5">
@@ -758,7 +832,7 @@ function DesktopHome() {
                 <li key={h.name} className="border-b border-border last:border-0">
                   <Link
                     to="/portfolio/$holdingId"
-                    params={{ holdingId: `f${i + 1}` }}
+                    params={{ holdingId: h.id || `plan-${i}` }}
                     className="grid grid-cols-[minmax(0,1fr)_7rem_9rem_8rem] items-center gap-4 px-6 py-4 press hover:bg-secondary/50"
                   >
                     <div className="flex min-w-0 items-center gap-3">

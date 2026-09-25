@@ -12,9 +12,15 @@ import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
 import { themeBootstrapScript } from "@/lib/theme";
+import { authGateBeforeLoad } from "@/lib/auth-guard";
+import { fetchKyc, isAuthenticated, restoreSession, tierNumber } from "@/lib/api";
+import { hydrateLiveBalances } from "@/lib/live-balances";
+import { setBvnPendingReview, setKycTier } from "@/lib/kyc-state";
+import { refreshWalletFromApi } from "@/lib/wallet-balance";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
+  const homeTo = isAuthenticated() ? "/" : "/welcome";
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
@@ -25,10 +31,10 @@ function NotFoundComponent() {
         </p>
         <div className="mt-6">
           <Link
-            to="/"
+            to={homeTo}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Go home
+            {isAuthenticated() ? "Go home" : "Go to welcome"}
           </Link>
         </div>
       </div>
@@ -42,6 +48,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
+
+  const homeHref = isAuthenticated() ? "/" : "/welcome";
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -63,10 +71,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             Try again
           </button>
           <a
-            href="/"
+            href={homeHref}
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Go home
+            {isAuthenticated() ? "Go home" : "Go to welcome"}
           </a>
         </div>
       </div>
@@ -75,6 +83,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  beforeLoad: async ({ location }) => {
+    await authGateBeforeLoad(location.pathname);
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -128,6 +139,27 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    void import("@/lib/invest-data").then((m) => m.hydrateInvestRatesFromApi());
+    void import("@/lib/explore-data").then((m) => m.hydrateExploreFromApi());
+    void (async () => {
+      const ok = await restoreSession();
+      if (!ok && !isAuthenticated()) return;
+      void refreshWalletFromApi();
+      void hydrateLiveBalances();
+      void fetchKyc()
+        .then((kyc) => {
+          setKycTier(tierNumber(kyc.tier));
+          const pending =
+            tierNumber(kyc.tier) < 1 &&
+            (kyc.status === "PENDING_REVIEW" || kyc.status === "IN_PROGRESS") &&
+            Boolean(kyc.profile?.bvn);
+          setBvnPendingReview(pending);
+        })
+        .catch(() => undefined);
+    })();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

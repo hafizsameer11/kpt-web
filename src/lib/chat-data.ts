@@ -28,12 +28,27 @@ export type StatusTone = "processing" | "successful" | "declined" | "pending";
 
 export type ChatBlock =
   | { kind: "text"; text: string }
-  | { kind: "balance" }
+  | {
+      kind: "balance";
+      wallet?: number;
+      invested?: number;
+      total?: number;
+      holdings?: number;
+    }
   | { kind: "chips"; label?: string; options: { label: string; send: string }[] }
   | { kind: "products"; intro?: string; amount?: number; products: ChatProduct[] }
   | { kind: "explain"; product: ChatProduct }
   | { kind: "handoff"; product: ChatProduct }
-  | { kind: "maturity" }
+  | { kind: "link"; label: string; to: string }
+  | {
+      kind: "maturity";
+      name?: string;
+      date?: string;
+      amount?: number;
+      rate?: string;
+      daysLeft?: number;
+      expectedPayout?: number;
+    }
   | { kind: "status" }
   | { kind: "funding" }
   | { kind: "unsupported" };
@@ -321,6 +336,7 @@ export function assistantReply(raw: string, amountInFlight?: number): ChatMessag
   };
 }
 
+/** Live statuses hydrate elsewhere; keep empty so chat never invents demo txns. */
 export const CHAT_STATUSES: {
   label: string;
   tone: StatusTone;
@@ -328,43 +344,100 @@ export const CHAT_STATUSES: {
   amount: number;
   time: string;
   to: string;
-}[] = [
-  {
-    label: "Withdrawal to GTBank ••4521",
-    tone: "processing",
-    detail: "Sent for payout — usually settles same day.",
-    amount: 50_000,
-    time: "Today, 10:12",
-    to: "/withdraw/tracker",
-  },
-  {
-    label: "Deposit — bank transfer",
-    tone: "successful",
-    detail: "Credited to your wallet.",
-    amount: 200_000,
-    time: "Today, 09:14",
-    to: "/portfolio/transactions",
-  },
-  {
-    label: "Card payment",
-    tone: "declined",
-    detail: "Your bank declined the payment. Nothing was charged.",
-    amount: 30_000,
-    time: "26 Aug",
-    to: "/wallet/failed",
-  },
-  {
-    label: "Explore subscription — 364-Day T-Bill",
-    tone: "pending",
-    detail: "Awaiting allocation at the next auction.",
-    amount: 500_000,
-    time: "24 Aug",
-    to: "/portfolio",
-  },
-];
+}[] = [];
 
 export const FUNDING_ACCOUNT = {
-  name: "Kipit / Adaeze Okafor",
-  number: "9902 4471 08",
-  bank: "Providus Bank",
+  name: "Kipit virtual account",
+  number: "",
+  bank: "",
 };
+
+/** Map /v1/chat/message blocks into renderable ChatBlocks. */
+export function mapApiChatBlocks(raw: unknown): ChatBlock[] {
+  if (!Array.isArray(raw)) return [];
+  const out: ChatBlock[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const b = item as Record<string, unknown>;
+    const kind = String(b.kind || "");
+    if (kind === "balance") {
+      out.push({
+        kind: "balance",
+        wallet: typeof b.wallet === "number" ? b.wallet : undefined,
+        invested: typeof b.invested === "number" ? b.invested : undefined,
+        total: typeof b.total === "number" ? b.total : undefined,
+      });
+      continue;
+    }
+    if (kind === "maturity") {
+      out.push({
+        kind: "maturity",
+        name: typeof b.name === "string" ? b.name : undefined,
+        date: typeof b.date === "string" ? b.date : undefined,
+        amount: typeof b.amount === "number" ? b.amount : undefined,
+        rate: typeof b.rate === "string" ? b.rate : undefined,
+        daysLeft: typeof b.daysLeft === "number" ? b.daysLeft : undefined,
+        expectedPayout: typeof b.expectedPayout === "number" ? b.expectedPayout : undefined,
+      });
+      continue;
+    }
+    if (kind === "funding") {
+      out.push({ kind: "funding" });
+      continue;
+    }
+    if (kind === "handoff" && typeof b.to === "string") {
+      out.push({
+        kind: "link",
+        label: typeof b.label === "string" ? b.label : "Continue",
+        to: b.to,
+      });
+      continue;
+    }
+    if (kind === "chips" && Array.isArray(b.options)) {
+      const options = b.options
+        .map((o) => {
+          if (typeof o === "string") return { label: o, send: o };
+          if (o && typeof o === "object") {
+            const row = o as Record<string, unknown>;
+            const label = String(row.label ?? row.send ?? "");
+            if (!label) return null;
+            return { label, send: String(row.send ?? label) };
+          }
+          return null;
+        })
+        .filter((o): o is { label: string; send: string } => Boolean(o));
+      if (options.length) out.push({ kind: "chips", options });
+      continue;
+    }
+    if (kind === "products" && Array.isArray(b.products)) {
+      const products: ChatProduct[] = b.products
+        .map((p, index) => {
+          if (!p || typeof p !== "object") return null;
+          const row = p as Record<string, unknown>;
+          const name = String(row.name ?? "");
+          if (!name) return null;
+          const rate = String(row.rate ?? "—");
+          return {
+            id: String(row.id ?? `api-${index}`),
+            name,
+            rate,
+            tenor: String(row.tenor ?? "—"),
+            minimum: typeof row.minimum === "number" ? row.minimum : 0,
+            ratePct: Number(String(rate).match(/[\d.]+/)?.[0] ?? 0) || 0,
+            to: String(row.to ?? "/invest"),
+            blurb: String(row.blurb ?? `${name} · ${rate}`),
+          };
+        })
+        .filter((p): p is ChatProduct => Boolean(p));
+      if (products.length) {
+        out.push({
+          kind: "products",
+          intro: typeof b.intro === "string" ? b.intro : undefined,
+          amount: typeof b.amount === "number" ? b.amount : undefined,
+          products,
+        });
+      }
+    }
+  }
+  return out;
+}

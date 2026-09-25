@@ -13,8 +13,11 @@ import { useEffect, useState } from "react";
 export type KycTier = 0 | 1 | 2;
 
 const KEY = "kipit.kyc.tier";
+const PENDING_KEY = "kipit.kyc.bvnPending";
 const listeners = new Set<(t: KycTier) => void>();
+const pendingListeners = new Set<(p: boolean) => void>();
 let current: KycTier | null = null;
+let bvnPending: boolean | null = null;
 
 function read(): KycTier {
   if (current !== null) return current;
@@ -24,6 +27,13 @@ function read(): KycTier {
   return current;
 }
 
+function readPending(): boolean {
+  if (bvnPending !== null) return bvnPending;
+  if (typeof window === "undefined") return false;
+  bvnPending = window.localStorage.getItem(PENDING_KEY) === "1";
+  return bvnPending;
+}
+
 export function getKycTier(): KycTier {
   return read();
 }
@@ -31,7 +41,20 @@ export function getKycTier(): KycTier {
 export function setKycTier(tier: KycTier) {
   current = tier;
   if (typeof window !== "undefined") window.localStorage.setItem(KEY, String(tier));
+  if (tier >= 1) setBvnPendingReview(false);
   listeners.forEach((l) => l(tier));
+}
+
+export function isBvnPendingReview() {
+  return readPending() && read() < 1;
+}
+
+export function setBvnPendingReview(pending: boolean) {
+  bvnPending = pending;
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(PENDING_KEY, pending ? "1" : "0");
+  }
+  pendingListeners.forEach((l) => l(pending));
 }
 
 /** Reactive tier. Returns 0 during SSR/first paint, then hydrates from storage. */
@@ -46,6 +69,22 @@ export function useKycTier(): KycTier {
     };
   }, []);
   return tier;
+}
+
+export function useBvnPendingReview(): boolean {
+  const [pending, setPending] = useState(false);
+  useEffect(() => {
+    setPending(isBvnPendingReview());
+    const l = (p: boolean) => setPending(p && read() < 1);
+    pendingListeners.add(l);
+    const tierL = () => setPending(isBvnPendingReview());
+    listeners.add(tierL);
+    return () => {
+      pendingListeners.delete(l);
+      listeners.delete(tierL);
+    };
+  }, []);
+  return pending;
 }
 
 /** True once the component has hydrated — avoids flashing a gate during SSR. */
@@ -88,4 +127,18 @@ export const GATE_COPY = {
     cta: "Complete Tier 2",
     to: "/verification/tier2" as const,
   },
+};
+
+export const PENDING_COPY = {
+  badge: "Under review",
+  title: "Your BVN is being reviewed",
+  body:
+    "We've received your BVN and compliance is checking it. Funding unlocks as soon as Tier 1 is approved — usually within 24 hours.",
+  unlocks: [
+    "BVN submitted",
+    "Compliance review in progress",
+    "You'll get a notification when approved",
+  ],
+  cta: "View review status",
+  to: "/verification/pending" as const,
 };

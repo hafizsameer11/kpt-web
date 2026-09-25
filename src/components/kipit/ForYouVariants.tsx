@@ -1,8 +1,22 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
+import { useEffect, useSyncExternalStore } from "react";
 import { articleArt } from "@/components/kipit/art";
-import { FEED } from "@/lib/home-data";
+import { FEED, hydrateHomeFeedFromApi, subscribeFeed } from "@/lib/home-data";
 import { LEARN_ARTICLES } from "@/lib/learn-data";
+
+function useHomeFeed() {
+  const tick = useSyncExternalStore(
+    subscribeFeed,
+    () => `${FEED.length}:${FEED.map((f) => f.id).join(",")}`,
+    () => "0",
+  );
+  useEffect(() => {
+    void hydrateHomeFeedFromApi();
+  }, []);
+  void tick;
+  return FEED;
+}
 
 function SectionHead({ label = "For you" }: { label?: string }) {
   return (
@@ -24,11 +38,13 @@ function SectionHead({ label = "For you" }: { label?: string }) {
  * bottom. Reads like a premium magazine rack.
  */
 export function ForYouCovers() {
+  const feed = useHomeFeed();
+  if (!feed.length) return null;
   return (
     <section>
       <SectionHead />
       <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 no-scrollbar md:mt-4 md:grid md:grid-cols-3 md:overflow-visible md:gap-4">
-        {FEED.map((item, i) => (
+        {feed.map((item, i) => (
           <Link
             key={item.id}
             to="/learn/$articleId"
@@ -74,11 +90,13 @@ export function ForYouCovers() {
  * stacks vertically on mobile instead of scrolling sideways.
  */
 export function ForYouList() {
+  const feed = useHomeFeed();
+  if (!feed.length) return null;
   return (
     <section>
       <SectionHead />
       <div className="mt-3 grid gap-2.5 md:mt-4 md:grid-cols-3 md:gap-4">
-        {FEED.map((item, i) => (
+        {feed.map((item, i) => (
           <Link
             key={item.id}
             to="/learn/$articleId"
@@ -123,7 +141,9 @@ export function ForYouList() {
  * Desktop: four image cards, each with a cover image like the lead card.
  */
 export function ForYouFeature({ className = "" }: { className?: string }) {
-  const [lead, ...rest] = FEED;
+  const feed = useHomeFeed();
+  if (!feed.length) return null;
+  const [lead, ...rest] = feed;
   return (
     <section className={className}>
       <SectionHead />
@@ -252,7 +272,9 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
  * Mobile scrolls horizontally with mixed widths; desktop locks into a bento.
  */
 export function ForYouBento({ className = "" }: { className?: string }) {
-  const cards = FEED.slice(0, 2);
+  const feed = useHomeFeed();
+  const cards = feed.slice(0, 2);
+  if (!cards.length) return null;
   return (
     <section className={className}>
       <SectionHead />

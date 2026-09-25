@@ -11,7 +11,7 @@ export const Route = createFileRoute("/settings_/statements")({
       {
         name: "description",
         content:
-          "Generate an account, transaction or portfolio statement for any date range and download it as a PDF.",
+          "Generate an account, transaction or portfolio statement summary for any date range — view, download, or print from your browser.",
       },
       { property: "og:title", content: "Statements | Kipit Settings" },
       { property: "og:description", content: "Generate Kipit statements for any period." },
@@ -65,7 +65,7 @@ function StatementsScreen() {
     <SettingsPage
       title="Statements"
       eyebrow="MOB-143"
-      subtitle="Official statements you can share with a bank, employer or adviser."
+      subtitle="Printable summaries you can share with a bank, employer or adviser."
     >
       {/* Mobile — unchanged */}
       <div className="space-y-4 md:hidden">
@@ -241,7 +241,7 @@ function StatementsScreen() {
                 </span>
                 <div className="min-w-0">
                   <p className="truncate text-[13.5px] font-extrabold">{kind}</p>
-                  <p className="text-[11.5px] text-muted-foreground">PDF · stamped</p>
+                  <p className="text-[11.5px] text-muted-foreground">Printable · stamped ref</p>
                 </div>
               </div>
               <dl className="divide-y divide-border/60 px-5 text-[12.5px]">

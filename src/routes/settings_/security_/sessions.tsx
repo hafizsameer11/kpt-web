@@ -1,8 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LogOut, Monitor, ShieldAlert, Smartphone } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
-import { SESSIONS } from "@/lib/settings-data";
+import {
+  fetchSessions,
+  logoutOtherSessions,
+  revokeSession,
+  type ApiSession,
+} from "@/lib/api";
 
 export const Route = createFileRoute("/settings_/security_/sessions")({
   head: () => ({
@@ -22,16 +27,93 @@ export const Route = createFileRoute("/settings_/security_/sessions")({
   component: SessionsScreen,
 });
 
+type UiSession = {
+  id: string;
+  device: string;
+  context: string;
+  lastActive: string;
+  current: boolean;
+};
+
+function formatRelative(iso: string) {
+  const then = new Date(iso).getTime();
+  const diffMs = Date.now() - then;
+  if (Number.isNaN(then)) return "Unknown";
+  if (diffMs < 60_000) return "Active now";
+  const mins = Math.floor(diffMs / 60_000);
+  if (mins < 60) return `${mins} min ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 48) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} day${days === 1 ? "" : "s"} ago`;
+}
+
+function mapSession(s: ApiSession, currentSessionId: string): UiSession {
+  const ua = s.userAgent ?? "";
+  const isMobile = /iPhone|Android|Mobile/i.test(ua);
+  const device =
+    s.deviceName?.trim() ||
+    (isMobile ? "Mobile · Kipit" : /Mac/i.test(ua) ? "Mac · Browser" : "Desktop · Browser");
+  const context = [s.ipAddress ?? "Unknown IP", ua ? ua.slice(0, 48) : "Web session"]
+    .filter(Boolean)
+    .join(" · ");
+  return {
+    id: s.id,
+    device,
+    context,
+    lastActive: formatRelative(s.lastActiveAt),
+    current: s.id === currentSessionId,
+  };
+}
+
 function SessionsScreen() {
-  const [sessions, setSessions] = useState(SESSIONS);
+  const [sessions, setSessions] = useState<UiSession[]>([]);
+  const [busy, setBusy] = useState(false);
   const others = sessions.filter((s) => !s.current).length;
+
+  async function reload() {
+    try {
+      const data = await fetchSessions();
+      setSessions(data.sessions.map((s) => mapSession(s, data.currentSessionId)));
+    } catch {
+      setSessions([]);
+    }
+  }
+
+  useEffect(() => {
+    void reload();
+  }, []);
+
+  async function handleRevoke(id: string) {
+    setBusy(true);
+    try {
+      await revokeSession(id);
+      await reload();
+    } catch {
+      /* keep list */
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleLogoutOthers() {
+    setBusy(true);
+    try {
+      const data = await logoutOtherSessions();
+      setSessions(data.sessions.map((s) => mapSession(s, data.currentSessionId)));
+    } catch {
+      /* keep list */
+    } finally {
+      setBusy(false);
+    }
+  }
 
   const list = (
     <ul className="card-surface divide-y divide-border/60 overflow-hidden">
       {sessions.map((s) => (
         <li key={s.id} className="flex items-center gap-3.5 px-4 py-4 md:px-5 md:py-5">
           <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25 md:size-11">
-            {s.device.includes("Mac") ? (
+            {s.device.includes("Mac") || s.device.includes("Desktop") ? (
               <Monitor className="size-[18px]" strokeWidth={2} />
             ) : (
               <Smartphone className="size-[18px]" strokeWidth={2} />
@@ -56,8 +138,9 @@ function SessionsScreen() {
           {!s.current ? (
             <button
               type="button"
-              onClick={() => setSessions((prev) => prev.filter((x) => x.id !== s.id))}
-              className="shrink-0 rounded-full border border-border px-3 py-1.5 text-[11.5px] font-bold text-foreground press hover:bg-secondary md:px-4 md:py-2 md:text-[12.5px]"
+              disabled={busy}
+              onClick={() => void handleRevoke(s.id)}
+              className="shrink-0 rounded-full border border-border px-3 py-1.5 text-[11.5px] font-bold text-foreground press hover:bg-secondary disabled:opacity-50 md:px-4 md:py-2 md:text-[12.5px]"
             >
               Log out
             </button>
@@ -80,8 +163,9 @@ function SessionsScreen() {
         {list}
         <button
           type="button"
-          onClick={() => setSessions((prev) => prev.filter((x) => x.current))}
-          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-destructive/30 bg-card px-5 py-3.5 text-[13.5px] font-extrabold text-destructive press"
+          disabled={busy || others === 0}
+          onClick={() => void handleLogoutOthers()}
+          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-destructive/30 bg-card px-5 py-3.5 text-[13.5px] font-extrabold text-destructive press disabled:opacity-50"
         >
           <LogOut className="size-4" strokeWidth={2.6} /> Log out other sessions
         </button>
@@ -113,8 +197,8 @@ function SessionsScreen() {
               </p>
               <button
                 type="button"
-                disabled={others === 0}
-                onClick={() => setSessions((prev) => prev.filter((x) => x.current))}
+                disabled={busy || others === 0}
+                onClick={() => void handleLogoutOthers()}
                 className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-destructive/30 bg-card px-5 py-3 text-[13px] font-extrabold text-destructive press disabled:opacity-50"
               >
                 <LogOut className="size-4" strokeWidth={2.6} /> Log out other sessions
@@ -125,7 +209,7 @@ function SessionsScreen() {
               <p className="text-[13px] font-extrabold">Next steps</p>
               <ul className="mt-2 space-y-2 text-[12.5px] leading-relaxed text-muted-foreground">
                 <li>Change your password if a device is unfamiliar.</li>
-                <li>Turn on biometric login for faster, safer access.</li>
+                <li>Keep your transaction PIN private and never share it.</li>
                 <li>Keep your transaction PIN private — Kipit never asks for it.</li>
               </ul>
             </section>
@@ -135,4 +219,3 @@ function SessionsScreen() {
     </SettingsPage>
   );
 }
-

@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Lock, Mail, Phone, ShieldCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Lock, Phone, ShieldCheck } from "lucide-react";
 import { Field, FieldCard, SettingsPage } from "@/components/kipit/SettingsPage";
-import { PROFILE } from "@/lib/settings-data";
+import { ApiError, fetchProfile, patchProfile } from "@/lib/api";
 
 export const Route = createFileRoute("/settings_/profile")({
   head: () => ({
@@ -22,7 +23,61 @@ export const Route = createFileRoute("/settings_/profile")({
   component: ProfileScreen,
 });
 
+function formatDob(value: string | null) {
+  if (!value) return "—";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return value;
+  return d.toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" });
+}
+
 function ProfileScreen() {
+  const [profile, setProfile] = useState({
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    dob: "",
+    gender: "",
+    email: "",
+    phone: "",
+    tier: "Unverified",
+  });
+  const [phoneEdit, setPhoneEdit] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    void fetchProfile()
+      .then((p) => {
+        const tier =
+          p.kycTier === "TIER_2" ? "Tier 2" : p.kycTier === "TIER_1" ? "Tier 1" : "Unverified";
+        setProfile({
+          firstName: p.firstName || "",
+          middleName: p.middleName || "",
+          lastName: p.surname || "",
+          dob: formatDob(p.dateOfBirth),
+          gender: p.gender || "—",
+          email: p.email || "",
+          phone: p.phone || "—",
+          tier,
+        });
+        setPhoneEdit(p.phone || "");
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const savePhone = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await patchProfile({ phone: phoneEdit.trim() });
+      setProfile((p) => ({ ...p, phone: phoneEdit.trim() || "—" }));
+      toast.success("Phone updated");
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Could not update phone.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <SettingsPage
       title="Profile"
@@ -31,17 +86,17 @@ function ProfileScreen() {
     >
       <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_300px] lg:gap-5">
         <FieldCard label="Identity">
-          <Field label="First name" value={PROFILE.firstName} locked />
-          <Field label="Middle name" value={PROFILE.middleName} />
-          <Field label="Last name" value={PROFILE.lastName} locked />
-          <Field label="Date of birth" value={PROFILE.dob} locked />
-          <Field label="Gender" value={PROFILE.gender} locked />
+          <Field label="First name" value={profile.firstName || "—"} locked />
+          <Field label="Middle name" value={profile.middleName || "—"} />
+          <Field label="Last name" value={profile.lastName || "—"} locked />
+          <Field label="Date of birth" value={profile.dob || "—"} locked />
+          <Field label="Gender" value={profile.gender || "—"} locked />
         </FieldCard>
 
         <div className="space-y-4">
           <FieldCard label="Contact">
-            <Field label="Email address" value={PROFILE.email} hint="Used for statements and alerts" />
-            <Field label="Phone number" value={PROFILE.phone} hint="Used for OTP verification" />
+            <Field label="Email address" value={profile.email || "—"} hint="Used for statements and alerts" />
+            <Field label="Phone number" value={profile.phone || "—"} hint="Used for OTP verification" />
           </FieldCard>
 
           <section className="card-surface flex items-start gap-3 p-4">
@@ -54,82 +109,42 @@ function ProfileScreen() {
             </p>
           </section>
 
-          <div className="flex flex-col gap-2.5 sm:flex-row">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-end">
+            <label className="min-w-0 flex-1">
+              <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                Phone number
+              </span>
+              <input
+                value={phoneEdit}
+                onChange={(e) => setPhoneEdit(e.target.value)}
+                className="mt-1.5 w-full rounded-xl border border-border bg-secondary px-3.5 py-2.5 text-[13.5px] font-semibold outline-none focus:border-brand"
+                placeholder="080…"
+              />
+            </label>
             <button
               type="button"
-              onClick={() =>
-                toast.info("Verification code sent", {
-                  description: "Enter the code we sent to your current email to change it.",
-                })
-              }
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press sm:w-auto sm:px-8"
+              disabled={busy}
+              onClick={() => void savePhone()}
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press disabled:opacity-40"
             >
-              <Mail className="size-4" strokeWidth={2.6} /> Change email
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                toast.info("Verification code sent", {
-                  description: "Enter the code we sent by SMS to change your phone number.",
-                })
-              }
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press sm:w-auto sm:px-8"
-            >
-              <Phone className="size-4" strokeWidth={2.4} /> Change phone
+              <Phone className="size-4" strokeWidth={2.4} /> {busy ? "Saving…" : "Save phone"}
             </button>
           </div>
-
-          <Link
-            to="/settings/security"
-            className="inline-flex items-center gap-2 px-1 text-[12.5px] font-bold text-brand"
-          >
-            <ShieldCheck className="size-4" /> Manage security settings
-          </Link>
         </div>
 
-        {/* Desktop-only status rail */}
-        <aside className="hidden lg:block">
-          <div className="sticky top-6 space-y-4">
-            <section className="card-surface overflow-hidden">
-              <div className="bg-brand-gradient px-5 py-4">
-                <p className="text-[10.5px] font-black uppercase tracking-[0.16em] text-gold">
-                  Account status
-                </p>
-                <p className="mt-1 text-[15px] font-extrabold text-primary-foreground">
-                  Identity verified
-                </p>
-              </div>
-              <ul className="divide-y divide-border">
-                {[
-                  { label: "Legal name", state: "Verified" },
-                  { label: "Date of birth", state: "Verified" },
-                  { label: "Email address", state: "Confirmed" },
-                  { label: "Phone number", state: "Confirmed" },
-                ].map((row) => (
-                  <li key={row.label} className="flex items-center justify-between px-5 py-3">
-                    <span className="text-[12.5px] font-semibold text-foreground">{row.label}</span>
-                    <span className="inline-flex items-center gap-1 text-[11.5px] font-bold text-brand">
-                      <ShieldCheck className="size-3.5" strokeWidth={2.6} /> {row.state}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-
-            <section className="card-surface p-5">
-              <p className="text-[12.5px] font-extrabold text-foreground">Need a correction?</p>
-              <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
-                Locked fields come from your KYC records. Raise a ticket with a valid
-                government-issued ID and support will update them for you.
-              </p>
-              <Link
-                to="/settings/help/ticket"
-                className="mt-3 inline-flex items-center gap-2 text-[12.5px] font-bold text-brand"
-              >
-                Contact support
-              </Link>
-            </section>
-          </div>
+        <aside className="card-surface space-y-4 p-5 lg:sticky lg:top-6">
+          <p className="flex items-center gap-2 text-[13px] font-extrabold">
+            <ShieldCheck className="size-4 text-brand" /> Verification
+          </p>
+          <p className="text-[12.5px] leading-relaxed text-muted-foreground">
+            Current status: <span className="font-bold text-foreground">{profile.tier}</span>
+          </p>
+          <Link
+            to="/verification"
+            className="inline-flex w-full items-center justify-center rounded-xl border border-border px-4 py-2.5 text-[12.5px] font-bold press hover:bg-secondary"
+          >
+            Review verification
+          </Link>
         </aside>
       </div>
     </SettingsPage>

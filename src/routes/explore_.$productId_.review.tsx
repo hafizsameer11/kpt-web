@@ -5,7 +5,6 @@ import {
   Building2,
   CreditCard,
   Delete,
-  Fingerprint,
   Lock,
   Plus,
   Wallet,
@@ -27,9 +26,12 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { naira, WALLET } from "@/lib/home-data";
-import { getExploreProduct } from "@/lib/explore-data";
+import { ApiError, subscribeExploreProduct } from "@/lib/api";
+import { naira } from "@/lib/home-data";
+import { ensureExploreHydrated, getExploreProduct } from "@/lib/explore-data";
 import { productTermsVersion, recordTermsAcceptance } from "@/lib/terms-acceptance";
+import { refreshWalletFromApi, useWalletBalance } from "@/lib/wallet-balance";
+import { hydrateLiveBalances } from "@/lib/live-balances";
 
 export const Route = createFileRoute("/explore_/$productId_/review")({
   head: () => ({
@@ -44,7 +46,7 @@ export const Route = createFileRoute("/explore_/$productId_/review")({
       {
         property: "og:description",
         content:
-          "Confirm your subscription details and authorize securely with PIN or biometrics.",
+          "Confirm your subscription details and authorize with your transaction PIN.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -57,7 +59,8 @@ export const Route = createFileRoute("/explore_/$productId_/review")({
         ? (search['source'] as "add" | "card")
         : ("wallet" as const),
   }),
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
+    await ensureExploreHydrated();
     const product = getExploreProduct(params.productId);
     if (!product) throw notFound();
     return { product };
@@ -68,7 +71,6 @@ export const Route = createFileRoute("/explore_/$productId_/review")({
 const DAY_MS = 86_400_000;
 const PIN_LENGTH = 4;
 const MAX_ATTEMPTS = 3;
-const CORRECT_PIN = "1234";
 
 const SOURCE_META = {
   wallet: { label: "Kipit Wallet", icon: Wallet },
@@ -81,6 +83,7 @@ function SubscriptionReviewScreen() {
   const { amount, source } = Route.useSearch();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const WALLET = useWalletBalance();
 
   const [open, setOpen] = useState(false);
   const [pin, setPin] = useState("");
@@ -89,6 +92,12 @@ function SubscriptionReviewScreen() {
   const [busy, setBusy] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const termsVersion = productTermsVersion(product.id);
+  const [orderKey] = useState(
+    () =>
+      (typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `exp-${product.id}-${amount}-${Date.now()}`),
+  );
 
   const ratePct = Number(product.rate.match(/[\d.]+/)?.[0]) || 0;
   const days = Number(product.tenor.match(/\d+/)?.[0]) || 365;
@@ -103,8 +112,50 @@ function SubscriptionReviewScreen() {
   const valid =
     amount >= product.minimum &&
     product.availability !== "closed" &&
-    acceptedTerms;
+    acceptedTerms &&
+    amount <= WALLET;
   const SourceIcon = SOURCE_META[source].icon;
+
+  async function submitPin(next: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      const placed = await subscribeExploreProduct({
+        productId: product.id,
+        amount,
+        pin: next,
+        idempotencyKey: orderKey,
+      });
+      recordTermsAcceptance({
+        productId: product.id,
+        productName: product.name,
+        version: termsVersion,
+        amount,
+      });
+      await refreshWalletFromApi().catch(() => undefined);
+      await hydrateLiveBalances().catch(() => undefined);
+      setOpen(false);
+      setPin("");
+      void navigate({
+        to: "/explore/$productId/processing",
+        params: { productId: product.id },
+        search: { amount, source, placementId: placed.id },
+      });
+    } catch (err) {
+      const n = attempts + 1;
+      setAttempts(n);
+      setPin("");
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : n >= MAX_ATTEMPTS
+            ? "Too many attempts. Try again later or reset your PIN."
+            : `Incorrect PIN. ${MAX_ATTEMPTS - n} attempt${MAX_ATTEMPTS - n === 1 ? "" : "s"} left.`,
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
 
   function press(key: string) {
     if (locked || busy) return;
@@ -116,47 +167,10 @@ function SubscriptionReviewScreen() {
     setPin((p) => {
       const next = (p + key).slice(0, PIN_LENGTH);
       if (next.length === PIN_LENGTH) {
-        setBusy(true);
-        window.setTimeout(() => {
-          setBusy(false);
-          if (next === CORRECT_PIN) {
-            setOpen(false);
-            setPin("");
-            recordTermsAcceptance({
-              productId: product.id,
-              productName: product.name,
-              version: termsVersion,
-              amount,
-            });
-            void navigate({
-              to: "/explore/$productId/processing",
-              params: { productId: product.id },
-              search: { amount, source },
-            });
-          } else {
-            const n = attempts + 1;
-            setAttempts(n);
-            setPin("");
-            setError(
-              n >= MAX_ATTEMPTS
-                ? "Too many attempts. Try again in 30 minutes or reset your PIN."
-                : `Incorrect PIN. ${MAX_ATTEMPTS - n} attempt${MAX_ATTEMPTS - n === 1 ? "" : "s"} left.`,
-            );
-          }
-        }, 650);
+        void submitPin(next);
       }
       return next;
     });
-  }
-
-  function biometrics() {
-    if (locked || busy) return;
-    setBusy(true);
-    setError(null);
-    window.setTimeout(() => {
-      setBusy(false);
-      setError("Biometric authentication failed. Enter your PIN instead.");
-    }, 900);
   }
 
   const authPad = (
@@ -192,23 +206,21 @@ function SubscriptionReviewScreen() {
 
       <div className="mx-auto mt-5 grid w-full max-w-sm auto-rows-max grid-cols-3 gap-x-3 gap-y-2.5">
         {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((k) => (
-          <Key key={k} onClick={() => press(k)} disabled={locked}>
+          <Key key={k} onClick={() => press(k)} disabled={locked || busy}>
             {k}
           </Key>
         ))}
-        <Key onClick={biometrics} aria-label="Use biometrics" disabled={locked}>
-          <Fingerprint className="mx-auto size-5 text-gold" />
-        </Key>
-        <Key onClick={() => press("0")} disabled={locked}>
+        <span className="grid place-items-center" aria-hidden />
+        <Key onClick={() => press("0")} disabled={locked || busy}>
           0
         </Key>
-        <Key onClick={() => press("del")} aria-label="Delete" disabled={locked}>
+        <Key onClick={() => press("del")} aria-label="Delete" disabled={locked || busy}>
           <Delete className="mx-auto size-5" />
         </Key>
       </div>
 
       <p className="mt-4 text-center text-[11px] text-muted-foreground">
-        Use PIN <span className="font-bold text-foreground">1234</span> in this prototype.
+        Enter your 4-digit transaction PIN to confirm.
       </p>
     </>
   );
@@ -367,7 +379,7 @@ function SubscriptionReviewScreen() {
                   <ArrowRight className="size-4" strokeWidth={2.6} />
                 </button>
                 <p className="mt-2.5 flex items-center justify-center gap-1.5 whitespace-nowrap text-[11.5px] text-muted-foreground md:justify-start">
-                  <Lock className="size-3.5" /> Authorize with your PIN or biometrics.
+                  <Lock className="size-3.5" /> Authorize with your transaction PIN.
                 </p>
               </div>
             </aside>

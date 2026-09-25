@@ -13,8 +13,9 @@ import { useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { AmountCounter, Rise } from "@/components/kipit/motion";
-import { naira, WALLET } from "@/lib/home-data";
+import { naira } from "@/lib/home-data";
 import { TENOR_BANDS } from "@/lib/invest-data";
+import { useWalletBalance } from "@/lib/wallet-balance";
 
 export const Route = createFileRoute("/fixed-plans_/create/options")({
   validateSearch: z.object({
@@ -71,6 +72,7 @@ const FREQUENCIES = ["Weekly", "Monthly"] as const;
 
 function PlanOptionsScreen() {
   const { amount, days } = Route.useSearch();
+  const WALLET = useWalletBalance();
   const band = TENOR_BANDS.find(
     (b) => Number(b.days.replace(/\D/g, "")) === days,
   );
@@ -114,7 +116,10 @@ function PlanOptionsScreen() {
     name: planName.trim(),
     maturity,
     auto: autoInvest && autoAmount ? `${naira(Number(autoAmount))} ${frequency.toLowerCase()} from ${startDate}` : "",
+    autoAmount: autoInvest && autoAmount ? Number(String(autoAmount).replace(/\D/g, "")) || undefined : undefined,
     gift: forWhom === "gift" ? recipient.trim() : "",
+    giftPhone: forWhom === "gift" ? recipientContact.trim() : "",
+    giftMessage: forWhom === "gift" ? giftMessage.trim() : "",
   };
 
   return (
@@ -342,8 +347,8 @@ function PlanOptionsScreen() {
                   <input
                     value={recipientContact}
                     onChange={(e) => setRecipientContact(e.target.value)}
-                    placeholder="Recipient email or phone"
-                    aria-label="Recipient email or phone"
+                    placeholder="Recipient phone (e.g. 0803…)"
+                    aria-label="Recipient phone"
                     className="w-full rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
                   />
                   <textarea
@@ -357,7 +362,7 @@ function PlanOptionsScreen() {
                   />
                   {!giftValid && (recipient || recipientContact) && (
                     <p className="k-shake rounded-xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
-                      Add the recipient's name and email or phone to gift this plan.
+                      Add the recipient&apos;s name and phone number to gift this plan.
                     </p>
                   )}
                 </div>
@@ -706,8 +711,8 @@ function PlanOptionsScreen() {
                     <input
                       value={recipientContact}
                       onChange={(e) => setRecipientContact(e.target.value)}
-                      placeholder="Recipient email or phone"
-                      aria-label="Recipient email or phone"
+                      placeholder="Recipient phone (e.g. 0803…)"
+                      aria-label="Recipient phone"
                       className="w-full rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
                     />
                     <textarea
@@ -721,7 +726,7 @@ function PlanOptionsScreen() {
                     />
                     {!giftValid && (recipient || recipientContact) && (
                       <p className="k-shake rounded-xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
-                        Add the recipient's name and email or phone to gift this plan.
+                        Add the recipient&apos;s name and phone number to gift this plan.
                       </p>
                     )}
                   </div>
@@ -789,7 +794,10 @@ function PlanOptionsScreen() {
                 name: planName.trim(),
                 maturity,
                 auto: autoInvest && autoAmount ? `${naira(Number(autoAmount))} ${frequency.toLowerCase()} from ${startDate}` : "",
+                autoAmount: autoInvest && autoAmount ? Number(String(autoAmount).replace(/\D/g, "")) || undefined : undefined,
                 gift: forWhom === "gift" ? recipient.trim() : "",
+                giftPhone: forWhom === "gift" ? recipientContact.trim() : "",
+                giftMessage: forWhom === "gift" ? giftMessage.trim() : "",
               }}
               disabled={!giftValid}
               className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${

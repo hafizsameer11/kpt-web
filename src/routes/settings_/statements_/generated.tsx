@@ -3,7 +3,8 @@ import { toast } from "sonner";
 import { Download, Eye, FileText, Mail } from "lucide-react";
 import { z } from "zod";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
-import { PROFILE } from "@/lib/settings-data";
+import { downloadDocumentPdf, printDocumentPdf } from "@/lib/document-pdf";
+import { useDisplayProfile } from "@/lib/profile-live";
 
 export const Route = createFileRoute("/settings_/statements_/generated")({
   validateSearch: z.object({
@@ -37,7 +38,63 @@ function fmt(d: string) {
 
 function GeneratedStatement() {
   const { kind, start, end } = Route.useSearch();
+  const profile = useDisplayProfile();
   const reference = `KPT-STM-${start.replace(/-/g, "").slice(2)}`;
+  const holder = [profile.firstName, profile.lastName].filter(Boolean).join(" ") || "—";
+  const generated = new Date().toLocaleDateString("en-NG", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+  const doc = {
+    title: kind,
+    subtitle: `${fmt(start)} — ${fmt(end)}`,
+    rows: [
+      { label: "Account holder", value: holder },
+      { label: "Email", value: profile.email || "—" },
+      { label: "Reference", value: reference },
+      { label: "Generated", value: generated },
+    ],
+    body: "Kipit account statement generated from your live profile for the selected period. Print or save as PDF from your browser. A full server-side PDF archive is not available yet.",
+  };
+
+  function viewDoc() {
+    try {
+      printDocumentPdf(doc);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not open statement.");
+    }
+  }
+
+  function downloadDoc() {
+    try {
+      downloadDocumentPdf({
+        ...doc,
+        filename: `${kind.replace(/\s+/g, "-").toLowerCase()}-${start}-${end}.html`,
+      });
+      toast.success("Statement downloaded — open it and print to PDF if needed.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not download statement.");
+    }
+  }
+
+  function emailDoc() {
+    try {
+      downloadDocumentPdf({
+        ...doc,
+        filename: `${kind.replace(/\s+/g, "-").toLowerCase()}-${start}-${end}.html`,
+      });
+      const subject = encodeURIComponent(`${kind} · ${fmt(start)} – ${fmt(end)}`);
+      const body = encodeURIComponent(
+        `Please find my Kipit ${kind.toLowerCase()} (${reference}) attached after download.\n\nPeriod: ${fmt(start)} — ${fmt(end)}`,
+      );
+      const to = profile.email ? encodeURIComponent(profile.email) : "";
+      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not prepare email.");
+    }
+  }
 
   return (
     <SettingsPage
@@ -45,7 +102,7 @@ function GeneratedStatement() {
       eyebrow="MOB-144"
       backTo="/settings"
       backLabel="Settings"
-      subtitle="Your document has been generated and is available for the next 30 days."
+      subtitle="Your document is ready to view, download, or email from this device."
     >
       <div className="mx-auto max-w-lg md:hidden">
         <section className="card-surface overflow-hidden">
@@ -56,44 +113,36 @@ function GeneratedStatement() {
             <div className="min-w-0">
               <p className="truncate text-[14px] font-extrabold">{kind}</p>
               <p className="mt-0.5 text-[11.5px] text-muted-foreground">
-                {fmt(start)} — {fmt(end)} · PDF
+                {fmt(start)} — {fmt(end)} · HTML / print to PDF
               </p>
             </div>
           </div>
           <dl className="divide-y divide-border/60 px-4 text-[13px]">
-            <Row label="Account holder">
-              {PROFILE.firstName} {PROFILE.lastName}
-            </Row>
+            <Row label="Account holder">{holder}</Row>
             <Row label="Reference">{reference}</Row>
-            <Row label="Generated">
-              {new Date().toLocaleDateString("en-NG", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              })}
-            </Row>
-            <Row label="Pages">4</Row>
+            <Row label="Generated">{generated}</Row>
+            <Row label="Format">HTML</Row>
           </dl>
         </section>
 
         <div className="mt-4 grid gap-2.5 sm:grid-cols-3">
           <button
             type="button"
-            onClick={() => toast.info("Opening statement preview")}
+            onClick={viewDoc}
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 py-3.5 text-[13px] font-extrabold text-primary-foreground shadow-float press"
           >
             <Eye className="size-4" strokeWidth={2.6} /> View
           </button>
           <button
             type="button"
-            onClick={() => toast.success("Statement downloaded (PDF)")}
+            onClick={downloadDoc}
             className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-[13px] font-bold press"
           >
             <Download className="size-4" strokeWidth={2.4} /> Download
           </button>
           <button
             type="button"
-            onClick={() => toast.success("Statement emailed to you")}
+            onClick={emailDoc}
             className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-[13px] font-bold press"
           >
             <Mail className="size-4" strokeWidth={2.4} /> Email
@@ -101,19 +150,18 @@ function GeneratedStatement() {
         </div>
 
         <p className="mt-4 px-1 text-[11.5px] leading-relaxed text-muted-foreground">
-          A copy will be sent to {PROFILE.email} when you choose Email. Keep statements private —
-          they contain your account details.
+          View opens a printable document. Download saves it locally; Email opens your mail app with
+          {profile.email ? ` ${profile.email}` : " your address"} after download. Keep statements private.
         </p>
       </div>
 
-      {/* Desktop */}
       <div className="hidden md:block">
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
           <section className="card-surface overflow-hidden">
             <div className="flex items-center justify-between gap-3 border-b border-border/60 px-6 py-4">
               <p className="text-[13px] font-extrabold">Preview</p>
               <span className="rounded-full bg-secondary px-2.5 py-1 text-[10.5px] font-extrabold text-muted-foreground">
-                Page 1 of 4
+                Printable
               </span>
             </div>
             <div className="bg-secondary/40 p-6">
@@ -132,23 +180,13 @@ function GeneratedStatement() {
                     </p>
                   </div>
                 </div>
-                <p className="mt-4 text-[12px] font-bold">
-                  {PROFILE.firstName} {PROFILE.lastName}
+                <p className="mt-4 text-[12px] font-bold">{holder}</p>
+                <p className="text-[11px] text-muted-foreground">{profile.email || "your email"}</p>
+                <p className="mt-5 text-[12.5px] leading-relaxed text-muted-foreground">
+                  {doc.body}
                 </p>
-                <p className="text-[11px] text-muted-foreground">{PROFILE.email}</p>
-                <div className="mt-5 space-y-2.5" aria-hidden>
-                  {[100, 92, 84, 96, 78, 88, 70, 90].map((w, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <span
-                        className="h-2 rounded-full bg-secondary"
-                        style={{ width: `${w * 0.55}%` }}
-                      />
-                      <span className="ml-auto h-2 w-16 rounded-full bg-secondary" />
-                    </div>
-                  ))}
-                </div>
                 <p className="mt-6 border-t border-border pt-3 text-[10px] text-muted-foreground">
-                  This document is system-generated and carries a verification reference.
+                  This document carries verification reference {reference}.
                 </p>
               </div>
             </div>
@@ -163,43 +201,35 @@ function GeneratedStatement() {
                 <div className="min-w-0">
                   <p className="truncate text-[14px] font-extrabold">{kind}</p>
                   <p className="mt-0.5 text-[11.5px] text-muted-foreground">
-                    {fmt(start)} — {fmt(end)} · PDF
+                    {fmt(start)} — {fmt(end)}
                   </p>
                 </div>
               </div>
               <dl className="divide-y divide-border/60 px-5 text-[12.5px]">
-                <Row label="Account holder">
-                  {PROFILE.firstName} {PROFILE.lastName}
-                </Row>
+                <Row label="Account holder">{holder}</Row>
                 <Row label="Reference">{reference}</Row>
-                <Row label="Generated">
-                  {new Date().toLocaleDateString("en-NG", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </Row>
-                <Row label="Pages">4</Row>
+                <Row label="Generated">{generated}</Row>
+                <Row label="Format">HTML</Row>
               </dl>
               <div className="space-y-2.5 p-5 pt-4">
                 <button
                   type="button"
-                  onClick={() => toast.success("Statement downloaded (PDF)")}
+                  onClick={downloadDoc}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 py-3.5 text-[13px] font-extrabold text-primary-foreground shadow-float press"
                 >
-                  <Download className="size-4" strokeWidth={2.6} /> Download PDF
+                  <Download className="size-4" strokeWidth={2.6} /> Download
                 </button>
                 <div className="grid grid-cols-2 gap-2.5">
                   <button
                     type="button"
-                    onClick={() => toast.info("Opening statement preview")}
+                    onClick={viewDoc}
                     className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-[12.5px] font-bold press"
                   >
                     <Eye className="size-4" strokeWidth={2.4} /> View
                   </button>
                   <button
                     type="button"
-                    onClick={() => toast.success("Statement emailed to you")}
+                    onClick={emailDoc}
                     className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-[12.5px] font-bold press"
                   >
                     <Mail className="size-4" strokeWidth={2.4} /> Email
@@ -211,14 +241,13 @@ function GeneratedStatement() {
             <section className="card-surface p-5">
               <p className="text-[13px] font-extrabold">Keep it private</p>
               <p className="mt-2 text-[12.5px] leading-relaxed text-muted-foreground">
-                A copy is sent to {PROFILE.email} when you choose Email. Statements contain your
-                account details and stay available for 30 days.
+                Use View or Download, then share or email from your device. Statements contain your
+                account details.
               </p>
             </section>
           </aside>
         </div>
       </div>
-
     </SettingsPage>
   );
 }

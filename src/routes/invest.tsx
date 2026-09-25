@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowDownLeft,
@@ -15,8 +16,41 @@ import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import { AmountCounter } from "@/components/kipit/motion";
-import { naira, HOLDINGS } from "@/lib/home-data";
-import { CALL_ACCOUNT, TENOR_BANDS } from "@/lib/invest-data";
+import { naira } from "@/lib/home-data";
+import { CALL_ACCOUNT, useTenorBands } from "@/lib/invest-data";
+import {
+  useCallAccountLive,
+  useHydrateLiveBalances,
+  type LiveHolding,
+} from "@/lib/live-balances";
+
+function mapLiveHolding(h: LiveHolding) {
+  const daysLeft = h.maturityDate
+    ? Math.max(
+        0,
+        Math.ceil(
+          (new Date(h.maturityDate).getTime() - Date.now()) / (24 * 60 * 60 * 1000),
+        ),
+      )
+    : 0;
+  const date = h.maturityDate
+    ? new Date(h.maturityDate).toLocaleDateString("en-NG", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : "—";
+  return {
+    id: h.id,
+    name: h.name,
+    rate: `${h.ratePct}% p.a.`,
+    amount: h.amount,
+    date,
+    daysLeft,
+    totalDays: Math.max(daysLeft, 1),
+    expectedPayout: h.amount,
+  };
+}
 
 export const Route = createFileRoute("/invest")({
   head: () => ({
@@ -51,6 +85,10 @@ function InvestScreen() {
 
 function MobileInvest() {
   const { hidden, mask } = useBalanceVisibility();
+  const { balance: callBalance, rateLabel: callRate } = useCallAccountLive();
+  const { bands: TENOR_BANDS, loading: ratesLoading } = useTenorBands();
+  const live = useHydrateLiveBalances();
+  const HOLDINGS = useMemo(() => live.holdings.map(mapLiveHolding), [live.holdings]);
 
   return (
     <div className="md:hidden">
@@ -87,18 +125,18 @@ function MobileInvest() {
                   {CALL_ACCOUNT.name}
                 </span>
                 <span className="shrink-0 rounded-full bg-gold-gradient px-3 py-1 text-[11px] font-extrabold text-gold-foreground">
-                  {CALL_ACCOUNT.rate}
+                  {callRate}
                 </span>
               </div>
 
               <div className="pointer-events-none relative z-10">
                 <p className="mt-4 text-[13px] text-primary-foreground/70">Balance</p>
                 <p className="mt-0.5 font-display text-[34px] font-extrabold leading-none tracking-[-0.03em] text-num md:text-[40px]">
-                  <AmountCounter value={CALL_ACCOUNT.balance} hidden={hidden} mask={mask} />
+                  <AmountCounter value={callBalance} hidden={hidden} mask={mask} />
                 </p>
                 <p className="mt-2 text-[12px] text-primary-foreground/60">
                   {CALL_ACCOUNT.liquidity} &middot; min {naira(CALL_ACCOUNT.minimum)} &middot; earned
-                  today {mask(CALL_ACCOUNT.accruedToday)}
+                  today {mask(0)}
                 </p>
               </div>
 
@@ -153,6 +191,12 @@ function MobileInvest() {
 
             {/* Fixed plans grid */}
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+              {ratesLoading && !TENOR_BANDS.length ? (
+                <p className="col-span-2 text-[12.5px] text-muted-foreground md:col-span-4">Loading rates…</p>
+              ) : null}
+              {!ratesLoading && !TENOR_BANDS.length ? (
+                <p className="col-span-2 text-[12.5px] text-muted-foreground md:col-span-4">No tenor bands available.</p>
+              ) : null}
               {TENOR_BANDS.map((band, i) => {
                 const featured = i === 1;
                 return (
@@ -339,6 +383,10 @@ function MobileInvest() {
 function DesktopInvest() {
   const { hidden, toggle, mask } = useBalanceVisibility();
   const navigate = useNavigate();
+  const { balance: callBalance, rateLabel: callRate } = useCallAccountLive();
+  const { bands: TENOR_BANDS, loading: ratesLoading } = useTenorBands();
+  const live = useHydrateLiveBalances();
+  const HOLDINGS = useMemo(() => live.holdings.map(mapLiveHolding), [live.holdings]);
 
   return (
     <div className="hidden pb-4 md:block">
@@ -368,7 +416,7 @@ function DesktopInvest() {
                   </p>
                   <div className="mt-3 flex items-end gap-3">
                     <AmountCounter
-                      value={CALL_ACCOUNT.balance}
+                      value={callBalance}
                       hidden={hidden}
                       mask={mask}
                       className="font-display text-[48px] font-extrabold leading-none tracking-[-0.045em] text-num"
@@ -384,13 +432,13 @@ function DesktopInvest() {
                   </div>
                   <div className="mt-4 flex flex-wrap items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1.5 text-[11px] font-bold text-gold">
-                      {CALL_ACCOUNT.rate}
+                      {callRate}
                     </span>
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-primary-foreground/75">
                       {CALL_ACCOUNT.liquidity} · min {naira(CALL_ACCOUNT.minimum)}
                     </span>
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-primary-foreground/75">
-                      Earned today {mask(CALL_ACCOUNT.accruedToday)}
+                      Earned today {mask(0)}
                     </span>
                   </div>
                 </div>
@@ -565,6 +613,12 @@ function DesktopInvest() {
         </div>
 
         <div className="mt-5 grid gap-4 grid-cols-2 xl:grid-cols-4">
+          {ratesLoading && !TENOR_BANDS.length ? (
+            <p className="col-span-2 text-xs text-muted-foreground xl:col-span-4">Loading rates…</p>
+          ) : null}
+          {!ratesLoading && !TENOR_BANDS.length ? (
+            <p className="col-span-2 text-xs text-muted-foreground xl:col-span-4">No tenor bands available.</p>
+          ) : null}
           {TENOR_BANDS.map((band, i) => {
             const featured = i === 1;
             return (

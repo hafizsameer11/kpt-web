@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { CreditCard, Plus, ShieldCheck, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
-import { LINKED_CARDS } from "@/lib/settings-data";
+import { ApiError, deleteSavedCard, fetchSavedCards } from "@/lib/api";
 
 export const Route = createFileRoute("/settings_/cards")({
   head: () => ({
@@ -23,8 +23,47 @@ export const Route = createFileRoute("/settings_/cards")({
   component: CardsScreen,
 });
 
+type CardRow = {
+  id: string;
+  nickname: string;
+  masked: string;
+  type: string;
+  expiry: string;
+};
+
 function CardsScreen() {
-  const [cards, setCards] = useState(LINKED_CARDS);
+  const [cards, setCards] = useState<CardRow[]>([]);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  useEffect(() => {
+    void fetchSavedCards()
+      .then((rows) =>
+        setCards(
+          rows.map((c) => ({
+            id: c.id,
+            nickname: c.bank || c.brand,
+            masked: `•••• ${c.last4}`,
+            type: c.brand,
+            expiry: "—",
+          })),
+        ),
+      )
+      .catch(() => setCards([]));
+  }, []);
+
+  const removeCard = async (id: string, nickname: string) => {
+    if (busyId) return;
+    setBusyId(id);
+    try {
+      await deleteSavedCard(id);
+      setCards((prev) => prev.filter((x) => x.id !== id));
+      toast.success(`${nickname} removed`);
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Could not remove card.");
+    } finally {
+      setBusyId(null);
+    }
+  };
 
   return (
     <SettingsPage
@@ -50,8 +89,9 @@ function CardsScreen() {
             <button
               type="button"
               aria-label={`Remove ${c.nickname}`}
-              onClick={() => setCards((prev) => prev.filter((x) => x.id !== c.id))}
-              className="grid size-9 shrink-0 place-items-center rounded-xl border border-border text-destructive press hover:bg-secondary"
+              disabled={busyId === c.id}
+              onClick={() => void removeCard(c.id, c.nickname)}
+              className="grid size-9 shrink-0 place-items-center rounded-xl border border-border text-destructive press hover:bg-secondary disabled:opacity-40"
             >
               <Trash2 className="size-4" strokeWidth={2.2} />
             </button>
@@ -67,17 +107,12 @@ function CardsScreen() {
           </div>
         ) : null}
 
-        <button
-          type="button"
-          onClick={() =>
-            toast.info("Add a card", {
-              description: "You'll be redirected to our secure card partner to tokenise the card.",
-            })
-          }
+        <Link
+          to="/wallet/card"
           className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press"
         >
           <Plus className="size-4" strokeWidth={2.6} /> Add card
-        </button>
+        </Link>
 
         <p className="flex items-start gap-2 px-1 text-[11.5px] leading-relaxed text-muted-foreground">
           <ShieldCheck className="mt-0.5 size-4 shrink-0 text-brand" />
@@ -98,18 +133,12 @@ function CardsScreen() {
                 Used for instant wallet top-ups.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() =>
-                toast.info("Add a card", {
-                  description:
-                    "You'll be redirected to our secure card partner to tokenise the card.",
-                })
-              }
+            <Link
+              to="/wallet/card"
               className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3 text-[13px] font-extrabold text-primary-foreground shadow-float press"
             >
               <Plus className="size-4" strokeWidth={2.6} /> Add card
-            </button>
+            </Link>
           </div>
 
           {cards.length === 0 ? (
@@ -137,8 +166,9 @@ function CardsScreen() {
                     <button
                       type="button"
                       aria-label={`Remove ${c.nickname}`}
-                      onClick={() => setCards((prev) => prev.filter((x) => x.id !== c.id))}
-                      className="grid size-9 place-items-center rounded-xl border border-white/20 bg-white/10 press hover:bg-white/20"
+                      disabled={busyId === c.id}
+                      onClick={() => void removeCard(c.id, c.nickname)}
+                      className="grid size-9 place-items-center rounded-xl border border-white/20 bg-white/10 press hover:bg-white/20 disabled:opacity-40"
                     >
                       <Trash2 className="size-4" strokeWidth={2.2} />
                     </button>
@@ -146,7 +176,7 @@ function CardsScreen() {
                   <p className="relative mt-6 font-display text-[20px] font-extrabold tracking-[0.14em] text-num">
                     {c.masked}
                   </p>
-                  <div className="relative mt-4 flex items-end justify-between gap-3">
+                  <div className="relative mt-4 flex flex-wrap items-end justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-primary-foreground/60">
                         Nickname

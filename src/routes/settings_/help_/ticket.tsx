@@ -1,10 +1,22 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { CheckCircle2, Paperclip } from "lucide-react";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { CheckCircle2, Paperclip, X } from "lucide-react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
+import { z } from "zod";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
-import { TICKET_CATEGORIES, ticketReference } from "@/lib/settings-data";
+import {
+  createSupportTicket,
+  fileToBase64,
+  uploadSupportAttachment,
+} from "@/lib/api";
+import { TICKET_CATEGORIES } from "@/lib/settings-data";
 
 export const Route = createFileRoute("/settings_/help_/ticket")({
+  validateSearch: z.object({
+    category: z.string().optional().catch(undefined),
+    subject: z.string().optional().catch(undefined),
+    body: z.string().optional().catch(undefined),
+  }),
   head: () => ({
     meta: [
       { title: "Submit a Support Ticket | Kipit" },
@@ -22,14 +34,112 @@ export const Route = createFileRoute("/settings_/help_/ticket")({
   component: TicketScreen,
 });
 
+function AttachmentPicker({
+  file,
+  onPick,
+}: {
+  file: File | null;
+  onPick: (file: File | null) => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  return (
+    <>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,application/pdf,.pdf"
+        className="sr-only"
+        onChange={(e) => {
+          const next = e.target.files?.[0] ?? null;
+          if (next && next.size > 6 * 1024 * 1024) {
+            toast.error("File too large (max 6 MB)");
+            e.target.value = "";
+            return;
+          }
+          onPick(next);
+          e.target.value = "";
+        }}
+      />
+      <div className="mt-4 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          className="flex min-w-0 flex-1 items-center gap-3 rounded-xl border border-dashed border-border bg-secondary/40 px-3.5 py-3 text-left text-[12.5px] font-semibold text-muted-foreground press hover:border-brand/40"
+        >
+          <Paperclip className="size-4 shrink-0" strokeWidth={2.2} />
+          <span className="min-w-0 truncate">
+            {file?.name ?? "Attach a screenshot (optional)"}
+          </span>
+        </button>
+        {file ? (
+          <button
+            type="button"
+            aria-label="Remove attachment"
+            onClick={() => onPick(null)}
+            className="grid size-10 shrink-0 place-items-center rounded-xl border border-border bg-card press"
+          >
+            <X className="size-4" />
+          </button>
+        ) : null}
+      </div>
+      <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+        JPG, PNG, WEBP or PDF · max 6 MB. Uploaded securely with your ticket.
+      </p>
+    </>
+  );
+}
+
 function TicketScreen() {
-  const [category, setCategory] = useState<string>(TICKET_CATEGORIES[0]);
-  const [subject, setSubject] = useState("");
-  const [description, setDescription] = useState("");
-  const [attachment, setAttachment] = useState<string | null>(null);
+  const search = Route.useSearch();
+  const prefillCategory =
+    search.category &&
+    (TICKET_CATEGORIES as readonly string[]).includes(search.category)
+      ? search.category
+      : TICKET_CATEGORIES[0];
+
+  const [category, setCategory] = useState<string>(prefillCategory);
+  const [subject, setSubject] = useState(search.subject ?? "");
+  const [description, setDescription] = useState(search.body ?? "");
+  const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
   const [reference, setReference] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const valid = subject.trim().length > 3 && description.trim().length > 10;
+  const shortRef = reference ? reference.slice(-8).toUpperCase() : "";
+
+  const submit = () => {
+    if (!valid || submitting) return;
+    setSubmitting(true);
+    void (async () => {
+      try {
+        let attachmentUrl: string | undefined;
+        let attachmentName: string | undefined;
+        if (attachmentFile) {
+          const encoded = await fileToBase64(attachmentFile);
+          const uploaded = await uploadSupportAttachment({
+            contentType: encoded.contentType,
+            dataBase64: encoded.dataBase64,
+            filename: attachmentFile.name,
+          });
+          attachmentUrl = uploaded.url;
+          attachmentName = uploaded.filename;
+        }
+        const ticket = await createSupportTicket({
+          category,
+          subject: subject.trim(),
+          body: description.trim(),
+          ...(attachmentUrl
+            ? { attachmentUrl, attachmentName: attachmentName || attachmentFile?.name }
+            : {}),
+        });
+        setReference(ticket.id);
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Could not submit ticket");
+      } finally {
+        setSubmitting(false);
+      }
+    })();
+  };
 
   if (reference) {
     return (
@@ -45,10 +155,25 @@ function TicketScreen() {
           </span>
           <p className="mt-4 font-display text-[18px] font-extrabold">We&apos;re on it</p>
           <p className="mt-1.5 text-[12.5px] text-muted-foreground">
-            Reference <span className="font-bold text-foreground">{reference}</span>. Our team
+            Reference <span className="font-bold text-foreground">{shortRef}</span>. Our team
             typically replies within one business day.
           </p>
         </section>
+        <div className="mx-auto mt-4 flex max-w-md flex-col gap-2.5">
+          <Link
+            to="/settings/help/tickets/$ticketId"
+            params={{ ticketId: reference }}
+            className="inline-flex w-full items-center justify-center rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press"
+          >
+            View ticket
+          </Link>
+          <Link
+            to="/settings/help/tickets"
+            className="inline-flex w-full items-center justify-center rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold press"
+          >
+            My tickets
+          </Link>
+        </div>
       </SettingsPage>
     );
   }
@@ -103,30 +228,25 @@ function TicketScreen() {
             />
           </label>
 
-          <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-border px-3.5 py-3">
-            <Paperclip className="size-4 shrink-0 text-muted-foreground" />
-            <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-muted-foreground">
-              {attachment ?? "Attach a screenshot (optional)"}
-            </span>
-            <input
-              type="file"
-              className="hidden"
-              onChange={(e) => setAttachment(e.target.files?.[0]?.name ?? null)}
-            />
-          </label>
+          <AttachmentPicker file={attachmentFile} onPick={setAttachmentFile} />
         </section>
 
         <button
           type="button"
-          disabled={!valid}
-          onClick={() => setReference(ticketReference())}
+          disabled={!valid || submitting}
+          onClick={submit}
           className="inline-flex w-full items-center justify-center rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40"
         >
-          Submit ticket
+          {submitting ? "Submitting…" : "Submit ticket"}
         </button>
+        <Link
+          to="/settings/help/tickets"
+          className="inline-flex w-full items-center justify-center rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold press"
+        >
+          View my tickets
+        </Link>
       </div>
 
-      {/* ---------- Desktop ---------- */}
       <div className="hidden md:grid md:grid-cols-[minmax(0,1fr)_320px] md:items-start md:gap-6">
         <section className="card-surface overflow-hidden p-0">
           <p className="border-b border-border/70 px-6 py-4 font-display text-[16px] font-extrabold tracking-[-0.02em] text-foreground">
@@ -174,31 +294,28 @@ function TicketScreen() {
               />
             </label>
 
-            <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-border px-4 py-4 transition hover:bg-secondary/50">
-              <Paperclip className="size-4 shrink-0 text-muted-foreground" />
-              <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-muted-foreground">
-                {attachment ?? "Attach a screenshot (optional)"}
-              </span>
-              <span className="shrink-0 text-[11.5px] font-extrabold text-brand">Browse</span>
-              <input
-                type="file"
-                className="hidden"
-                onChange={(e) => setAttachment(e.target.files?.[0]?.name ?? null)}
-              />
-            </label>
+            <AttachmentPicker file={attachmentFile} onPick={setAttachmentFile} />
           </div>
           <div className="flex items-center justify-between gap-4 border-t border-border/70 bg-secondary/40 px-6 py-4">
             <p className="text-[11.5px] text-muted-foreground">
               {valid ? "Ready to send." : "Add a subject and a short description to continue."}
             </p>
-            <button
-              type="button"
-              disabled={!valid}
-              onClick={() => setReference(ticketReference())}
-              className="inline-flex shrink-0 items-center justify-center rounded-xl bg-brand-gradient px-8 py-3 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40"
-            >
-              Submit ticket
-            </button>
+            <div className="flex shrink-0 items-center gap-2">
+              <Link
+                to="/settings/help/tickets"
+                className="inline-flex items-center justify-center rounded-xl border border-border bg-card px-5 py-3 text-[13px] font-bold press"
+              >
+                My tickets
+              </Link>
+              <button
+                type="button"
+                disabled={!valid || submitting}
+                onClick={submit}
+                className="inline-flex items-center justify-center rounded-xl bg-brand-gradient px-8 py-3 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40"
+              >
+                {submitting ? "Submitting…" : "Submit ticket"}
+              </button>
+            </div>
           </div>
         </section>
 

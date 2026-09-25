@@ -3,7 +3,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Delete,
-  Fingerprint,
   Gift,
   Lock,
   PiggyBank,
@@ -28,8 +27,11 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { naira, WALLET } from "@/lib/home-data";
+import { ApiError, createAutoInvestRule, createFixedPlan, createGift } from "@/lib/api";
+import { naira } from "@/lib/home-data";
 import { TENOR_BANDS } from "@/lib/invest-data";
+import { refreshWalletFromApi, useWalletBalance } from "@/lib/wallet-balance";
+import { hydrateLiveBalances } from "@/lib/live-balances";
 
 export const Route = createFileRoute("/fixed-plans_/create/review")({
   validateSearch: z.object({
@@ -38,7 +40,10 @@ export const Route = createFileRoute("/fixed-plans_/create/review")({
     name: z.string().catch(""),
     maturity: z.enum(["wallet", "rollover", "call"]).catch("wallet"),
     auto: z.string().catch(""),
+    autoAmount: z.number().optional().catch(undefined),
     gift: z.string().catch(""),
+    giftPhone: z.string().catch(""),
+    giftMessage: z.string().catch(""),
   }),
   head: () => ({
     meta: [
@@ -64,7 +69,12 @@ export const Route = createFileRoute("/fixed-plans_/create/review")({
 const DAY_MS = 86_400_000;
 const PIN_LENGTH = 4;
 const MAX_ATTEMPTS = 3;
-const CORRECT_PIN = "1234";
+
+const MATURITY_API = {
+  wallet: "WALLET",
+  rollover: "ROLLOVER",
+  call: "PAYOUT",
+} as const;
 
 const MATURITY_LABEL = {
   wallet: { label: "Move funds to wallet", icon: Wallet },
@@ -104,16 +114,100 @@ function PlanReviewScreen() {
 /* Shared authorization flow (PIN pad in Drawer on mobile, Dialog on desktop) */
 /* ------------------------------------------------------------------ */
 
+function normalizeGiftPhone(raw: string): string | null {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length < 10) return null;
+  if (digits.length === 11 && digits.startsWith("0")) return `234${digits.slice(1)}`;
+  if (digits.length === 10) return `234${digits}`;
+  return digits;
+}
+
 function useAuthFlow() {
-  const { amount, days, name, maturity } = Route.useSearch();
+  const { amount, days, name, maturity, gift, giftPhone, giftMessage, autoAmount } =
+    Route.useSearch();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [pin, setPin] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [orderKey] = useState(() =>
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `fp-${amount}-${days}-${Math.random().toString(36).slice(2, 10)}`,
+  );
 
   const locked = attempts >= MAX_ATTEMPTS;
+
+  async function submitPin(next: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      if (gift) {
+        const phone = normalizeGiftPhone(giftPhone);
+        if (!phone) {
+          setError("Add a valid recipient phone number to send this gift.");
+          setBusy(false);
+          return;
+        }
+        const created = await createGift({
+          amount,
+          recipientPhone: phone,
+          recipientName: gift,
+          pin: next,
+          ...(giftMessage.trim() ? { message: giftMessage.trim() } : {}),
+          ...(days > 0 ? { tenorDays: days } : {}),
+        });
+        await refreshWalletFromApi().catch(() => undefined);
+        await hydrateLiveBalances().catch(() => undefined);
+        setOpen(false);
+        setPin("");
+        void navigate({
+          to: "/gifts/$giftId",
+          params: { giftId: created.id },
+          replace: true,
+        });
+        return;
+      }
+
+      await createFixedPlan({
+        amount,
+        tenorDays: days,
+        name: name || "Fixed plan",
+        pin: next,
+        maturityInstruction: MATURITY_API[maturity],
+        idempotencyKey: orderKey,
+      });
+      if (autoAmount && autoAmount > 0) {
+        await createAutoInvestRule({
+          label: name || "Fixed plan",
+          amount: autoAmount,
+          dayOfMonth: Math.min(28, Math.max(1, new Date().getDate())),
+        }).catch(() => undefined);
+      }
+      await refreshWalletFromApi().catch(() => undefined);
+      await hydrateLiveBalances().catch(() => undefined);
+      setOpen(false);
+      setPin("");
+      void navigate({
+        to: "/fixed-plans/create/processing",
+        search: { amount, days, name, maturity },
+      });
+    } catch (err) {
+      const n = attempts + 1;
+      setAttempts(n);
+      setPin("");
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : n >= MAX_ATTEMPTS
+            ? "Too many attempts. Try again later or reset your PIN."
+            : `Incorrect PIN. ${MAX_ATTEMPTS - n} attempt${MAX_ATTEMPTS - n === 1 ? "" : "s"} left.`,
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
 
   function press(key: string) {
     if (locked || busy) return;
@@ -125,40 +219,10 @@ function useAuthFlow() {
     setPin((p) => {
       const next = (p + key).slice(0, PIN_LENGTH);
       if (next.length === PIN_LENGTH) {
-        setBusy(true);
-        window.setTimeout(() => {
-          setBusy(false);
-          if (next === CORRECT_PIN) {
-            setOpen(false);
-            setPin("");
-            void navigate({
-              to: "/fixed-plans/create/processing",
-              search: { amount, days, name, maturity },
-            });
-          } else {
-            const n = attempts + 1;
-            setAttempts(n);
-            setPin("");
-            setError(
-              n >= MAX_ATTEMPTS
-                ? "Too many attempts. Try again in 30 minutes or reset your PIN."
-                : `Incorrect PIN. ${MAX_ATTEMPTS - n} attempt${MAX_ATTEMPTS - n === 1 ? "" : "s"} left.`,
-            );
-          }
-        }, 650);
+        void submitPin(next);
       }
       return next;
     });
-  }
-
-  function biometrics() {
-    if (locked || busy) return;
-    setBusy(true);
-    setError(null);
-    window.setTimeout(() => {
-      setBusy(false);
-      setError("Biometric authentication failed. Enter your PIN instead.");
-    }, 900);
   }
 
   return {
@@ -170,7 +234,6 @@ function useAuthFlow() {
     locked,
     busy,
     press,
-    biometrics,
     reset: () => {
       setPin("");
       setError(null);
@@ -216,31 +279,25 @@ function AuthPad({ flow }: { flow: ReturnType<typeof useAuthFlow> }) {
 
       <div className="mx-auto mt-5 grid w-full max-w-sm auto-rows-max grid-cols-3 gap-x-3 gap-y-2.5">
         {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((k) => (
-          <Key key={k} onClick={() => flow.press(k)} disabled={flow.locked}>
+          <Key key={k} onClick={() => flow.press(k)} disabled={flow.locked || flow.busy}>
             {k}
           </Key>
         ))}
-        <Key
-          onClick={flow.biometrics}
-          aria-label="Use biometrics"
-          disabled={flow.locked}
-        >
-          <Fingerprint className="mx-auto size-5 text-gold" />
-        </Key>
-        <Key onClick={() => flow.press("0")} disabled={flow.locked}>
+        <span className="grid place-items-center" aria-hidden />
+        <Key onClick={() => flow.press("0")} disabled={flow.locked || flow.busy}>
           0
         </Key>
         <Key
           onClick={() => flow.press("del")}
           aria-label="Delete"
-          disabled={flow.locked}
+          disabled={flow.locked || flow.busy}
         >
           <Delete className="mx-auto size-5" />
         </Key>
       </div>
 
       <p className="mt-4 text-center text-[11px] text-muted-foreground">
-        Use PIN <span className="font-bold text-foreground">1234</span> in this prototype.
+        Enter your 4-digit transaction PIN to confirm.
       </p>
     </>
   );
@@ -254,6 +311,7 @@ function PlanReviewMobile() {
   const { amount, days, name, maturity, auto, gift } = Route.useSearch();
   const flow = useAuthFlow();
   const { rateLabel, interest, payout, maturityDate } = usePlanCalc(amount, days);
+  const WALLET = useWalletBalance();
 
   const valid = amount > 0 && days > 0 && amount <= WALLET;
   const MaturityIcon = MATURITY_LABEL[maturity].icon;
@@ -406,7 +464,7 @@ function PlanReviewMobile() {
               <ArrowRight className="size-4" strokeWidth={2.6} />
             </button>
             <p className="mt-2.5 flex items-center justify-center gap-1.5 text-[11.5px] text-muted-foreground">
-              <Lock className="size-3.5" /> Authorize with your PIN or biometrics.
+              <Lock className="size-3.5" /> Authorize with your transaction PIN.
             </p>
           </div>
         </div>
@@ -439,6 +497,7 @@ function PlanReviewDesktop() {
   const { amount, days, name, maturity, auto, gift } = Route.useSearch();
   const flow = useAuthFlow();
   const { rateLabel, interest, payout, maturityDate } = usePlanCalc(amount, days);
+  const WALLET = useWalletBalance();
 
   const valid = amount > 0 && days > 0 && amount <= WALLET;
   const MaturityIcon = MATURITY_LABEL[maturity].icon;
@@ -584,7 +643,7 @@ function PlanReviewDesktop() {
                     <ArrowRight className="size-4" strokeWidth={2.6} />
                   </button>
                   <p className="mt-3 flex items-center justify-center gap-1.5 text-[11.5px] text-muted-foreground">
-                    <Lock className="size-3.5" /> Authorize with PIN or biometrics.
+                    <Lock className="size-3.5" /> Authorize with your transaction PIN.
                   </p>
                 </div>
               </section>

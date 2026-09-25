@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   CalendarClock,
@@ -12,8 +12,53 @@ import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import { AmountCounter } from "@/components/kipit/motion";
-import { naira, HOLDINGS } from "@/lib/home-data";
-import { TENOR_BANDS, MATURED_PLANS } from "@/lib/invest-data";
+import { naira } from "@/lib/home-data";
+import { MATURED_PLANS, useTenorBands } from "@/lib/invest-data";
+import {
+  useHydrateLiveBalances,
+  type LiveHolding,
+} from "@/lib/live-balances";
+
+type PlanHolding = {
+  id: string;
+  name: string;
+  rate: string;
+  amount: number;
+  date: string;
+  daysLeft: number;
+  totalDays: number;
+  expectedPayout: number;
+  autoRenew: boolean;
+};
+
+function mapLiveHolding(h: LiveHolding): PlanHolding {
+  const daysLeft = h.maturityDate
+    ? Math.max(
+        0,
+        Math.ceil(
+          (new Date(h.maturityDate).getTime() - Date.now()) / (24 * 60 * 60 * 1000),
+        ),
+      )
+    : 0;
+  const date = h.maturityDate
+    ? new Date(h.maturityDate).toLocaleDateString("en-NG", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : "—";
+  return {
+    id: h.id,
+    name: h.name,
+    rate: `${h.ratePct}% p.a.`,
+    amount: h.amount,
+    date,
+    daysLeft,
+    totalDays: Math.max(daysLeft, 1),
+    expectedPayout: h.amount,
+    autoRenew: false,
+  };
+}
 
 export const Route = createFileRoute("/fixed-plans")({
   head: () => ({
@@ -42,6 +87,10 @@ type Tab = "active" | "matured";
 function FixedPlansScreen() {
   const { hidden, mask } = useBalanceVisibility();
   const [tab, setTab] = useState<Tab>("active");
+  const { bands: TENOR_BANDS, loading: ratesLoading } = useTenorBands();
+  const live = useHydrateLiveBalances();
+  const HOLDINGS = useMemo(() => live.holdings.map(mapLiveHolding), [live.holdings]);
+  void ratesLoading;
 
   const invested = HOLDINGS.reduce((sum, h) => sum + h.amount, 0);
   const expected = HOLDINGS.reduce((sum, h) => sum + h.expectedPayout, 0);
@@ -63,6 +112,7 @@ function FixedPlansScreen() {
     <AppShell title="Fixed plans" navVariant="elevated">
       {/* ── Desktop layout (mobile untouched below) ─────────────────── */}
       <DesktopFixedPlans
+        holdings={HOLDINGS}
         hidden={hidden}
         mask={mask}
         invested={invested}
@@ -460,18 +510,20 @@ function FixedPlansScreen() {
 
 // ── Desktop-only layout ──────────────────────────────────────────────
 type DesktopProps = {
+  holdings: PlanHolding[];
   hidden: boolean;
   mask: (n: number) => string;
   invested: number;
   expected: number;
   expectedInterest: number;
-  nextMaturity: (typeof HOLDINGS)[number] | undefined;
+  nextMaturity: PlanHolding | undefined;
   nextProgress: number;
   tab: Tab;
   setTab: (t: Tab) => void;
 };
 
 function DesktopFixedPlans({
+  holdings: HOLDINGS,
   hidden,
   mask,
   invested,
@@ -483,6 +535,7 @@ function DesktopFixedPlans({
   setTab,
 }: DesktopProps) {
   void hidden;
+  const { bands: TENOR_BANDS } = useTenorBands();
   return (
     <div className="hidden md:block">
       {/* Hero */}

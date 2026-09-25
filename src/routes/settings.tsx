@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   BadgeCheck,
   Bell,
@@ -16,8 +16,9 @@ import {
   User,
 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
-import { PROFILE } from "@/lib/settings-data";
 import { useTheme } from "@/lib/theme";
+import { signOut } from "@/lib/auth-session";
+import { useDisplayProfile } from "@/lib/profile-live";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -63,25 +64,25 @@ const GROUPS: { label: string; items: Item[] }[] = [
   {
     label: "Account",
     items: [
-      { to: "/verification", icon: ShieldCheck, title: "Verification", sub: "Tiers, BVN, NIN and address checks", meta: PROFILE.tier },
-      { to: "/settings/profile", icon: User, title: "Profile", sub: "Name, date of birth, contact", meta: PROFILE.tier },
+      { to: "/verification", icon: ShieldCheck, title: "Verification", sub: "Tiers, BVN, NIN and address checks" },
+      { to: "/settings/profile", icon: User, title: "Profile", sub: "Name, date of birth, contact" },
       { to: "/settings/address", icon: Landmark, title: "Address & personal details", sub: "Residence, occupation, source of funds" },
       { to: "/settings/statements", icon: FileText, title: "Statements", sub: "Account, transaction and portfolio" },
-      { to: "/withdraw/accounts", icon: Landmark, title: "Bank accounts", sub: "Saved payout destinations", meta: "2 saved" },
+      { to: "/withdraw/accounts", icon: Landmark, title: "Bank accounts", sub: "Saved payout destinations" },
     ],
   },
   {
     label: "Security & payments",
     items: [
-      { to: "/settings/security", icon: ShieldCheck, title: "Security", sub: "PIN, password, biometrics, sessions" },
-      { to: "/settings/cards", icon: CreditCard, title: "Linked cards", sub: "Cards saved for funding", meta: "2 cards" },
+      { to: "/settings/security", icon: ShieldCheck, title: "Security", sub: "PIN, password, sessions" },
+      { to: "/settings/cards", icon: CreditCard, title: "Linked cards", sub: "Cards saved for funding" },
     ],
   },
   {
     label: "Preferences",
     items: [
       { to: "/settings/notifications", icon: Bell, title: "Notifications", sub: "Push and email alerts" },
-      { to: "/settings/referrals", icon: Gift, title: "Referrals", sub: "Invite friends and earn rewards", meta: "9 joined" },
+      { to: "/settings/referrals", icon: Gift, title: "Referrals", sub: "Invite friends and earn rewards" },
     ],
   },
   {
@@ -94,7 +95,20 @@ const GROUPS: { label: string; items: Item[] }[] = [
 ];
 
 function SettingsHome() {
+  const profile = useDisplayProfile();
   const { isDark, toggle: toggleTheme } = useTheme();
+  const navigate = useNavigate();
+  const name = [profile.firstName, profile.lastName].filter(Boolean).join(" ") || "—";
+  const email = profile.email || "—";
+  const initials = profile.initials || "—";
+  const tier = profile.tier ? `${profile.tier} verified` : "Unverified";
+  const memberSince = profile.memberSince;
+
+  async function handleSignOut() {
+    await signOut();
+    void navigate({ to: "/welcome", replace: true });
+  }
+
   return (
     <AppShell title="Settings" navVariant="elevated">
       {/* ===== MOBILE (unchanged) ===== */}
@@ -106,20 +120,22 @@ function SettingsHome() {
           />
           <div className="relative flex items-center gap-4">
             <span className="grid size-16 shrink-0 place-items-center rounded-2xl bg-gold font-display text-[22px] font-extrabold text-gold-foreground shadow-float">
-              {PROFILE.initials}
+              {initials}
             </span>
             <div className="min-w-0">
               <h1 className="truncate font-display text-[22px] font-extrabold tracking-[-0.03em] md:text-[26px]">
-                {PROFILE.firstName} {PROFILE.lastName}
+                {name}
               </h1>
-              <p className="truncate text-[12px] text-primary-foreground/70">{PROFILE.email}</p>
+              <p className="truncate text-[12px] text-primary-foreground/70">{email}</p>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1 rounded-full bg-gold/18 px-2.5 py-1 text-[10.5px] font-extrabold uppercase tracking-wide text-gold">
-                  <BadgeCheck className="size-3.5" strokeWidth={2.6} /> {PROFILE.tier} verified
+                  <BadgeCheck className="size-3.5" strokeWidth={2.6} /> {tier}
                 </span>
-                <span className="rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[10.5px] font-bold">
-                  Member since {PROFILE.memberSince}
-                </span>
+                {memberSince ? (
+                  <span className="rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[10.5px] font-bold">
+                    Member since {memberSince}
+                  </span>
+                ) : null}
               </div>
             </div>
           </div>
@@ -198,15 +214,16 @@ function SettingsHome() {
             ))}
           </div>
 
-          <Link
-            to="/login"
+          <button
+            type="button"
+            onClick={() => void handleSignOut()}
             className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-destructive/30 bg-card px-5 py-3.5 text-[13.5px] font-extrabold text-destructive press md:w-auto md:px-10"
           >
             <LogOut className="size-4" strokeWidth={2.6} /> Log out
-          </Link>
+          </button>
 
           <p className="mt-4 px-1 text-[11px] text-muted-foreground">
-            Kipit v1.0.0 (prototype) · Investments carry risk. Returns are not guaranteed.
+            Kipit v1.0.0 · Investments carry risk. Returns are not guaranteed.
           </p>
         </div>
       </div>
@@ -222,21 +239,21 @@ function SettingsHome() {
             <div className="relative flex items-center justify-between gap-8">
               <div className="flex min-w-0 items-center gap-5">
                 <span className="grid size-[68px] shrink-0 place-items-center rounded-2xl bg-gold font-display text-[24px] font-extrabold text-gold-foreground shadow-float">
-                  {PROFILE.initials}
+                  {profile.initials || "—"}
                 </span>
                 <div className="min-w-0">
                   <h1 className="truncate font-display text-[28px] font-extrabold tracking-[-0.03em]">
-                    {PROFILE.firstName} {PROFILE.lastName}
+                    {[profile.firstName, profile.lastName].filter(Boolean).join(" ") || "—"}
                   </h1>
                   <p className="truncate text-[12.5px] text-primary-foreground/70">
-                    {PROFILE.email}
+                    {email}
                   </p>
                   <div className="mt-2.5 flex flex-wrap items-center gap-2">
                     <span className="inline-flex items-center gap-1 rounded-full bg-gold/18 px-2.5 py-1 text-[10.5px] font-extrabold uppercase tracking-wide text-gold">
-                      <BadgeCheck className="size-3.5" strokeWidth={2.6} /> {PROFILE.tier} verified
+                      <BadgeCheck className="size-3.5" strokeWidth={2.6} /> {profile.tier || "Tier 0"} verified
                     </span>
                     <span className="rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[10.5px] font-bold">
-                      Member since {PROFILE.memberSince}
+                      {profile.memberSince ? `Member since ${profile.memberSince}` : "Member"}
                     </span>
                   </div>
                 </div>
@@ -314,7 +331,7 @@ function SettingsHome() {
                       to: "/verification" as const,
                       icon: ShieldCheck,
                       label: "Verification",
-                      value: `${PROFILE.tier} verified`,
+                      value: tier,
                       note: "Full access to funding and withdrawals",
                     },
                     {
@@ -358,14 +375,15 @@ function SettingsHome() {
               </div>
 
               <div className="card-surface p-5">
-                <Link
-                  to="/login"
+                <button
+                  type="button"
+                  onClick={() => void handleSignOut()}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-destructive/30 px-5 py-2.5 text-[13px] font-extrabold text-destructive transition-colors hover:bg-destructive/5"
                 >
                   <LogOut className="size-4" strokeWidth={2.6} /> Log out
-                </Link>
+                </button>
                 <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
-                  Kipit v1.0.0 (prototype) · Investments carry risk. Returns are not guaranteed.
+                  Kipit v1.0.0 · Investments carry risk. Returns are not guaranteed.
                 </p>
               </div>
             </aside>

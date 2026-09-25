@@ -5,7 +5,7 @@ import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { Rise } from "@/components/kipit/motion";
 import { naira } from "@/lib/home-data";
-import { getExploreProduct } from "@/lib/explore-data";
+import { ensureExploreHydrated, getExploreProduct } from "@/lib/explore-data";
 
 export const Route = createFileRoute("/explore_/$productId_/unavailable")({
   head: () => ({
@@ -25,7 +25,8 @@ export const Route = createFileRoute("/explore_/$productId_/unavailable")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
+    await ensureExploreHydrated();
     const product = getExploreProduct(params.productId);
     if (!product) throw notFound();
     return { product };

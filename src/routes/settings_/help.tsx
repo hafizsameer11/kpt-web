@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronDown, MessageCircle, Phone, Search, TrendingUp } from "lucide-react";
+import { ChevronDown, MessageCircle, Phone, Search, Ticket, TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
 import { FAQS, FAQ_CATEGORIES, POPULAR_QUESTIONS } from "@/lib/settings-data";
@@ -124,15 +124,32 @@ function HelpCentre() {
 
       <section className="card-surface mt-4 p-4">
         <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
-          Contact support
+          Your tickets
+        </p>
+        <p className="mt-2 text-[12.5px] text-muted-foreground">
+          Track submissions or ask Ask AI to file a ticket for you.
         </p>
         <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
           <Link
-            to="/settings/help/ticket"
+            to="/settings/help/tickets"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 py-3.5 text-[13px] font-extrabold text-primary-foreground shadow-float press"
+          >
+            <Ticket className="size-4" strokeWidth={2.6} /> My tickets
+          </Link>
+          <Link
+            to="/settings/help/ticket"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-[13px] font-bold press"
           >
             <MessageCircle className="size-4" strokeWidth={2.6} /> Submit a ticket
           </Link>
+        </div>
+      </section>
+
+      <section className="card-surface mt-4 p-4">
+        <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
+          Contact support
+        </p>
+        <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
           <a
             href="tel:+2347000547480"
             className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-[13px] font-bold press"
@@ -259,8 +276,14 @@ function HelpCentre() {
               Still stuck? Our Lagos team replies to tickets within one business day.
             </p>
             <Link
-              to="/settings/help/ticket"
+              to="/settings/help/tickets"
               className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 py-3.5 text-[13px] font-extrabold text-primary-foreground shadow-float press"
+            >
+              <Ticket className="size-4" strokeWidth={2.6} /> My tickets
+            </Link>
+            <Link
+              to="/settings/help/ticket"
+              className="mt-2.5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-[13px] font-bold press hover:bg-secondary/60"
             >
               <MessageCircle className="size-4" strokeWidth={2.6} /> Submit a ticket
             </Link>

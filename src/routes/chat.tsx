@@ -29,10 +29,9 @@ import {
   DEFAULT_AMOUNT,
   FUNDING_ACCOUNT,
   MATURITY,
-  PORTFOLIO_SNAPSHOT,
   SUGGESTED_PROMPTS,
-  assistantReply,
   estimatedReturn,
+  mapApiChatBlocks,
   naira,
   nextId,
   parseAmount,
@@ -41,6 +40,16 @@ import {
   type ChatProduct,
 } from "@/lib/chat-data";
 import { WHATSAPP_URL } from "@/lib/terms-acceptance";
+import { getStoredUser } from "@/lib/api";
+import { useHydrateLiveBalances } from "@/lib/live-balances";
+import { refreshWalletFromApi, useWalletBalance } from "@/lib/wallet-balance";
+
+type PositionSnapshot = {
+  wallet: number;
+  invested: number;
+  total: number;
+  holdings: number;
+};
 
 export const Route = createFileRoute("/chat")({
   head: () => ({
@@ -64,27 +73,46 @@ export const Route = createFileRoute("/chat")({
   component: ChatScreen,
 });
 
-const WELCOME: ChatMessage = {
-  id: "welcome",
-  role: "assistant",
-  screen: "CHAT-001",
-  blocks: [
-    { kind: "text", text: "Hi Adaeze, how can I help you today?" },
-  ],
-};
+function welcomeMessage(): ChatMessage {
+  const first = getStoredUser()?.firstName?.trim();
+  const greeting = first ? `Hi ${first}, how can I help you today?` : "Hi, how can I help you today?";
+  return {
+    id: "welcome",
+    role: "assistant",
+    screen: "CHAT-001",
+    blocks: [{ kind: "text", text: greeting }],
+  };
+}
 
 const STORAGE_KEY = "kipit:chat-history";
 
 function ChatScreen() {
-  const [messages, setMessages] = useState<ChatMessage[]>([WELCOME]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => [welcomeMessage()]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const [restored, setRestored] = useState(false);
   const amountRef = useRef<number | undefined>(undefined);
+  const sessionRef = useRef<string | undefined>(undefined);
   const endRef = useRef<HTMLDivElement>(null);
   const mobileScrollRef = useRef<HTMLDivElement>(null);
   const desktopScrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const wallet = useWalletBalance();
+  const live = useHydrateLiveBalances();
+  const position = useMemo<PositionSnapshot>(
+    () => ({
+      wallet,
+      invested: live.invested,
+      total: wallet + live.invested,
+      holdings: live.holdings.length,
+    }),
+    [wallet, live.invested, live.holdings.length],
+  );
+
+  useEffect(() => {
+    void refreshWalletFromApi().catch(() => undefined);
+  }, []);
 
   // Restore the conversation after mount so it survives closing the chat,
   // then open the new session with a fresh greeting + suggested questions.
@@ -98,7 +126,7 @@ function ChatScreen() {
           const needsGreeting = !(last && last.role === "assistant" && last.screen === "CHAT-001");
           setMessages(
             needsGreeting
-              ? [...saved.messages, { ...WELCOME, id: nextId() }]
+              ? [...saved.messages, { ...welcomeMessage(), id: nextId() }]
               : saved.messages,
           );
         }
@@ -125,7 +153,8 @@ function ChatScreen() {
 
   const resetChat = () => {
     amountRef.current = undefined;
-    setMessages([WELCOME]);
+    sessionRef.current = undefined;
+    setMessages([welcomeMessage()]);
     setInput("");
     try {
       window.localStorage.removeItem(STORAGE_KEY);
@@ -166,10 +195,58 @@ function ChatScreen() {
     setInput("");
     setThinking(true);
     window.setTimeout(() => {
-      setMessages((prev) => [...prev, assistantReply(value, amountRef.current)]);
-      setThinking(false);
-      inputRef.current?.focus();
-    }, 550);
+      void (async () => {
+        try {
+          const { isAuthenticated, sendChatMessage } = await import("@/lib/api");
+          if (!isAuthenticated()) {
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: nextId(),
+                role: "assistant",
+                blocks: [
+                  {
+                    kind: "text",
+                    text: "Sign in to ask Kipit about your balances, plans, and investments.",
+                  },
+                ],
+              },
+            ]);
+            return;
+          }
+          const res = await sendChatMessage(value, sessionRef.current);
+          if (res.sessionId) sessionRef.current = res.sessionId;
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: nextId(),
+              role: "assistant",
+              blocks: [
+                { kind: "text", text: res.message.text },
+                ...mapApiChatBlocks(res.message.blocks),
+              ],
+            },
+          ]);
+        } catch {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: nextId(),
+              role: "assistant",
+              blocks: [
+                {
+                  kind: "text",
+                  text: "I couldn't reach Kipit just now. Please try again in a moment.",
+                },
+              ],
+            },
+          ]);
+        } finally {
+          setThinking(false);
+          inputRef.current?.focus();
+        }
+      })();
+    }, 350);
   };
   const lastMessage = messages[messages.length - 1];
   const showPrompts =
@@ -199,7 +276,7 @@ function ChatScreen() {
                   className="k-rise"
                   style={{ "--d": `${index * 70}ms` } as React.CSSProperties}
                 >
-                  <BlockView block={block} onSend={send} />
+                  <BlockView block={block} onSend={send} position={position} />
                 </div>
               ))}
             </div>
@@ -396,17 +473,17 @@ function ChatScreen() {
                     Your position
                   </p>
                   <p className="mt-1.5 text-[22px] font-bold text-num">
-                    {naira(PORTFOLIO_SNAPSHOT.total)}
+                    {naira(position.total)}
                   </p>
                   <dl className="mt-3 space-y-2 text-[12.5px]">
                     <div className="flex justify-between">
                       <dt className="text-muted-foreground">Wallet</dt>
-                      <dd className="font-semibold text-num">{naira(PORTFOLIO_SNAPSHOT.wallet)}</dd>
+                      <dd className="font-semibold text-num">{naira(position.wallet)}</dd>
                     </div>
                     <div className="flex justify-between">
                       <dt className="text-muted-foreground">Invested</dt>
                       <dd className="font-semibold text-num">
-                        {naira(PORTFOLIO_SNAPSHOT.invested)}
+                        {naira(position.invested)}
                       </dd>
                     </div>
                   </dl>
@@ -482,9 +559,11 @@ function Bubble({ children }: { children: React.ReactNode }) {
 function BlockView({
   block,
   onSend,
+  position,
 }: {
   block: ChatBlock;
   onSend: (raw: string, display?: string) => void;
+  position: PositionSnapshot;
 }) {
   switch (block.kind) {
     case "text":
@@ -511,9 +590,11 @@ function BlockView({
 
     /* CHAT-002 */
     case "balance": {
-      const invested = PORTFOLIO_SNAPSHOT.invested;
-      const total = PORTFOLIO_SNAPSHOT.total || 1;
-      const investedPct = Math.round((invested / total) * 100);
+      const wallet = block.wallet ?? position.wallet;
+      const invested = block.invested ?? position.invested;
+      const total = (block.total ?? position.total) || wallet + invested;
+      const holdings = block.holdings ?? position.holdings;
+      const investedPct = Math.round((invested / (total || 1)) * 100);
       return (
         <ResponseCard>
           <div className="relative overflow-hidden bg-brand-gradient px-4 pb-5 pt-4 text-primary-foreground">
@@ -522,7 +603,7 @@ function BlockView({
               <Landmark className="size-3.5 text-gold" /> Total portfolio
             </p>
             <p className="relative mt-1 font-display text-[26px] font-bold leading-none text-num">
-              {naira(PORTFOLIO_SNAPSHOT.total)}
+              {naira(total)}
             </p>
             <div className="relative mt-3.5 h-1.5 overflow-hidden rounded-full bg-primary-foreground/15">
               <span
@@ -535,12 +616,12 @@ function BlockView({
             </p>
           </div>
           <div className="grid grid-cols-2 divide-x divide-border">
-            <MiniStat icon={Wallet} label="Wallet" value={naira(PORTFOLIO_SNAPSHOT.wallet)} hint="Ready to invest" />
+            <MiniStat icon={Wallet} label="Wallet" value={naira(wallet)} hint="Ready to invest" />
             <MiniStat
               icon={PieChart}
               label="Invested"
-              value={naira(PORTFOLIO_SNAPSHOT.invested)}
-              hint={`${PORTFOLIO_SNAPSHOT.holdings} active holdings`}
+              value={naira(invested)}
+              hint={`${holdings} active holdings`}
             />
           </div>
           <CardFooter>
@@ -614,9 +695,22 @@ function BlockView({
         </div>
       );
 
+    case "link":
+      return (
+        <div className="flex flex-wrap gap-2">
+          <CtaLink to={block.to} label={block.label} />
+        </div>
+      );
+
     /* CHAT-007 */
     case "maturity": {
-      const progress = Math.max(6, Math.min(96, 100 - (MATURITY.daysLeft / 90) * 100));
+      const name = block.name || MATURITY.name || "Next maturity";
+      const date = block.date || MATURITY.date || "—";
+      const amount = block.amount ?? MATURITY.amount;
+      const rate = block.rate || MATURITY.rate || "—";
+      const daysLeft = block.daysLeft ?? MATURITY.daysLeft;
+      const payout = block.expectedPayout ?? MATURITY.expectedPayout ?? amount;
+      const progress = Math.max(6, Math.min(96, daysLeft ? 100 - (daysLeft / 90) * 100 : 6));
       return (
         <ResponseCard>
           <div className="flex items-center gap-3 border-b border-border px-4 py-3.5">
@@ -624,25 +718,35 @@ function BlockView({
               <CalendarClock className="size-4" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[13.5px] font-bold">{MATURITY.name}</p>
-              <p className="text-[11.5px] text-muted-foreground">Matures {MATURITY.date}</p>
+              <p className="truncate text-[13.5px] font-bold">{name || "No upcoming maturity"}</p>
+              <p className="text-[11.5px] text-muted-foreground">
+                {date !== "—" ? `Matures ${date}` : "Nothing scheduled yet"}
+              </p>
             </div>
-            <span className="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-bold text-brand">
-              {MATURITY.daysLeft} days left
-            </span>
+            {daysLeft > 0 ? (
+              <span className="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-bold text-brand">
+                {daysLeft} days left
+              </span>
+            ) : null}
           </div>
           <div className="px-4 py-3.5">
             <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
-              <span
-                className="block h-full rounded-full bg-brand-gradient"
-                style={{ width: `${progress}%` }}
-              />
+              <span className="block h-full rounded-full bg-brand" style={{ width: `${progress}%` }} />
             </div>
-            <dl className="mt-3.5 grid grid-cols-3 gap-2 text-[12px]">
-              <Cell label="Principal" value={naira(MATURITY.amount)} />
-              <Cell label="Rate" value={MATURITY.rate} />
-              <Cell label="Payout" value={naira(MATURITY.expectedPayout)} />
-            </dl>
+            <div className="mt-3.5 grid grid-cols-3 gap-2">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Principal</p>
+                <p className="mt-0.5 text-[12.5px] font-bold">{naira(amount)}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Rate</p>
+                <p className="mt-0.5 text-[12.5px] font-bold">{rate}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Payout</p>
+                <p className="mt-0.5 text-[12.5px] font-bold">{naira(payout)}</p>
+              </div>
+            </div>
           </div>
           <CardFooter>
             <CtaLink to="/portfolio/maturities" label="View Investment" />
@@ -656,9 +760,15 @@ function BlockView({
       return (
         <ResponseCard>
           <div className="divide-y divide-border">
-            {CHAT_STATUSES.map((item) => (
-              <StatusCard key={item.label} item={item} />
-            ))}
+            {CHAT_STATUSES.length === 0 ? (
+              <p className="px-4 py-4 text-[13px] text-muted-foreground">
+                No recent transactions to show yet.
+              </p>
+            ) : (
+              CHAT_STATUSES.map((item) => (
+                <StatusCard key={item.label} item={item} />
+              ))
+            )}
           </div>
           <CardFooter>
             <CtaLink to="/portfolio/transactions" label="All Transactions" />

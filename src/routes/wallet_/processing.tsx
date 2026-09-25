@@ -1,16 +1,25 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Banknote } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
 import { depositReference } from "@/lib/wallet-data";
+import {
+  confirmCardFunding,
+  confirmTransferFunding,
+  fetchRecentWalletCredits,
+  isAuthenticated,
+} from "@/lib/api";
+import { refreshWalletFromApi } from "@/lib/wallet-balance";
 
 export const Route = createFileRoute("/wallet_/processing")({
   validateSearch: z.object({
     amount: z.number().catch(0),
     method: z.enum(["transfer", "card"]).catch("transfer"),
     fail: z.string().optional(),
+    ref: z.string().optional(),
+    pending: z.boolean().optional(),
   }),
   head: () => ({
     meta: [
@@ -20,10 +29,6 @@ export const Route = createFileRoute("/wallet_/processing")({
         content: "We're confirming your Kipit wallet deposit — this usually takes seconds.",
       },
       { property: "og:title", content: "Confirming Your Deposit | Kipit" },
-      {
-        property: "og:description",
-        content: "Hang on while we confirm your wallet top-up.",
-      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -32,9 +37,20 @@ export const Route = createFileRoute("/wallet_/processing")({
 });
 
 function DepositProcessing() {
-  const { amount, method, fail } = Route.useSearch();
+  const { amount, method, fail, ref, pending } = Route.useSearch();
   const navigate = useNavigate();
-  const reference = depositReference(amount);
+  const reference =
+    ref ||
+    (typeof window !== "undefined"
+      ? window.sessionStorage.getItem("kipit:card-ref") ||
+        window.sessionStorage.getItem("kipit:last-deposit-ref")
+      : null) ||
+    depositReference(amount);
+  const [note, setNote] = useState(
+    method === "transfer"
+      ? "Waiting for your bank transfer to arrive…"
+      : "Confirming your deposit",
+  );
 
   const steps =
     method === "card"
@@ -42,15 +58,171 @@ function DepositProcessing() {
       : ["Listening for your transfer", "Matching the payment", "Crediting your wallet"];
 
   useEffect(() => {
-    const t = window.setTimeout(() => {
-      if (fail) {
-        void navigate({ to: "/wallet/failed", search: { amount, reason: fail }, replace: true });
-      } else {
-        void navigate({ to: "/wallet/success", search: { amount, method }, replace: true });
+    let cancelled = false;
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+    // Paystack callback often lands with ?reference= / ?trxref=
+    const resolveCardRef = () => {
+      if (ref) return ref;
+      if (typeof window === "undefined") return undefined;
+      const params = new URLSearchParams(window.location.search);
+      return (
+        params.get("reference") ||
+        params.get("trxref") ||
+        params.get("ref") ||
+        window.sessionStorage.getItem("kipit:card-ref") ||
+        undefined
+      );
+    };
+
+    const confirmWithRetry = async (cardRef: string) => {
+      let lastError: unknown;
+      for (let attempt = 0; attempt < 45; attempt++) {
+        if (cancelled) return;
+        try {
+          await confirmCardFunding(cardRef);
+          return;
+        } catch (err) {
+          lastError = err;
+          await sleep(2000);
+        }
       }
-    }, 2600);
-    return () => window.clearTimeout(t);
-  }, [amount, method, fail, navigate]);
+      throw lastError ?? new Error("card confirm timed out");
+    };
+
+    const waitForTransferCredit = async () => {
+      const storedAfter =
+        typeof window !== "undefined"
+          ? window.sessionStorage.getItem("kipit:transfer-watch-after")
+          : null;
+      const after = storedAfter || new Date(Date.now() - 60_000).toISOString();
+      for (let attempt = 0; attempt < 60; attempt++) {
+        if (cancelled) return null;
+        try {
+          const latest = await fetchRecentWalletCredits(after);
+          const credit = latest.credits.find(
+            (c) => c.channel === "transfer" || c.channel === "sandbox",
+          );
+          if (credit) {
+            await refreshWalletFromApi();
+            if (typeof window !== "undefined") {
+              window.sessionStorage.removeItem("kipit:transfer-watch-after");
+              window.sessionStorage.setItem(
+                "kipit:last-deposit-ref",
+                credit.reference || "",
+              );
+            }
+            return { amount: credit.amount, ref: credit.reference || "" };
+          }
+          if (attempt === 10) setNote("Still waiting — transfers usually land within a minute.");
+          if (attempt === 30) {
+            setNote("Almost there — we credit the amount your bank actually sent.");
+          }
+        } catch {
+          /* keep polling */
+        }
+        await sleep(3000);
+      }
+      return null;
+    };
+
+    const run = async () => {
+      if (fail) {
+        await sleep(1800);
+        if (!cancelled) {
+          void navigate({
+            to: "/wallet/failed",
+            search: { amount, reason: fail, ...(ref ? { ref } : {}) },
+            replace: true,
+          });
+        }
+        return;
+      }
+
+      try {
+        if (!isAuthenticated()) throw new Error("not signed in");
+
+        if (method === "card") {
+          const cardRef = resolveCardRef();
+          if (!cardRef) throw new Error("missing card reference");
+          await confirmWithRetry(cardRef);
+          if (typeof window !== "undefined") {
+            window.sessionStorage.setItem("kipit:last-deposit-ref", cardRef);
+            window.sessionStorage.removeItem("kipit:card-ref");
+          }
+          await refreshWalletFromApi();
+          await sleep(400);
+          if (!cancelled) {
+            void navigate({
+              to: "/wallet/success",
+              search: { amount, method, ref: cardRef },
+              replace: true,
+            });
+          }
+          return;
+        }
+
+        // Transfer: intent already created on "I've sent" — only poll for Monnify credit.
+        if (pending !== false) {
+          const alreadyConfirmed =
+            typeof window !== "undefined" &&
+            window.sessionStorage.getItem("kipit:transfer-confirmed") === "1";
+          if (!alreadyConfirmed) {
+            try {
+              await confirmTransferFunding(amount);
+            } catch {
+              /* may already be pending */
+            }
+          } else if (typeof window !== "undefined") {
+            window.sessionStorage.removeItem("kipit:transfer-confirmed");
+          }
+          const credited = await waitForTransferCredit();
+          if (cancelled) return;
+          if (credited != null && credited.amount > 0) {
+            void navigate({
+              to: "/wallet/success",
+              search: {
+                amount: credited.amount,
+                method: "transfer",
+                ...(credited.ref ? { ref: credited.ref } : {}),
+              },
+              replace: true,
+            });
+            return;
+          }
+          setNote(
+            `We have not received ${naira(amount)} yet. Send to your dedicated account — we credit the exact amount that arrives.`,
+          );
+          await sleep(2500);
+          if (!cancelled) void navigate({ to: "/", replace: true });
+          return;
+        }
+
+        // No silent success path — require card confirm or transfer credit poll above.
+        if (!cancelled) void navigate({ to: "/", replace: true });
+      } catch {
+        if (!cancelled) {
+          if (method === "transfer") void navigate({ to: "/", replace: true });
+          else {
+            const failRef = resolveCardRef();
+            void navigate({
+              to: "/wallet/failed",
+              search: {
+                amount,
+                reason: "auth",
+                ...(failRef ? { ref: failRef } : {}),
+              },
+              replace: true,
+            });
+          }
+        }
+      }
+    };
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [amount, method, fail, ref, pending, navigate]);
 
   return (
     <AppShell title="Processing" navVariant="elevated">
@@ -76,7 +248,7 @@ function DepositProcessing() {
             </span>
 
             <p className="k-success-fade mt-7 font-display text-[22px] font-extrabold leading-tight tracking-[-0.02em]">
-              Confirming your deposit
+              {note}
             </p>
             <p className="k-success-fade mt-2 text-[12.5px] text-primary-foreground/65">
               {naira(amount)} · Ref {reference}

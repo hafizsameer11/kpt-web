@@ -26,7 +26,7 @@ export function KycStep({
   subtitle?: string;
   step?: number;
   totalSteps?: number;
-  backTo?: "/verification" | "/settings";
+  backTo?: string;
   backLabel?: string;
   hero?: ReactNode;
   /** Desktop-only supporting rail shown beside the step content. */

@@ -11,7 +11,7 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { Rise } from "@/components/kipit/motion";
@@ -21,6 +21,8 @@ import {
   EXPLORE_CATEGORIES,
   EXPLORE_COMING_SOON,
   EXPLORE_PRODUCTS,
+  hydrateExploreFromApi,
+  subscribeExplore,
   type ExploreProduct,
 } from "@/lib/explore-data";
 
@@ -54,6 +56,14 @@ const CATEGORY_ICON = {
 } as const;
 
 function ExploreScreen() {
+  useSyncExternalStore(
+    subscribeExplore,
+    () => `${EXPLORE_PRODUCTS.length}:${EXPLORE_CATEGORIES.length}`,
+    () => "0",
+  );
+  useEffect(() => {
+    void hydrateExploreFromApi();
+  }, []);
   return (
     <AppShell title="Explore" navVariant="elevated">
       <DesktopExplore />

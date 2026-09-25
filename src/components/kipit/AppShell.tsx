@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Home,
   TrendingUp,
@@ -8,8 +8,9 @@ import {
   MessageCircle,
   type LucideIcon,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { DashboardSidebar, DashboardTopBar } from "./DashboardSidebar";
+import { isAuthenticated } from "@/lib/api";
 
 type Tab = { label: string; to: string; icon: LucideIcon };
 
@@ -30,9 +31,20 @@ export function AppShell({
   title?: string;
   navVariant?: "classic" | "floating" | "morph" | "aurora" | "elevated" | "orbit";
 }) {
+  const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isActive = (to: string) =>
     to === "/" ? pathname === "/" || pathname.startsWith("/home-v") : pathname === to;
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      void navigate({ to: "/welcome", replace: true });
+    }
+  }, [navigate, pathname]);
+
+  if (!isAuthenticated()) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">

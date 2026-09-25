@@ -1,9 +1,14 @@
 import { KycGuard } from "@/components/kipit/KycGate";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Check, Landmark, Plus, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
-import { findAccount, maskAccount, payoutEta, SAVED_ACCOUNTS } from "@/lib/withdraw-data";
+import {
+  hydratePayoutFromApi,
+  maskAccount,
+  payoutEta,
+  type PayoutAccount,
+} from "@/lib/withdraw-data";
 
 export const Route = createFileRoute("/withdraw_/accounts")({
   head: () => ({
@@ -31,27 +36,50 @@ export const Route = createFileRoute("/withdraw_/accounts")({
 });
 
 function SelectAccountScreen() {
-  const navigate = useNavigate();
-  const [selected, setSelected] = useState(SAVED_ACCOUNTS[0]?.id ?? "");
+  const [accounts, setAccounts] = useState<PayoutAccount[]>([]);
+  const [selected, setSelected] = useState("");
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    void hydratePayoutFromApi().then((rows) => {
+      setAccounts(rows);
+      setSelected(rows[0]?.id ?? "");
+      setLoaded(true);
+    });
+  }, []);
 
   return (
     <>
       <div className="md:hidden">
-        <MobileSelectAccount selected={selected} setSelected={setSelected} />
+        <MobileSelectAccount
+          accounts={accounts}
+          selected={selected}
+          setSelected={setSelected}
+          loaded={loaded}
+        />
       </div>
       <div className="hidden md:block">
-        <DesktopSelectAccount selected={selected} setSelected={setSelected} />
+        <DesktopSelectAccount
+          accounts={accounts}
+          selected={selected}
+          setSelected={setSelected}
+          loaded={loaded}
+        />
       </div>
     </>
   );
 }
 
 function MobileSelectAccount({
+  accounts,
   selected,
   setSelected,
+  loaded,
 }: {
+  accounts: PayoutAccount[];
   selected: string;
   setSelected: (id: string) => void;
+  loaded: boolean;
 }) {
   const navigate = useNavigate();
 
@@ -89,51 +117,57 @@ function MobileSelectAccount({
             Saved accounts
           </p>
 
-          <ul className="mt-3 space-y-2.5 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
-            {SAVED_ACCOUNTS.map((acct) => {
-              const active = acct.id === selected;
-              return (
-                <li key={acct.id}>
-                  <button
-                    type="button"
-                    onClick={() => setSelected(acct.id)}
-                    aria-pressed={active}
-                    className={`flex w-full items-center gap-3 rounded-xl border p-3.5 text-left transition-colors press ${
-                      active
-                        ? "border-gold bg-gold/[0.07]"
-                        : "border-border bg-card hover:border-gold/40"
-                    }`}
-                  >
-                    <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                      <Landmark className="size-5" strokeWidth={2.2} />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-2">
-                        <span className="truncate text-[13.5px] font-bold text-foreground">
-                          {acct.accountName}
-                        </span>
-                        {acct.primary && (
-                          <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-primary">
-                            Primary
-                          </span>
-                        )}
-                      </span>
-                      <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-                        {acct.bank} · {maskAccount(acct.accountNumber)}
-                      </span>
-                    </span>
-                    <span
-                      className={`grid size-5 shrink-0 place-items-center rounded-full border ${
-                        active ? "border-gold bg-gold text-gold-foreground" : "border-border"
+          {loaded && accounts.length === 0 ? (
+            <p className="mt-3 rounded-xl border border-dashed border-border bg-card px-4 py-5 text-[13px] text-muted-foreground">
+              No saved payout accounts yet. Add a bank account to continue.
+            </p>
+          ) : (
+            <ul className="mt-3 space-y-2.5 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
+              {accounts.map((acct) => {
+                const active = acct.id === selected;
+                return (
+                  <li key={acct.id}>
+                    <button
+                      type="button"
+                      onClick={() => setSelected(acct.id)}
+                      aria-pressed={active}
+                      className={`flex w-full items-center gap-3 rounded-xl border p-3.5 text-left transition-colors press ${
+                        active
+                          ? "border-gold bg-gold/[0.07]"
+                          : "border-border bg-card hover:border-gold/40"
                       }`}
                     >
-                      {active && <Check className="size-3.5" strokeWidth={3} />}
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+                      <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                        <Landmark className="size-5" strokeWidth={2.2} />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-center gap-2">
+                          <span className="truncate text-[13.5px] font-bold text-foreground">
+                            {acct.accountName}
+                          </span>
+                          {acct.primary && (
+                            <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-primary">
+                              Primary
+                            </span>
+                          )}
+                        </span>
+                        <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
+                          {acct.bank} · {maskAccount(acct.accountNumber)}
+                        </span>
+                      </span>
+                      <span
+                        className={`grid size-5 shrink-0 place-items-center rounded-full border ${
+                          active ? "border-gold bg-gold text-gold-foreground" : "border-border"
+                        }`}
+                      >
+                        {active && <Check className="size-3.5" strokeWidth={3} />}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
 
           <Link
             to="/withdraw/add-account"
@@ -171,14 +205,18 @@ function MobileSelectAccount({
 }
 
 function DesktopSelectAccount({
+  accounts,
   selected,
   setSelected,
+  loaded,
 }: {
+  accounts: PayoutAccount[];
   selected: string;
   setSelected: (id: string) => void;
+  loaded: boolean;
 }) {
   const navigate = useNavigate();
-  const acct = findAccount(selected);
+  const acct = accounts.find((a) => a.id === selected) ?? accounts[0];
 
   return (
     <AppShell title="Payout Account">
@@ -202,61 +240,68 @@ function DesktopSelectAccount({
               </p>
             </div>
             <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 text-[11px] font-bold text-primary-foreground">
-              {SAVED_ACCOUNTS.length} saved account
-              {SAVED_ACCOUNTS.length === 1 ? "" : "s"}
+              {accounts.length === 0
+                ? "No saved accounts"
+                : `${accounts.length} saved account${accounts.length === 1 ? "" : "s"}`}
             </span>
           </div>
         </section>
 
         <div className="grid grid-cols-[minmax(0,1fr)_340px] items-start gap-6">
           <div className="min-w-0 space-y-4">
-            <ul className="grid grid-cols-2 gap-4">
-              {SAVED_ACCOUNTS.map((a) => {
-                const active = a.id === selected;
-                return (
-                  <li key={a.id}>
-                    <button
-                      type="button"
-                      onClick={() => setSelected(a.id)}
-                      aria-pressed={active}
-                      className={`flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition-colors press ${
-                        active
-                          ? "border-gold bg-gold/[0.07] ring-1 ring-gold/40"
-                          : "border-border bg-card hover:border-gold/40"
-                      }`}
-                    >
-                      <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                        <Landmark className="size-5" strokeWidth={2.2} />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="flex items-center gap-2">
-                          <span className="truncate text-[14px] font-bold text-foreground">
-                            {a.accountName}
-                          </span>
-                          {a.primary && (
-                            <span className="shrink-0 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-gold">
-                              Primary
-                            </span>
-                          )}
-                        </span>
-                        <span className="mt-0.5 block truncate text-[12.5px] text-muted-foreground">
-                          {a.bank} &middot; {maskAccount(a.accountNumber)}
-                        </span>
-                      </span>
-                      <span
-                        className={`grid size-5 shrink-0 place-items-center rounded-full border ${
+            {loaded && accounts.length === 0 ? (
+              <p className="rounded-2xl border border-dashed border-border bg-card px-5 py-6 text-[13px] text-muted-foreground">
+                No saved payout accounts yet. Add a bank account to continue.
+              </p>
+            ) : (
+              <ul className="grid grid-cols-2 gap-4">
+                {accounts.map((a) => {
+                  const active = a.id === selected;
+                  return (
+                    <li key={a.id}>
+                      <button
+                        type="button"
+                        onClick={() => setSelected(a.id)}
+                        aria-pressed={active}
+                        className={`flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition-colors press ${
                           active
-                            ? "border-gold bg-gold text-gold-foreground"
-                            : "border-border"
+                            ? "border-gold bg-gold/[0.07] ring-1 ring-gold/40"
+                            : "border-border bg-card hover:border-gold/40"
                         }`}
                       >
-                        {active && <Check className="size-3.5" strokeWidth={3} />}
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+                        <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                          <Landmark className="size-5" strokeWidth={2.2} />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="flex items-center gap-2">
+                            <span className="truncate text-[14px] font-bold text-foreground">
+                              {a.accountName}
+                            </span>
+                            {a.primary && (
+                              <span className="shrink-0 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-gold">
+                                Primary
+                              </span>
+                            )}
+                          </span>
+                          <span className="mt-0.5 block truncate text-[12.5px] text-muted-foreground">
+                            {a.bank} &middot; {maskAccount(a.accountNumber)}
+                          </span>
+                        </span>
+                        <span
+                          className={`grid size-5 shrink-0 place-items-center rounded-full border ${
+                            active
+                              ? "border-gold bg-gold text-gold-foreground"
+                              : "border-border"
+                          }`}
+                        >
+                          {active && <Check className="size-3.5" strokeWidth={3} />}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
 
             <Link
               to="/withdraw/add-account"
@@ -282,19 +327,25 @@ function DesktopSelectAccount({
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Receiving account
               </p>
-              <div className="mt-4 flex items-center gap-3">
-                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-navy/5 text-primary">
-                  <Landmark className="size-5" strokeWidth={2} />
-                </span>
-                <span className="min-w-0">
-                  <span className="block truncate text-[14px] font-bold text-foreground">
-                    {acct.bank}
+              {acct ? (
+                <div className="mt-4 flex items-center gap-3">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-navy/5 text-primary">
+                    <Landmark className="size-5" strokeWidth={2} />
                   </span>
-                  <span className="block truncate text-[12px] text-muted-foreground">
-                    {acct.accountName} &middot; {maskAccount(acct.accountNumber)}
+                  <span className="min-w-0">
+                    <span className="block truncate text-[14px] font-bold text-foreground">
+                      {acct.bank}
+                    </span>
+                    <span className="block truncate text-[12px] text-muted-foreground">
+                      {acct.accountName} &middot; {maskAccount(acct.accountNumber)}
+                    </span>
                   </span>
-                </span>
-              </div>
+                </div>
+              ) : (
+                <p className="mt-4 text-[13px] text-muted-foreground">
+                  Select or add a payout account.
+                </p>
+              )}
               <p className="mt-4 flex items-center gap-1.5 text-[12px] text-muted-foreground">
                 <ShieldCheck className="size-3.5 text-primary" /> {payoutEta}
               </p>

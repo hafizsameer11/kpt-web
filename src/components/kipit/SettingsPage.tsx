@@ -7,7 +7,7 @@ type Props = {
   title: string;
   eyebrow?: string;
   subtitle?: string;
-  backTo?: "/settings" | "/settings/security" | "/settings/help";
+  backTo?: string;
   backLabel?: string;
   hero?: ReactNode;
   children: ReactNode;
@@ -37,7 +37,7 @@ export function SettingsPage({
           />
           <div className="relative md:max-w-3xl">
             <Link
-              to={backTo}
+              to={backTo as "/settings"}
               className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold press"
             >
               <ArrowLeft className="size-3.5" /> {backLabel}

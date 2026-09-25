@@ -18,13 +18,16 @@ import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { Rise } from "@/components/kipit/motion";
 import {
   AVAILABILITY_LABEL,
+  ensureExploreHydrated,
   getExploreProduct,
   getProductDetail,
 } from "@/lib/explore-data";
-import { naira, WALLET } from "@/lib/home-data";
+import { naira } from "@/lib/home-data";
+import { useWalletBalance } from "@/lib/wallet-balance";
 
 export const Route = createFileRoute("/explore_/$productId")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
+    await ensureExploreHydrated();
     const product = getExploreProduct(params.productId);
     if (!product) throw notFound();
     return { product, detail: getProductDetail(product) };
@@ -77,12 +80,13 @@ function ProductNotFound() {
 
 function ProductDetailScreen() {
   const { product: p, detail } = Route.useLoaderData();
+  const WALLET = useWalletBalance();
   const [amount, setAmount] = useState(p.minimum);
   const [inputValue, setInputValue] = useState(p.minimum.toLocaleString("en-NG"));
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const closed = p.availability === "closed";
-  const largeTicket = p.minimum >= 5_000_000;
+  const largeTicket = Boolean(p.largeTicket) || p.minimum >= 5_000_000;
 
   const ratePct = Number(p.rate.match(/[\d.]+/)?.[0]) || 0;
   const days = Number(p.tenor.replace(/[^0-9]/g, "")) || 365;

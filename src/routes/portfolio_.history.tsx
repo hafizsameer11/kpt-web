@@ -1,14 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, ChevronRight, History } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
-import {
-  INVESTMENT_HISTORY,
-  type InvestmentStatus,
-} from "@/lib/portfolio-data";
+import { fetchPlacements } from "@/lib/api";
+import type { InvestmentRecord, InvestmentStatus } from "@/lib/portfolio-data";
 
 export const Route = createFileRoute("/portfolio_/history")({
   head: () => ({
@@ -20,11 +18,6 @@ export const Route = createFileRoute("/portfolio_/history")({
           "Review every Kipit investment — active, matured and closed — with principal, rate, dates and interest earned.",
       },
       { property: "og:title", content: "Investment History | Kipit" },
-      {
-        property: "og:description",
-        content:
-          "Your full Kipit investment record: principal, rate, tenor dates and interest earned on each plan and product.",
-      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -34,12 +27,57 @@ export const Route = createFileRoute("/portfolio_/history")({
 
 const FILTERS: InvestmentStatus[] = ["Active", "Matured", "Closed"];
 
+function mapStatus(raw: string): InvestmentStatus {
+  const s = raw.toUpperCase();
+  if (s === "MATURED" || s === "COMPLETED") return "Matured";
+  if (s === "CLOSED" || s === "CANCELLED" || s === "REDEEMED") return "Closed";
+  return "Active";
+}
+
 function InvestmentHistoryScreen() {
   const { mask, hidden } = useBalanceVisibility();
   const navigate = useNavigate();
   const [filter, setFilter] = useState<InvestmentStatus>("Active");
-  const records = INVESTMENT_HISTORY.filter((r) => r.status === filter);
-  const interestTotal = INVESTMENT_HISTORY.reduce((s, r) => s + r.interest, 0);
+  const [history, setHistory] = useState<InvestmentRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    void fetchPlacements()
+      .then((rows) => {
+        if (!alive) return;
+        setHistory(
+          (rows ?? []).map((p) => ({
+            id: p.id,
+            name: p.name,
+            kind: String(p.kind).toUpperCase() === "EXPLORE" ? "Explore product" : "Fixed plan",
+            status: mapStatus(p.status),
+            principal: p.principal,
+            rate: `${p.ratePct}% p.a.`,
+            startDate: "—",
+            endDate: p.maturityDate ?? "—",
+            interest: p.accrued ?? 0,
+            holdingId: p.id,
+          })),
+        );
+      })
+      .catch(() => {
+        if (alive) setHistory([]);
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const records = useMemo(
+    () => history.filter((r) => r.status === filter),
+    [history, filter],
+  );
+  const interestTotal = history.reduce((s, r) => s + r.interest, 0);
 
   return (
     <AppShell title="Investment history" navVariant="elevated">
@@ -68,7 +106,7 @@ function InvestmentHistoryScreen() {
               </div>
               <div className="flex gap-3">
                 {FILTERS.map((f) => {
-                  const count = INVESTMENT_HISTORY.filter((r) => r.status === f).length;
+                  const count = history.filter((r) => r.status === f).length;
                   const active = f === filter;
                   return (
                     <button
@@ -106,7 +144,11 @@ function InvestmentHistoryScreen() {
                 Transaction history <ChevronRight className="size-3.5" />
               </Link>
             </div>
-            {records.length > 0 ? (
+            {loading ? (
+              <p className="px-6 py-12 text-center text-[12.5px] text-muted-foreground">
+                Loading investments…
+              </p>
+            ) : records.length > 0 ? (
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b border-border text-[10px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
@@ -202,7 +244,7 @@ function InvestmentHistoryScreen() {
               style={{ ["--d" as string]: "80ms" }}
             >
               <History className="size-3.5 text-gold" />
-              {INVESTMENT_HISTORY.length} investments on record
+              {loading ? "Loading…" : `${history.length} investments on record`}
             </p>
           </div>
         </section>
@@ -216,7 +258,7 @@ function InvestmentHistoryScreen() {
           {/* Filters */}
           <div className="flex gap-2">
             {FILTERS.map((f) => {
-              const count = INVESTMENT_HISTORY.filter((r) => r.status === f).length;
+              const count = history.filter((r) => r.status === f).length;
               const active = f === filter;
               return (
                 <button

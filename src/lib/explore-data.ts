@@ -10,12 +10,7 @@ export type ExploreCategory = {
   count: number;
 };
 
-export const EXPLORE_CATEGORIES: ExploreCategory[] = [
-  { id: "tbills", name: "Treasury Bills", short: "T-Bills", count: 4 },
-  { id: "cp", name: "Commercial Papers", short: "Commercial", count: 3 },
-  { id: "notes", name: "Private & Structured Notes", short: "Notes", count: 2 },
-  { id: "portfolios", name: "Managed Portfolios", short: "Portfolios", count: 2 },
-];
+export let EXPLORE_CATEGORIES: ExploreCategory[] = [];
 
 export type ExploreProduct = {
   id: string;
@@ -30,166 +25,13 @@ export type ExploreProduct = {
   closes: string;
   featured?: boolean;
   blurb: string;
+  largeTicket?: boolean;
 };
 
-export const EXPLORE_PRODUCTS: ExploreProduct[] = [
-  {
-    id: "p1",
-    name: "364-Day Treasury Bill",
-    issuer: "Federal Government of Nigeria",
-    categoryId: "tbills",
-    category: "Treasury Bills",
-    rate: "22.4% p.a.",
-    tenor: "364 days",
-    minimum: 100_000,
-    availability: "open",
-    closes: "Closes 12 Sep 2026",
-    featured: true,
-    blurb: "Sovereign-backed discount instrument held to maturity.",
-  },
-  {
-    id: "p2",
-    name: "Dangote Cement CP Series 12",
-    issuer: "Dangote Cement Plc",
-    categoryId: "cp",
-    category: "Commercial Papers",
-    rate: "24.1% p.a.",
-    tenor: "180 days",
-    minimum: 500_000,
-    availability: "closing",
-    closes: "Closes in 3 days",
-    featured: true,
-    blurb: "Short-term corporate paper from a blue-chip issuer.",
-  },
-  {
-    id: "p3",
-    name: "182-Day Treasury Bill",
-    issuer: "Federal Government of Nigeria",
-    categoryId: "tbills",
-    category: "Treasury Bills",
-    rate: "20.8% p.a.",
-    tenor: "182 days",
-    minimum: 100_000,
-    availability: "open",
-    closes: "Closes 19 Sep 2026",
-    featured: true,
-    blurb: "A half-year sovereign bill for parked cash.",
-  },
-  {
-    id: "p4",
-    name: "MTN Nigeria CP Series 8",
-    issuer: "MTN Nigeria Communications Plc",
-    categoryId: "cp",
-    category: "Commercial Papers",
-    rate: "23.5% p.a.",
-    tenor: "270 days",
-    minimum: 500_000,
-    availability: "open",
-    closes: "Closes 24 Sep 2026",
-    blurb: "Telecoms issuer paper with quarterly coupon reporting.",
-  },
-  {
-    id: "p5",
-    name: "Infrastructure Note Series II",
-    issuer: "Kipit Structured Partners",
-    categoryId: "notes",
-    category: "Private & Structured Notes",
-    rate: "26.0% p.a.",
-    tenor: "540 days",
-    minimum: 5_000_000,
-    availability: "closing",
-    closes: "Closes in 6 days",
-    featured: true,
-    blurb: "Private note secured on operating infrastructure assets.",
-  },
-  {
-    id: "p6",
-    name: "Naira Balanced Portfolio",
-    issuer: "SEC-licensed fund manager",
-    categoryId: "portfolios",
-    category: "Managed Portfolios",
-    rate: "18.9% p.a. target",
-    tenor: "Open-ended",
-    minimum: 250_000,
-    availability: "open",
-    closes: "Always open",
-    blurb: "A managed mix of bills, papers and bonds.",
-  },
-  {
-    id: "p7",
-    name: "Eurobond Income Portfolio",
-    issuer: "SEC-licensed fund manager",
-    categoryId: "portfolios",
-    category: "Managed Portfolios",
-    rate: "9.2% p.a. (USD)",
-    tenor: "Open-ended",
-    minimum: 2_000_000,
-    availability: "closed",
-    closes: "Fully subscribed",
-    blurb: "Dollar income exposure; reopens next allocation window.",
-  },
-  {
-    id: "p8",
-    name: "91-Day Treasury Bill",
-    issuer: "Federal Government of Nigeria",
-    categoryId: "tbills",
-    category: "Treasury Bills",
-    rate: "19.3% p.a.",
-    tenor: "91 days",
-    minimum: 100_000,
-    availability: "open",
-    closes: "Closes 09 Sep 2026",
-    blurb: "The shortest sovereign tenor on the marketplace.",
-  },
-  {
-    id: "p9",
-    name: "Zenith Bank CP Series 45",
-    issuer: "Zenith Bank Plc",
-    categoryId: "cp",
-    category: "Commercial Papers",
-    rate: "23.0% p.a.",
-    tenor: "90 days",
-    minimum: 1_000_000,
-    availability: "closed",
-    closes: "Fully subscribed",
-    blurb: "Bank-issued short-term paper that closed after strong demand.",
-  },
-  {
-    id: "p10",
-    name: "Real Estate Bridge Note",
-    issuer: "Kipit Structured Partners",
-    categoryId: "notes",
-    category: "Private & Structured Notes",
-    rate: "27.5% p.a.",
-    tenor: "720 days",
-    minimum: 10_000_000,
-    availability: "open",
-    closes: "Closes 30 Sep 2026",
-    featured: true,
-    blurb: "Senior-secured bridge facility on a mixed-use development.",
-  },
-  {
-    id: "p11",
-    name: "282-Day Treasury Bill",
-    issuer: "Federal Government of Nigeria",
-    categoryId: "tbills",
-    category: "Treasury Bills",
-    rate: "21.5% p.a.",
-    tenor: "282 days",
-    minimum: 100_000,
-    availability: "closing",
-    closes: "Closes in 2 days",
-    featured: true,
-    blurb: "Mid-tenor sovereign bill with a near-term auction close.",
-  },
-];
+export let EXPLORE_PRODUCTS: ExploreProduct[] = [];
 
 /** Coming Soon rail (MOB-080). */
-export const EXPLORE_COMING_SOON = [
-  { name: "Real Estate Notes", note: "Fractional income-generating property" },
-  { name: "Dollar Fixed Income", note: "USD savings and Eurobond access" },
-  { name: "Green Energy Notes", note: "Solar and mini-grid project funding" },
-];
+export const EXPLORE_COMING_SOON: { name: string; note: string }[] = [];
 
 export const AVAILABILITY_LABEL: Record<
   ExploreProduct["availability"],
@@ -226,6 +68,78 @@ const CATEGORY_ABOUT: Record<string, string> = {
 
 export function getExploreProduct(id: string) {
   return EXPLORE_PRODUCTS.find((p) => p.id === id);
+}
+
+const exploreListeners = new Set<() => void>();
+export function subscribeExplore(listener: () => void) {
+  exploreListeners.add(listener);
+  return () => {
+    exploreListeners.delete(listener);
+  };
+}
+function emitExplore() {
+  exploreListeners.forEach((l) => l());
+}
+
+function mapAvailability(raw: string): ExploreProduct["availability"] {
+  const v = raw.toLowerCase();
+  if (v === "closing") return "closing";
+  if (v === "closed") return "closed";
+  return "open";
+}
+
+let exploreHydratePromise: Promise<boolean> | null = null;
+
+/** Hydrate marketplace catalog from /v1/explore (empty on failure). */
+export async function hydrateExploreFromApi() {
+  try {
+    const { fetchExploreCategories, fetchExploreProducts } = await import("@/lib/api");
+    const [cats, products] = await Promise.all([
+      fetchExploreCategories().catch(() => []),
+      fetchExploreProducts().catch(() => []),
+    ]);
+    const list = Array.isArray(products) ? products : [];
+    const catList = Array.isArray(cats) ? cats : [];
+    EXPLORE_CATEGORIES = catList.map((c) => ({
+      id: c.slug || c.id,
+      name: c.name,
+      short: c.name.split(" ")[0] || c.name,
+      count: c.productCount ?? 0,
+    }));
+    EXPLORE_PRODUCTS = list.map((p, i) => ({
+      id: p.id || p.slug,
+      name: p.name,
+      issuer: p.issuer || "",
+      categoryId: p.category?.slug || "",
+      category: p.category?.name || "",
+      rate: `${p.ratePct}% p.a.`,
+      tenor: `${p.tenorDays} days`,
+      minimum: p.minimum,
+      availability: mapAvailability(p.availability),
+      closes: p.availability?.toLowerCase() === "open" ? "Open" : "See details",
+      featured: i < 4,
+      blurb: p.blurb || "",
+      largeTicket: Boolean(p.largeTicket) || p.minimum >= 5_000_000,
+    }));
+    emitExplore();
+    return true;
+  } catch {
+    EXPLORE_CATEGORIES = [];
+    EXPLORE_PRODUCTS = [];
+    emitExplore();
+    return false;
+  }
+}
+
+/** Await catalog before product loaders so deep links don't 404 on a race. */
+export async function ensureExploreHydrated() {
+  if (EXPLORE_PRODUCTS.length > 0) return true;
+  if (!exploreHydratePromise) {
+    exploreHydratePromise = hydrateExploreFromApi().finally(() => {
+      exploreHydratePromise = null;
+    });
+  }
+  return exploreHydratePromise;
 }
 
 export function getProductDetail(p: ExploreProduct): ProductDetail {

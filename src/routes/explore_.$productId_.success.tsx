@@ -3,7 +3,7 @@ import { ArrowRight, Building2, CreditCard, Plus, Wallet } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { naira } from "@/lib/home-data";
-import { getExploreProduct } from "@/lib/explore-data";
+import { ensureExploreHydrated, getExploreProduct } from "@/lib/explore-data";
 
 export const Route = createFileRoute("/explore_/$productId_/success")({
   head: () => ({
@@ -24,13 +24,15 @@ export const Route = createFileRoute("/explore_/$productId_/success")({
     ],
   }),
   validateSearch: (search: Record<string, unknown>) => ({
-    amount: Number(search['amount']) || 0,
+    amount: Number(search["amount"]) || 0,
     source:
-      search['source'] === "add" || search['source'] === "card"
-        ? (search['source'] as "add" | "card")
+      search["source"] === "add" || search["source"] === "card"
+        ? (search["source"] as "add" | "card")
         : ("wallet" as const),
+    placementId: typeof search["placementId"] === "string" ? search["placementId"] : "",
   }),
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
+    await ensureExploreHydrated();
     const product = getExploreProduct(params.productId);
     if (!product) throw notFound();
     return { product };
@@ -48,7 +50,7 @@ const SOURCE_META = {
 
 function SubscriptionSuccessScreen() {
   const { product } = Route.useLoaderData();
-  const { amount, source } = Route.useSearch();
+  const { amount, source, placementId } = Route.useSearch();
 
   const ratePct = Number(product.rate.match(/[\d.]+/)?.[0]) || 0;
   const days = Number(product.tenor.match(/\d+/)?.[0]) || 365;
@@ -58,7 +60,9 @@ function SubscriptionSuccessScreen() {
     "en-NG",
     { day: "2-digit", month: "short", year: "numeric" },
   );
-  const reference = `KPT-MP-${String(Math.abs(amount + days) % 100000).padStart(5, "0")}`;
+  const reference =
+    placementId ||
+    `KPT-MP-${String(Math.abs(amount + days) % 100000).padStart(5, "0")}`;
   const SourceIcon = SOURCE_META[source].icon;
 
   return (

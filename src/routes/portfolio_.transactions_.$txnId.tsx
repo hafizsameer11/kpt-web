@@ -9,7 +9,12 @@ import {
 import { useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { ReceiptDialog } from "@/components/kipit/ReceiptView";
-import { getTransaction, naira, type TxnStatus } from "@/lib/portfolio-data";
+import {
+  loadPortfolioTransaction,
+  naira,
+  type Transaction,
+  type TxnStatus,
+} from "@/lib/portfolio-data";
 
 export const Route = createFileRoute("/portfolio_/transactions_/$txnId")({
   head: () => ({
@@ -30,9 +35,10 @@ export const Route = createFileRoute("/portfolio_/transactions_/$txnId")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  loader: ({ params }) => {
-    if (!getTransaction(params.txnId)) throw notFound();
-    return null;
+  loader: async ({ params }) => {
+    const txn = await loadPortfolioTransaction(params.txnId);
+    if (!txn) throw notFound();
+    return { txn };
   },
   component: TransactionDetailScreen,
 });
@@ -54,8 +60,7 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 function TransactionDetailScreen() {
-  const { txnId } = Route.useParams();
-  const txn = getTransaction(txnId)!;
+  const { txn } = Route.useLoaderData() as { txn: Transaction };
   const [receiptOpen, setReceiptOpen] = useState(false);
 
   return (

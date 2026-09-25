@@ -1,11 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ChevronRight, Gift as GiftIcon, Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
-import { GIFTS, GIFT_TABS, giftsForTab, type GiftTab } from "@/lib/gift-data";
+import {
+  GIFT_TABS,
+  hydrateGiftsFromApi,
+  type Gift,
+  type GiftTab,
+} from "@/lib/gift-data";
 
 export const Route = createFileRoute("/gifts")({
   head: () => ({
@@ -38,8 +43,14 @@ const STATUS_STYLE: Record<string, string> = {
 function GiftsScreen() {
   const { mask, hidden } = useBalanceVisibility();
   const [tab, setTab] = useState<GiftTab>("Sent");
-  const list = giftsForTab(tab);
-  const totalGifted = GIFTS.reduce((s, g) => s + g.amount, 0);
+  const [gifts, setGifts] = useState<Gift[]>([]);
+
+  useEffect(() => {
+    void hydrateGiftsFromApi().then(setGifts);
+  }, []);
+
+  const list = tab === "Sent" ? gifts : gifts.filter((g) => g.status === tab);
+  const totalGifted = gifts.reduce((s, g) => s + g.amount, 0);
 
   return (
     <AppShell title="Gift investments" navVariant="elevated">
@@ -67,7 +78,7 @@ function GiftsScreen() {
                 </p>
                 <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11.5px] font-bold">
                   <GiftIcon className="size-3.5 text-gold" />
-                  {GIFTS.length} gifts sent
+                  {gifts.length} gifts sent
                 </p>
               </div>
               <div className="flex items-end gap-3">
@@ -89,7 +100,7 @@ function GiftsScreen() {
                           {t}
                         </p>
                         <p className="mt-0.5 font-display text-[20px] font-extrabold text-num">
-                          {giftsForTab(t).length}
+                          {(t === "Sent" ? gifts : gifts.filter((g) => g.status === t)).length}
                         </p>
                       </button>
                     );
@@ -184,9 +195,9 @@ function GiftsScreen() {
 
               <section className="rounded-2xl border border-border bg-card p-5">
                 <h2 className="font-display text-[15px] font-extrabold">Awaiting claim</h2>
-                {GIFTS.filter((g) => g.status === "Pending").length > 0 ? (
+                {gifts.filter((g) => g.status === "Pending").length > 0 ? (
                   <ul className="mt-3 space-y-2">
-                    {GIFTS.filter((g) => g.status === "Pending").map((g) => (
+                    {gifts.filter((g) => g.status === "Pending").map((g) => (
                       <li key={g.id}>
                         <Link
                           to="/gifts/$giftId"
@@ -244,7 +255,7 @@ function GiftsScreen() {
               style={{ ["--d" as string]: "80ms" }}
             >
               <GiftIcon className="size-3.5 text-gold" />
-              {GIFTS.length} gifts sent
+              {gifts.length} gifts sent
             </p>
           </div>
         </section>
@@ -270,7 +281,7 @@ function GiftsScreen() {
                       : "border-border bg-card text-muted-foreground"
                   }`}
                 >
-                  {t} · {giftsForTab(t).length}
+                  {t} · {(t === "Sent" ? gifts : gifts.filter((g) => g.status === t)).length}
                 </button>
               );
             })}

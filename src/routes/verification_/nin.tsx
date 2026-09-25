@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, IdCard, Info, Lock } from "lucide-react";
+import { ArrowRight, IdCard, Lock } from "lucide-react";
 import { useState } from "react";
 import { KycStep, kycCta, kycField, kycLabel } from "@/components/kipit/KycStep";
 import { DEMO_NIN_LENGTH } from "@/lib/kyc-data";
+import { getTier2Draft, patchTier2Draft } from "@/lib/tier2-draft";
 
 export const Route = createFileRoute("/verification_/nin")({
   head: () => ({
@@ -14,7 +15,6 @@ export const Route = createFileRoute("/verification_/nin")({
           "Enter your 11-digit National Identity Number to continue Kipit Tier 2 verification.",
       },
       { property: "og:title", content: "Enter Your NIN | Kipit" },
-      { property: "og:description", content: "Submit your NIN for Kipit Tier 2 verification." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/verification_/nin")({
 
 function NinEntry() {
   const navigate = useNavigate();
-  const [nin, setNin] = useState("");
+  const [nin, setNin] = useState(() => getTier2Draft().nin);
   const valid = nin.length === DEMO_NIN_LENGTH;
 
   return (
@@ -36,29 +36,21 @@ function NinEntry() {
       title="Enter your NIN"
       subtitle="Dial *346# on any Nigerian line to retrieve your National Identity Number."
       aside={
-        <>
-          <section className="card-surface p-5">
-            <p className="text-[12.5px] font-extrabold text-foreground">Why Tier 2 needs your NIN</p>
-            <ul className="mt-2 space-y-2">
-              {[
-                "Required before your first withdrawal.",
-                "Matches your payout bank account name.",
-                "Raises your transaction limits.",
-              ].map((t) => (
-                <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
-                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </section>
-          <section className="card-surface p-5">
-            <p className="text-[12.5px] font-extrabold text-foreground">What comes next</p>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
-              A quick selfie check, your residential address, then occupation and source of funds.
-            </p>
-          </section>
-        </>
+        <section className="card-surface p-5">
+          <p className="text-[12.5px] font-extrabold text-foreground">Why Tier 2 needs your NIN</p>
+          <ul className="mt-2 space-y-2">
+            {[
+              "Required before your first withdrawal.",
+              "Matched to your Kipit profile name.",
+              "Raises your transaction limits.",
+            ].map((t) => (
+              <li key={t} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                {t}
+              </li>
+            ))}
+          </ul>
+        </section>
       }
       step={1}
       totalSteps={4}
@@ -86,25 +78,22 @@ function NinEntry() {
         </label>
 
         <p className="mt-3 flex items-start gap-1.5 text-[11.5px] text-muted-foreground">
-          <Lock className="mt-0.5 size-3.5 shrink-0" /> Encrypted and never shared with third
-          parties beyond identity verification.
+          <Lock className="mt-0.5 size-3.5 shrink-0" /> Encrypted and never shared beyond identity
+          verification.
         </p>
 
         <button
           type="button"
           disabled={!valid}
-          onClick={() => void navigate({ to: "/verification/liveness" })}
+          onClick={() => {
+            patchTier2Draft({ nin });
+            void navigate({ to: "/verification/selfie" });
+          }}
           className={`mt-5 ${kycCta}`}
         >
           Continue <ArrowRight className="size-4" strokeWidth={2.6} />
         </button>
       </section>
-
-      <p className="mt-4 flex items-start gap-2 rounded-xl bg-secondary px-3.5 py-3 text-[11.5px] text-muted-foreground md:max-w-lg">
-        <Info className="mt-0.5 size-4 shrink-0" />
-        The name on your NIN must match the name on your BVN. If they differ, update your NIMC
-        record before continuing.
-      </p>
     </KycStep>
   );
 }

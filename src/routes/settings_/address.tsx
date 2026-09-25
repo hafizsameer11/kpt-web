@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { MapPin } from "lucide-react";
-import { Field, FieldCard, SettingsPage } from "@/components/kipit/SettingsPage";
-import { ADDRESS } from "@/lib/settings-data";
+import { useEffect, useState } from "react";
+import { FieldCard, SettingsPage } from "@/components/kipit/SettingsPage";
+import { ApiError, fetchProfile, patchAddress, patchProfile } from "@/lib/api";
+import { NIGERIAN_STATES } from "@/lib/kyc-data";
+import { EMPLOYMENT_STATUS, SOURCE_OF_FUNDS } from "@/lib/kyc-data";
 
 export const Route = createFileRoute("/settings_/address")({
   head: () => ({
@@ -14,7 +17,6 @@ export const Route = createFileRoute("/settings_/address")({
           "Keep your residential address, occupation, employment status and source of funds up to date on Kipit.",
       },
       { property: "og:title", content: "Address & Personal Details | Kipit Settings" },
-      { property: "og:description", content: "Residence and personal details on your Kipit account." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -22,7 +24,66 @@ export const Route = createFileRoute("/settings_/address")({
   component: AddressScreen,
 });
 
+const inputClass =
+  "mt-1.5 w-full rounded-xl border border-border bg-secondary px-3.5 py-2.5 text-[13.5px] font-semibold outline-none focus:border-brand";
+
 function AddressScreen() {
+  const [street, setStreet] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [lga, setLga] = useState("");
+  const [occupation, setOccupation] = useState("");
+  const [employment, setEmployment] = useState("");
+  const [sourceOfFunds, setSourceOfFunds] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    void fetchProfile()
+      .then((p) => {
+        setStreet(p.address?.street || "");
+        setCity(p.address?.city || "");
+        setState(p.address?.state || "");
+        setLga(p.address?.lga || "");
+        setOccupation(p.occupation || "");
+        setEmployment(p.employmentStatus || "");
+        setSourceOfFunds(p.sourceOfFunds || "");
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const save = async () => {
+    if (busy) return;
+    if (!street.trim() || !city.trim() || !state.trim() || !lga.trim()) {
+      toast.error("Complete your residential address.");
+      return;
+    }
+    setBusy(true);
+    try {
+      await patchAddress({
+        street: street.trim(),
+        city: city.trim(),
+        state: state.trim(),
+        lga: lga.trim(),
+      });
+      const profilePatch: {
+        occupation?: string;
+        employmentStatus?: string;
+        sourceOfFunds?: string;
+      } = {};
+      if (occupation.trim()) profilePatch.occupation = occupation.trim();
+      if (employment) profilePatch.employmentStatus = employment;
+      if (sourceOfFunds) profilePatch.sourceOfFunds = sourceOfFunds;
+      if (Object.keys(profilePatch).length) {
+        await patchProfile(profilePatch);
+      }
+      toast.success("Details saved");
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Could not save changes.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <SettingsPage
       title="Address & personal details"
@@ -31,17 +92,85 @@ function AddressScreen() {
     >
       <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_300px] lg:gap-5">
         <FieldCard label="Residential address">
-          <Field label="Street" value={ADDRESS.street} />
-          <Field label="City" value={ADDRESS.city} />
-          <Field label="State" value={ADDRESS.state} />
-          <Field label="LGA" value={ADDRESS.lga} />
+          <label className="block px-4 py-3">
+            <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+              Street
+            </span>
+            <input value={street} onChange={(e) => setStreet(e.target.value)} className={inputClass} />
+          </label>
+          <label className="block px-4 py-3">
+            <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+              City
+            </span>
+            <input value={city} onChange={(e) => setCity(e.target.value)} className={inputClass} />
+          </label>
+          <label className="block px-4 py-3">
+            <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+              State
+            </span>
+            <select value={state} onChange={(e) => setState(e.target.value)} className={inputClass}>
+              <option value="">Select state</option>
+              {NIGERIAN_STATES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block px-4 py-3">
+            <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+              LGA
+            </span>
+            <input value={lga} onChange={(e) => setLga(e.target.value)} className={inputClass} />
+          </label>
         </FieldCard>
 
         <div className="space-y-4">
           <FieldCard label="Personal details">
-            <Field label="Occupation" value={ADDRESS.occupation} />
-            <Field label="Employment status" value={ADDRESS.employment} />
-            <Field label="Source of funds" value={ADDRESS.sourceOfFunds} />
+            <label className="block px-4 py-3">
+              <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                Occupation
+              </span>
+              <input
+                value={occupation}
+                onChange={(e) => setOccupation(e.target.value)}
+                className={inputClass}
+              />
+            </label>
+            <label className="block px-4 py-3">
+              <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                Employment status
+              </span>
+              <select
+                value={employment}
+                onChange={(e) => setEmployment(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">Select</option>
+                {EMPLOYMENT_STATUS.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block px-4 py-3">
+              <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                Source of funds
+              </span>
+              <select
+                value={sourceOfFunds}
+                onChange={(e) => setSourceOfFunds(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">Select</option>
+                {SOURCE_OF_FUNDS.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </label>
           </FieldCard>
 
           <section className="card-surface flex items-start gap-3 p-4">
@@ -49,50 +178,22 @@ function AddressScreen() {
               <MapPin className="size-[18px]" strokeWidth={2} />
             </span>
             <p className="text-[12px] leading-relaxed text-muted-foreground">
-              A proof of address may be requested when you update your residence or move to a higher
-              verification tier.
+              Keep your residence and source of funds current to avoid withdrawal delays.
             </p>
           </section>
 
           <button
             type="button"
-            onClick={() =>
-              toast.success("Address submitted", {
-                description: "We'll review your new address within 1 business day.",
-              })
-            }
-            className="inline-flex w-full items-center justify-center rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
+            disabled={busy}
+            onClick={() => void save()}
+            className="inline-flex w-full items-center justify-center rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40 md:w-auto md:px-10"
           >
-            Save changes
+            {busy ? "Saving…" : "Save changes"}
           </button>
         </div>
 
-        {/* Desktop-only guidance rail */}
         <aside className="hidden lg:block">
           <div className="sticky top-6 space-y-4">
-            <section className="card-surface overflow-hidden">
-              <div className="bg-brand-gradient px-5 py-4">
-                <p className="text-[10.5px] font-black uppercase tracking-[0.16em] text-gold">
-                  On record
-                </p>
-                <p className="mt-1 text-[15px] font-extrabold text-primary-foreground">
-                  {ADDRESS.city}, {ADDRESS.state}
-                </p>
-              </div>
-              <ul className="divide-y divide-border">
-                {[
-                  { label: "Last updated", value: "12 Aug 2026" },
-                  { label: "Proof of address", value: "On file" },
-                  { label: "Review time", value: "1 business day" },
-                ].map((row) => (
-                  <li key={row.label} className="flex items-center justify-between px-5 py-3">
-                    <span className="text-[12.5px] font-semibold text-foreground">{row.label}</span>
-                    <span className="text-[11.5px] font-bold text-brand">{row.value}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-
             <section className="card-surface p-5">
               <p className="text-[12.5px] font-extrabold text-foreground">Why we ask</p>
               <ul className="mt-2 space-y-2">

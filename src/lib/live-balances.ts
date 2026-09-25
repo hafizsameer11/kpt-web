@@ -1,0 +1,231 @@
+/**
+ * Live portfolio / call balances from kipit-api. Starts at zero — no demo seed.
+ */
+import { useEffect, useSyncExternalStore } from "react";
+import {
+  fetchCallAccount,
+  fetchHome,
+  fetchPlacements,
+  isAuthenticated,
+  type ApiUser,
+} from "@/lib/api";
+import { refreshWalletFromApi } from "@/lib/wallet-balance";
+
+export type LiveHolding = {
+  id: string;
+  name: string;
+  amount: number;
+  ratePct: number;
+  maturityDate: string | null;
+};
+
+export type LiveNextMaturity = {
+  id: string;
+  name: string;
+  amount: number;
+  date: string;
+  daysLeft: number;
+} | null;
+
+type LiveState = {
+  greetingName: string;
+  invested: number;
+  interestThisWeek: number;
+  holdings: LiveHolding[];
+  nextMaturity: LiveNextMaturity;
+  callBalance: number;
+  callRatePct: number;
+  user: ApiUser | null;
+};
+
+const EMPTY: LiveState = {
+  greetingName: "",
+  invested: 0,
+  interestThisWeek: 0,
+  holdings: [],
+  nextMaturity: null,
+  callBalance: 0,
+  callRatePct: 0,
+  user: null,
+};
+
+let state: LiveState = { ...EMPTY };
+const listeners = new Set<() => void>();
+
+function emit() {
+  listeners.forEach((l) => l());
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+export function getLiveState() {
+  return state;
+}
+
+export function resetLiveBalances() {
+  state = { ...EMPTY, holdings: [] };
+  emit();
+}
+
+export async function hydrateLiveBalances() {
+  if (!isAuthenticated()) {
+    resetLiveBalances();
+    return state;
+  }
+  try {
+    const [home, call] = await Promise.all([
+      fetchHome(),
+      fetchCallAccount().catch(() => ({ balance: 0, ratePct: 0 })),
+      refreshWalletFromApi(),
+    ]);
+    state = {
+      greetingName: home.greetingName || home.user?.firstName || "",
+      invested: Math.max(0, Math.round(home.invested?.balance ?? 0)),
+      interestThisWeek: Math.max(0, Math.round(home.interestThisWeek ?? 0)),
+      holdings: home.holdings ?? [],
+      nextMaturity: home.nextMaturity,
+      callBalance: Math.max(0, Math.round(call.balance ?? 0)),
+      callRatePct: call.ratePct ?? 0,
+      user: home.user ?? null,
+    };
+    const { setInvestedTotal } = await import("@/lib/home-data");
+    setInvestedTotal(state.invested);
+    const homeData = await import("@/lib/home-data");
+    if (home.feed?.length) {
+      homeData.setHomeFeed(home.feed);
+    } else {
+      void homeData.hydrateHomeFeedFromApi();
+    }
+    homeData.HOLDINGS.splice(
+      0,
+      homeData.HOLDINGS.length,
+      ...state.holdings.map((h) => ({
+        id: h.id,
+        name: h.name,
+        rate: `${h.ratePct}% p.a.`,
+        amount: h.amount,
+        date: h.maturityDate ?? "",
+        daysLeft: 0,
+        totalDays: 0,
+        expectedPayout: h.amount,
+        autoRenew: false,
+      })),
+    );
+    if (state.nextMaturity) {
+      homeData.NEXT_MATURITY.name = state.nextMaturity.name;
+      homeData.NEXT_MATURITY.amount = state.nextMaturity.amount;
+      homeData.NEXT_MATURITY.date = state.nextMaturity.date;
+      homeData.NEXT_MATURITY.daysLeft = state.nextMaturity.daysLeft;
+      homeData.NEXT_MATURITY.expectedPayout = state.nextMaturity.amount;
+      homeData.NEXT_MATURITY.rate = "";
+      homeData.NEXT_MATURITY.tenor = "";
+      homeData.NEXT_MATURITY.totalDays = 0;
+    } else {
+      homeData.NEXT_MATURITY.name = "";
+      homeData.NEXT_MATURITY.amount = 0;
+      homeData.NEXT_MATURITY.date = "";
+      homeData.NEXT_MATURITY.daysLeft = 0;
+      homeData.NEXT_MATURITY.expectedPayout = 0;
+    }
+    homeData.PAYOUTS.splice(0, homeData.PAYOUTS.length);
+    const { syncCallAccountFromLive, setCallActivityFromApi } = await import("@/lib/invest-data");
+    syncCallAccountFromLive(state.callBalance, state.callRatePct);
+    try {
+      const { fetchPortfolioTransactions } = await import("@/lib/api");
+      const txns = await fetchPortfolioTransactions();
+      setCallActivityFromApi(
+        (txns ?? [])
+          .filter((t) => {
+            const k = String(t.kind).toUpperCase();
+            const d = String(t.description || "").toLowerCase();
+            return (
+              k.includes("CALL") ||
+              d.includes("call account") ||
+              d.includes("call deposit") ||
+              d.includes("call withdraw")
+            );
+          })
+          .map((t) => {
+            const k = String(t.kind).toUpperCase();
+            const d = String(t.description || "").toLowerCase();
+            const kind: "deposit" | "withdrawal" | "interest" =
+              k.includes("INTEREST") || d.includes("interest")
+                ? "interest"
+                : k.includes("WITHDRAW") || t.direction === "debit"
+                  ? "withdrawal"
+                  : "deposit";
+            return {
+              id: t.id,
+              kind,
+              label: t.description || t.kind,
+              date: t.createdAt?.slice(0, 10) || "",
+              amount: Math.abs(t.amount),
+              status: "successful" as const,
+            };
+          }),
+      );
+    } catch {
+      /* call activity optional */
+    }
+    try {
+      const placements = await fetchPlacements();
+      const explore = (placements ?? [])
+        .filter((p) => {
+          const kind = String(p.kind).toUpperCase();
+          return kind === "EXPLORE";
+        })
+        .map((p) => ({
+          id: p.id,
+          name: p.name,
+          issuer: "Marketplace",
+          rate: `${p.ratePct}% p.a.`,
+          amount: p.principal,
+          expectedPayout: p.principal + (p.accrued || 0),
+          date: p.maturityDate ?? "",
+          daysLeft: 0,
+          totalDays: p.tenorDays || 0,
+        }));
+      const portfolio = await import("@/lib/portfolio-data");
+      portfolio.setExploreHoldings(explore);
+    } catch {
+      /* explore hydrate optional */
+    }
+    emit();
+  } catch {
+    /* keep prior live state */
+  }
+  return state;
+}
+
+export function useLiveBalances() {
+  return useSyncExternalStore(subscribe, getLiveState, () => EMPTY);
+}
+
+/** Hydrate from API on mount and subscribe to live balances. */
+export function useHydrateLiveBalances() {
+  const state = useLiveBalances();
+  useEffect(() => {
+    void hydrateLiveBalances();
+  }, []);
+  return state;
+}
+
+export function callRateLabel(ratePct = state.callRatePct) {
+  if (!ratePct) return "—";
+  return `${ratePct}% p.a.`;
+}
+
+/** Call balance + rate from API (hydrates on mount). */
+export function useCallAccountLive() {
+  const live = useHydrateLiveBalances();
+  return {
+    balance: live.callBalance,
+    rateLabel: callRateLabel(live.callRatePct),
+    ratePct: live.callRatePct,
+  };
+}

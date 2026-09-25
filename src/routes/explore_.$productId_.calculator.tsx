@@ -3,7 +3,8 @@ import { ArrowLeft, Minus, Plus, TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { Rise } from "@/components/kipit/motion";
-import { naira, WALLET } from "@/lib/home-data";
+import { naira } from "@/lib/home-data";
+import { useWalletBalance } from "@/lib/wallet-balance";
 import { EXPLORE_PRODUCTS } from "@/lib/explore-data";
 
 export const Route = createFileRoute("/explore_/$productId_/calculator")({
@@ -40,6 +41,7 @@ const num = (value: string) => Number(value.replace(/[^0-9.]/g, "")) || 0;
 
 function ProductCalculatorScreen() {
   const { product: p } = Route.useLoaderData();
+  const WALLET = useWalletBalance();
   const step = Math.max(p.minimum, 50_000);
   const [input, setInput] = useState(p.minimum.toLocaleString("en-NG"));
 

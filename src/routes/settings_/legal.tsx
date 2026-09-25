@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { CheckCircle2, ChevronRight, Download, FileText, Scale } from "lucide-react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
+import { downloadDocumentPdf } from "@/lib/document-pdf";
 import { LEGAL_DOCS } from "@/lib/settings-data";
 import { naira } from "@/lib/home-data";
 import {
@@ -67,6 +68,28 @@ function LegalScreen() {
     setAccepted(listTermsAcceptances());
   }, []);
 
+  function downloadAll() {
+    try {
+      const body = LEGAL_DOCS.map(
+        (d) =>
+          `${d.title} (${d.version})\n${d.desc}\n\n${(DOC_BODY[d.title] ?? []).join("\n\n")}`,
+      ).join("\n\n———\n\n");
+      downloadDocumentPdf({
+        title: "Kipit legal documents",
+        subtitle: "Terms, privacy, risk disclosure and product terms",
+        body,
+        filename: "kipit-legal-documents.html",
+      });
+      toast.success("Legal pack downloaded — open and print to PDF if needed.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not download documents.");
+    }
+  }
+
+  function openLegalDoc(d: (typeof LEGAL_DOCS)[number]) {
+    setOpenDoc(d);
+  }
+
   return (
     <SettingsPage
       title="Legal documents"
@@ -79,9 +102,7 @@ function LegalScreen() {
           <li key={d.title} style={{ ["--d" as string]: `${i * 50}ms` }} className="k-rise">
             <button
               type="button"
-              onClick={() =>
-                toast.info(`${d.title} ${d.version}`, { description: d.desc })
-              }
+              onClick={() => openLegalDoc(d)}
               className="group relative flex w-full items-center gap-3.5 px-4 py-4 text-left press transition-colors hover:bg-secondary/50"
             >
               <span
@@ -109,11 +130,7 @@ function LegalScreen() {
 
       <button
         type="button"
-        onClick={() =>
-          toast.success("Documents downloaded", {
-            description: "All legal documents saved as a single PDF.",
-          })
-        }
+        onClick={downloadAll}
         className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press md:hidden"
       >
         <Download className="size-4" strokeWidth={2.4} /> Download all documents
@@ -191,11 +208,7 @@ function LegalScreen() {
               </p>
               <button
                 type="button"
-                onClick={() =>
-                  toast.success("Documents downloaded", {
-                    description: "All legal documents saved as a single PDF.",
-                  })
-                }
+                onClick={downloadAll}
                 className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3 text-[13px] font-extrabold text-primary-foreground shadow-float press"
               >
                 <Download className="size-4" strokeWidth={2.4} /> Download all documents

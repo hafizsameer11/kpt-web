@@ -4,13 +4,15 @@ import { ArrowRight, TrendingUp } from "lucide-react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
-import { creditWallet, useWalletBalance } from "@/lib/wallet-balance";
-import { cardFee, depositReference } from "@/lib/wallet-data";
+import { refreshWalletFromApi, useWalletBalance } from "@/lib/wallet-balance";
+import { isAuthenticated } from "@/lib/api";
+import { cardFee } from "@/lib/wallet-data";
 
 export const Route = createFileRoute("/wallet_/success")({
   validateSearch: z.object({
     amount: z.number().catch(0),
     method: z.enum(["transfer", "card"]).catch("transfer"),
+    ref: z.string().optional().catch(undefined),
   }),
   head: () => ({
     meta: [
@@ -33,9 +35,15 @@ export const Route = createFileRoute("/wallet_/success")({
 });
 
 function DepositSuccess() {
-  const { amount, method } = Route.useSearch();
+  const { amount, method, ref } = Route.useSearch();
   const fee = method === "card" ? cardFee(amount) : 0;
-  const reference = depositReference(amount);
+  const reference =
+    ref ||
+    (typeof window !== "undefined"
+      ? window.sessionStorage.getItem("kipit:card-ref") ||
+        window.sessionStorage.getItem("kipit:last-deposit-ref")
+      : null) ||
+    "—";
   const applied = useRef(false);
   const balanceAfter = useRef<number | null>(null);
   const wallet = useWalletBalance();
@@ -43,7 +51,10 @@ function DepositSuccess() {
   useEffect(() => {
     if (applied.current || amount <= 0) return;
     applied.current = true;
-    balanceAfter.current = creditWallet(`deposit-${Date.now()}-${amount}`, amount);
+    void (async () => {
+      if (!isAuthenticated()) return;
+      balanceAfter.current = await refreshWalletFromApi();
+    })();
   }, [amount]);
 
   const newBalance = balanceAfter.current ?? wallet;

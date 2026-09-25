@@ -1,10 +1,15 @@
+import { useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, CalendarClock, ChevronRight } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
-import { MATURITY_CALENDAR, UPCOMING_MATURITIES } from "@/lib/portfolio-data";
+import {
+  usePortfolioSnapshot,
+  type Maturity,
+  type MaturityMonth,
+} from "@/lib/portfolio-data";
 
 export const Route = createFileRoute("/portfolio_/maturities")({
   head: () => ({
@@ -28,13 +33,87 @@ export const Route = createFileRoute("/portfolio_/maturities")({
   component: MaturityCalendarScreen,
 });
 
+const MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
+function parseMaturityDate(raw: string): Date | null {
+  if (!raw) return null;
+  const iso = new Date(raw);
+  if (!Number.isNaN(iso.getTime())) return iso;
+  const parts = raw.split(" ");
+  if (parts.length >= 3) {
+    const day = Number(parts[0]);
+    const mon = MONTHS.indexOf(parts[1] ?? "");
+    const year = Number(parts[2]);
+    if (mon >= 0 && !Number.isNaN(day) && !Number.isNaN(year)) {
+      return new Date(year, mon, day);
+    }
+  }
+  return null;
+}
+
+function formatMaturityDate(raw: string): string {
+  const d = parseMaturityDate(raw);
+  if (!d) return raw || "—";
+  return `${String(d.getDate()).padStart(2, "0")} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function daysLeftFromDate(raw: string, fallback: number): number {
+  if (fallback > 0) return fallback;
+  const d = parseMaturityDate(raw);
+  if (!d) return 0;
+  return Math.max(0, Math.ceil((d.getTime() - Date.now()) / (24 * 60 * 60 * 1000)));
+}
+
+function enrichMaturities(rows: Maturity[]): Maturity[] {
+  return rows
+    .map((m) => ({
+      ...m,
+      date: formatMaturityDate(m.date),
+      daysLeft: daysLeftFromDate(m.date, m.daysLeft),
+    }))
+    .sort((a, b) => a.daysLeft - b.daysLeft);
+}
+
+function groupByMonth(rows: Maturity[]): MaturityMonth[] {
+  const groups = new Map<string, Maturity[]>();
+  for (const m of rows) {
+    const d = parseMaturityDate(m.date);
+    const key = d
+      ? `${MONTHS[d.getMonth()]} ${d.getFullYear()}`
+      : m.date.split(" ").slice(1).join(" ") || "Upcoming";
+    const list = groups.get(key) ?? [];
+    list.push(m);
+    groups.set(key, list);
+  }
+  return [...groups.entries()].map(([month, items]) => ({
+    month,
+    items,
+    total: items.reduce((s, i) => s + i.amount, 0),
+  }));
+}
+
+function useMaturityCalendar() {
+  const snap = usePortfolioSnapshot();
+  return useMemo(() => {
+    const maturities = enrichMaturities(snap.maturities);
+    return {
+      maturities,
+      calendar: groupByMonth(maturities),
+    };
+  }, [snap.maturities]);
+}
+
 function MaturityCalendarScreen() {
   const { mask, hidden } = useBalanceVisibility();
-  const totalDue = UPCOMING_MATURITIES.reduce((s, m) => s + m.amount, 0);
+  const { maturities, calendar } = useMaturityCalendar();
+  const totalDue = maturities.reduce((s, m) => s + m.amount, 0);
 
   return (
     <AppShell title="Maturities" navVariant="elevated">
-      <DesktopMaturities />
+      <DesktopMaturities maturities={maturities} calendar={calendar} />
       <div className="pb-2 md:hidden">
         {/* Hero */}
         <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-6 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pt-8 md:shadow-float">
@@ -61,7 +140,7 @@ function MaturityCalendarScreen() {
               style={{ ["--d" as string]: "80ms" }}
             >
               <CalendarClock className="size-3.5 text-gold" />
-              {UPCOMING_MATURITIES.length} scheduled payouts
+              {maturities.length} scheduled payouts
             </p>
           </div>
         </section>
@@ -73,48 +152,57 @@ function MaturityCalendarScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          <div className="space-y-6 md:grid md:grid-cols-2 md:gap-5 md:space-y-0">
-            {MATURITY_CALENDAR.map((group, gi) => (
-              <section
-                key={group.month}
-                className="k-rise"
-                style={{ ["--d" as string]: `${gi * 70}ms` }}
-              >
-                <div className="mb-2.5 flex items-baseline justify-between px-1">
-                  <h2 className="font-display text-[15px] font-extrabold">{group.month}</h2>
-                  <span className="text-[11px] font-semibold text-muted-foreground text-num">
-                    {mask(group.total)}
-                  </span>
-                </div>
+          {calendar.length === 0 ? (
+            <div className="k-rise rounded-xl border border-dashed border-border bg-card p-6 text-center">
+              <p className="text-sm font-bold">No upcoming maturities</p>
+              <p className="mt-1 text-[12px] text-muted-foreground">
+                Active plans will appear here as they approach maturity.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6 md:grid md:grid-cols-2 md:gap-5 md:space-y-0">
+              {calendar.map((group, gi) => (
+                <section
+                  key={group.month}
+                  className="k-rise"
+                  style={{ ["--d" as string]: `${gi * 70}ms` }}
+                >
+                  <div className="mb-2.5 flex items-baseline justify-between px-1">
+                    <h2 className="font-display text-[15px] font-extrabold">{group.month}</h2>
+                    <span className="text-[11px] font-semibold text-muted-foreground text-num">
+                      {mask(group.total)}
+                    </span>
+                  </div>
 
-                <ul className="card-surface divide-y divide-border/60 overflow-hidden">
-                  {group.items.map((m) => (
-                    <li key={`${m.name}-${m.date}`}>
-                      <Link
-                        to="/portfolio/$holdingId"
-                        params={{ holdingId: m.holdingId }}
-                        className="flex items-center gap-3 px-4 py-3.5 press"
-                      >
-                        <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-extrabold text-brand text-num">
-                          {m.date.split(" ")[0]}
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-bold">{m.name}</p>
-                          <p className="text-[11px] text-muted-foreground">
-                            {m.kind} · in {m.daysLeft} days
+                  <ul className="card-surface divide-y divide-border/60 overflow-hidden">
+                    {group.items.map((m) => (
+                      <li key={`${m.holdingId}-${m.date}`}>
+                        <Link
+                          to="/portfolio/$holdingId"
+                          params={{ holdingId: m.holdingId }}
+                          className="flex items-center gap-3 px-4 py-3.5 press"
+                        >
+                          <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-extrabold text-brand text-num">
+                            {m.date.split(" ")[0]}
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-[13px] font-bold">{m.name}</p>
+                            <p className="text-[11px] text-muted-foreground">
+                              {m.kind} · in {m.daysLeft} days
+                            </p>
+                          </div>
+                          <p className="shrink-0 text-[13px] font-extrabold text-num">
+                            {mask(m.amount)}
                           </p>
-                        </div>
-                        <p className="shrink-0 text-[13px] font-extrabold text-num">
-                          {mask(m.amount)}
-                        </p>
-                        <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))}
-          </div>
+                          <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
+            </div>
+          )}
 
           <Link
             to="/portfolio/history"
@@ -135,16 +223,22 @@ function MaturityCalendarScreen() {
 /* ─────────────────────────────────────────────────────────────
    Desktop layout (md+)
    ───────────────────────────────────────────────────────────── */
-function DesktopMaturities() {
+function DesktopMaturities({
+  maturities,
+  calendar,
+}: {
+  maturities: Maturity[];
+  calendar: MaturityMonth[];
+}) {
   const { mask, hidden } = useBalanceVisibility();
-  const totalDue = UPCOMING_MATURITIES.reduce((s, m) => s + m.amount, 0);
-  const next = UPCOMING_MATURITIES[0];
-  const in30 = UPCOMING_MATURITIES.filter((m) => m.daysLeft <= 30);
-  const in90 = UPCOMING_MATURITIES.filter((m) => m.daysLeft <= 90);
-  const fixed = UPCOMING_MATURITIES.filter((m) => m.kind === "Fixed plan");
-  const explore = UPCOMING_MATURITIES.filter((m) => m.kind === "Explore product");
-  const sum = (list: typeof UPCOMING_MATURITIES) => list.reduce((s, m) => s + m.amount, 0);
-  const maxMonth = Math.max(...MATURITY_CALENDAR.map((g) => g.total), 1);
+  const totalDue = maturities.reduce((s, m) => s + m.amount, 0);
+  const next = maturities[0];
+  const in30 = maturities.filter((m) => m.daysLeft <= 30);
+  const in90 = maturities.filter((m) => m.daysLeft <= 90);
+  const fixed = maturities.filter((m) => m.kind === "Fixed plan");
+  const explore = maturities.filter((m) => m.kind === "Explore product");
+  const sum = (list: Maturity[]) => list.reduce((s, m) => s + m.amount, 0);
+  const maxMonth = Math.max(...calendar.map((g) => g.total), 1);
 
   return (
     <div className="hidden md:block">
@@ -166,7 +260,7 @@ function DesktopMaturities() {
               <div className="mt-4 flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11.5px] font-bold">
                   <CalendarClock className="size-3.5 text-gold" />
-                  {UPCOMING_MATURITIES.length} scheduled payouts
+                  {maturities.length} scheduled payouts
                 </span>
                 {next && (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11.5px] font-bold">
@@ -225,48 +319,54 @@ function DesktopMaturities() {
             <div className="flex items-center justify-between border-b border-border px-6 py-4">
               <h2 className="font-display text-[17px] font-extrabold">Maturity schedule</h2>
               <span className="text-[11px] font-semibold text-muted-foreground">
-                {MATURITY_CALENDAR.length} months
+                {calendar.length} months
               </span>
             </div>
 
-            {MATURITY_CALENDAR.map((group) => (
-              <div key={group.month}>
-                <div className="flex items-center justify-between bg-muted/30 px-6 py-2.5">
-                  <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
-                    {group.month}
-                  </p>
-                  <p className="text-[12px] font-extrabold text-num">{mask(group.total)}</p>
+            {calendar.length === 0 ? (
+              <p className="px-6 py-8 text-[13px] text-muted-foreground">
+                No upcoming maturities yet.
+              </p>
+            ) : (
+              calendar.map((group) => (
+                <div key={group.month}>
+                  <div className="flex items-center justify-between bg-muted/30 px-6 py-2.5">
+                    <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
+                      {group.month}
+                    </p>
+                    <p className="text-[12px] font-extrabold text-num">{mask(group.total)}</p>
+                  </div>
+                  <ul>
+                    {group.items.map((m) => (
+                      <li key={`${m.holdingId}-${m.date}`} className="border-b border-border/60 last:border-0">
+                        <Link
+                          to="/portfolio/$holdingId"
+                          params={{ holdingId: m.holdingId }}
+                          className="flex items-center gap-4 px-6 py-3.5 transition-colors hover:bg-secondary/50 focus-visible:bg-secondary/50 focus-visible:outline-none"
+                        >
+                        <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-secondary text-[12px] font-extrabold text-brand text-num">
+                          {m.date.split(" ")[0]}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[13.5px] font-bold">{m.name}</p>
+                          <p className="mt-0.5 text-[11.5px] text-muted-foreground">
+                            {m.date} · in {m.daysLeft} days
+                          </p>
+                        </div>
+                        <span className="shrink-0 rounded-full bg-secondary px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] text-brand">
+                          {m.kind}
+                        </span>
+                          <p className="w-[130px] shrink-0 text-right text-[14px] font-extrabold text-num">
+                            {mask(m.amount)}
+                          </p>
+                          <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul>
-                  {group.items.map((m) => (
-                    <li key={`${m.name}-${m.date}`} className="border-b border-border/60 last:border-0">
-                      <Link
-                        to="/portfolio/$holdingId"
-                        params={{ holdingId: m.holdingId }}
-                        className="flex items-center gap-4 px-6 py-3.5 transition-colors hover:bg-secondary/50 focus-visible:bg-secondary/50 focus-visible:outline-none"
-                      >
-                      <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-secondary text-[12px] font-extrabold text-brand text-num">
-                        {m.date.split(" ")[0]}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[13.5px] font-bold">{m.name}</p>
-                        <p className="mt-0.5 text-[11.5px] text-muted-foreground">
-                          {m.date} · in {m.daysLeft} days
-                        </p>
-                      </div>
-                      <span className="shrink-0 rounded-full bg-secondary px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] text-brand">
-                        {m.kind}
-                      </span>
-                        <p className="w-[130px] shrink-0 text-right text-[14px] font-extrabold text-num">
-                          {mask(m.amount)}
-                        </p>
-                        <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+              ))
+            )}
           </section>
 
           {/* Right rail */}
@@ -274,7 +374,7 @@ function DesktopMaturities() {
             <section className="rounded-2xl border border-border bg-card p-5">
               <h2 className="font-display text-[15px] font-extrabold">By month</h2>
               <ul className="mt-4 space-y-3">
-                {MATURITY_CALENDAR.map((g) => (
+                {calendar.map((g) => (
                   <li key={g.month}>
                     <div className="flex items-baseline justify-between gap-2">
                       <p className="text-[11.5px] font-semibold text-muted-foreground">{g.month}</p>

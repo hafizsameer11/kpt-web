@@ -1,7 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Mail, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { AuthShell, GhostButton } from "@/components/kipit/AuthShell";
+import { logSignupFunnel } from "@/lib/api";
+import { resetSignupDraft, signupDraft } from "@/lib/auth-data";
 import {
   Drawer,
   DrawerContent,
@@ -60,6 +63,14 @@ function SignupMethod() {
   const [openDoc, setOpenDoc] = useState<DocKey>(null);
   const activeDoc = openDoc ? DOCS[openDoc] : null;
 
+  useEffect(() => {
+    resetSignupDraft();
+    void logSignupFunnel({
+      step: "method",
+      deviceId: signupDraft.deviceId,
+    });
+  }, []);
+
   return (
     <>
       <AuthShell
@@ -87,14 +98,22 @@ function SignupMethod() {
             Continue with email
           </button>
 
-          <GhostButton onClick={() => navigate({ to: "/signup/details" })}>
+          <GhostButton
+            onClick={() =>
+              toast.message("Google sign-up is coming soon. Continue with email for now.")
+            }
+          >
             <span className="flex items-center justify-center gap-3">
               <GoogleMark />
               Continue with Google
             </span>
           </GhostButton>
 
-          <GhostButton onClick={() => navigate({ to: "/signup/details" })}>
+          <GhostButton
+            onClick={() =>
+              toast.message("Apple sign-up is coming soon. Continue with email for now.")
+            }
+          >
             <span className="flex items-center justify-center gap-3">
               <AppleMark />
               Continue with Apple

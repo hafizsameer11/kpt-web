@@ -1,11 +1,13 @@
 import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, Mail, MessageCircle, Phone, UserRound } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { Rise } from "@/components/kipit/motion";
+import { ApiError, requestExploreAccess } from "@/lib/api";
 import { naira } from "@/lib/home-data";
-import { getExploreProduct } from "@/lib/explore-data";
+import { ensureExploreHydrated, getExploreProduct } from "@/lib/explore-data";
+import { useDisplayProfile } from "@/lib/profile-live";
 
 export const Route = createFileRoute("/explore_/$productId_/request")({
   head: () => ({
@@ -25,7 +27,8 @@ export const Route = createFileRoute("/explore_/$productId_/request")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
+    await ensureExploreHydrated();
     const product = getExploreProduct(params.productId);
     if (!product) throw notFound();
     return { product };
@@ -42,8 +45,9 @@ const CONTACT_METHODS = [
 function LargeTicketRequestScreen() {
   const { product } = Route.useLoaderData();
   const navigate = useNavigate();
+  const profile = useDisplayProfile();
 
-  const [name, setName] = useState("Adeola Bankole");
+  const [name, setName] = useState("");
   const [amount, setAmount] = useState(product.minimum);
   const [amountText, setAmountText] = useState(
     product.minimum.toLocaleString("en-NG"),
@@ -53,8 +57,16 @@ function LargeTicketRequestScreen() {
   );
   const [note, setNote] = useState("");
 
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fromProfile = [profile.firstName, profile.lastName].filter(Boolean).join(" ").trim();
+    if (fromProfile) setName(fromProfile);
+  }, [profile.firstName, profile.lastName]);
+
   const belowMin = amount < product.minimum;
-  const valid = name.trim().length > 1 && !belowMin;
+  const valid = name.trim().length > 1 && !belowMin && !busy;
 
   const handleAmount = (raw: string) => {
     const digits = raw.replace(/[^0-9]/g, "");
@@ -63,13 +75,32 @@ function LargeTicketRequestScreen() {
     setAmountText(digits ? numeric.toLocaleString("en-NG") : "");
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (!valid) return;
-    void navigate({
-      to: "/explore/$productId/request-submitted",
-      params: { productId: product.id },
-      search: { amount, contact },
-    });
+    setBusy(true);
+    setError(null);
+    try {
+      await requestExploreAccess(
+        product.id,
+        [
+          `Name: ${name.trim()}`,
+          `Intended amount: ₦${amount.toLocaleString("en-NG")}`,
+          `Preferred contact: ${contact}`,
+          note.trim() ? `Note: ${note.trim()}` : "",
+        ]
+          .filter(Boolean)
+          .join("\n"),
+      );
+      void navigate({
+        to: "/explore/$productId/request-submitted",
+        params: { productId: product.id },
+        search: { amount, contact },
+      });
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not submit request.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (

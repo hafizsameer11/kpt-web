@@ -1,11 +1,7 @@
 /**
- * Onboarding & authentication fixtures (MOB-001 – MOB-017).
- * Prototype only: an in-memory draft carries values between steps.
+ * Onboarding & authentication draft (MOB-001 – MOB-017).
+ * In-memory draft carries values between steps. OTP verifies via API only.
  */
-
-export const DEMO_OTP = "123456";
-export const DEMO_PASSWORD = "Kipit1234!";
-export const DEMO_IDENTIFIER = "adaeze.okonkwo@gmail.com";
 
 export const COUNTRIES = [
   { code: "NG", dial: "+234", flag: "🇳🇬", name: "Nigeria", digits: 10 },
@@ -22,10 +18,18 @@ export type SignupDraft = {
   firstName: string;
   middleName: string;
   lastName: string;
+  dateOfBirth: string;
   referral: string;
+  password: string;
+  otp: string;
   pin: string;
   biometrics: boolean;
+  deviceId: string;
 };
+
+function newDeviceId() {
+  return `dev-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
 
 export const signupDraft: SignupDraft = {
   email: "",
@@ -34,20 +38,29 @@ export const signupDraft: SignupDraft = {
   firstName: "",
   middleName: "",
   lastName: "",
+  dateOfBirth: "",
   referral: "",
+  password: "",
+  otp: "",
   pin: "",
   biometrics: false,
+  deviceId: newDeviceId(),
 };
 
 export function resetSignupDraft() {
   signupDraft.email = "";
+  signupDraft.dial = "+234";
   signupDraft.phone = "";
   signupDraft.firstName = "";
   signupDraft.middleName = "";
   signupDraft.lastName = "";
+  signupDraft.dateOfBirth = "";
   signupDraft.referral = "";
+  signupDraft.password = "";
+  signupDraft.otp = "";
   signupDraft.pin = "";
   signupDraft.biometrics = false;
+  signupDraft.deviceId = newDeviceId();
 }
 
 /** Rejects sequential runs, repeated digits and common combinations. */

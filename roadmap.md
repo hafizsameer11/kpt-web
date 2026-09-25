@@ -1,4 +1,6 @@
-# Kipit prototype roadmap
+# Kipit web prototype roadmap
+
+Consumer app only. Admin work lives in `../kipit-admin`.
 
 ## Built
 - Home / balance hidden / notifications (MOB-020–022)
@@ -12,26 +14,9 @@
 - KYC / Verification centre, Tier 1 BVN flow, Tier 2 NIN/selfie/address/occupation, review, pending, approved, rejected (MOB-040–057)
 - Onboarding & auth: splash, welcome, email sign-up, OTP, PIN, biometrics, login, password reset (MOB-001–017)
 - Just-in-time KYC gates: Tier 1 on funding/investing, Tier 2 on withdrawals & payout accounts (Product Paper §7.2)
-
 - Custom tenor (MOB-068), Investment calculator (MOB-069), Explore category (MOB-081), Product calculator (MOB-083)
-
 - WEB-001 Web login (desktop split brand/auth layout)
-- ADM-010 Executive dashboard (+ ADM-011 FUM breakdown, ADM-012 maturity tracker, ADM-013 operational alerts)
-- ADM-020–025 User management: directory, profile (Overview, Balances, Investments, Transactions, KYC, Sessions, Support, Audit), freeze dialog
-- ADM-030–035 Compliance & KYC (hub, queue, case review, AML, monitoring, reporting)
-- ADM-040–041 Global transaction view + transaction detail
-- ADM-050–052 Withdrawal queue, review, decline flow
-- ADM-060–064 Product management: list, create (details/documents/review), product detail, published confirmation
-- ADM-070–073 Rate management: rate table, propose change, approval queue, approve/reject decision
-- ADM-090–092 Reconciliation: dashboard, records ledger, variance review
-- ADM-080–081 Plan adjustments: request (maker), maker-checker approval detail
-- ADM-100–105 Marketing: dashboard, campaigns list/detail/create, audience builder, home feed manager, create card, daily digest
 - CHAT-001–010 Chat-to-Trade customer surface (/chat)
-- ADM-110–111 Support: ticket desk list + ticket detail (conversation, customer, transactions, history, assign/resolve dialogs)
 
 ## Left to build
 - WEB-002–013 desktop refinements (dashboard side panel, holdings/transaction tables, plan builder two-column, web withdrawal step flow)
-- Admin console: ADM-001–003 auth — DONE (sign in, two-factor, session lock, access reset)
-- ADM-120–122 admin users, add admin, roles & permissions — DONE (/admin/team, /admin/team/new, /admin/team/roles, /admin/team/$adminId)
-- ADM-130 global audit log — DONE (/admin/audit)
-

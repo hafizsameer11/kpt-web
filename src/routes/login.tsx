@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Eye, EyeOff, Fingerprint } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import {
   AuthField,
@@ -7,9 +7,17 @@ import {
   PrimaryButton,
   authInputClass,
 } from "@/components/kipit/AuthShell";
-import { DEMO_IDENTIFIER, DEMO_PASSWORD } from "@/lib/auth-data";
+import { ApiError, claimGift, claimPendingGifts, loginWithPassword, tierNumber } from "@/lib/api";
+import { setKycTier } from "@/lib/kyc-state";
+import { refreshWalletFromApi } from "@/lib/wallet-balance";
+import { hydrateLiveBalances } from "@/lib/live-balances";
+
+const PENDING_GIFT_KEY = "kipit:pending-gift-claim";
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    gift: typeof search["gift"] === "string" ? search["gift"] : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Log in to Kipit" },
@@ -25,7 +33,8 @@ export const Route = createFileRoute("/login")({
 
 function Login() {
   const navigate = useNavigate();
-  const [identifier, setIdentifier] = useState(DEMO_IDENTIFIER);
+  const { gift: giftFromSearch } = Route.useSearch();
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [attempts, setAttempts] = useState(0);
@@ -34,24 +43,55 @@ function Login() {
 
   const locked = attempts >= 3;
 
-  const submit = () => {
+  const submit = async () => {
     if (locked) return;
     setBusy(true);
     setError(null);
-    setTimeout(() => {
-      setBusy(false);
-      if (password === DEMO_PASSWORD || password.length >= 8) {
-        navigate({ to: "/" });
+    try {
+      const email = identifier.trim().toLowerCase();
+      if (!email.includes("@")) {
+        setError("Enter the email address for your Kipit account.");
         return;
       }
+      const session = await loginWithPassword(email, password);
+      setKycTier(tierNumber(session.user.kycTier));
+      await refreshWalletFromApi();
+      await hydrateLiveBalances();
+      const giftCode =
+        giftFromSearch ||
+        (typeof window !== "undefined"
+          ? window.sessionStorage.getItem(PENDING_GIFT_KEY)
+          : null);
+      if (giftCode) {
+        try {
+          const claimed = await claimGift(giftCode);
+          window.sessionStorage.removeItem(PENDING_GIFT_KEY);
+          void navigate({
+            to: "/portfolio/$holdingId",
+            params: { holdingId: claimed.placementId },
+            replace: true,
+          });
+          return;
+        } catch {
+          await claimPendingGifts().catch(() => undefined);
+        }
+      } else {
+        await claimPendingGifts().catch(() => undefined);
+      }
+      navigate({ to: "/" });
+    } catch (err) {
       const next = attempts + 1;
       setAttempts(next);
       setError(
         next >= 3
           ? "Your account is temporarily locked after 3 failed attempts. Reset your password to continue."
-          : `Incorrect credentials. ${3 - next} attempt${3 - next === 1 ? "" : "s"} remaining.`,
+          : err instanceof ApiError
+            ? err.message
+            : `Incorrect credentials. ${3 - next} attempt${3 - next === 1 ? "" : "s"} remaining.`,
       );
-    }, 700);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -104,19 +144,12 @@ function Login() {
       </div>
 
       <div className="mt-7 space-y-3">
-        <PrimaryButton disabled={!identifier || password.length < 4 || busy || locked} onClick={submit}>
+        <PrimaryButton
+          disabled={!identifier.includes("@") || password.length < 4 || busy || locked}
+          onClick={submit}
+        >
           {busy ? "Signing in…" : "Log in"}
         </PrimaryButton>
-        <button
-          type="button"
-          onClick={() => navigate({ to: "/login/biometric" })}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-5 py-3.5 text-sm font-semibold transition hover:bg-white/10"
-        >
-          <Fingerprint className="size-4" /> Use biometrics
-        </button>
-        <p className="text-center text-[11px] text-brand-foreground/50">
-          Demo password: {DEMO_PASSWORD}
-        </p>
       </div>
     </AuthShell>
   );
