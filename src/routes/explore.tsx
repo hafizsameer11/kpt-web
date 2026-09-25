@@ -48,12 +48,17 @@ export const Route = createFileRoute("/explore")({
   component: ExploreScreen,
 });
 
-const CATEGORY_ICON = {
+const CATEGORY_ICON: Record<string, typeof Landmark> = {
+  "treasury-bills": Landmark,
   tbills: Landmark,
+  "commercial-papers": Building2,
   cp: Building2,
+  "structured-notes": Layers,
   notes: Layers,
+  "managed-portfolio": LineChart,
   portfolios: LineChart,
-} as const;
+  commodities: Layers,
+};
 
 function ExploreScreen() {
   useSyncExternalStore(
@@ -161,7 +166,7 @@ function MobileExplore() {
               </p>
               <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
                 {EXPLORE_CATEGORIES.map((c, i) => {
-                  const Icon = CATEGORY_ICON[c.id as keyof typeof CATEGORY_ICON];
+                  const Icon = CATEGORY_ICON[c.id] ?? Layers;
                   const active = category === c.id;
                   return (
                     <button
@@ -691,7 +696,7 @@ function DesktopExplore() {
       {/* Categories */}
       <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {EXPLORE_CATEGORIES.map((c) => {
-          const Icon = CATEGORY_ICON[c.id as keyof typeof CATEGORY_ICON];
+          const Icon = CATEGORY_ICON[c.id] ?? Layers;
           const active = category === c.id;
           return (
             <button

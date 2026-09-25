@@ -57,13 +57,23 @@ export type ProductDetail = {
 };
 
 const CATEGORY_ABOUT: Record<string, string> = {
+  "treasury-bills":
+    "Treasury bills are short-term debt instruments issued by the Federal Government of Nigeria and sold at a discount to face value. You receive the full face value at maturity.",
   tbills:
     "Treasury bills are short-term debt instruments issued by the Federal Government of Nigeria and sold at a discount to face value. You receive the full face value at maturity.",
+  "commercial-papers":
+    "Commercial paper is unsecured short-term debt issued by large corporates to fund working capital. Returns are fixed at purchase and paid at maturity.",
   cp: "Commercial paper is unsecured short-term debt issued by large corporates to fund working capital. Returns are fixed at purchase and paid at maturity.",
+  "structured-notes":
+    "Private and structured notes are arranged instruments secured on underlying assets or cash flows, offering higher yields for a longer lock-up.",
   notes:
     "Private and structured notes are arranged instruments secured on underlying assets or cash flows, offering higher yields for a longer lock-up.",
+  "managed-portfolio":
+    "Managed portfolios are professionally run mixes of fixed-income instruments. Returns are targets, not guarantees, and your balance moves with the portfolio.",
   portfolios:
     "Managed portfolios are professionally run mixes of fixed-income instruments. Returns are targets, not guarantees, and your balance moves with the portfolio.",
+  commodities:
+    "Commodity-linked products track physical or futures markets. Prices can move sharply with supply, demand and FX.",
 };
 
 export function getExploreProduct(id: string) {
@@ -102,24 +112,24 @@ export async function hydrateExploreFromApi() {
     const catList = Array.isArray(cats) ? cats : [];
     EXPLORE_CATEGORIES = catList.map((c) => ({
       id: c.slug || c.id,
-      name: c.name,
-      short: c.name.split(" ")[0] || c.name,
+      name: c.name || "Category",
+      short: (c.name || "Category").split(" ")[0] || c.name || "Category",
       count: c.productCount ?? 0,
     }));
     EXPLORE_PRODUCTS = list.map((p, i) => ({
       id: p.id || p.slug,
-      name: p.name,
+      name: p.name || "Product",
       issuer: p.issuer || "",
       categoryId: p.category?.slug || "",
       category: p.category?.name || "",
-      rate: `${p.ratePct}% p.a.`,
-      tenor: `${p.tenorDays} days`,
-      minimum: p.minimum,
-      availability: mapAvailability(p.availability),
-      closes: p.availability?.toLowerCase() === "open" ? "Open" : "See details",
+      rate: `${p.ratePct ?? 0}% p.a.`,
+      tenor: `${p.tenorDays ?? 0} days`,
+      minimum: Math.max(0, Math.round(p.minimum ?? 0)),
+      availability: mapAvailability(String(p.availability ?? "open")),
+      closes: String(p.availability ?? "").toLowerCase() === "open" ? "Open" : "See details",
       featured: i < 4,
       blurb: p.blurb || "",
-      largeTicket: Boolean(p.largeTicket) || p.minimum >= 5_000_000,
+      largeTicket: Boolean(p.largeTicket) || (p.minimum ?? 0) >= 5_000_000,
     }));
     emitExplore();
     return true;
@@ -162,7 +172,7 @@ export function getProductDetail(p: ExploreProduct): ProductDetail {
         : "Withdraw all or part of your balance to your wallet at any time.",
     ],
     risks: [
-      p.categoryId === "tbills"
+      p.categoryId === "tbills" || p.categoryId === "treasury-bills"
         ? "Sovereign-backed, but early exit may be at a discount to par."
         : "Issuer credit risk applies — returns depend on the issuer meeting its obligations.",
       fixed
