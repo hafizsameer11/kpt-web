@@ -57,7 +57,7 @@ export function formatAcceptedAt(iso: string) {
   });
 }
 
-export const WHATSAPP_NUMBER = "2347000547480";
-export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-  "Hi Kipit, I'd like some help with my account.",
-)}`;
+/** @deprecated Prefer `buildWhatsAppSupportUrl` from app config — hardcoded number is invalid. */
+export const WHATSAPP_NUMBER = "";
+/** @deprecated Prefer `buildWhatsAppSupportUrl(fetchAppConfig().support.whatsapp)`. */
+export const WHATSAPP_URL = "";

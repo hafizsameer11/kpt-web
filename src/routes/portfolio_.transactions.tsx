@@ -68,13 +68,23 @@ const statusTone: Record<TxnStatus, string> = {
   Failed: "bg-destructive/10 text-destructive",
 };
 
-const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const parse = (d: string) => {
-  const [day, mon, year] = d.split(" ");
-  const month = MONTHS.indexOf(mon ?? "");
-  if (month < 0) return Number.NaN;
-  return new Date(Number(year), month, Number(day)).getTime();
-};
+function txnTimestamp(t: { createdAt?: string; date: string }) {
+  if (t.createdAt) {
+    const iso = Date.parse(t.createdAt);
+    if (!Number.isNaN(iso)) return iso;
+  }
+  const raw = t.date.trim().replace(/,/g, "");
+  const months: Record<string, number> = {
+    Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+    Jul: 6, Aug: 7, Sep: 8, Sept: 8, Oct: 9, Nov: 10, Dec: 11,
+  };
+  const parts = raw.split(/\s+/);
+  if (parts.length >= 3) {
+    const month = months[parts[1] ?? ""] ?? months[(parts[1] ?? "").replace(/\./g, "")];
+    if (month != null) return new Date(Number(parts[2]), month, Number(parts[0])).getTime();
+  }
+  return Number.NaN;
+}
 
 function TransactionHistoryScreen() {
   const { mask, hidden } = useBalanceVisibility();
@@ -116,11 +126,15 @@ function TransactionHistoryScreen() {
     const q = query.trim().toLowerCase();
     const now = Date.now();
     return rows.filter((t) => {
-      if (type !== "All" && t.type !== type) return false;
+      if (type !== "All") {
+        const typeMatch =
+          t.type === type || (type === "Investment" && t.type === "Interest");
+        if (!typeMatch) return false;
+      }
       if (status !== "All" && t.status !== status) return false;
       if (period !== "All time") {
         const days = period === "Last 30 days" ? 30 : 90;
-        const ts = parse(t.date);
+        const ts = txnTimestamp(t);
         if (Number.isNaN(ts) || now - ts > days * 864e5) return false;
       }
       if (q) {
@@ -539,8 +553,8 @@ function FilterPanel({
   };
 
   const content = (
-    <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between border-b border-border px-6 py-4">
+    <div className="flex h-full max-h-[inherit] min-h-0 flex-col">
+      <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4">
         <h2 className="font-display text-lg font-bold">Filters</h2>
         <button
           type="button"
@@ -552,7 +566,7 @@ function FilterPanel({
         </button>
       </div>
 
-      <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
+      <div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-6 py-5">
         {/* Search */}
         <div>
           <p className="mb-2.5 text-[11px] font-extrabold uppercase tracking-wide text-muted-foreground">
@@ -663,7 +677,7 @@ function FilterPanel({
         </div>
       </div>
 
-      <div className="flex items-center gap-3 border-t border-border px-6 py-4">
+      <div className="flex shrink-0 items-center gap-3 border-t border-border bg-card px-6 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <button
           type="button"
           onClick={reset}
@@ -676,7 +690,7 @@ function FilterPanel({
           onClick={() => onOpenChange(false)}
           className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 py-3 text-[13px] font-extrabold text-primary-foreground shadow-float press"
         >
-          Show {results} result{results === 1 ? "" : "s"}
+          Apply · {results} result{results === 1 ? "" : "s"}
         </button>
       </div>
     </div>
@@ -684,7 +698,7 @@ function FilterPanel({
 
   return isMobile ? (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[92svh] rounded-t-[2rem] bg-card px-0 pb-0 pt-2">
+      <DrawerContent className="flex max-h-[92svh] flex-col overflow-hidden rounded-t-[2rem] bg-card px-0 pb-0 pt-2">
         <DrawerTitle className="sr-only">Filters</DrawerTitle>
         <DrawerDescription className="sr-only">
           Filter transactions by search, type, period and status.
@@ -694,7 +708,7 @@ function FilterPanel({
     </Drawer>
   ) : (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[80vh] max-w-md overflow-hidden rounded-2xl p-0">
+      <DialogContent className="flex max-h-[80vh] max-w-md flex-col overflow-hidden rounded-2xl p-0">
         <DialogHeader className="sr-only">
           <DialogTitle>Filters</DialogTitle>
         </DialogHeader>

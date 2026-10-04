@@ -231,7 +231,7 @@ function SubscribeScreen() {
                         onSelect={() => setSource("card")}
                         icon={<CreditCard className="size-5" strokeWidth={2.2} />}
                         title="Pay with card"
-                        sub="Card or bank via Paystack"
+                        sub="Card or bank transfer"
                       />
                     </>
                   )}

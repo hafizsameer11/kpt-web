@@ -20,7 +20,6 @@ import { AmountCounter } from "@/components/kipit/motion";
 import {
   MONTH_CHANGE,
   MONTH_CHANGE_PCT,
-  PAYOUTS,
   QUICK_ACTIONS,
   WEEK_LABELS,
   WEEK_SERIES,
@@ -33,6 +32,33 @@ import {
   type LiveHolding,
   type LiveNextMaturity,
 } from "@/lib/live-balances";
+
+const DAY_MS = 86_400_000;
+
+function comingUpFromHoldings(holdings: LiveHolding[]) {
+  return holdings
+    .filter((h) => h.maturityDate)
+    .map((h) => {
+      const d = new Date(h.maturityDate!);
+      const daysLeft = Number.isNaN(d.getTime())
+        ? 0
+        : Math.max(0, Math.ceil((d.getTime() - Date.now()) / DAY_MS));
+      return {
+        label: h.name,
+        date: Number.isNaN(d.getTime())
+          ? "—"
+          : d.toLocaleDateString("en-NG", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            }),
+        amount: h.amount,
+        daysLeft,
+      };
+    })
+    .sort((a, b) => a.daysLeft - b.daysLeft)
+    .slice(0, 5);
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -101,13 +127,13 @@ function mapHolding(h: LiveHolding) {
   };
 }
 
-function mapNextMaturity(nm: LiveNextMaturity) {
+function mapNextMaturity(nm: LiveNextMaturity, holdings: LiveHolding[]) {
   if (!nm) {
     return {
       id: "",
       name: "No upcoming maturity",
       tenor: "",
-      rate: "",
+      rate: "—",
       date: "—",
       daysLeft: 0,
       totalDays: 1,
@@ -115,16 +141,25 @@ function mapNextMaturity(nm: LiveNextMaturity) {
       expectedPayout: 0,
     };
   }
+  const match = holdings.find((h) => h.id === nm.id);
   const date = new Date(nm.date).toLocaleDateString("en-NG", {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
+  const rate =
+    match && Number.isFinite(match.ratePct) && match.ratePct > 0
+      ? `${match.ratePct}% p.a.`
+      : "—";
+  const tenor =
+    match?.maturityDate && nm.daysLeft >= 0
+      ? `${Math.max(nm.daysLeft, 1)} days left`
+      : "";
   return {
     id: nm.id,
     name: nm.name,
-    tenor: "",
-    rate: "",
+    tenor,
+    rate,
     date,
     daysLeft: nm.daysLeft,
     totalDays: Math.max(nm.daysLeft, 1),
@@ -189,7 +224,11 @@ function MobileHome() {
   const live = useLiveBalances();
   const INVESTED = live.invested;
   const HOLDINGS = useMemo(() => live.holdings.map(mapHolding), [live.holdings]);
-  const NEXT_MATURITY = useMemo(() => mapNextMaturity(live.nextMaturity), [live.nextMaturity]);
+  const NEXT_MATURITY = useMemo(
+    () => mapNextMaturity(live.nextMaturity, live.holdings),
+    [live.nextMaturity, live.holdings],
+  );
+  const COMING_UP = useMemo(() => comingUpFromHoldings(live.holdings), [live.holdings]);
   const firstName = live.greetingName || displayName().split(" ")[0] || "";
   const initials = displayInitials();
   const LENSES = lenses(WALLET, INVESTED);
@@ -512,31 +551,37 @@ function MobileHome() {
                 </Link>
               </div>
               <ol className="mt-3.5 space-y-3.5">
-                {PAYOUTS.map((p, i) => (
-                  <li
-                    key={p.label}
-                    style={{ ["--d" as string]: `${i * 90}ms` }}
-                    className={`k-rise relative grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3 ${
-                      i === 3 ? "lg:hidden" : ""
-                    }`}
-                  >
-                    <span className="relative flex w-3 justify-center">
-                      <span
-                        className={`z-10 mt-1.5 size-2.5 rounded-full ring-4 ring-surface ${
-                          i === 0 ? "bg-gold k-glow" : "bg-brand/30"
-                        }`}
-                      />
-                      {i < PAYOUTS.length - 1 && (
-                        <span className="absolute top-3 h-full w-px bg-border" />
-                      )}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold">{p.label}</p>
-                      <p className="text-[11px] text-muted-foreground">{p.date}</p>
-                    </div>
-                    <p className="shrink-0 text-sm font-bold text-num">{mask(p.amount)}</p>
+                {COMING_UP.length === 0 ? (
+                  <li className="text-[12.5px] text-muted-foreground">
+                    No upcoming maturities yet.
                   </li>
-                ))}
+                ) : (
+                  COMING_UP.map((p, i) => (
+                    <li
+                      key={`${p.label}-${p.date}`}
+                      style={{ ["--d" as string]: `${i * 90}ms` }}
+                      className={`k-rise relative grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3 ${
+                        i === 3 ? "lg:hidden" : ""
+                      }`}
+                    >
+                      <span className="relative flex w-3 justify-center">
+                        <span
+                          className={`z-10 mt-1.5 size-2.5 rounded-full ring-4 ring-surface ${
+                            i === 0 ? "bg-gold k-glow" : "bg-brand/30"
+                          }`}
+                        />
+                        {i < COMING_UP.length - 1 && (
+                          <span className="absolute top-3 h-full w-px bg-border" />
+                        )}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold">{p.label}</p>
+                        <p className="text-[11px] text-muted-foreground">{p.date}</p>
+                      </div>
+                      <p className="shrink-0 text-sm font-bold text-num">{mask(p.amount)}</p>
+                    </li>
+                  ))
+                )}
               </ol>
             </section>
             </div>
@@ -591,7 +636,11 @@ function DesktopHome() {
   const live = useLiveBalances();
   const INVESTED = live.invested;
   const HOLDINGS = useMemo(() => live.holdings.map(mapHolding), [live.holdings]);
-  const NEXT_MATURITY = useMemo(() => mapNextMaturity(live.nextMaturity), [live.nextMaturity]);
+  const NEXT_MATURITY = useMemo(
+    () => mapNextMaturity(live.nextMaturity, live.holdings),
+    [live.nextMaturity, live.holdings],
+  );
+  const COMING_UP = useMemo(() => comingUpFromHoldings(live.holdings), [live.holdings]);
   const TOTAL = WALLET + INVESTED || 1;
   const { hidden, toggle, mask } = useBalanceVisibility();
   const investedPct = TOTAL > 0 ? Math.round((INVESTED / TOTAL) * 100) : 0;
@@ -875,29 +924,35 @@ function DesktopHome() {
             </Link>
           </div>
           <ol className="mt-4 space-y-4">
-            {PAYOUTS.map((p, i) => (
-              <li
-                key={p.label}
-                style={{ ["--d" as string]: `${i * 80}ms` }}
-                className="k-rise relative grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3"
-              >
-                <span className="relative flex w-3 justify-center">
-                  <span
-                    className={`z-10 mt-1.5 size-2.5 rounded-full ring-4 ring-surface ${
-                      i === 0 ? "bg-gold k-glow" : "bg-brand/30"
-                    }`}
-                  />
-                  {i < PAYOUTS.length - 1 && (
-                    <span className="absolute top-3 h-full w-px bg-border" />
-                  )}
-                </span>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{p.label}</p>
-                  <p className="text-[11px] text-muted-foreground">{p.date}</p>
-                </div>
-                <p className="shrink-0 text-sm font-bold text-num">{mask(p.amount)}</p>
+            {COMING_UP.length === 0 ? (
+              <li className="text-[12.5px] text-muted-foreground">
+                No upcoming maturities yet.
               </li>
-            ))}
+            ) : (
+              COMING_UP.map((p, i) => (
+                <li
+                  key={`${p.label}-${p.date}`}
+                  style={{ ["--d" as string]: `${i * 80}ms` }}
+                  className="k-rise relative grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3"
+                >
+                  <span className="relative flex w-3 justify-center">
+                    <span
+                      className={`z-10 mt-1.5 size-2.5 rounded-full ring-4 ring-surface ${
+                        i === 0 ? "bg-gold k-glow" : "bg-brand/30"
+                      }`}
+                    />
+                    {i < COMING_UP.length - 1 && (
+                      <span className="absolute top-3 h-full w-px bg-border" />
+                    )}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">{p.label}</p>
+                    <p className="text-[11px] text-muted-foreground">{p.date}</p>
+                  </div>
+                  <p className="shrink-0 text-sm font-bold text-num">{mask(p.amount)}</p>
+                </li>
+              ))
+            )}
           </ol>
         </section>
       </div>

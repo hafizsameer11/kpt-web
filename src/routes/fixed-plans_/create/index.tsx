@@ -43,22 +43,22 @@ const quickAmounts = (minimum: number, wallet: number) => {
 };
 
 function CreatePlanAmountScreen() {
-  const { bands: TENOR_BANDS, loading } = useTenorBands();
+  const { bands: TENOR_BANDS, loading: ratesLoading } = useTenorBands();
   const WALLET = useWalletBalance();
+  const DEFAULT_MIN = 10_000;
   const LOWEST_MIN = TENOR_BANDS.length
-    ? Math.min(...TENOR_BANDS.map((b) => b.minimum || 0))
-    : 0;
+    ? Math.min(...TENOR_BANDS.map((b) => (b.minimum > 0 ? b.minimum : DEFAULT_MIN)))
+    : DEFAULT_MIN;
   const TOP_RATE = TENOR_BANDS.length
     ? Math.max(...TENOR_BANDS.map((b) => Number(b.rate.replace("%", "")) || 0))
     : 0;
   const { plan } = Route.useSearch();
   const band = TENOR_BANDS.find((b) => b.days === plan);
-  const MINIMUM = band?.minimum ?? LOWEST_MIN;
+  const MINIMUM = band && band.minimum > 0 ? band.minimum : LOWEST_MIN;
   const BEST_RATE = band ? Number(band.rate.replace("%", "")) : TOP_RATE;
 
   const [raw, setRaw] = useState("");
   const amount = Number(raw.replace(/[^0-9]/g, "")) || 0;
-  void loading;
   const belowMin = amount > 0 && amount < MINIMUM;
   const overWallet = amount > WALLET;
   const valid = amount > 0 && !belowMin && !overWallet;
@@ -123,7 +123,9 @@ function CreatePlanAmountScreen() {
 
               <p className="mt-3 flex items-center gap-1.5 text-[12px] font-medium text-primary-foreground/60">
                 <ShieldCheck className="size-3.5 text-primary-foreground/70" />
-                Minimum {naira(MINIMUM)} &middot; funded from your wallet
+                {ratesLoading && !TENOR_BANDS.length
+                  ? "Loading plan minimum…"
+                  : `Minimum ${naira(MINIMUM)} · funded from your wallet`}
               </p>
 
               <div className="mt-6 grid max-w-xl grid-cols-4 gap-2">
@@ -291,7 +293,9 @@ function CreatePlanAmountScreen() {
 
             <p className="mt-3 flex items-center gap-1.5 text-[12px] font-medium text-primary-foreground/60">
               <ShieldCheck className="size-3.5 text-primary-foreground/70" />
-              Minimum {naira(MINIMUM)} &middot; funded from your wallet
+              {ratesLoading && !TENOR_BANDS.length
+                ? "Loading plan minimum…"
+                : `Minimum ${naira(MINIMUM)} · funded from your wallet`}
             </p>
 
             {/* Quick amounts */}

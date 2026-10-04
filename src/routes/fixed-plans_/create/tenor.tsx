@@ -352,7 +352,7 @@ function CreatePlanTenorScreen() {
                     </div>
                   )}
                   {selected === "custom" && (
-                    <p className="mt-3 text-center text-[11px] text-primary-foreground/50">
+                    <p className="mt-3 text-center text-[13px] font-medium leading-snug text-primary-foreground/70">
                       Minimum 30 days · rate set by the band your days fall into
                     </p>
                   )}
@@ -579,7 +579,7 @@ function CreatePlanTenorScreen() {
                   </div>
                 )}
                 {selected === "custom" && (
-                  <p className="mt-3 text-center text-[11px] text-primary-foreground/50">
+                  <p className="mt-3 text-center text-[13px] font-medium leading-snug text-primary-foreground/70">
                     Minimum 30 days · rate set by the band your days fall into
                   </p>
                 )}

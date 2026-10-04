@@ -26,6 +26,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { naira } from "@/lib/home-data";
 import { callWithdraw, isAuthenticated } from "@/lib/api";
+import { useKycTier } from "@/lib/kyc-state";
 import { useCallAccountLive, hydrateLiveBalances } from "@/lib/live-balances";
 import { refreshWalletFromApi, useWalletBalance } from "@/lib/wallet-balance";
 
@@ -62,6 +63,7 @@ function newId() {
 function ToWalletScreen() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const tier = useKycTier();
   const walletBalance = useWalletBalance();
   const { balance: callBalance, ratePct } = useCallAccountLive();
   const rateDecimal = ratePct > 0 ? ratePct / 100 : 0;
@@ -194,7 +196,7 @@ function ToWalletScreen() {
               </span>
               <input
                 inputMode="numeric"
-                autoFocus
+                autoFocus={tier >= 1}
                 value={raw}
                 onChange={(e) => {
                   const digits = e.target.value.replace(/[^0-9]/g, "");

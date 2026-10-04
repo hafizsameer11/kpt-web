@@ -46,7 +46,7 @@ function CreatePin() {
     >
       <div className="space-y-8">
         <PinDots length={4} filled={pin.length} />
-        <p className="min-h-5 text-center text-xs [color:oklch(0.8_0.14_25)]">{error}</p>
+        <p className="min-h-5 text-center text-xs font-semibold text-red-400">{error}</p>
         <Keypad
           onDigit={(d) => { setError(null); setPin((p) => (p.length < 4 ? p + d : p)); }}
           onBackspace={() => setPin((p) => p.slice(0, -1))}

@@ -48,18 +48,59 @@ function InvestmentHistoryScreen() {
       .then((rows) => {
         if (!alive) return;
         setHistory(
-          (rows ?? []).map((p) => ({
-            id: p.id,
-            name: p.name,
-            kind: String(p.kind).toUpperCase() === "EXPLORE" ? "Explore product" : "Fixed plan",
-            status: mapStatus(p.status),
-            principal: p.principal,
-            rate: `${p.ratePct}% p.a.`,
-            startDate: "—",
-            endDate: p.maturityDate ?? "—",
-            interest: p.accrued ?? 0,
-            holdingId: p.id,
-          })),
+          (rows ?? []).map((p) => {
+            const tenorDays = p.tenorDays || 0;
+            let startDate = "—";
+            if (p.startDate) {
+              const d = new Date(p.startDate);
+              if (!Number.isNaN(d.getTime())) {
+                startDate = d.toLocaleDateString("en-NG", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                });
+              }
+            } else if (p.maturityDate && tenorDays > 0) {
+              const d = new Date(p.maturityDate);
+              if (!Number.isNaN(d.getTime())) {
+                d.setDate(d.getDate() - tenorDays);
+                startDate = d.toLocaleDateString("en-NG", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                });
+              }
+            }
+            const endDate = p.maturityDate
+              ? new Date(p.maturityDate).toLocaleDateString("en-NG", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })
+              : "—";
+            const accrued = Math.round(p.accrued ?? 0);
+            const expected =
+              p.expectedInterest != null
+                ? Math.round(p.expectedInterest)
+                : Math.round(
+                    (p.principal || 0) * ((p.ratePct || 0) / 100) * (tenorDays / 365),
+                  );
+            return {
+              id: p.id,
+              name: p.name,
+              kind:
+                String(p.kind).toUpperCase() === "EXPLORE" ? "Explore product" : "Fixed plan",
+              status: mapStatus(p.status),
+              principal: p.principal,
+              rate: `${p.ratePct}% p.a.`,
+              startDate,
+              endDate: Number.isNaN(new Date(p.maturityDate || "").getTime())
+                ? p.maturityDate ?? "—"
+                : endDate,
+              interest: Math.max(accrued, expected > 0 ? expected : 0),
+              holdingId: p.id,
+            };
+          }),
         );
       })
       .catch(() => {

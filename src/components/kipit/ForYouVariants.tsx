@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { useEffect, useSyncExternalStore } from "react";
 import { articleArt } from "@/components/kipit/art";
 import { FEED, hydrateHomeFeedFromApi, subscribeFeed } from "@/lib/home-data";
-import { LEARN_ARTICLES } from "@/lib/learn-data";
+import { LEARN_ARTICLES, resolveLearnArticleId } from "@/lib/learn-data";
 
 function useHomeFeed() {
   const tick = useSyncExternalStore(
@@ -48,7 +48,7 @@ export function ForYouCovers() {
           <Link
             key={item.id}
             to="/learn/$articleId"
-            params={{ articleId: item.id }}
+            params={{ articleId: resolveLearnArticleId(item) }}
             className="relative block h-[19rem] w-[72vw] max-w-[16rem] shrink-0 snap-start overflow-hidden rounded-xl shadow-card press hover:-translate-y-0.5 hover:shadow-float md:h-[21rem] md:w-auto md:max-w-none"
           >
             <img
@@ -100,7 +100,7 @@ export function ForYouList() {
           <Link
             key={item.id}
             to="/learn/$articleId"
-            params={{ articleId: item.id }}
+            params={{ articleId: resolveLearnArticleId(item) }}
             className="card-surface flex items-center gap-3.5 p-3 press hover:-translate-y-0.5 hover:shadow-float md:flex-col md:items-start md:gap-3 md:p-4"
           >
             <div className="relative size-20 shrink-0 overflow-hidden rounded-xl md:h-28 md:w-full">
@@ -153,7 +153,7 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
         {lead && (
           <Link
             to="/learn/$articleId"
-            params={{ articleId: lead.id }}
+            params={{ articleId: resolveLearnArticleId(lead) }}
             className="relative block overflow-hidden rounded-xl bg-brand-gradient p-5 text-primary-foreground shadow-card press"
           >
             <span
@@ -189,7 +189,7 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
             <Link
               key={item.id}
               to="/learn/$articleId"
-              params={{ articleId: item.id }}
+              params={{ articleId: resolveLearnArticleId(item) }}
               className="card-surface flex items-start gap-3 p-4 press"
             >
               <span
@@ -283,7 +283,7 @@ export function ForYouBento({ className = "" }: { className?: string }) {
           <Link
             key={item.id}
             to="/learn/$articleId"
-            params={{ articleId: item.id }}
+            params={{ articleId: resolveLearnArticleId(item) }}
             className="card-surface relative flex flex-col justify-between overflow-hidden rounded-lg p-3 press hover:-translate-y-0.5 hover:shadow-float md:rounded-xl md:p-4"
           >
             <div className="relative -mx-3 -mt-3 h-24 overflow-hidden md:-mx-4 md:-mt-4 md:h-32">

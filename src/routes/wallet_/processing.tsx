@@ -51,6 +51,7 @@ function DepositProcessing() {
       ? "Waiting for your bank transfer to arrive…"
       : "Confirming your deposit",
   );
+  const [timedOut, setTimedOut] = useState(false);
 
   const steps =
     method === "card"
@@ -60,6 +61,15 @@ function DepositProcessing() {
   useEffect(() => {
     let cancelled = false;
     const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    const maxAttempts = method === "card" ? 15 : 25;
+    const pollMs = method === "card" ? 2000 : 3000;
+
+    const goHomePending = async () => {
+      setTimedOut(true);
+      setNote("We'll notify you when your payment is confirmed. Thanks.");
+      await sleep(2200);
+      if (!cancelled) void navigate({ to: "/", replace: true });
+    };
 
     // Paystack callback often lands with ?reference= / ?trxref=
     const resolveCardRef = () => {
@@ -77,14 +87,18 @@ function DepositProcessing() {
 
     const confirmWithRetry = async (cardRef: string) => {
       let lastError: unknown;
-      for (let attempt = 0; attempt < 45; attempt++) {
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
         if (cancelled) return;
         try {
           await confirmCardFunding(cardRef);
           return;
         } catch (err) {
           lastError = err;
-          await sleep(2000);
+          if (attempt === 5) setNote("Still confirming your payment…");
+          if (attempt === 10) {
+            setNote("Taking a bit longer — we'll notify you when it's confirmed.");
+          }
+          await sleep(pollMs);
         }
       }
       throw lastError ?? new Error("card confirm timed out");
@@ -96,7 +110,7 @@ function DepositProcessing() {
           ? window.sessionStorage.getItem("kipit:transfer-watch-after")
           : null;
       const after = storedAfter || new Date(Date.now() - 60_000).toISOString();
-      for (let attempt = 0; attempt < 60; attempt++) {
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
         if (cancelled) return null;
         try {
           const latest = await fetchRecentWalletCredits(after);
@@ -114,14 +128,14 @@ function DepositProcessing() {
             }
             return { amount: credit.amount, ref: credit.reference || "" };
           }
-          if (attempt === 10) setNote("Still waiting — transfers usually land within a minute.");
-          if (attempt === 30) {
-            setNote("Almost there — we credit the amount your bank actually sent.");
+          if (attempt === 5) setNote("Still waiting — transfers usually land within a minute.");
+          if (attempt === 12) {
+            setNote("Taking a bit longer — we'll notify you when your payment is confirmed.");
           }
         } catch {
           /* keep polling */
         }
-        await sleep(3000);
+        await sleep(pollMs);
       }
       return null;
     };
@@ -146,6 +160,7 @@ function DepositProcessing() {
           const cardRef = resolveCardRef();
           if (!cardRef) throw new Error("missing card reference");
           await confirmWithRetry(cardRef);
+          if (cancelled) return;
           if (typeof window !== "undefined") {
             window.sessionStorage.setItem("kipit:last-deposit-ref", cardRef);
             window.sessionStorage.removeItem("kipit:card-ref");
@@ -190,32 +205,14 @@ function DepositProcessing() {
             });
             return;
           }
-          setNote(
-            `We have not received ${naira(amount)} yet. Send to your dedicated account — we credit the exact amount that arrives.`,
-          );
-          await sleep(2500);
-          if (!cancelled) void navigate({ to: "/", replace: true });
+          await goHomePending();
           return;
         }
 
         // No silent success path — require card confirm or transfer credit poll above.
         if (!cancelled) void navigate({ to: "/", replace: true });
       } catch {
-        if (!cancelled) {
-          if (method === "transfer") void navigate({ to: "/", replace: true });
-          else {
-            const failRef = resolveCardRef();
-            void navigate({
-              to: "/wallet/failed",
-              search: {
-                amount,
-                reason: "auth",
-                ...(failRef ? { ref: failRef } : {}),
-              },
-              replace: true,
-            });
-          }
-        }
+        if (!cancelled) await goHomePending();
       }
     };
     void run();
@@ -238,10 +235,12 @@ function DepositProcessing() {
                 aria-hidden
                 className="k-success-ring absolute inset-0 rounded-full border-2 border-gold/50"
               />
-              <span
-                aria-hidden
-                className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-gold [animation-duration:1.1s]"
-              />
+              {!timedOut ? (
+                <span
+                  aria-hidden
+                  className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-gold [animation-duration:1.1s]"
+                />
+              ) : null}
               <span className="grid size-14 place-items-center rounded-full bg-gold/15 text-gold">
                 <Banknote className="size-7" strokeWidth={2.2} />
               </span>
@@ -251,21 +250,27 @@ function DepositProcessing() {
               {note}
             </p>
             <p className="k-success-fade mt-2 text-[12.5px] text-primary-foreground/65">
-              {naira(amount)} · Ref {reference}
+              {timedOut
+                ? "You can leave — we'll update your wallet when the payment lands."
+                : `${naira(amount)} · Ref ${reference}`}
             </p>
 
-            <ul className="k-success-fade mx-auto mt-7 w-full max-w-xs space-y-2.5 text-left">
-              {steps.map((step, i) => (
-                <li
-                  key={step}
-                  className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-[12.5px] font-semibold"
-                  style={{ animationDelay: `${i * 220}ms` }}
-                >
-                  <span className="size-1.5 shrink-0 animate-pulse rounded-full bg-gold" />
-                  {step}
-                </li>
-              ))}
-            </ul>
+            {!timedOut ? (
+              <ul className="k-success-fade mx-auto mt-7 w-full max-w-xs space-y-2.5 text-left">
+                {steps.map((step, i) => (
+                  <li
+                    key={step}
+                    className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3.5 py-2.5 text-[12.5px] font-semibold"
+                    style={{ animationDelay: `${i * 220}ms` }}
+                  >
+                    <span className="size-1.5 shrink-0 animate-pulse rounded-full bg-gold" />
+                    {step}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-6 text-[12.5px] text-primary-foreground/65">Taking you home…</p>
+            )}
           </div>
         </section>
       </div>

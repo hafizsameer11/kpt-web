@@ -138,7 +138,7 @@ export function AuthField({
       </span>
       <div className="mt-2">{children}</div>
       {error ? (
-        <span className="mt-1.5 block text-xs text-destructive-foreground/90 [color:oklch(0.8_0.14_25)]">
+        <span className="mt-1.5 block text-xs font-semibold text-red-400">
           {error}
         </span>
       ) : hint ? (
@@ -205,17 +205,47 @@ export function OtpInput({
   invalid?: boolean;
 }) {
   const ref = useRef<HTMLInputElement>(null);
-  useEffect(() => {
+
+  const placeCaretAtEnd = () => {
+    const el = ref.current;
+    if (!el) return;
+    const pos = el.value.length;
+    try {
+      el.setSelectionRange(pos, pos);
+    } catch {
+      /* some browsers reject selectionRange on certain input types */
+    }
+  };
+
+  const focusAtEnd = () => {
     ref.current?.focus();
+    placeCaretAtEnd();
+  };
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.focus();
+    const pos = el.value.length;
+    try {
+      el.setSelectionRange(pos, pos);
+    } catch {
+      /* ignore */
+    }
   }, []);
+
+  // Active box = next empty digit (or last box when complete), not always index 0.
+  const activeIndex = Math.min(value.length, length - 1);
+
   return (
-    <div className="relative" onClick={() => ref.current?.focus()}>
+    <div className="relative" onClick={focusAtEnd}>
       <input
         ref={ref}
         inputMode="numeric"
         autoComplete="one-time-code"
         value={value}
         onChange={(e) => onChange(e.target.value.replace(/\D/g, "").slice(0, length))}
+        onFocus={placeCaretAtEnd}
         className="absolute inset-0 h-full w-full opacity-0"
         aria-label="One-time code"
       />
@@ -226,7 +256,7 @@ export function OtpInput({
             className={`flex h-14 flex-1 items-center justify-center rounded-xl border text-xl font-semibold ${
               invalid
                 ? "border-[oklch(0.7_0.16_25)] bg-white/8"
-                : value.length === i
+                : i === activeIndex
                   ? "border-gold bg-white/14"
                   : "border-white/15 bg-white/8"
             }`}

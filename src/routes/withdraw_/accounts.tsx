@@ -1,12 +1,22 @@
 import { KycGuard } from "@/components/kipit/KycGate";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Check, Landmark, Plus, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Landmark,
+  Plus,
+  ShieldCheck,
+  Trash2,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import {
   hydratePayoutFromApi,
   maskAccount,
   payoutEta,
+  removePayoutAccountViaApi,
   type PayoutAccount,
 } from "@/lib/withdraw-data";
 
@@ -39,6 +49,7 @@ function SelectAccountScreen() {
   const [accounts, setAccounts] = useState<PayoutAccount[]>([]);
   const [selected, setSelected] = useState("");
   const [loaded, setLoaded] = useState(false);
+  const [removingId, setRemovingId] = useState<string | null>(null);
 
   useEffect(() => {
     void hydratePayoutFromApi().then((rows) => {
@@ -48,6 +59,27 @@ function SelectAccountScreen() {
     });
   }, []);
 
+  const onRemove = (account: PayoutAccount) => {
+    if (removingId) return;
+    const ok = window.confirm(
+      `Remove ${account.bank} · ${maskAccount(account.accountNumber)} from your saved payouts?`,
+    );
+    if (!ok) return;
+    setRemovingId(account.id);
+    void (async () => {
+      try {
+        const rows = await removePayoutAccountViaApi(account.id);
+        setAccounts(rows);
+        setSelected((cur) => (cur === account.id ? rows[0]?.id ?? "" : cur));
+        toast.success("Bank account removed from your saved payouts.");
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Could not remove bank account.");
+      } finally {
+        setRemovingId(null);
+      }
+    })();
+  };
+
   return (
     <>
       <div className="md:hidden">
@@ -56,6 +88,8 @@ function SelectAccountScreen() {
           selected={selected}
           setSelected={setSelected}
           loaded={loaded}
+          removingId={removingId}
+          onRemove={onRemove}
         />
       </div>
       <div className="hidden md:block">
@@ -64,6 +98,8 @@ function SelectAccountScreen() {
           selected={selected}
           setSelected={setSelected}
           loaded={loaded}
+          removingId={removingId}
+          onRemove={onRemove}
         />
       </div>
     </>
@@ -75,11 +111,15 @@ function MobileSelectAccount({
   selected,
   setSelected,
   loaded,
+  removingId,
+  onRemove,
 }: {
   accounts: PayoutAccount[];
   selected: string;
   setSelected: (id: string) => void;
   loaded: boolean;
+  removingId: string | null;
+  onRemove: (account: PayoutAccount) => void;
 }) {
   const navigate = useNavigate();
 
@@ -127,42 +167,55 @@ function MobileSelectAccount({
                 const active = acct.id === selected;
                 return (
                   <li key={acct.id}>
-                    <button
-                      type="button"
-                      onClick={() => setSelected(acct.id)}
-                      aria-pressed={active}
-                      className={`flex w-full items-center gap-3 rounded-xl border p-3.5 text-left transition-colors press ${
+                    <div
+                      className={`flex w-full items-center gap-2 rounded-xl border p-3.5 transition-colors ${
                         active
                           ? "border-gold bg-gold/[0.07]"
                           : "border-border bg-card hover:border-gold/40"
                       }`}
                     >
-                      <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                        <Landmark className="size-5" strokeWidth={2.2} />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="flex items-center gap-2">
-                          <span className="truncate text-[13.5px] font-bold text-foreground">
-                            {acct.accountName}
-                          </span>
-                          {acct.primary && (
-                            <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-primary">
-                              Primary
-                            </span>
-                          )}
-                        </span>
-                        <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
-                          {acct.bank} · {maskAccount(acct.accountNumber)}
-                        </span>
-                      </span>
-                      <span
-                        className={`grid size-5 shrink-0 place-items-center rounded-full border ${
-                          active ? "border-gold bg-gold text-gold-foreground" : "border-border"
-                        }`}
+                      <button
+                        type="button"
+                        onClick={() => setSelected(acct.id)}
+                        aria-pressed={active}
+                        className="flex min-w-0 flex-1 items-center gap-3 text-left press"
                       >
-                        {active && <Check className="size-3.5" strokeWidth={3} />}
-                      </span>
-                    </button>
+                        <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                          <Landmark className="size-5" strokeWidth={2.2} />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="flex items-center gap-2">
+                            <span className="truncate text-[13.5px] font-bold text-foreground">
+                              {acct.accountName}
+                            </span>
+                            {acct.primary && (
+                              <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-primary">
+                                Primary
+                              </span>
+                            )}
+                          </span>
+                          <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">
+                            {acct.bank} · {maskAccount(acct.accountNumber)}
+                          </span>
+                        </span>
+                        <span
+                          className={`grid size-5 shrink-0 place-items-center rounded-full border ${
+                            active ? "border-gold bg-gold text-gold-foreground" : "border-border"
+                          }`}
+                        >
+                          {active && <Check className="size-3.5" strokeWidth={3} />}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Remove bank account"
+                        disabled={removingId === acct.id}
+                        onClick={() => onRemove(acct)}
+                        className="grid size-9 shrink-0 place-items-center rounded-xl border border-border text-muted-foreground press hover:bg-secondary hover:text-destructive disabled:opacity-40"
+                      >
+                        <Trash2 className="size-4" strokeWidth={2.2} />
+                      </button>
+                    </div>
                   </li>
                 );
               })}
@@ -209,11 +262,15 @@ function DesktopSelectAccount({
   selected,
   setSelected,
   loaded,
+  removingId,
+  onRemove,
 }: {
   accounts: PayoutAccount[];
   selected: string;
   setSelected: (id: string) => void;
   loaded: boolean;
+  removingId: string | null;
+  onRemove: (account: PayoutAccount) => void;
 }) {
   const navigate = useNavigate();
   const acct = accounts.find((a) => a.id === selected) ?? accounts[0];
@@ -259,44 +316,57 @@ function DesktopSelectAccount({
                   const active = a.id === selected;
                   return (
                     <li key={a.id}>
-                      <button
-                        type="button"
-                        onClick={() => setSelected(a.id)}
-                        aria-pressed={active}
-                        className={`flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition-colors press ${
+                      <div
+                        className={`flex w-full items-center gap-3 rounded-2xl border p-5 transition-colors ${
                           active
                             ? "border-gold bg-gold/[0.07] ring-1 ring-gold/40"
                             : "border-border bg-card hover:border-gold/40"
                         }`}
                       >
-                        <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                          <Landmark className="size-5" strokeWidth={2.2} />
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="flex items-center gap-2">
-                            <span className="truncate text-[14px] font-bold text-foreground">
-                              {a.accountName}
-                            </span>
-                            {a.primary && (
-                              <span className="shrink-0 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-gold">
-                                Primary
-                              </span>
-                            )}
-                          </span>
-                          <span className="mt-0.5 block truncate text-[12.5px] text-muted-foreground">
-                            {a.bank} &middot; {maskAccount(a.accountNumber)}
-                          </span>
-                        </span>
-                        <span
-                          className={`grid size-5 shrink-0 place-items-center rounded-full border ${
-                            active
-                              ? "border-gold bg-gold text-gold-foreground"
-                              : "border-border"
-                          }`}
+                        <button
+                          type="button"
+                          onClick={() => setSelected(a.id)}
+                          aria-pressed={active}
+                          className="flex min-w-0 flex-1 items-center gap-4 text-left press"
                         >
-                          {active && <Check className="size-3.5" strokeWidth={3} />}
-                        </span>
-                      </button>
+                          <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                            <Landmark className="size-5" strokeWidth={2.2} />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="flex items-center gap-2">
+                              <span className="truncate text-[14px] font-bold text-foreground">
+                                {a.accountName}
+                              </span>
+                              {a.primary && (
+                                <span className="shrink-0 rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-gold">
+                                  Primary
+                                </span>
+                              )}
+                            </span>
+                            <span className="mt-0.5 block truncate text-[12.5px] text-muted-foreground">
+                              {a.bank} &middot; {maskAccount(a.accountNumber)}
+                            </span>
+                          </span>
+                          <span
+                            className={`grid size-5 shrink-0 place-items-center rounded-full border ${
+                              active
+                                ? "border-gold bg-gold text-gold-foreground"
+                                : "border-border"
+                            }`}
+                          >
+                            {active && <Check className="size-3.5" strokeWidth={3} />}
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Remove bank account"
+                          disabled={removingId === a.id}
+                          onClick={() => onRemove(a)}
+                          className="grid size-9 shrink-0 place-items-center rounded-xl border border-border text-muted-foreground press hover:bg-secondary hover:text-destructive disabled:opacity-40"
+                        >
+                          <Trash2 className="size-4" strokeWidth={2.2} />
+                        </button>
+                      </div>
                     </li>
                   );
                 })}

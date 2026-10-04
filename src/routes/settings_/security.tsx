@@ -8,6 +8,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
+import { getStoredUser } from "@/lib/api";
+import { useDisplayProfile } from "@/lib/profile-live";
 
 export const Route = createFileRoute("/settings_/security")({
   head: () => ({
@@ -28,6 +30,9 @@ export const Route = createFileRoute("/settings_/security")({
 });
 
 function SecurityScreen() {
+  const profile = useDisplayProfile();
+  const accountEmail =
+    profile.email?.trim() || getStoredUser()?.email?.trim() || "";
   const links = [
     {
       to: "/settings/security/change-pin" as const,
@@ -64,6 +69,7 @@ function SecurityScreen() {
             <li>
               <Link
                 to="/forgot-password"
+                search={accountEmail ? { email: accountEmail } : {}}
                 className="group flex w-full items-center gap-3.5 px-4 py-3.5 text-left press transition-colors hover:bg-secondary/50"
               >
                 <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-gold ring-1 ring-inset ring-gold/25">
@@ -71,7 +77,11 @@ function SecurityScreen() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[13.5px] font-bold">Change password</p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">Reset via email OTP</p>
+                  <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                    {accountEmail
+                      ? `Reset code goes to ${accountEmail}`
+                      : "Reset via email OTP"}
+                  </p>
                 </div>
                 <ChevronRight className="size-4 text-muted-foreground" />
               </Link>

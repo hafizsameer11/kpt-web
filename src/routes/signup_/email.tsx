@@ -7,7 +7,13 @@ import {
   authInputClass,
 } from "@/components/kipit/AuthShell";
 import { signupDraft } from "@/lib/auth-data";
-import { ApiError, logSignupFunnel, requestOtp } from "@/lib/api";
+import {
+  ApiError,
+  checkEmailAvailable,
+  isValidEmailFormat,
+  logSignupFunnel,
+  requestOtp,
+} from "@/lib/api";
 
 export const Route = createFileRoute("/signup_/email")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -42,7 +48,7 @@ function EmailEntry() {
     }
   }, [gift]);
 
-  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
+  const valid = isValidEmailFormat(email);
 
   const submit = async () => {
     if (!valid || busy) {
@@ -54,6 +60,12 @@ function EmailEntry() {
     const target = email.trim().toLowerCase();
     signupDraft.email = target;
     try {
+      const { available } = await checkEmailAvailable(target);
+      if (!available) {
+        setError("This email is already associated with a Kipit account. Log in instead.");
+        setBusy(false);
+        return;
+      }
       await requestOtp(target, "SIGNUP");
       void logSignupFunnel({
         step: "email",

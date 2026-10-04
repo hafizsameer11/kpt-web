@@ -70,17 +70,17 @@ function LegalScreen() {
 
   function downloadAll() {
     try {
-      const body = LEGAL_DOCS.map(
-        (d) =>
-          `${d.title} (${d.version})\n${d.desc}\n\n${(DOC_BODY[d.title] ?? []).join("\n\n")}`,
-      ).join("\n\n———\n\n");
-      downloadDocumentPdf({
-        title: "Kipit legal documents",
-        subtitle: "Terms, privacy, risk disclosure and product terms",
-        body,
-        filename: "kipit-legal-documents.html",
-      });
-      toast.success("Legal pack downloaded — open and print to PDF if needed.");
+      for (const d of LEGAL_DOCS) {
+        const body = `${d.desc}\n\n${(DOC_BODY[d.title] ?? []).join("\n\n")}`;
+        const slug = d.title.replace(/\s+/g, "-").toLowerCase();
+        downloadDocumentPdf({
+          title: d.title,
+          subtitle: `${d.version} · ${d.accepted}`,
+          body,
+          filename: `kipit-${slug}.html`,
+        });
+      }
+      toast.success(`${LEGAL_DOCS.length} legal documents downloaded.`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not download documents.");
     }

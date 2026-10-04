@@ -70,9 +70,15 @@ function NotificationSettings() {
     setPush((p) => p.map((i) => ({ ...i, on: true })));
     setEmail((p) => p.map((i) => ({ ...i, on: true })));
     void patchNotificationPrefs({
+      pushDeposits: true,
+      pushWithdrawals: true,
+      pushInvestments: true,
       pushMaturities: true,
       pushProducts: true,
+      pushSecurity: true,
+      pushKyc: true,
       emailDigest: true,
+      emailMarketing: true,
       emailDeposits: true,
       emailWithdrawals: true,
       emailInvestments: true,
@@ -84,6 +90,7 @@ function NotificationSettings() {
     setEmail((p) => p.map((i) => ({ ...i, on: false })));
     void patchNotificationPrefs({
       emailDigest: false,
+      emailMarketing: false,
       emailDeposits: false,
       emailWithdrawals: false,
       emailInvestments: false,

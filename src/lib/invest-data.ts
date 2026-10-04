@@ -58,32 +58,82 @@ export function subscribeRates(listener: () => void) {
   };
 }
 
+const PRODUCT_NAMES: Record<string, string> = {
+  CALL: "Kipit Call Account",
+  "1-90": "Kipit Starter",
+  "91-120": "Kipit Fixed Income",
+  "121-180": "Kipit Target Savings",
+  "181-364": "Kipit Growth",
+  "365+": "Kipit Vault",
+};
+
+/** Fallback minima when API omits `minimum` (mirrors kipit-api minimumForBand). */
+function fallbackMinimum(code: string, minDays: number) {
+  if (code === "CALL" || minDays <= 0) return 5_000;
+  if (minDays <= 90) return 10_000;
+  if (minDays <= 180) return 50_000;
+  if (minDays <= 364) return 100_000;
+  return 250_000;
+}
+
+function productName(code: string, minDays: number, fallback: string) {
+  if (PRODUCT_NAMES[code]) return PRODUCT_NAMES[code];
+  if (minDays <= 90) return "Kipit Starter";
+  if (minDays <= 120) return "Kipit Fixed Income";
+  if (minDays <= 180) return "Kipit Target Savings";
+  if (minDays <= 364) return "Kipit Growth";
+  return fallback || "Kipit Vault";
+}
+
+/** Prefer maxDays (band upper bound) as the displayed tenor when present. */
+function tenorDays(b: ApiRateBand) {
+  if (b.maxDays != null && b.maxDays > 0) return b.maxDays;
+  return Math.max(b.minDays, 1);
+}
+
 function mapBands(bands: ApiRateBand[]) {
   const fixed = bands.filter((b) => b.code !== "CALL" && b.minDays > 0);
-  TENOR_BANDS = fixed.map((b, i) => {
-    const days = b.maxDays ?? b.minDays;
+  TENOR_BANDS = fixed.map((b) => {
+    const name = productName(b.code, b.minDays, b.label);
+    const days = tenorDays(b);
+    const minimum = b.minimum && b.minimum > 0 ? b.minimum : fallbackMinimum(b.code, b.minDays);
     return {
-      name: b.label,
+      name,
       days: `${days} days`,
       rate: `${b.ratePct}%`,
-      minimum: 0,
-      featured: i === 0,
+      minimum,
+      featured: b.code === "91-120" || name === "Kipit Fixed Income",
     };
   });
   FIXED_PLANS = fixed.map((b) => {
-    const days = b.maxDays ?? b.minDays;
+    const name = productName(b.code, b.minDays, b.label);
+    const days = tenorDays(b);
+    const minimum = b.minimum && b.minimum > 0 ? b.minimum : fallbackMinimum(b.code, b.minDays);
     return {
-      name: b.label,
+      name,
       rate: `${b.ratePct}% p.a.`,
       tenor: `${days} days`,
-      minimum: 0,
-      blurb: `${b.label} at ${b.ratePct}% p.a.`,
+      minimum,
+      blurb: `${name} at ${b.ratePct}% p.a.`,
     };
   });
   const call = bands.find((b) => b.code === "CALL");
   if (call) {
     CALL_ACCOUNT.rate = `${call.ratePct}% p.a.`;
+    if (call.minimum && call.minimum > 0) CALL_ACCOUNT.minimum = call.minimum;
   }
+  AUTO_INVEST_DESTINATIONS = [
+    {
+      name: CALL_ACCOUNT.name,
+      rate: CALL_ACCOUNT.rate.replace(/\s*p\.a\./i, "").trim() || "—",
+      minimum: CALL_ACCOUNT.minimum,
+    },
+    ...FIXED_PLANS.map((p) => ({
+      name: p.name,
+      rate: p.rate.replace(/\s*p\.a\./i, "").trim(),
+      minimum: p.minimum,
+    })),
+  ];
 }
 
 export async function hydrateInvestRatesFromApi() {
@@ -95,6 +145,9 @@ export async function hydrateInvestRatesFromApi() {
   } catch {
     TENOR_BANDS = [];
     FIXED_PLANS = [];
+    AUTO_INVEST_DESTINATIONS = [
+      { name: CALL_ACCOUNT.name, rate: CALL_ACCOUNT.rate.replace(/\s*p\.a\./i, "").trim() || "—", minimum: CALL_ACCOUNT.minimum },
+    ];
   } finally {
     ratesLoading = false;
     emitRates();

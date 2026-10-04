@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
-import { ApiError, changeTransactionPin } from "@/lib/api";
+import { ApiError, changeTransactionPin, verifyTransactionPin } from "@/lib/api";
 
 export const Route = createFileRoute("/settings_/security_/change-pin")({
   head: () => ({
@@ -44,7 +44,16 @@ function ChangePinScreen() {
     setError(null);
     if (step === 0) {
       if (current.length !== 4) return;
-      setStep(1);
+      setBusy(true);
+      try {
+        await verifyTransactionPin(current);
+        setStep(1);
+      } catch (err) {
+        setCurrent("");
+        setError(err instanceof ApiError ? err.message : "Current PIN is incorrect.");
+      } finally {
+        setBusy(false);
+      }
       return;
     }
     if (step === 1) {

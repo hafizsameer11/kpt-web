@@ -75,7 +75,7 @@ const MAX_ATTEMPTS = 3;
 const SOURCE_META = {
   wallet: { label: "Kipit Wallet", icon: Wallet },
   add: { label: "Wallet top-up (transfer)", icon: Plus },
-  card: { label: "Card or bank via Paystack", icon: CreditCard },
+  card: { label: "Card or bank transfer", icon: CreditCard },
 } as const;
 
 function SubscriptionReviewScreen() {

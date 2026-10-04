@@ -233,7 +233,22 @@ function MobileInvest() {
                           featured ? "text-primary-foreground/70" : "text-muted-foreground"
                         }`}
                       >
-                        {band.days} &middot; min {naira(band.minimum)}
+                        {band.days} &middot; matures{" "}
+                        {new Date(
+                          Date.now() +
+                            Number(String(band.days).replace(/\D/g, "")) * 86_400_000,
+                        ).toLocaleDateString("en-NG", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                      <p
+                        className={`mt-0.5 text-[10px] font-semibold md:text-[11px] ${
+                          featured ? "text-primary-foreground/70" : "text-muted-foreground"
+                        }`}
+                      >
+                        Min {naira(band.minimum)}
                       </p>
                     </div>
                     <div className="relative mt-4">

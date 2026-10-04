@@ -48,16 +48,16 @@ function maturityLabel(days: number) {
   });
 }
 
-function useCalcOptions(): Option[] {
-  const { bands } = useTenorBands();
-  return useMemo(
+function useCalcOptions(): { options: Option[]; loading: boolean } {
+  const { bands, loading } = useTenorBands();
+  const options = useMemo(
     () => [
       {
         id: "call",
         name: CALL_ACCOUNT.name,
         days: 365,
         rate: parseFloat(CALL_ACCOUNT.rate) || 0,
-        minimum: CALL_ACCOUNT.minimum,
+        minimum: CALL_ACCOUNT.minimum > 0 ? CALL_ACCOUNT.minimum : 5_000,
         liquidity: "Withdraw anytime",
       },
       ...bands.map((b) => ({
@@ -65,30 +65,28 @@ function useCalcOptions(): Option[] {
         name: b.name,
         days: Number(b.days.replace(/\D/g, "")),
         rate: Number(b.rate.replace(/[^0-9.]/g, "")),
-        minimum: b.minimum,
+        minimum: b.minimum > 0 ? b.minimum : 10_000,
         liquidity: `Locked for ${b.days}`,
       })),
     ],
     [bands],
   );
+  return { options, loading };
 }
 
 function CalculatorScreen() {
-  const OPTIONS = useCalcOptions();
+  const { options: OPTIONS, loading: ratesLoading } = useCalcOptions();
   const [input, setInput] = useState("");
   const [optionId, setOptionId] = useState<string>("call");
+  const [touched, setTouched] = useState(false);
 
   const amount = Number(input.replace(/[^0-9]/g, "")) || 0;
   const option = OPTIONS.find((o) => o.id === optionId) ?? OPTIONS[0];
-  if (!option) {
-    return (
-      <AppShell title="Calculator" navVariant="elevated">
-        <p className="px-5 py-8 text-sm text-muted-foreground">Loading rates…</p>
-      </AppShell>
-    );
-  }
+  const ratesPending =
+    ratesLoading && OPTIONS.length <= 1 && !String(CALL_ACCOUNT.rate).includes("%");
 
   const { interest, payout, perDay } = useMemo(() => {
+    if (!option) return { interest: 0, payout: 0, perDay: 0 };
     const gross = Math.round(amount * (option.rate / 100) * (option.days / 365));
     return {
       interest: gross,
@@ -97,13 +95,30 @@ function CalculatorScreen() {
     };
   }, [amount, option]);
 
-  const belowMin = amount > 0 && amount < option.minimum;
-  const isCall = option.id === "call";
+  const zeroAmount = touched && amount === 0;
+  const belowMin = !!option && amount > 0 && amount < option.minimum;
+  const amountError = !option
+    ? null
+    : zeroAmount
+      ? "Enter an amount greater than zero."
+      : belowMin
+        ? `Minimum for ${option.name} is ${naira(option.minimum)}.`
+        : null;
+  const isCall = option?.id === "call";
 
   const handleAmount = (value: string) => {
+    setTouched(true);
     const digits = value.replace(/[^0-9]/g, "");
     setInput(digits ? Number(digits).toLocaleString("en-NG") : "");
   };
+
+  if (!option || ratesPending) {
+    return (
+      <AppShell title="Calculator" navVariant="elevated">
+        <p className="px-5 py-8 text-sm text-muted-foreground">Loading rates…</p>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell title="Calculator" navVariant="elevated">
@@ -168,9 +183,9 @@ function CalculatorScreen() {
                   </button>
                 ))}
               </div>
-              {belowMin && (
+              {amountError && (
                 <p className="mt-4 rounded-xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
-                  Minimum for {option.name} is {naira(option.minimum)}.
+                  {amountError}
                 </p>
               )}
             </section>
@@ -219,9 +234,11 @@ function CalculatorScreen() {
                           {o.rate}%
                         </span>
                       </div>
-                      <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-3">
-                        <span className="text-[11.5px] text-muted-foreground">{o.liquidity}</span>
-                        <span className="text-[13px] font-extrabold text-num">+{naira(gross)}</span>
+                      <div className="mt-3 flex items-center justify-between gap-3 border-t border-border/60 pt-3">
+                        <span className="shrink-0 text-[11.5px] text-muted-foreground">{o.liquidity}</span>
+                        <span className="min-w-0 break-all text-right text-[clamp(11px,1.2vw,13px)] font-extrabold text-num">
+                          +{naira(gross)}
+                        </span>
                       </div>
                     </button>
                   );
@@ -241,20 +258,20 @@ function CalculatorScreen() {
                   Estimated payout{" "}
                   {isCall ? "after 12 months" : `on ${maturityLabel(option.days)}`}
                 </p>
-                <p className="mt-2 font-display text-[36px] font-extrabold leading-none tracking-[-0.03em] text-num">
+                <p className="mt-2 break-all font-display text-[clamp(22px,2.8vw,36px)] font-extrabold leading-none tracking-[-0.03em] text-num">
                   {naira(payout)}
                 </p>
                 <dl className="mt-5 space-y-3 border-t border-white/10 pt-4 text-[12.5px]">
-                  <div className="flex items-center justify-between">
-                    <dt className="text-primary-foreground/60">Interest earned</dt>
-                    <dd className="font-extrabold text-gold text-num">{naira(interest)}</dd>
+                  <div className="flex items-center justify-between gap-3">
+                    <dt className="shrink-0 text-primary-foreground/60">Interest earned</dt>
+                    <dd className="min-w-0 break-all text-right font-extrabold text-gold text-num">{naira(interest)}</dd>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <dt className="text-primary-foreground/60">Per day</dt>
-                    <dd className="font-extrabold text-num">{naira(perDay)}</dd>
+                  <div className="flex items-center justify-between gap-3">
+                    <dt className="shrink-0 text-primary-foreground/60">Per day</dt>
+                    <dd className="min-w-0 break-all text-right font-extrabold text-num">{naira(perDay)}</dd>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <dt className="text-primary-foreground/60">Rate</dt>
+                  <div className="flex items-center justify-between gap-3">
+                    <dt className="shrink-0 text-primary-foreground/60">Rate</dt>
                     <dd className="font-extrabold text-num">{option.rate}% p.a.</dd>
                   </div>
                   <div className="flex items-center justify-between">
@@ -330,9 +347,9 @@ function CalculatorScreen() {
                   </button>
                 ))}
               </div>
-              {belowMin && (
+              {amountError && (
                 <p className="mt-3 rounded-xl bg-destructive/10 px-3 py-2.5 text-[11.5px] font-semibold text-destructive">
-                  Minimum for {option.name} is {naira(option.minimum)}.
+                  {amountError}
                 </p>
               )}
             </section>
@@ -401,25 +418,25 @@ function CalculatorScreen() {
                 <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
                   Estimated payout {isCall ? "after 12 months" : `on ${maturityLabel(option.days)}`}
                 </p>
-                <p className="mt-2 font-display text-[34px] font-extrabold leading-none tracking-[-0.03em] text-num">
+                <p className="mt-2 break-all font-display text-[clamp(18px,7vw,34px)] font-extrabold leading-none tracking-[-0.03em] text-num">
                   {naira(payout)}
                 </p>
                 <div className="mt-4 grid grid-cols-3 gap-3 border-t border-white/10 pt-4">
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-primary-foreground/55">
                       Interest
                     </p>
-                    <p className="mt-1 text-[14px] font-extrabold text-gold text-num">
+                    <p className="mt-1 break-all text-[clamp(11px,3.2vw,14px)] font-extrabold text-gold text-num">
                       {naira(interest)}
                     </p>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-primary-foreground/55">
                       Per day
                     </p>
-                    <p className="mt-1 text-[14px] font-extrabold text-num">{naira(perDay)}</p>
+                    <p className="mt-1 break-all text-[clamp(11px,3.2vw,14px)] font-extrabold text-num">{naira(perDay)}</p>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-primary-foreground/55">
                       Rate
                     </p>
@@ -442,13 +459,18 @@ function CalculatorScreen() {
                   return (
                     <li
                       key={o.id}
-                      className="flex items-center justify-between rounded-xl bg-muted/50 px-3 py-2.5"
+                      className="flex items-center justify-between gap-3 rounded-xl bg-muted/50 px-3 py-2.5"
                     >
-                      <span className="text-[12.5px] font-semibold">
-                        {o.days} days
-                        <span className="ml-2 text-[11px] font-bold text-gold">{o.rate}%</span>
+                      <span className="min-w-0 flex-1 text-[12.5px] font-semibold">
+                        <span className="block truncate">{o.name}</span>
+                        <span className="mt-0.5 block text-[11px] text-muted-foreground">
+                          {o.days} days · min {naira(o.minimum)} ·{" "}
+                          <span className="font-bold text-gold">{o.rate}%</span>
+                        </span>
                       </span>
-                      <span className="text-[13px] font-extrabold text-num">+{naira(gross)}</span>
+                      <span className="min-w-0 break-all text-right text-[clamp(11px,3.4vw,13px)] font-extrabold text-num">
+                        +{naira(gross)}
+                      </span>
                     </li>
                   );
                 })}

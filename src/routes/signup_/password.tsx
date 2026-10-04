@@ -95,11 +95,16 @@ function CreatePassword() {
 
         <ul className="space-y-1.5 rounded-xl border border-white/12 bg-white/8 p-4">
           {checks.map((c) => (
-            <li key={c.label} className="flex items-center gap-2 text-xs text-brand-foreground/75">
+            <li
+              key={c.label}
+              className={`flex items-center gap-2 text-xs ${
+                c.ok ? "text-brand-foreground/75" : "font-semibold text-red-400"
+              }`}
+            >
               {c.ok ? (
                 <Check className="size-3.5 text-gold" />
               ) : (
-                <X className="size-3.5 text-brand-foreground/40" />
+                <X className="size-3.5 text-red-400" />
               )}
               {c.label}
             </li>

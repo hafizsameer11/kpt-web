@@ -25,6 +25,7 @@ export type LiveNextMaturity = {
   amount: number;
   date: string;
   daysLeft: number;
+  ratePct?: number;
 } | null;
 
 type LiveState = {
@@ -117,22 +118,58 @@ export async function hydrateLiveBalances() {
       })),
     );
     if (state.nextMaturity) {
+      const match = state.holdings.find((h) => h.id === state.nextMaturity!.id);
       homeData.NEXT_MATURITY.name = state.nextMaturity.name;
       homeData.NEXT_MATURITY.amount = state.nextMaturity.amount;
       homeData.NEXT_MATURITY.date = state.nextMaturity.date;
       homeData.NEXT_MATURITY.daysLeft = state.nextMaturity.daysLeft;
       homeData.NEXT_MATURITY.expectedPayout = state.nextMaturity.amount;
-      homeData.NEXT_MATURITY.rate = "";
-      homeData.NEXT_MATURITY.tenor = "";
-      homeData.NEXT_MATURITY.totalDays = 0;
+      const ratePct =
+        (state.nextMaturity.ratePct && state.nextMaturity.ratePct > 0
+          ? state.nextMaturity.ratePct
+          : null) ??
+        (match && match.ratePct > 0 ? match.ratePct : 0);
+      homeData.NEXT_MATURITY.rate = ratePct > 0 ? `${ratePct}% p.a.` : "—";
+      homeData.NEXT_MATURITY.tenor =
+        state.nextMaturity.daysLeft >= 0
+          ? `${Math.max(state.nextMaturity.daysLeft, 1)} days left`
+          : "";
+      homeData.NEXT_MATURITY.totalDays = Math.max(state.nextMaturity.daysLeft, 1);
     } else {
       homeData.NEXT_MATURITY.name = "";
       homeData.NEXT_MATURITY.amount = 0;
       homeData.NEXT_MATURITY.date = "";
       homeData.NEXT_MATURITY.daysLeft = 0;
       homeData.NEXT_MATURITY.expectedPayout = 0;
+      homeData.NEXT_MATURITY.rate = "—";
+      homeData.NEXT_MATURITY.tenor = "";
     }
-    homeData.PAYOUTS.splice(0, homeData.PAYOUTS.length);
+    homeData.PAYOUTS.splice(
+      0,
+      homeData.PAYOUTS.length,
+      ...state.holdings
+        .filter((h) => h.maturityDate)
+        .map((h) => {
+          const d = new Date(h.maturityDate!);
+          return {
+            label: h.name,
+            date: Number.isNaN(d.getTime())
+              ? "—"
+              : d.toLocaleDateString("en-NG", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                }),
+            amount: h.amount,
+            _days: Number.isNaN(d.getTime())
+              ? 9999
+              : Math.max(0, Math.ceil((d.getTime() - Date.now()) / 86_400_000)),
+          };
+        })
+        .sort((a, b) => a._days - b._days)
+        .slice(0, 5)
+        .map(({ label, date, amount }) => ({ label, date, amount })),
+    );
     const { syncCallAccountFromLive, setCallActivityFromApi } = await import("@/lib/invest-data");
     syncCallAccountFromLive(state.callBalance, state.callRatePct);
     try {
