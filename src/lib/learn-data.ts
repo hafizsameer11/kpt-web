@@ -241,3 +241,23 @@ export const LEARN_CATEGORIES: LearnCategory[] = [
 export function getLearnArticle(id: string): LearnArticle | undefined {
   return LEARN_ARTICLES.find((a) => a.id === id);
 }
+
+/**
+ * Map a home feed card (often a DB cuid) to a real Learn article slug
+ * so `/learn/$articleId` never 404s.
+ */
+export function resolveLearnArticleId(item: { id: string; title: string }): string {
+  if (getLearnArticle(item.id)) return item.id;
+  const title = item.title.trim().toLowerCase();
+  const exact = LEARN_ARTICLES.find((a) => a.title.toLowerCase() === title);
+  if (exact) return exact.id;
+  const partial = LEARN_ARTICLES.find(
+    (a) =>
+      title.includes(a.title.toLowerCase().slice(0, 24)) ||
+      a.title.toLowerCase().includes(title.slice(0, 24)),
+  );
+  if (partial) return partial.id;
+  let hash = 0;
+  for (let i = 0; i < item.id.length; i++) hash = (hash + item.id.charCodeAt(i) * (i + 1)) % LEARN_ARTICLES.length;
+  return LEARN_ARTICLES[hash]?.id ?? LEARN_ARTICLES[0]!.id;
+}

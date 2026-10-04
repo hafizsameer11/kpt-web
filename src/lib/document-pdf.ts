@@ -57,6 +57,16 @@ export function printDocumentPdf(input: {
   }, 250);
 }
 
+/** HTML string for a Kipit-branded document (also used for server email attach). */
+export function documentHtml(input: {
+  title: string;
+  subtitle?: string;
+  rows?: { label: string; value: string }[];
+  body?: string;
+}) {
+  return buildHtml(input);
+}
+
 /** Download an HTML document the user can open or print to PDF. */
 export function downloadDocumentPdf(input: {
   title: string;

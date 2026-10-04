@@ -21,10 +21,40 @@ import {
   fetchPortfolioHolding,
   patchHoldingMaturity,
 } from "@/lib/api";
+import { downloadDocumentPdf } from "@/lib/document-pdf";
 import {
   holdingTxnId,
   type HoldingDetail,
 } from "@/lib/portfolio-data";
+
+function downloadHoldingDoc(
+  holding: HoldingDetail,
+  doc: { label: string; kind: string; size: string; url?: string },
+) {
+  try {
+    if (doc.url) {
+      window.open(doc.url, "_blank", "noopener,noreferrer");
+      toast.success(`${doc.label} opened`);
+      return;
+    }
+    downloadDocumentPdf({
+      title: doc.label,
+      subtitle: `${holding.name} · ${holding.rate}`,
+      rows: [
+        { label: "Plan", value: holding.name },
+        { label: "Principal", value: `₦${holding.principal.toLocaleString("en-NG")}` },
+        { label: "Start", value: holding.startDate },
+        { label: "Maturity", value: holding.maturityDate },
+        { label: "Rate", value: holding.rate },
+      ],
+      body: `${doc.label} for your Kipit ${holding.kind.toLowerCase()}. Keep this for your records.`,
+      filename: `${doc.label.replace(/\s+/g, "-").toLowerCase()}.html`,
+    });
+    toast.success(`${doc.label} downloaded`);
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : "Could not download document");
+  }
+}
 
 export const Route = createFileRoute("/portfolio_/$holdingId")({
   head: () => ({
@@ -72,11 +102,13 @@ function instructionLabel(raw: string | null | undefined): string {
 function mapApiHolding(api: Awaited<ReturnType<typeof fetchPortfolioHolding>>): HoldingDetail {
   const principal = Math.round(api.principal);
   const accrued = Math.round(api.accrued ?? 0);
+  const expectedInterest = Math.round(api.expectedInterest ?? 0);
   const totalDays = Math.max(1, api.tenorDays || 1);
   const daysLeft = daysUntil(api.maturityDate);
   const maturityDate = fmtDisplayDate(api.maturityDate);
-  const startDate =
-    api.maturityDate && api.tenorDays
+  const startDate = api.startDate
+    ? fmtDisplayDate(api.startDate)
+    : api.maturityDate && api.tenorDays
       ? (() => {
           const d = new Date(api.maturityDate);
           if (Number.isNaN(d.getTime())) return "—";
@@ -85,6 +117,23 @@ function mapApiHolding(api: Awaited<ReturnType<typeof fetchPortfolioHolding>>): 
         })()
       : "—";
   const isFixed = String(api.kind).toUpperCase() === "FIXED";
+  const apiDocs = (api.documents ?? [])
+    .filter((d) => d.name)
+    .map((d) => ({
+      label: d.name,
+      kind: d.url ? "PDF" : "HTML",
+      size: d.meta || (d.url ? "File" : "Generated"),
+      url: d.url || undefined,
+    }));
+  const fallbackDocs = isFixed
+    ? [
+        { label: "Plan certificate", kind: "PDF", size: "184 KB" },
+        { label: "Terms & conditions", kind: "PDF", size: "96 KB" },
+      ]
+    : [
+        { label: "Offer summary", kind: "PDF", size: "212 KB" },
+        { label: "Issuer information", kind: "PDF", size: "148 KB" },
+      ];
 
   return {
     id: api.id,
@@ -97,10 +146,10 @@ function mapApiHolding(api: Awaited<ReturnType<typeof fetchPortfolioHolding>>): 
     maturityDate,
     totalDays,
     daysLeft,
-    expectedPayout: principal + accrued,
+    expectedPayout: principal + Math.max(accrued, expectedInterest),
     canManageMaturity: isFixed,
     maturityInstruction: instructionLabel(api.maturityInstruction),
-    documents: [],
+    documents: apiDocs.length > 0 ? apiDocs : fallbackDocs,
     transactions: [
       {
         label: "Plan funded",
@@ -434,7 +483,7 @@ function DesktopHolding({ holding: h, onSetMaturity }: HoldingViewProps) {
                   <li key={d.label}>
                     <button
                       type="button"
-                      onClick={() => toast.success(`${d.label} downloaded`)}
+                      onClick={() => downloadHoldingDoc(h, d)}
                       className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-secondary/60"
                     >
                       <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-gold/12 text-gold">
@@ -672,7 +721,7 @@ function MobileHolding({ holding: h, onSetMaturity }: HoldingViewProps) {
                   <li key={d.label} style={{ ["--d" as string]: `${i * 60}ms` }} className="k-rise">
                     <button
                       type="button"
-                      onClick={() => toast.success(`${d.label} downloaded`)}
+                      onClick={() => downloadHoldingDoc(h, d)}
                       className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-secondary/60"
                     >
                       <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-gold/12 text-gold">

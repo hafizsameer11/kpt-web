@@ -1,12 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowUpRight, Download, TrendingUp } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
-import { REPORTS, REPORT_PERIODS, type ReportPeriod } from "@/lib/reports-data";
+import { downloadDocumentPdf } from "@/lib/document-pdf";
+import { naira } from "@/lib/home-data";
+import {
+  hydrateReportsFromApi,
+  REPORTS,
+  REPORT_PERIODS,
+  type ReportPeriod,
+} from "@/lib/reports-data";
 
 export const Route = createFileRoute("/reports")({
   head: () => ({
@@ -31,6 +38,13 @@ export const Route = createFileRoute("/reports")({
 });
 
 function GrowthChart({ series, labels }: { series: number[]; labels: string[] }) {
+  if (!series.length) {
+    return (
+      <p className="flex h-32 items-center justify-center text-[12.5px] text-muted-foreground">
+        No chart data for this period yet.
+      </p>
+    );
+  }
   const max = Math.max(...series);
   const min = Math.min(...series);
   return (
@@ -59,12 +73,37 @@ function GrowthChart({ series, labels }: { series: number[]; labels: string[] })
 function ReportsScreen() {
   const { mask, hidden } = useBalanceVisibility();
   const [period, setPeriod] = useState<ReportPeriod>("Monthly");
+  const [, setTick] = useState(0);
   const r = REPORTS[period];
 
-  const download = () =>
-    toast.success(`${period} report downloaded`, {
-      description: "Saved as PDF to your device.",
-    });
+  useEffect(() => {
+    void hydrateReportsFromApi().then(() => setTick((n) => n + 1));
+  }, []);
+
+  const download = () => {
+    try {
+      downloadDocumentPdf({
+        title: `Kipit ${period} report`,
+        subtitle: r.range,
+        rows: [
+          { label: "Period", value: r.label },
+          { label: "Opening value", value: naira(r.openingValue) },
+          { label: "Closing value", value: naira(r.closingValue) },
+          { label: "Growth", value: `${r.growthPct}%` },
+          { label: "Interest earned", value: naira(r.interestEarned) },
+          { label: "Contributions", value: naira(r.contributions) },
+          { label: "Withdrawals", value: naira(r.withdrawals) },
+          { label: "Average rate", value: r.averageRate },
+          { label: "Best performer", value: r.bestPerformer },
+        ],
+        body: r.summary,
+        filename: `kipit-${period.toLowerCase()}-report.html`,
+      });
+      toast.success(`${period} report downloaded`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not download report.");
+    }
+  };
 
   return (
     <AppShell title="Kipit reports" navVariant="elevated">
@@ -317,11 +356,7 @@ function ReportsScreen() {
 
           <button
             type="button"
-            onClick={() =>
-              toast.success(`${period} report downloaded`, {
-                description: "Saved as PDF to your device.",
-              })
-            }
+            onClick={download}
             className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3.5 text-[13px] font-bold text-brand-foreground press"
           >
             <Download className="size-4" /> Download {period.toLowerCase()} report (PDF)

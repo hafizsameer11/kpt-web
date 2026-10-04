@@ -31,7 +31,23 @@ export type ExploreProduct = {
 export let EXPLORE_PRODUCTS: ExploreProduct[] = [];
 
 /** Coming Soon rail (MOB-080). */
-export const EXPLORE_COMING_SOON: { name: string; note: string }[] = [];
+export const EXPLORE_COMING_SOON: { name: string; note: string; status: string }[] = [
+  {
+    name: "Real Estate Notes",
+    note: "Fractional income-generating property",
+    status: "NEXT UP",
+  },
+  {
+    name: "Dollar Fixed Income",
+    note: "USD savings and Eurobond access",
+    status: "Q4",
+  },
+  {
+    name: "Green Energy Notes",
+    note: "Solar and mini-grid project funding",
+    status: "Q1 2027",
+  },
+];
 
 export const AVAILABILITY_LABEL: Record<
   ExploreProduct["availability"],

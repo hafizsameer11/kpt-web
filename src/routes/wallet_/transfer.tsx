@@ -35,19 +35,23 @@ function TransferDetails() {
   const navigate = useNavigate();
   const [copied, setCopied] = useState<string | null>(null);
   const [va, setVa] = useState({ bank: "", accountNumber: "", accountName: "" });
+  const [vaLoading, setVaLoading] = useState(true);
   const [vaError, setVaError] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    void hydrateWalletFundingFromApi().then((ok) => {
-      if (ok) {
-        setVa({ ...VIRTUAL_ACCOUNT });
-        setVaError(false);
-      } else {
-        setVa({ bank: "", accountNumber: "", accountName: "" });
-        setVaError(true);
-      }
-    });
+    setVaLoading(true);
+    void hydrateWalletFundingFromApi()
+      .then((ok) => {
+        if (ok) {
+          setVa({ ...VIRTUAL_ACCOUNT });
+          setVaError(false);
+        } else {
+          setVa({ bank: "", accountNumber: "", accountName: "" });
+          setVaError(true);
+        }
+      })
+      .finally(() => setVaLoading(false));
   }, []);
 
   function copy(label: string, value: string) {
@@ -66,21 +70,33 @@ function TransferDetails() {
     setBusy(true);
     const watchAfter = new Date().toISOString();
     try {
-      // Confirm once here (creates Monnify pending intent) — processing only polls credits.
-      await confirmTransferFunding(amount);
+      const result = await confirmTransferFunding(amount);
       if (typeof window !== "undefined") {
         window.sessionStorage.setItem("kipit:transfer-watch-after", watchAfter);
         window.sessionStorage.setItem("kipit:transfer-confirmed", "1");
       }
-      void navigate({
-        to: "/wallet/processing",
-        search: { amount, method: "transfer", pending: true },
-      });
+      if (result.pending) {
+        void navigate({
+          to: "/wallet/processing",
+          search: { amount, method: "transfer", pending: true },
+        });
+      } else {
+        void navigate({
+          to: "/wallet/success",
+          search: { amount: result.amount ?? amount, method: "transfer" },
+        });
+      }
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "Could not confirm transfer.");
       setBusy(false);
     }
   };
+
+  const vaStatusMessage = vaLoading
+    ? "Loading your dedicated account…"
+    : vaError || !va.accountNumber
+      ? "Could not load your dedicated account. Please try again."
+      : null;
 
   const steps = [
     "Open your bank app and add the account above as a beneficiary.",
@@ -137,9 +153,13 @@ function TransferDetails() {
                 </div>
               </div>
               <div className="mt-5 space-y-3">
-                {vaError || !va.accountNumber ? (
-                  <p className="text-[12.5px] text-muted-foreground">
-                    Could not load your dedicated account. Please try again.
+                {vaStatusMessage ? (
+                  <p
+                    className={`text-[12.5px] ${
+                      vaLoading ? "text-muted-foreground" : "font-semibold text-destructive"
+                    }`}
+                  >
+                    {vaStatusMessage}
                   </p>
                 ) : null}
                 <CopyRow
@@ -254,9 +274,13 @@ function TransferDetails() {
               </div>
 
               <div className="mt-4 space-y-2.5">
-                {vaError || !va.accountNumber ? (
-                  <p className="text-[12px] text-muted-foreground">
-                    Could not load your dedicated account. Please try again.
+                {vaStatusMessage ? (
+                  <p
+                    className={`text-[12px] ${
+                      vaLoading ? "text-muted-foreground" : "font-semibold text-destructive"
+                    }`}
+                  >
+                    {vaStatusMessage}
                   </p>
                 ) : null}
                 <CopyRow

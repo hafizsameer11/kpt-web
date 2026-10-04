@@ -109,10 +109,14 @@ function CardsScreen() {
 
         <Link
           to="/wallet/card"
+          search={{ amount: 1000 }}
           className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press"
         >
           <Plus className="size-4" strokeWidth={2.6} /> Add card
         </Link>
+        <p className="px-1 text-center text-[11.5px] text-muted-foreground">
+          Minimum ₦1,000 deposit to link a card (same as the mobile app).
+        </p>
 
         <p className="flex items-start gap-2 px-1 text-[11.5px] leading-relaxed text-muted-foreground">
           <ShieldCheck className="mt-0.5 size-4 shrink-0 text-brand" />
@@ -135,6 +139,7 @@ function CardsScreen() {
             </div>
             <Link
               to="/wallet/card"
+              search={{ amount: 1000 }}
               className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3 text-[13px] font-extrabold text-primary-foreground shadow-float press"
             >
               <Plus className="size-4" strokeWidth={2.6} /> Add card

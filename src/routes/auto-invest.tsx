@@ -38,6 +38,8 @@ import {
 import {
   AUTO_INVEST_DESTINATIONS,
   AUTO_INVEST_FREQUENCIES,
+  hydrateInvestRatesFromApi,
+  useTenorBands,
   type AutoInvestFrequency,
   type AutoInvestRule,
 } from "@/lib/invest-data";
@@ -64,29 +66,45 @@ export const Route = createFileRoute("/auto-invest")({
   component: AutoInvestScreen,
 });
 
-function nextRunLabel(dayOfMonth: number, active: boolean) {
+function nextRunLabel(frequency: AutoInvestFrequency, active: boolean) {
   if (!active) return "Paused";
-  const now = new Date();
-  let year = now.getFullYear();
-  let month = now.getMonth();
-  if (now.getDate() >= dayOfMonth) month += 1;
-  if (month > 11) {
-    month = 0;
-    year += 1;
+  const d = new Date();
+  if (frequency === "Weekly") {
+    d.setDate(d.getDate() + 7);
+  } else if (frequency === "Every 2 weeks") {
+    d.setDate(d.getDate() + 14);
+  } else {
+    // Monthly — same calendar day next month (cap at 28).
+    const day = Math.min(Math.max(d.getDate(), 1), 28);
+    let month = d.getMonth() + 1;
+    let year = d.getFullYear();
+    if (month > 11) {
+      month = 0;
+      year += 1;
+    }
+    d.setFullYear(year, month, day);
   }
-  const d = new Date(year, month, Math.min(dayOfMonth, 28));
   return d.toLocaleDateString("en-NG", { day: "2-digit", month: "short", year: "numeric" });
 }
 
 function mapApiRule(r: ApiAutoInvestRule): AutoInvestRule {
   const dest = AUTO_INVEST_DESTINATIONS.find((d) => d.name === r.label);
+  const frequency = (r.frequency ?? "Monthly") as AutoInvestFrequency;
   return {
     id: r.id,
     destination: r.label,
     rate: dest?.rate ?? "—",
     amount: r.amount,
-    frequency: "Monthly",
-    nextRun: nextRunLabel(r.dayOfMonth, r.active),
+    frequency,
+    nextRun: r.active
+      ? r.nextRun
+        ? new Date(r.nextRun).toLocaleDateString("en-NG", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })
+        : nextRunLabel(frequency, true)
+      : "Paused",
     fundedFrom: "Kipit wallet",
     investedToDate: 0,
     active: r.active,
@@ -105,11 +123,14 @@ function AutoInvestScreen() {
   const { hidden, mask } = useBalanceVisibility();
   const isMobile = useIsMobile();
   const WALLET = useWalletBalance();
+  const { bands } = useTenorBands();
   const [rules, setRules] = useState<AutoInvestRule[]>([]);
   const [open, setOpen] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  void bands;
 
   useEffect(() => {
+    void hydrateInvestRatesFromApi();
     void fetchAutoInvestRules()
       .then((data) => setRules((data ?? []).map(mapApiRule)))
       .catch(() => setRules([]));
@@ -129,7 +150,7 @@ function AutoInvestScreen() {
           ? {
               ...r,
               active: nextActive,
-              nextRun: nextActive ? nextRunLabel(1, true) : "Paused",
+              nextRun: nextActive ? nextRunLabel(rule.frequency, true) : "Paused",
             }
           : r,
       ),
@@ -168,14 +189,21 @@ function AutoInvestScreen() {
         label: input.destination,
         amount: input.amount,
         dayOfMonth,
+        frequency: input.frequency,
       });
       const rule: AutoInvestRule = {
         id: created.id,
         destination: input.destination,
         rate: input.rate,
         amount: input.amount,
-        frequency: input.frequency,
-        nextRun: nextRunLabel(dayOfMonth, true),
+        frequency: (created.frequency as AutoInvestFrequency) || input.frequency,
+        nextRun: created.nextRun
+          ? new Date(created.nextRun).toLocaleDateString("en-NG", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })
+          : nextRunLabel(input.frequency, true),
         fundedFrom: "Kipit wallet",
         investedToDate: 0,
         active: true,
@@ -460,14 +488,22 @@ function NewRuleForm({
   }) => void | Promise<void>;
   isMobile: boolean;
 }) {
-  const [destination, setDestination] = useState(AUTO_INVEST_DESTINATIONS[0]!.name);
+  const { bands } = useTenorBands();
+  const destinations = AUTO_INVEST_DESTINATIONS;
+  void bands;
+  const [destination, setDestination] = useState(destinations[0]!.name);
   const [frequency, setFrequency] = useState<AutoInvestFrequency>("Monthly");
   const [raw, setRaw] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (!destinations.some((d) => d.name === destination) && destinations[0]) {
+      setDestination(destinations[0].name);
+    }
+  }, [destinations, destination]);
+
   const dest =
-    AUTO_INVEST_DESTINATIONS.find((d) => d.name === destination) ??
-    AUTO_INVEST_DESTINATIONS[0]!;
+    destinations.find((d) => d.name === destination) ?? destinations[0]!;
   const amount = Number(raw.replace(/[^0-9]/g, "")) || 0;
   const belowMin = amount > 0 && amount < dest.minimum;
   const valid = amount > 0 && !belowMin;
@@ -498,7 +534,7 @@ function NewRuleForm({
         Destination
       </p>
       <ul className="mt-2 overflow-hidden rounded-xl border border-border">
-        {AUTO_INVEST_DESTINATIONS.map((d, i) => (
+        {destinations.map((d, i) => (
           <li key={d.name}>
             <button
               type="button"
@@ -569,7 +605,7 @@ function NewRuleForm({
         Create auto-invest
       </button>
       <p className="mt-2.5 text-center text-[11px] text-muted-foreground">
-        First run on {nextRunLabel(Math.min(Math.max(new Date().getDate(), 1), 28), true)} · cancel anytime
+        First run on {nextRunLabel(frequency, true)} · cancel anytime
       </p>
     </div>
   );

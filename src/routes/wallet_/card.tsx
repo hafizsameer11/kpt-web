@@ -17,7 +17,7 @@ export const Route = createFileRoute("/wallet_/card")({
       {
         name: "description",
         content:
-          "Top up your Kipit wallet with a saved or new debit card via Paystack 3-D Secure checkout.",
+          "Top up your Kipit wallet with a saved or new debit card via secure 3-D Secure checkout.",
       },
       { property: "og:title", content: "Pay With Card | Kipit" },
       {
@@ -111,7 +111,7 @@ function CardPayment() {
                   {card.brand} •••• {card.last4}
                 </span>
                 <span className="block truncate text-[12px] text-muted-foreground">
-                  {card.bank} · Paystack Checkout
+                  {card.bank} · Secure checkout
                 </span>
               </span>
               <span
@@ -140,7 +140,7 @@ function CardPayment() {
           <span className="min-w-0">
             <span className="block text-[13.5px] font-bold text-foreground">Use a new card</span>
             <span className="block text-[12px] text-muted-foreground">
-              Opens secure Paystack Checkout — Kipit never sees your card number
+              Opens secure checkout — Kipit never sees your card number
             </span>
           </span>
         </button>
@@ -173,11 +173,11 @@ function CardPayment() {
                 </p>
                 <p className="mt-3 flex items-center gap-1.5 text-[12.5px] text-primary-foreground/65">
                   <Lock className="size-4" /> {naira(amount)} to wallet + {naira(fee)} card fee ·
-                  Paystack 3-D Secure
+                  3-D Secure
                 </p>
               </div>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-[12.5px] font-extrabold">
-                <Lock className="size-4 text-gold" /> PCI-DSS via Paystack
+                <Lock className="size-4 text-gold" /> PCI-DSS secured
               </span>
             </div>
           </section>
@@ -217,11 +217,11 @@ function CardPayment() {
                   disabled={!valid || busy}
                   className="press mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float disabled:opacity-40 disabled:shadow-none"
                 >
-                  {busy ? "Opening Paystack…" : `Pay ${naira(amount + fee)}`}{" "}
+                  {busy ? "Opening checkout…" : `Pay ${naira(amount + fee)}`}{" "}
                   {!busy && <ArrowRight className="size-4" strokeWidth={2.6} />}
                 </button>
                 <p className="mt-3 text-center text-[11.5px] text-muted-foreground">
-                  Paystack opens in Kipit — same secure checkout as the app.
+                  Secure checkout opens in Kipit — same experience as the app.
                 </p>
               </section>
             </div>
@@ -245,7 +245,7 @@ function CardPayment() {
               {naira(amount + fee)}
             </p>
             <p className="mt-3 flex items-center gap-1.5 text-[12px] text-primary-foreground/65">
-              <Lock className="size-3.5" /> {naira(amount)} + {naira(fee)} fee · Paystack
+              <Lock className="size-3.5" /> {naira(amount)} + {naira(fee)} fee · Secure checkout
             </p>
           </div>
         </section>
@@ -261,11 +261,11 @@ function CardPayment() {
             onClick={() => void pay()}
             className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40"
           >
-            {busy ? "Opening Paystack…" : `Pay ${naira(amount + fee)}`}{" "}
+            {busy ? "Opening checkout…" : `Pay ${naira(amount + fee)}`}{" "}
             {!busy && <ArrowRight className="size-4" strokeWidth={2.6} />}
           </button>
           <p className="mt-2.5 text-center text-[11.5px] text-muted-foreground">
-            Card details are entered only on Paystack — checkout stays in Kipit.
+            Card details are entered only on secure checkout — stays in Kipit.
           </p>
         </div>
       </div>

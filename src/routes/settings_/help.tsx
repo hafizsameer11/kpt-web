@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronDown, MessageCircle, Phone, Search, Ticket, TrendingUp } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
+import { buildWhatsAppSupportUrl, fetchAppConfig } from "@/lib/api";
 import { FAQS, FAQ_CATEGORIES, POPULAR_QUESTIONS } from "@/lib/settings-data";
-import { WHATSAPP_URL } from "@/lib/terms-acceptance";
 
 export const Route = createFileRoute("/settings_/help")({
   head: () => ({
@@ -27,6 +28,28 @@ function HelpCentre() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string>("All");
   const [open, setOpen] = useState<string | null>(null);
+  const [support, setSupport] = useState({ phone: "+2347000547480", whatsapp: "", email: "" });
+
+  useEffect(() => {
+    void fetchAppConfig()
+      .then((cfg) => {
+        setSupport({
+          phone: cfg.support.phone || "+2347000547480",
+          whatsapp: cfg.support.whatsapp || "",
+          email: cfg.support.email || "",
+        });
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const whatsappUrl = buildWhatsAppSupportUrl(support.whatsapp);
+  const openWhatsApp = (e: { preventDefault: () => void }) => {
+    if (whatsappUrl) return;
+    e.preventDefault();
+    toast.message(
+      "WhatsApp support is not configured yet. Please call us or submit a ticket.",
+    );
+  };
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -151,16 +174,17 @@ function HelpCentre() {
         </p>
         <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
           <a
-            href="tel:+2347000547480"
+            href={`tel:${support.phone.replace(/\s/g, "")}`}
             className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-[13px] font-bold press"
           >
             <Phone className="size-4" strokeWidth={2.4} /> Call us
           </a>
         </div>
         <a
-          href={WHATSAPP_URL}
-          target="_blank"
-          rel="noreferrer"
+          href={whatsappUrl || "#"}
+          target={whatsappUrl ? "_blank" : undefined}
+          rel={whatsappUrl ? "noreferrer" : undefined}
+          onClick={openWhatsApp}
           className="mt-2.5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-600/30 bg-emerald-500/10 px-4 py-3.5 text-[13px] font-bold text-emerald-700 press"
         >
           <MessageCircle className="size-4" strokeWidth={2.4} /> Chat on WhatsApp
@@ -288,15 +312,16 @@ function HelpCentre() {
               <MessageCircle className="size-4" strokeWidth={2.6} /> Submit a ticket
             </Link>
             <a
-              href="tel:+2347000547480"
+              href={`tel:${support.phone.replace(/\s/g, "")}`}
               className="mt-2.5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-[13px] font-bold press hover:bg-secondary/60"
             >
               <Phone className="size-4" strokeWidth={2.4} /> Call us
             </a>
             <a
-              href={WHATSAPP_URL}
-              target="_blank"
-              rel="noreferrer"
+              href={whatsappUrl || "#"}
+              target={whatsappUrl ? "_blank" : undefined}
+              rel={whatsappUrl ? "noreferrer" : undefined}
+              onClick={openWhatsApp}
               className="mt-2.5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-600/30 bg-emerald-500/10 px-4 py-3.5 text-[13px] font-bold text-emerald-700 press hover:bg-emerald-500/15"
             >
               <MessageCircle className="size-4" strokeWidth={2.4} /> Chat on WhatsApp

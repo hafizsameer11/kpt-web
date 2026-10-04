@@ -7,7 +7,14 @@ import {
   PrimaryButton,
   authInputClass,
 } from "@/components/kipit/AuthShell";
-import { ApiError, claimGift, claimPendingGifts, loginWithPassword, tierNumber } from "@/lib/api";
+import {
+  ApiError,
+  claimGift,
+  claimPendingGifts,
+  isValidEmailFormat,
+  loginWithPassword,
+  tierNumber,
+} from "@/lib/api";
 import { setKycTier } from "@/lib/kyc-state";
 import { refreshWalletFromApi } from "@/lib/wallet-balance";
 import { hydrateLiveBalances } from "@/lib/live-balances";
@@ -38,19 +45,22 @@ function Login() {
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [attempts, setAttempts] = useState(0);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const locked = attempts >= 3;
+  const emailOk = isValidEmailFormat(identifier);
 
   const submit = async () => {
     if (locked) return;
     setBusy(true);
     setError(null);
+    setEmailError(null);
     try {
       const email = identifier.trim().toLowerCase();
-      if (!email.includes("@")) {
-        setError("Enter the email address for your Kipit account.");
+      if (!isValidEmailFormat(email)) {
+        setEmailError("Enter a valid email address (e.g. you@example.com).");
         return;
       }
       const session = await loginWithPassword(email, password);
@@ -109,10 +119,16 @@ function Login() {
       }
     >
       <div className="space-y-4">
-        <AuthField label="Phone or email">
+        <AuthField label="Email" error={emailError}>
           <input
             value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            onChange={(e) => {
+              setIdentifier(e.target.value);
+              setEmailError(null);
+            }}
             className={authInputClass}
             placeholder="you@example.com"
           />
@@ -145,8 +161,8 @@ function Login() {
 
       <div className="mt-7 space-y-3">
         <PrimaryButton
-          disabled={!identifier.includes("@") || password.length < 4 || busy || locked}
-          onClick={submit}
+          disabled={!emailOk || password.length < 4 || busy || locked}
+          onClick={() => void submit()}
         >
           {busy ? "Signing in…" : "Log in"}
         </PrimaryButton>

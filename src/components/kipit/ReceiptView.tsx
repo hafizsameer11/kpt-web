@@ -1,4 +1,5 @@
 import { CheckCircle2, Download, Share2 } from "lucide-react";
+import { toast } from "sonner";
 import { Logo } from "@/components/kipit/Logo";
 import {
   Dialog,
@@ -6,6 +7,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { downloadDocumentPdf, printDocumentPdf } from "@/lib/document-pdf";
 import { naira, type Transaction } from "@/lib/portfolio-data";
 
 function Line({ label, value }: { label: string; value: string }) {
@@ -17,25 +19,77 @@ function Line({ label, value }: { label: string; value: string }) {
   );
 }
 
+function receiptPayload(txn: Transaction) {
+  return {
+    title: "Kipit receipt",
+    subtitle: txn.reference,
+    rows: [
+      { label: "Description", value: txn.label },
+      { label: "Amount", value: naira(txn.amount) },
+      { label: "Date & time", value: `${txn.date} · ${txn.time}` },
+      { label: "Type", value: txn.type },
+      { label: "Status", value: txn.status },
+      { label: "Source", value: txn.source },
+      { label: "Destination", value: txn.destination },
+      ...(txn.related ? [{ label: "Investment", value: txn.related.name }] : []),
+      { label: "Reference", value: txn.reference },
+    ],
+    body: "Issued by Kipit. Investments are administered by Kipit's SEC-licensed partner.",
+    filename: `kipit-receipt-${txn.reference}.html`,
+  };
+}
+
 export async function shareReceipt(txn: Transaction) {
-  const text = `Kipit receipt ${txn.reference} — ${txn.label}, ${naira(txn.amount)} on ${txn.date}.`;
-  if (typeof navigator !== "undefined" && navigator.share) {
+  const payload = receiptPayload(txn);
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${payload.title}</title></head><body>
+    <h1>${payload.title}</h1>
+    ${payload.rows.map((r) => `<p><strong>${r.label}:</strong> ${r.value}</p>`).join("")}
+    <p>${payload.body}</p>
+  </body></html>`;
+  const blob = new Blob([html], { type: "text/html" });
+  const file = new File([blob], payload.filename!, { type: "text/html" });
+
+  if (typeof navigator !== "undefined" && navigator.share && navigator.canShare?.({ files: [file] })) {
     try {
-      await navigator.share({ title: "Kipit receipt", text });
+      await navigator.share({
+        title: "Kipit receipt",
+        files: [file],
+      });
       return;
     } catch {
-      /* user dismissed */
+      /* user dismissed or share failed — fall through */
     }
   }
-  if (typeof navigator !== "undefined" && navigator.clipboard) {
-    await navigator.clipboard.writeText(text);
+
+  try {
+    downloadDocumentPdf(payload);
+    toast.success("Receipt downloaded — attach or share the file from your device.");
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : "Could not share receipt.");
+  }
+}
+
+function downloadReceipt(txn: Transaction) {
+  try {
+    downloadDocumentPdf(receiptPayload(txn));
+    toast.success("Receipt downloaded");
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : "Could not download receipt.");
+  }
+}
+
+function printReceipt(txn: Transaction) {
+  try {
+    printDocumentPdf(receiptPayload(txn));
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : "Could not open receipt.");
   }
 }
 
 /** Branded receipt card — shared by the receipt route and the desktop dialog. */
 export function ReceiptCard({ txn }: { txn: Transaction }) {
   return (
-    <section className="overflow-hidden rounded-xl border border-border bg-card shadow-card">
+    <section className="receipt-print overflow-hidden rounded-xl border border-border bg-card shadow-card">
       <div className="relative overflow-hidden bg-brand-gradient px-5 py-6 text-primary-foreground">
         <span
           aria-hidden
@@ -91,7 +145,7 @@ export function ReceiptCard({ txn }: { txn: Transaction }) {
 
 export function ReceiptActions({ txn }: { txn: Transaction }) {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 print:hidden">
       <button
         type="button"
         onClick={() => void shareReceipt(txn)}
@@ -101,11 +155,17 @@ export function ReceiptActions({ txn }: { txn: Transaction }) {
       </button>
       <button
         type="button"
-        onClick={() => typeof window !== "undefined" && window.print()}
+        onClick={() => downloadReceipt(txn)}
         className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-extrabold text-foreground press"
       >
         <Download className="size-4" strokeWidth={2.4} /> Download
       </button>
+      <button
+        type="button"
+        onClick={() => printReceipt(txn)}
+        className="hidden"
+        aria-hidden
+      />
     </div>
   );
 }

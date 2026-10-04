@@ -315,7 +315,7 @@ function MobileExplore() {
 
                 <div className="space-y-5">
                   {EXPLORE_COMING_SOON.map((c, i) => {
-                    const timing = ["Next up", "Q4", "Q1 2027"][i] ?? "Soon";
+                    const timing = c.status ?? "Soon";
                     return (
                       <div
                         key={c.name}
@@ -885,7 +885,7 @@ function DesktopExplore() {
               />
               <div className="space-y-3">
                 {EXPLORE_COMING_SOON.map((c, i) => {
-                  const timing = ["Next up", "Q4", "Q1 2027"][i] ?? "Soon";
+                  const timing = c.status ?? "Soon";
                   const on = notified.includes(c.name);
                   return (
                     <div key={c.name} className="relative">

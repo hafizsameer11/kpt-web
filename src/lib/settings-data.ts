@@ -104,37 +104,49 @@ export const EMAIL_TOGGLES: ToggleItem[] = [
 /** Map API notification prefs onto the static toggle catalogs (ids stay stable). */
 export function applyNotificationPrefs<T extends ToggleItem>(
   prefs: {
-    emailDeposits: boolean;
-    emailWithdrawals: boolean;
-    emailInvestments: boolean;
-    emailMaturities: boolean;
-    emailDigest: boolean;
-    pushProducts: boolean;
-    pushMaturities: boolean;
+    emailDeposits?: boolean;
+    emailWithdrawals?: boolean;
+    emailInvestments?: boolean;
+    emailMaturities?: boolean;
+    emailDigest?: boolean;
+    emailMarketing?: boolean;
+    pushDeposits?: boolean;
+    pushWithdrawals?: boolean;
+    pushInvestments?: boolean;
+    pushMaturities?: boolean;
+    pushProducts?: boolean;
+    pushSecurity?: boolean;
+    pushKyc?: boolean;
   },
   push: T[],
   email: T[],
 ): { push: T[]; email: T[] } {
   const txn =
-    prefs.emailDeposits &&
-    prefs.emailWithdrawals &&
-    prefs.emailInvestments &&
-    prefs.emailMaturities;
+    prefs.emailDeposits !== false &&
+    prefs.emailWithdrawals !== false &&
+    prefs.emailInvestments !== false &&
+    prefs.emailMaturities !== false;
   return {
     push: push.map((item) => {
-      if (item.id === "p-mat") return { ...item, on: prefs.pushMaturities };
-      if (item.id === "p-prd") return { ...item, on: prefs.pushProducts };
+      if (item.id === "p-dep") return { ...item, on: prefs.pushDeposits !== false };
+      if (item.id === "p-wdr") return { ...item, on: prefs.pushWithdrawals !== false };
+      if (item.id === "p-inv") return { ...item, on: prefs.pushInvestments !== false };
+      if (item.id === "p-mat") return { ...item, on: prefs.pushMaturities !== false };
+      if (item.id === "p-prd") return { ...item, on: prefs.pushProducts === true };
+      if (item.id === "p-sec") return { ...item, on: prefs.pushSecurity !== false };
+      if (item.id === "p-kyc") return { ...item, on: prefs.pushKyc !== false };
       return item;
     }),
     email: email.map((item) => {
       if (item.id === "e-txn") return { ...item, on: txn };
-      if (item.id === "e-dig") return { ...item, on: prefs.emailDigest };
+      if (item.id === "e-dig") return { ...item, on: prefs.emailDigest !== false };
+      if (item.id === "e-mkt") return { ...item, on: prefs.emailMarketing === true };
       return item;
     }),
   };
 }
 
-/** Build a PATCH body for a single toggle id. Returns null when the toggle is local-only. */
+/** Build a PATCH body for a single toggle id. */
 export function notificationPatchForToggle(
   id: string,
   on: boolean,
@@ -144,21 +156,44 @@ export function notificationPatchForToggle(
   emailInvestments: boolean;
   emailMaturities: boolean;
   emailDigest: boolean;
-  pushProducts: boolean;
+  emailMarketing: boolean;
+  pushDeposits: boolean;
+  pushWithdrawals: boolean;
+  pushInvestments: boolean;
   pushMaturities: boolean;
+  pushProducts: boolean;
+  pushSecurity: boolean;
+  pushKyc: boolean;
 }> | null {
-  if (id === "p-mat") return { pushMaturities: on };
-  if (id === "p-prd") return { pushProducts: on };
-  if (id === "e-dig") return { emailDigest: on };
-  if (id === "e-txn") {
-    return {
-      emailDeposits: on,
-      emailWithdrawals: on,
-      emailInvestments: on,
-      emailMaturities: on,
-    };
+  switch (id) {
+    case "p-dep":
+      return { pushDeposits: on };
+    case "p-wdr":
+      return { pushWithdrawals: on };
+    case "p-inv":
+      return { pushInvestments: on };
+    case "p-mat":
+      return { pushMaturities: on };
+    case "p-prd":
+      return { pushProducts: on };
+    case "p-sec":
+      return { pushSecurity: on };
+    case "p-kyc":
+      return { pushKyc: on };
+    case "e-dig":
+      return { emailDigest: on };
+    case "e-mkt":
+      return { emailMarketing: on };
+    case "e-txn":
+      return {
+        emailDeposits: on,
+        emailWithdrawals: on,
+        emailInvestments: on,
+        emailMaturities: on,
+      };
+    default:
+      return null;
   }
-  return null;
 }
 
 export type Faq = { q: string; a: string; category: string };

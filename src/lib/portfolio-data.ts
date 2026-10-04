@@ -216,7 +216,7 @@ export { naira };
 
 /* ── MOB-121 — Holding detail ───────────────────────────────────── */
 
-export type HoldingDoc = { label: string; kind: string; size: string };
+export type HoldingDoc = { label: string; kind: string; size: string; url?: string };
 export type HoldingTxn = {
   label: string;
   date: string;
@@ -397,6 +397,8 @@ export type Transaction = {
   label: string;
   date: string;
   time: string;
+  /** ISO timestamp for reliable period filters. */
+  createdAt: string;
   amount: number;
   direction: "in" | "out";
   source: string;
@@ -424,23 +426,44 @@ export function mapApiPortfolioTransaction(row: {
   amount: number;
   direction: "credit" | "debit" | string;
   createdAt: string;
+  accountType?: string | null;
 }): Transaction {
   const k = row.kind.toUpperCase();
+  const desc = String(row.description || "").toLowerCase();
+  const account = String(row.accountType || "").toUpperCase();
   let type: TxnType = "Adjustment";
-  if (k.includes("DEPOSIT") || k.includes("FUND")) type = "Deposit";
-  else if (k.includes("INTEREST") || k.includes("ACCRUAL")) type = "Interest";
-  else if (k.includes("WITHDRAW") || k.includes("PAYOUT") || k.includes("MATURITY"))
+  if (
+    k.includes("INTEREST") ||
+    k.includes("ACCRUAL") ||
+    k.includes("CALL_INTEREST") ||
+    desc.includes("interest")
+  ) {
+    type = "Interest";
+  } else if (k.includes("DEPOSIT") || k.includes("FUND") || k.includes("CALL_DEPOSIT")) {
+    type = "Deposit";
+  } else if (
+    k.includes("WITHDRAW") ||
+    k.includes("PAYOUT") ||
+    k.includes("MATURITY") ||
+    k.includes("CALL_WITHDRAW")
+  ) {
     type = "Withdrawal";
-  else if (k.includes("PLACEMENT") || k.includes("INVEST")) type = "Investment";
+  } else if (k.includes("PLACEMENT") || k.includes("INVEST") || account.includes("PLACEMENT")) {
+    type = "Investment";
+  }
 
   const created = new Date(row.createdAt);
   const credit = String(row.direction).toLowerCase() !== "debit";
+  const label =
+    type === "Interest"
+      ? row.description || "Interest credited"
+      : row.description || row.kind || "Transaction";
   return {
     id: row.id,
     reference: row.reference || row.id,
     type,
     status: "Successful",
-    label: row.description || row.kind || "Transaction",
+    label,
     date: Number.isNaN(created.getTime())
       ? "—"
       : created.toLocaleDateString("en-NG", {
@@ -454,9 +477,10 @@ export function mapApiPortfolioTransaction(row: {
           hour: "2-digit",
           minute: "2-digit",
         }),
+    createdAt: row.createdAt,
     amount: Number(row.amount) || 0,
     direction: credit ? "in" : "out",
-    source: credit ? "External" : "Kipit Wallet",
+    source: credit ? (type === "Interest" ? "Investment" : "External") : "Kipit Wallet",
     destination: credit ? "Kipit Wallet" : "External",
   };
 }
@@ -513,6 +537,7 @@ export const CALL_ACTIVITY_TXNS: Transaction[] = CALL_ACTIVITY.map((a) => {
     label: `${a.label} · Call Account`,
     date: a.date,
     time: "09:00",
+    createdAt: "",
     amount: a.amount,
     direction: credit ? "in" : "out",
     source: credit ? (a.kind === "interest" ? "Kipit Call Account" : "Kipit Wallet") : "Kipit Call Account",
@@ -530,6 +555,7 @@ export const HOLDING_TXNS: Transaction[] = HOLDING_DETAILS.flatMap((h) =>
     label: `${t.label} · ${h.name}`,
     date: t.date,
     time: "10:00",
+    createdAt: "",
     amount: t.amount,
     direction: t.direction,
     source: t.direction === "out" ? "Kipit Wallet" : h.name,

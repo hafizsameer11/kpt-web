@@ -3,7 +3,13 @@ import { CheckCircle2, MessageSquareLock, ShieldCheck, UserCheck } from "lucide-
 import { useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
 import { useDisplayProfile } from "@/lib/profile-live";
-import { ApiError, requestPinReset, resetTransactionPin } from "@/lib/api";
+import {
+  ApiError,
+  fetchProfile,
+  requestPinReset,
+  resetTransactionPin,
+  verifyOtp,
+} from "@/lib/api";
 
 export const Route = createFileRoute("/settings_/security_/reset-pin")({
   head: () => ({
@@ -54,7 +60,22 @@ function ResetPinScreen() {
     }
     if (step === 1) {
       if (otp.length !== 6) return setError("Enter the 6-digit code.");
-      setStep(2);
+      setBusy(true);
+      try {
+        const email =
+          (await fetchProfile().catch(() => null))?.email ||
+          profile.email ||
+          "";
+        if (!email.includes("@")) {
+          throw new Error("Could not verify the code for your account email.");
+        }
+        await verifyOtp(email, "PIN_RESET", otp, { peek: true });
+        setStep(2);
+      } catch (err) {
+        setError(err instanceof ApiError ? err.message : "Invalid or expired code.");
+      } finally {
+        setBusy(false);
+      }
       return;
     }
     if (step === 2) {

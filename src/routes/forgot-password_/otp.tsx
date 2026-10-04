@@ -28,6 +28,7 @@ function ResetOtp() {
   const [status, setStatus] = useState<"idle" | "validating" | "invalid">("idle");
   const [seconds, setSeconds] = useState(45);
   const [resendError, setResendError] = useState<string | null>(null);
+  const [resendBusy, setResendBusy] = useState(false);
   const verifying = useRef(false);
 
   useEffect(() => {
@@ -45,7 +46,8 @@ function ResetOtp() {
     void (async () => {
       try {
         if (!target) throw new Error("missing target");
-        await verifyOtp(target, "PASSWORD_RESET", code);
+        // Peek so the same code remains valid for /password/reset (matches KipitApp).
+        await verifyOtp(target, "PASSWORD_RESET", code, { peek: true });
         window.sessionStorage.setItem("kipit:password-reset-code", code);
         void navigate({ to: "/forgot-password/new" });
       } catch {
@@ -56,21 +58,26 @@ function ResetOtp() {
   }, [code, navigate]);
 
   const resend = async () => {
+    if (seconds > 0 || resendBusy) return;
     const target =
       (typeof window !== "undefined" && window.sessionStorage.getItem(RESET_TARGET_KEY)) || "";
     if (!target) {
-      setResendError("Go back and enter your email or phone again.");
+      setResendError("Go back and enter your email again.");
       return;
     }
+    setResendBusy(true);
+    setSeconds(45);
     setResendError(null);
     try {
       await requestOtp(target, "PASSWORD_RESET");
-      setSeconds(45);
       setCode("");
       setStatus("idle");
       verifying.current = false;
     } catch (err) {
       setResendError(err instanceof ApiError ? err.message : "Could not resend the code.");
+      setSeconds(0);
+    } finally {
+      setResendBusy(false);
     }
   };
 
@@ -78,7 +85,7 @@ function ResetOtp() {
     <AuthShell
       back="/forgot-password"
       title="Enter your reset code"
-      subtitle="We sent a six-digit code to your registered phone and email."
+      subtitle="We sent a six-digit code to your registered email."
     >
       <OtpInput
         value={code}
@@ -110,9 +117,9 @@ function ResetOtp() {
           Verify
         </PrimaryButton>
         <div className="text-center text-xs">
-          {seconds > 0 ? (
+          {seconds > 0 || resendBusy ? (
             <span className="text-brand-foreground/55">
-              Resend code in 0:{String(seconds).padStart(2, "0")}
+              {resendBusy ? "Sending…" : `Resend code in 0:${String(seconds).padStart(2, "0")}`}
             </span>
           ) : (
             <button type="button" onClick={() => void resend()} className="font-semibold text-gold">

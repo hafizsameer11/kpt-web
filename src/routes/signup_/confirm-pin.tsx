@@ -28,17 +28,19 @@ function ConfirmPin() {
   const submitting = useRef(false);
 
   useEffect(() => {
-    if (pin.length !== 4 || busy || submitting.current) return;
+    if (pin.length !== 4 || submitting.current) return;
     if (signupDraft.pin && pin !== signupDraft.pin) {
       setError("Your PINs don't match. Please try again.");
-      const t = setTimeout(() => setPin(""), 600);
-      return () => clearTimeout(t);
+      const timer = setTimeout(() => setPin(""), 600);
+      return () => clearTimeout(timer);
     }
+
     let cancelled = false;
-    setBusy(true);
-    submitting.current = true;
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       void (async () => {
+        if (submitting.current) return;
+        submitting.current = true;
+        setBusy(true);
         setError(null);
         try {
           if (!signupDraft.email || !signupDraft.password || signupDraft.password.length < 8) {
@@ -81,11 +83,12 @@ function ConfirmPin() {
         }
       })();
     }, 350);
+
     return () => {
       cancelled = true;
-      clearTimeout(t);
+      clearTimeout(timer);
     };
-  }, [pin, navigate, busy]);
+  }, [pin, navigate]);
 
   return (
     <AuthShell
@@ -97,7 +100,9 @@ function ConfirmPin() {
     >
       <div className="space-y-8">
         <PinDots length={4} filled={pin.length} />
-        <p className="min-h-5 text-center text-xs [color:oklch(0.8_0.14_25)]">{error}</p>
+        <p className="min-h-5 text-center text-xs font-semibold text-red-400">
+          {busy ? "Creating your account…" : error}
+        </p>
         <Keypad
           disabled={busy}
           onDigit={(d) => {

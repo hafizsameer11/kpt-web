@@ -1,10 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Download, Eye, FileText, Mail } from "lucide-react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
-import { downloadDocumentPdf, printDocumentPdf } from "@/lib/document-pdf";
+import { ApiError, emailStatement } from "@/lib/api";
+import { documentHtml, downloadDocumentPdf, printDocumentPdf } from "@/lib/document-pdf";
 import { useDisplayProfile } from "@/lib/profile-live";
+import { buildStatementPayload, type StatementDoc } from "@/lib/statement-payload";
 
 export const Route = createFileRoute("/settings_/statements_/generated")({
   validateSearch: z.object({
@@ -39,27 +42,38 @@ function fmt(d: string) {
 function GeneratedStatement() {
   const { kind, start, end } = Route.useSearch();
   const profile = useDisplayProfile();
-  const reference = `KPT-STM-${start.replace(/-/g, "").slice(2)}`;
+  const [doc, setDoc] = useState<StatementDoc | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [emailBusy, setEmailBusy] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    void buildStatementPayload({ kind, start, end })
+      .then((payload) => {
+        if (alive) setDoc(payload);
+      })
+      .catch(() => {
+        if (alive) setDoc(null);
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [kind, start, end]);
+
   const holder = [profile.firstName, profile.lastName].filter(Boolean).join(" ") || "—";
+  const reference = doc?.reference ?? `KPT-STM-${start.replace(/-/g, "").slice(2)}`;
   const generated = new Date().toLocaleDateString("en-NG", {
     day: "2-digit",
     month: "short",
     year: "numeric",
   });
 
-  const doc = {
-    title: kind,
-    subtitle: `${fmt(start)} — ${fmt(end)}`,
-    rows: [
-      { label: "Account holder", value: holder },
-      { label: "Email", value: profile.email || "—" },
-      { label: "Reference", value: reference },
-      { label: "Generated", value: generated },
-    ],
-    body: "Kipit account statement generated from your live profile for the selected period. Print or save as PDF from your browser. A full server-side PDF archive is not available yet.",
-  };
-
   function viewDoc() {
+    if (!doc) return;
     try {
       printDocumentPdf(doc);
     } catch (err) {
@@ -68,6 +82,7 @@ function GeneratedStatement() {
   }
 
   function downloadDoc() {
+    if (!doc) return;
     try {
       downloadDocumentPdf({
         ...doc,
@@ -79,20 +94,46 @@ function GeneratedStatement() {
     }
   }
 
-  function emailDoc() {
+  async function emailDoc() {
+    if (!doc || emailBusy) return;
+    const statementKind = (
+      ["Account statement", "Transaction statement", "Portfolio statement"].includes(kind)
+        ? kind
+        : "Account statement"
+    ) as "Account statement" | "Transaction statement" | "Portfolio statement";
+    const summary = [
+      `Kipit ${kind}`,
+      `Period: ${fmt(start)} — ${fmt(end)}`,
+      `Reference: ${reference}`,
+      `Account holder: ${holder}`,
+    ].join("\n");
+    const filename = `${kind.replace(/\s+/g, "-").toLowerCase()}-${start}-${end}.html`;
+    const html = documentHtml(doc);
+    const contentBase64 = btoa(unescape(encodeURIComponent(html)));
+    setEmailBusy(true);
     try {
-      downloadDocumentPdf({
-        ...doc,
-        filename: `${kind.replace(/\s+/g, "-").toLowerCase()}-${start}-${end}.html`,
+      await emailStatement({
+        kind: statementKind,
+        from: start,
+        to: end,
+        filename,
+        contentBase64,
+        contentType: "text/html",
+        summary,
       });
-      const subject = encodeURIComponent(`${kind} · ${fmt(start)} – ${fmt(end)}`);
-      const body = encodeURIComponent(
-        `Please find my Kipit ${kind.toLowerCase()} (${reference}) attached after download.\n\nPeriod: ${fmt(start)} — ${fmt(end)}`,
+      toast.success(
+        profile.email
+          ? `Statement emailed to ${profile.email}`
+          : "Statement emailed to your Kipit account email.",
       );
-      const to = profile.email ? encodeURIComponent(profile.email) : "";
-      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not prepare email.");
+      toast.error(
+        err instanceof ApiError
+          ? err.message
+          : "Could not email statement. Try Download, then attach manually.",
+      );
+    } finally {
+      setEmailBusy(false);
     }
   }
 
@@ -121,37 +162,40 @@ function GeneratedStatement() {
             <Row label="Account holder">{holder}</Row>
             <Row label="Reference">{reference}</Row>
             <Row label="Generated">{generated}</Row>
-            <Row label="Format">HTML</Row>
+            <Row label="Rows">{loading ? "…" : String(doc?.rows.length ?? 0)}</Row>
           </dl>
         </section>
 
         <div className="mt-4 grid gap-2.5 sm:grid-cols-3">
           <button
             type="button"
+            disabled={!doc || loading}
             onClick={viewDoc}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 py-3.5 text-[13px] font-extrabold text-primary-foreground shadow-float press"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 py-3.5 text-[13px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40"
           >
             <Eye className="size-4" strokeWidth={2.6} /> View
           </button>
           <button
             type="button"
+            disabled={!doc || loading}
             onClick={downloadDoc}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-[13px] font-bold press"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-[13px] font-bold press disabled:opacity-40"
           >
             <Download className="size-4" strokeWidth={2.4} /> Download
           </button>
           <button
             type="button"
-            onClick={emailDoc}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-[13px] font-bold press"
+            disabled={!doc || loading || emailBusy}
+            onClick={() => void emailDoc()}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-[13px] font-bold press disabled:opacity-40"
           >
-            <Mail className="size-4" strokeWidth={2.4} /> Email
+            <Mail className="size-4" strokeWidth={2.4} /> {emailBusy ? "Sending…" : "Email"}
           </button>
         </div>
 
         <p className="mt-4 px-1 text-[11.5px] leading-relaxed text-muted-foreground">
-          View opens a printable document. Download saves it locally; Email opens your mail app with
-          {profile.email ? ` ${profile.email}` : " your address"} after download. Keep statements private.
+          View opens a printable document. Download saves it locally. Email sends the statement file
+          to your Kipit account email with the attachment included.
         </p>
       </div>
 
@@ -182,11 +226,25 @@ function GeneratedStatement() {
                 </div>
                 <p className="mt-4 text-[12px] font-bold">{holder}</p>
                 <p className="text-[11px] text-muted-foreground">{profile.email || "your email"}</p>
-                <p className="mt-5 text-[12.5px] leading-relaxed text-muted-foreground">
-                  {doc.body}
-                </p>
+                {loading ? (
+                  <p className="mt-5 text-[12.5px] text-muted-foreground">Loading statement data…</p>
+                ) : (
+                  <dl className="mt-5 space-y-2 text-[12px]">
+                    {(doc?.rows ?? []).slice(0, 12).map((row) => (
+                      <div key={`${row.label}-${row.value}`} className="flex justify-between gap-3">
+                        <dt className="text-muted-foreground">{row.label}</dt>
+                        <dd className="text-right font-semibold text-foreground">{row.value}</dd>
+                      </div>
+                    ))}
+                    {(doc?.rows.length ?? 0) > 12 ? (
+                      <p className="pt-1 text-[11px] text-muted-foreground">
+                        …and {(doc?.rows.length ?? 0) - 12} more lines in View / Download
+                      </p>
+                    ) : null}
+                  </dl>
+                )}
                 <p className="mt-6 border-t border-border pt-3 text-[10px] text-muted-foreground">
-                  This document carries verification reference {reference}.
+                  {doc?.body ?? "This document carries your verification reference."}
                 </p>
               </div>
             </div>
@@ -209,30 +267,33 @@ function GeneratedStatement() {
                 <Row label="Account holder">{holder}</Row>
                 <Row label="Reference">{reference}</Row>
                 <Row label="Generated">{generated}</Row>
-                <Row label="Format">HTML</Row>
+                <Row label="Data rows">{loading ? "…" : String(doc?.rows.length ?? 0)}</Row>
               </dl>
               <div className="space-y-2.5 p-5 pt-4">
                 <button
                   type="button"
+                  disabled={!doc || loading}
                   onClick={downloadDoc}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 py-3.5 text-[13px] font-extrabold text-primary-foreground shadow-float press"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 py-3.5 text-[13px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40"
                 >
                   <Download className="size-4" strokeWidth={2.6} /> Download
                 </button>
                 <div className="grid grid-cols-2 gap-2.5">
                   <button
                     type="button"
+                    disabled={!doc || loading}
                     onClick={viewDoc}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-[12.5px] font-bold press"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-[12.5px] font-bold press disabled:opacity-40"
                   >
                     <Eye className="size-4" strokeWidth={2.4} /> View
                   </button>
                   <button
                     type="button"
-                    onClick={emailDoc}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-[12.5px] font-bold press"
+                    disabled={!doc || loading || emailBusy}
+                    onClick={() => void emailDoc()}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-[12.5px] font-bold press disabled:opacity-40"
                   >
-                    <Mail className="size-4" strokeWidth={2.4} /> Email
+                    <Mail className="size-4" strokeWidth={2.4} /> {emailBusy ? "Sending…" : "Email"}
                   </button>
                 </div>
               </div>
@@ -241,8 +302,8 @@ function GeneratedStatement() {
             <section className="card-surface p-5">
               <p className="text-[13px] font-extrabold">Keep it private</p>
               <p className="mt-2 text-[12.5px] leading-relaxed text-muted-foreground">
-                Use View or Download, then share or email from your device. Statements contain your
-                account details.
+                Email sends the statement as an attachment to the email on your Kipit account. Only
+                you receive it.
               </p>
             </section>
           </aside>

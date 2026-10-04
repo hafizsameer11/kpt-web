@@ -6,8 +6,11 @@ import { AppShell } from "@/components/kipit/AppShell";
 import {
   addPayoutAccount,
   BANKS,
+  commitPayoutAccountLocal,
   hydratePayoutFromApi,
+  resolvePayoutAccountViaApi,
   type PayoutBank,
+  type ResolvedPayoutAccount,
 } from "@/lib/withdraw-data";
 
 export const Route = createFileRoute("/withdraw_/add-account")({
@@ -44,7 +47,8 @@ function AddAccountScreen() {
   const [number, setNumber] = useState("");
   const [stage, setStage] = useState<Stage>("form");
   const [verifiedName, setVerifiedName] = useState("");
-  const [createdId, setCreatedId] = useState("");
+  const [pendingResolved, setPendingResolved] = useState<ResolvedPayoutAccount | null>(null);
+  const [busyConfirm, setBusyConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -54,17 +58,46 @@ function AddAccountScreen() {
   const bankName = banks.find((b) => b.code === bank)?.name ?? "";
   const valid = bank !== "" && number.length === 10;
 
+  function abandonPending() {
+    setPendingResolved(null);
+    setVerifiedName("");
+    setStage("form");
+  }
+
   async function verify() {
     setError(null);
     setStage("verifying");
     try {
-      const account = await addPayoutAccount(bank, number);
-      setVerifiedName(account.accountName);
-      setCreatedId(account.id);
+      // Resolve-only — no PayoutBank row until Confirm (app-safe additive API).
+      const resolved = await resolvePayoutAccountViaApi(bank, number);
+      setVerifiedName(resolved.accountName);
+      setPendingResolved(resolved);
       setStage("confirm");
     } catch (err) {
       setStage("form");
       setError(err instanceof Error ? err.message : "Could not verify account.");
+    }
+  }
+
+  async function confirm() {
+    if (!pendingResolved || busyConfirm) return;
+    setBusyConfirm(true);
+    setError(null);
+    try {
+      const account = await addPayoutAccount(
+        pendingResolved.bankCode,
+        pendingResolved.accountNumber,
+        { commitLocal: true },
+      );
+      commitPayoutAccountLocal(account);
+      void navigate({
+        to: "/withdraw/amount",
+        search: { acct: account.id },
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save payout account.");
+    } finally {
+      setBusyConfirm(false);
     }
   }
 
@@ -79,6 +112,11 @@ function AddAccountScreen() {
           <div className="relative md:max-w-3xl">
             <Link
               to="/withdraw/accounts"
+              onClick={() => {
+                if (stage === "confirm" && pendingResolved) {
+                  abandonPending();
+                }
+              }}
               className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground press"
             >
               <ArrowLeft className="size-3.5" /> Payout accounts
@@ -118,22 +156,24 @@ function AddAccountScreen() {
                 </div>
               </div>
 
+              {error ? (
+                <p className="mt-3 text-[12px] font-semibold text-destructive">{error}</p>
+              ) : null}
+
               <div className="mt-5 flex flex-col gap-2.5 md:flex-row">
                 <button
                   type="button"
-                  onClick={() =>
-                    void navigate({
-                      to: "/withdraw/amount",
-                      search: { acct: createdId },
-                    })
-                  }
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
+                  disabled={busyConfirm}
+                  onClick={() => void confirm()}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40 md:w-auto md:px-10"
                 >
-                  Confirm <ArrowRight className="size-4" strokeWidth={2.6} />
+                  {busyConfirm ? "Saving…" : "Confirm"}{" "}
+                  <ArrowRight className="size-4" strokeWidth={2.6} />
                 </button>
                 <button
                   type="button"
-                  onClick={() => setStage("form")}
+                  disabled={busyConfirm}
+                  onClick={() => abandonPending()}
                   className="inline-flex w-full items-center justify-center rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press md:w-auto md:px-8"
                 >
                   Edit details
@@ -172,20 +212,17 @@ function AddAccountScreen() {
                 </span>
                 <input
                   inputMode="numeric"
-                  placeholder="10-digit account number"
+                  maxLength={10}
                   value={number}
                   disabled={stage === "verifying"}
-                  onChange={(e) =>
-                    setNumber(e.target.value.replace(/[^0-9]/g, "").slice(0, 10))
-                  }
-                  className="mt-2 w-full rounded-xl border border-border bg-background px-3.5 py-3 text-[15px] font-bold tracking-[0.06em] text-num text-foreground outline-none placeholder:text-[13px] placeholder:font-medium placeholder:tracking-normal placeholder:text-muted-foreground focus:border-gold"
+                  onChange={(e) => setNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                  placeholder="10-digit NUBAN"
+                  className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-[13.5px] font-semibold outline-none"
                 />
               </label>
 
               {error ? (
-                <p className="mt-3 rounded-xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
-                  {error}
-                </p>
+                <p className="mt-3 text-[12px] font-semibold text-destructive">{error}</p>
               ) : null}
 
               {stage === "verifying" ? (

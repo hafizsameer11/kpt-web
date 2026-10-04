@@ -73,7 +73,7 @@ function KycPending() {
               Confirming your NIN
             </p>
             <p className="mx-auto mt-3 max-w-sm text-[12.5px] text-primary-foreground/70">
-              We're matching your NIN with Prembly. Status:{" "}
+              We're verifying your NIN. Status:{" "}
               {statusLabel.replace(/_/g, " ").toLowerCase()}
               {ninStatus ? ` · NIN ${ninStatus.toLowerCase()}` : ""}.
             </p>
@@ -94,7 +94,7 @@ function KycPending() {
               <ol className="mt-3 space-y-3">
                 {[
                   { label: "Documents submitted", done: true },
-                  { label: "NIN provider check", done: ninStatus === "SUCCESS" },
+                  { label: "NIN verification", done: ninStatus === "SUCCESS" },
                   { label: "Tier 2 approval", done: statusLabel === "APPROVED" },
                 ].map((t) => (
                   <li key={t.label} className="flex items-center gap-3">

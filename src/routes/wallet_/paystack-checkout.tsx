@@ -20,7 +20,7 @@ export const Route = createFileRoute("/wallet_/paystack-checkout")({
       { title: "Secure Card Checkout | Kipit" },
       {
         name: "description",
-        content: "Complete your Kipit wallet top-up securely with Paystack — stay in Kipit.",
+        content: "Complete your Kipit wallet top-up securely — stay in Kipit.",
       },
     ],
   }),
@@ -149,7 +149,7 @@ function PaystackCheckoutScreen() {
           Secure card checkout
         </h1>
         <p className="mt-1 text-[12px] text-primary-foreground/70">
-          Paystack · stay in Kipit
+          Secure checkout · stay in Kipit
           {amount > 0 ? ` · ${naira(amount)}` : ""}
         </p>
       </header>
@@ -158,14 +158,14 @@ function PaystackCheckoutScreen() {
         {loading && !blocked ? (
           <div className="absolute inset-0 z-10 grid place-items-center gap-2.5 bg-white">
             <Loader2 className="size-8 animate-spin text-brand" />
-            <p className="text-[13px] font-medium text-muted-foreground">Loading Paystack…</p>
+            <p className="text-[13px] font-medium text-muted-foreground">Loading secure checkout…</p>
           </div>
         ) : null}
 
         {blocked ? (
           <div className="grid h-full place-items-center gap-4 px-6 text-center">
             <p className="max-w-sm text-[14px] text-muted-foreground">
-              Paystack couldn&apos;t load inside Kipit. Continue on their secure page — you&apos;ll
+              Secure checkout couldn&apos;t load inside Kipit. Continue on the secure page — you&apos;ll
               return here when done.
             </p>
             <button
@@ -173,13 +173,13 @@ function PaystackCheckoutScreen() {
               onClick={() => window.location.assign(authorizationUrl)}
               className="press rounded-xl bg-brand-gradient px-5 py-3 text-[13.5px] font-extrabold text-primary-foreground"
             >
-              Continue to Paystack
+              Continue to secure checkout
             </button>
           </div>
         ) : (
           <iframe
             ref={iframeRef}
-            title="Paystack Checkout"
+            title="Secure card checkout"
             src={authorizationUrl}
             className="h-full w-full border-0 bg-white"
             allow="payment *"

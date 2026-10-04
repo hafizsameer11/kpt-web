@@ -108,12 +108,22 @@ export function setHomeFeed(
   emitFeed();
 }
 
+function feedFromLearnArticles() {
+  return import("@/lib/learn-data").then(({ LEARN_ARTICLES }) =>
+    LEARN_ARTICLES.slice(0, 4).map((a) => ({
+      id: a.id,
+      tag: a.tag,
+      title: a.title,
+      body: a.body,
+    })),
+  );
+}
+
 export async function hydrateHomeFeedFromApi() {
   try {
     const { fetchHome, fetchHomeFeed, isAuthenticated } = await import("@/lib/api");
     if (!isAuthenticated()) {
-      FEED = [];
-      emitFeed();
+      setHomeFeed(await feedFromLearnArticles());
       return FEED;
     }
     try {
@@ -126,10 +136,18 @@ export async function hydrateHomeFeedFromApi() {
       /* fall through to /v1/me/home */
     }
     const home = await fetchHome();
-    setHomeFeed(home.feed ?? []);
+    if (home.feed?.length) {
+      setHomeFeed(home.feed);
+    } else {
+      setHomeFeed(await feedFromLearnArticles());
+    }
   } catch {
-    FEED = [];
-    emitFeed();
+    try {
+      setHomeFeed(await feedFromLearnArticles());
+    } catch {
+      FEED = [];
+      emitFeed();
+    }
   }
   return FEED;
 }

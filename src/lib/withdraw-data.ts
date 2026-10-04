@@ -5,9 +5,11 @@
 
 import {
   createPayoutAccount,
+  deletePayoutAccount,
   fetchPayoutAccounts,
   fetchPayoutBanks,
   isAuthenticated,
+  resolvePayoutAccount,
 } from "@/lib/api";
 
 export type PayoutAccount = {
@@ -91,8 +93,35 @@ export async function hydratePayoutFromApi(): Promise<PayoutAccount[]> {
   }
 }
 
+export type ResolvedPayoutAccount = {
+  bankCode: string;
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+  nameMatched: boolean;
+};
+
+/** Resolve + name-match without creating a server row. */
+export async function resolvePayoutAccountViaApi(
+  bankCode: string,
+  accountNumber: string,
+): Promise<ResolvedPayoutAccount> {
+  const resolved = await resolvePayoutAccount({ bankCode, accountNumber });
+  return {
+    bankCode: resolved.bankCode || bankCode,
+    bankName: resolved.bankName,
+    accountNumber: resolved.accountNumber,
+    accountName: resolved.accountName,
+    nameMatched: resolved.nameMatched,
+  };
+}
+
 /** Create a payout account via API and append to the local cache. */
-export async function addPayoutAccount(bankCode: string, accountNumber: string) {
+export async function addPayoutAccount(
+  bankCode: string,
+  accountNumber: string,
+  opts?: { commitLocal?: boolean },
+) {
   const created = await createPayoutAccount({ bankCode, accountNumber });
   const account: PayoutAccount = {
     id: created.id,
@@ -102,7 +131,30 @@ export async function addPayoutAccount(bankCode: string, accountNumber: string) 
     accountNumber: created.accountNumber,
     primary: SAVED_ACCOUNTS.length === 0,
   };
-  const existing = SAVED_ACCOUNTS.find((a) => a.id === account.id);
-  if (!existing) SAVED_ACCOUNTS = [...SAVED_ACCOUNTS, account];
+  if (opts?.commitLocal !== false) {
+    const existing = SAVED_ACCOUNTS.find((a) => a.id === account.id);
+    if (!existing) SAVED_ACCOUNTS = [...SAVED_ACCOUNTS, account];
+  }
   return account;
+}
+
+/** Soft-delete on server and drop from local cache (abandon before Confirm). */
+export async function discardPayoutAccount(id: string) {
+  await deletePayoutAccount(id);
+  SAVED_ACCOUNTS = SAVED_ACCOUNTS.filter((a) => a.id !== id);
+}
+
+/** Remove a saved payout account and return the refreshed list. */
+export async function removePayoutAccountViaApi(id: string) {
+  await discardPayoutAccount(id);
+  return hydratePayoutFromApi();
+}
+
+/** Commit a verified account into the local list after user Confirm. */
+export function commitPayoutAccountLocal(account: PayoutAccount) {
+  if (SAVED_ACCOUNTS.some((a) => a.id === account.id)) return;
+  SAVED_ACCOUNTS = [
+    ...SAVED_ACCOUNTS,
+    { ...account, primary: SAVED_ACCOUNTS.length === 0 },
+  ];
 }

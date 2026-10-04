@@ -26,11 +26,12 @@ function SignupOtp() {
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<"idle" | "validating" | "invalid" | "expired">("idle");
   const [seconds, setSeconds] = useState(45);
+  const [resendBusy, setResendBusy] = useState(false);
 
   useEffect(() => {
     void logSignupFunnel({
       step: "otp",
-      email: signupDraft.email || undefined,
+      ...(signupDraft.email ? { email: signupDraft.email } : {}),
       deviceId: signupDraft.deviceId,
     });
   }, []);
@@ -62,6 +63,25 @@ function SignupOtp() {
     if (value.length === 6) void verifyCode(value);
   };
 
+  const resend = async () => {
+    if (!signupDraft.email || seconds > 0 || resendBusy) return;
+    setResendBusy(true);
+    setSeconds(45);
+    try {
+      await requestOtp(signupDraft.email, "SIGNUP");
+      setCode("");
+      setStatus("idle");
+    } catch (err) {
+      setStatus("invalid");
+      setSeconds(0);
+      if (err instanceof ApiError) {
+        /* keep invalid state */
+      }
+    } finally {
+      setResendBusy(false);
+    }
+  };
+
   const masked = signupDraft.email || "your email";
 
   return (
@@ -78,9 +98,9 @@ function SignupOtp() {
         {status === "validating" ? (
           <span className="text-brand-foreground/70">Verifying code…</span>
         ) : status === "invalid" ? (
-          <span className="[color:oklch(0.8_0.14_25)]">The code you entered is incorrect.</span>
+          <span className="font-semibold text-red-400">The code you entered is incorrect.</span>
         ) : status === "expired" ? (
-          <span className="[color:oklch(0.8_0.14_25)]">This code has expired. Request a new one.</span>
+          <span className="font-semibold text-red-400">This code has expired. Request a new one.</span>
         ) : (
           <span className="text-brand-foreground/55">Enter the six-digit code from your email.</span>
         )}
@@ -91,31 +111,12 @@ function SignupOtp() {
           Verify
         </PrimaryButton>
         <div className="flex items-center justify-between text-xs">
-          {seconds > 0 ? (
+          {seconds > 0 || resendBusy ? (
             <span className="text-brand-foreground/55">
-              Resend code in 0:{String(seconds).padStart(2, "0")}
+              {resendBusy ? "Sending…" : `Resend code in 0:${String(seconds).padStart(2, "0")}`}
             </span>
           ) : (
-            <button
-              type="button"
-              onClick={() => {
-                void (async () => {
-                  if (!signupDraft.email) return;
-                  try {
-                    await requestOtp(signupDraft.email, "SIGNUP");
-                    setSeconds(45);
-                    setCode("");
-                    setStatus("idle");
-                  } catch (err) {
-                    setStatus("invalid");
-                    if (err instanceof ApiError) {
-                      /* keep invalid state */
-                    }
-                  }
-                })();
-              }}
-              className="font-semibold text-gold"
-            >
+            <button type="button" onClick={() => void resend()} className="font-semibold text-gold">
               Resend code
             </button>
           )}

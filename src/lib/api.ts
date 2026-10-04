@@ -427,6 +427,10 @@ export async function fetchHome() {
       amount: number;
       date: string;
       daysLeft: number;
+      tenorDays?: number | null;
+      ratePct?: number;
+      startDate?: string;
+      accrued?: number;
     } | null;
     holdings: {
       id: string;
@@ -487,6 +491,24 @@ export async function fetchReferrals() {
   }>("/v1/settings/referrals");
 }
 
+/** Name-check only — does not persist a payout bank (prefer before Confirm). */
+export async function resolvePayoutAccount(input: {
+  bankCode: string;
+  accountNumber: string;
+}) {
+  return api<{
+    bankCode: string;
+    bankName: string;
+    accountNumber: string;
+    accountName: string;
+    nameMatched: boolean;
+    matchScore?: number;
+  }>("/v1/withdraw/accounts/resolve", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
 export async function createPayoutAccount(input: { bankCode: string; accountNumber: string }) {
   return api<{
     id: string;
@@ -497,6 +519,12 @@ export async function createPayoutAccount(input: { bankCode: string; accountNumb
   }>("/v1/withdraw/accounts", {
     method: "POST",
     body: JSON.stringify(input),
+  });
+}
+
+export async function deletePayoutAccount(id: string) {
+  return api<{ ok: boolean }>(`/v1/withdraw/accounts/${encodeURIComponent(id)}`, {
+    method: "DELETE",
   });
 }
 
@@ -647,12 +675,37 @@ export async function verifyOtp(
   target: string,
   purpose: "SIGNUP" | "LOGIN" | "PASSWORD_RESET" | "PIN_RESET",
   code: string,
+  options?: { peek?: boolean },
 ) {
   return api<{ verified: boolean }>("/v1/auth/otp/verify", {
     method: "POST",
     auth: false,
-    body: JSON.stringify({ target, purpose, code }),
+    body: JSON.stringify({
+      target,
+      purpose,
+      code,
+      ...(options?.peek ? { peek: true } : {}),
+    }),
   });
+}
+
+/** True when no account exists for this email (safe to start signup). */
+export async function checkEmailAvailable(email: string) {
+  return api<{ available: boolean }>(
+    `/v1/auth/email-available?email=${encodeURIComponent(email.trim().toLowerCase())}`,
+    { auth: false },
+  );
+}
+
+export async function validateReferralCode(code: string) {
+  return api<{ valid: boolean; code?: string; inviterFirstName?: string }>(
+    `/v1/auth/referral/${encodeURIComponent(code.trim().toUpperCase())}`,
+    { auth: false },
+  );
+}
+
+export function isValidEmailFormat(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
 }
 
 export type ApiExploreProduct = {
@@ -694,6 +747,8 @@ export type ApiRateBand = {
   maxDays: number | null;
   rateBps: number;
   ratePct: number;
+  /** Investment minimum in naira (from /v1/invest/rates). */
+  minimum?: number;
 };
 
 export async function fetchInvestRates() {
@@ -799,6 +854,8 @@ export type ApiAutoInvestRule = {
   amount: number;
   dayOfMonth: number;
   active: boolean;
+  frequency?: "Weekly" | "Every 2 weeks" | "Monthly";
+  nextRun?: string | null;
 };
 
 export async function fetchAutoInvestRules() {
@@ -809,11 +866,33 @@ export async function createAutoInvestRule(input: {
   label: string;
   amount: number;
   dayOfMonth: number;
+  frequency?: "Weekly" | "Every 2 weeks" | "Monthly";
 }) {
-  return api<{ id: string }>("/v1/invest/auto-invest", {
-    method: "POST",
-    body: JSON.stringify(input),
-  });
+  return api<{ id: string; frequency?: string; nextRun?: string | null }>(
+    "/v1/invest/auto-invest",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+  );
+}
+
+export async function emailStatement(input: {
+  kind: "Account statement" | "Transaction statement" | "Portfolio statement";
+  from: string;
+  to: string;
+  filename?: string;
+  contentBase64: string;
+  contentType?: "text/html" | "application/pdf" | "application/octet-stream";
+  summary?: string;
+}) {
+  return api<{ ok: boolean; messageId: string; provider: string }>(
+    "/v1/settings/statements/email",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+  );
 }
 
 export async function patchAutoInvestRule(id: string, input: { active: boolean }) {
@@ -829,8 +908,14 @@ export type ApiNotificationPrefs = {
   emailInvestments: boolean;
   emailMaturities: boolean;
   emailDigest: boolean;
-  pushProducts: boolean;
+  emailMarketing: boolean;
+  pushDeposits: boolean;
+  pushWithdrawals: boolean;
+  pushInvestments: boolean;
   pushMaturities: boolean;
+  pushProducts: boolean;
+  pushSecurity: boolean;
+  pushKyc: boolean;
 };
 
 export async function fetchNotificationPrefs() {
@@ -921,8 +1006,10 @@ export async function fetchPlacements() {
       principal: number;
       ratePct: number;
       tenorDays: number;
+      startDate?: string;
       maturityDate: string | null;
       accrued: number;
+      expectedInterest?: number | null;
     }[]
   >("/v1/invest/placements");
 }
@@ -956,6 +1043,7 @@ export async function fetchPortfolioTransactions() {
       amount: number;
       direction: "credit" | "debit";
       createdAt: string;
+      accountType?: string | null;
     }[]
   >("/v1/portfolio/transactions");
 }
@@ -1076,6 +1164,13 @@ export async function submitTier2(input: {
   });
 }
 
+export async function verifyTransactionPin(pin: string) {
+  return api<{ ok: boolean }>("/v1/settings/pin/verify", {
+    method: "POST",
+    body: JSON.stringify({ pin }),
+  });
+}
+
 export async function changeTransactionPin(input: {
   currentPin: string;
   newPin: string;
@@ -1085,6 +1180,60 @@ export async function changeTransactionPin(input: {
     method: "POST",
     body: JSON.stringify(input),
   });
+}
+
+export type AppPublicConfig = {
+  support: {
+    phone: string;
+    whatsapp: string;
+    email: string;
+  };
+  maintenance: {
+    enabled: boolean;
+    message: string;
+  };
+  featureFlags?: {
+    askAi?: boolean;
+    autoInvest?: boolean;
+    giftInvest?: boolean;
+    explore?: boolean;
+  };
+};
+
+export async function fetchAppConfig() {
+  const data = await api<AppPublicConfig>("/v1/app/config", { auth: false });
+  const maintenance = data?.maintenance ?? { enabled: false, message: "" };
+  return {
+    ...data,
+    support: {
+      phone: String(data?.support?.phone || ""),
+      whatsapp: String(data?.support?.whatsapp || "").replace(/\D/g, ""),
+      email: String(data?.support?.email || ""),
+    },
+    maintenance: {
+      enabled:
+        maintenance.enabled === true ||
+        (maintenance as { enabled?: unknown }).enabled === 1 ||
+        String((maintenance as { enabled?: unknown }).enabled).toLowerCase() === "true",
+      message: String(maintenance.message || ""),
+    },
+    featureFlags: {
+      askAi: data?.featureFlags?.askAi !== false,
+      autoInvest: data?.featureFlags?.autoInvest !== false,
+      giftInvest: data?.featureFlags?.giftInvest !== false,
+      explore: data?.featureFlags?.explore !== false,
+    },
+  };
+}
+
+/** Build a WhatsApp deep link from an admin-configured number (digits / + / spaces OK). */
+export function buildWhatsAppSupportUrl(
+  whatsapp: string,
+  text = "Hi Kipit, I'd like some help with my account.",
+) {
+  const digits = String(whatsapp || "").replace(/\D/g, "");
+  if (digits.length < 10) return null;
+  return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
 }
 
 export async function requestPinReset(dateOfBirth: string) {
@@ -1166,9 +1315,12 @@ export async function fetchPortfolioHolding(id: string) {
     principal: number;
     ratePct: number;
     tenorDays: number;
+    startDate?: string;
     maturityDate: string | null;
     accrued: number;
+    expectedInterest?: number | null;
     maturityInstruction?: string | null;
+    documents?: { name: string; meta?: string; url?: string }[];
   }>(`/v1/portfolio/holdings/${id}`);
 }
 

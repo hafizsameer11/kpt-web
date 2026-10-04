@@ -1,6 +1,7 @@
 import { Link, useRouter } from "@tanstack/react-router";
 import { ArrowRight, Check, Lock, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   GATE_COPY,
@@ -31,6 +32,13 @@ export function KycGuard({
   const router = useRouter();
   const open = hydrated && tier < required;
   const copy = required === 1 && pending ? PENDING_COPY : GATE_COPY[required];
+
+  // Dismiss keyboard under the BVN/KYC modal (invest withdraw amount autofocus).
+  useEffect(() => {
+    if (!open || typeof document === "undefined") return;
+    const el = document.activeElement;
+    if (el instanceof HTMLElement) el.blur();
+  }, [open]);
 
   const dismiss = () => router.history.back();
 

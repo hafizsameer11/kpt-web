@@ -39,8 +39,7 @@ import {
   type ChatMessage,
   type ChatProduct,
 } from "@/lib/chat-data";
-import { WHATSAPP_URL } from "@/lib/terms-acceptance";
-import { getStoredUser } from "@/lib/api";
+import { buildWhatsAppSupportUrl, fetchAppConfig, getStoredUser } from "@/lib/api";
 import { useHydrateLiveBalances } from "@/lib/live-balances";
 import { refreshWalletFromApi, useWalletBalance } from "@/lib/wallet-balance";
 
@@ -91,6 +90,7 @@ function ChatScreen() {
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const [restored, setRestored] = useState(false);
+  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
   const amountRef = useRef<number | undefined>(undefined);
   const sessionRef = useRef<string | undefined>(undefined);
   const endRef = useRef<HTMLDivElement>(null);
@@ -112,6 +112,12 @@ function ChatScreen() {
 
   useEffect(() => {
     void refreshWalletFromApi().catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
+    void fetchAppConfig()
+      .then((cfg) => setWhatsappUrl(buildWhatsAppSupportUrl(cfg.support.whatsapp)))
+      .catch(() => setWhatsappUrl(null));
   }, []);
 
   // Restore the conversation after mount so it survives closing the chat,
@@ -387,12 +393,16 @@ function ChatScreen() {
             <button
               type="button"
               onClick={resetChat}
-              aria-label="Start a new chat"
+              aria-label="Refresh chat"
+              title="Refresh chat"
               className="ml-auto grid size-9 place-items-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10 press"
             >
               <RotateCcw className="size-4 text-gold" />
             </button>
           </div>
+          <p className="relative mt-2 text-[10.5px] text-primary-foreground/55">
+            Browsers can’t pull-to-refresh this chat — tap the refresh icon to start over.
+          </p>
         </header>
 
         <div
@@ -529,14 +539,28 @@ function ChatScreen() {
                     Ask the same questions on WhatsApp and a Kipit agent picks up where the
                     assistant stops.
                   </p>
-                  <a
-                    href={WHATSAPP_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-3 flex items-center justify-center gap-1.5 rounded-full bg-emerald-600 py-2 text-[12.5px] font-bold text-white press hover:bg-emerald-700"
-                  >
-                    Chat on WhatsApp <ArrowRight className="size-3.5" />
-                  </a>
+                  {whatsappUrl ? (
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-3 flex items-center justify-center gap-1.5 rounded-full bg-emerald-600 py-2 text-[12.5px] font-bold text-white press hover:bg-emerald-700"
+                    >
+                      Chat on WhatsApp <ArrowRight className="size-3.5" />
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        toast.message(
+                          "WhatsApp support is not configured yet. Please use Help & support.",
+                        )
+                      }
+                      className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full bg-emerald-600 py-2 text-[12.5px] font-bold text-white press hover:bg-emerald-700"
+                    >
+                      Chat on WhatsApp <ArrowRight className="size-3.5" />
+                    </button>
+                  )}
                 </div>
               </div>
             </aside>
