@@ -46,6 +46,32 @@ export const TIERS: TierInfo[] = [
   },
 ];
 
+/** Update displayed KYC tier limits from System settings. */
+export function applyTierLimitsFromConfig(limits?: {
+  tier1DailyWithdrawal?: number;
+  tier2DailyWithdrawal?: number;
+  singlePayoutMax?: number;
+}) {
+  const naira = (n: number) => `₦${n.toLocaleString("en-NG")}`;
+  const tier1 = TIERS.find((t) => t.id === "tier1");
+  const tier2 = TIERS.find((t) => t.id === "tier2");
+  if (tier1 && limits?.tier1DailyWithdrawal) {
+    tier1.limits = tier1.limits.map((l) =>
+      l.label === "Daily deposit" || l.label === "Daily withdrawal"
+        ? { ...l, value: naira(limits.tier1DailyWithdrawal!) }
+        : l,
+    );
+  }
+  if (tier2 && limits?.tier2DailyWithdrawal) {
+    tier2.limits = tier2.limits.map((l) =>
+      l.label === "Daily withdrawal" ? { ...l, value: naira(limits.tier2DailyWithdrawal!) } : l,
+    );
+  }
+  if (tier2 && limits?.singlePayoutMax) {
+    // Keep a single-deposit style row if present; otherwise leave.
+    void limits.singlePayoutMax;
+  }
+}
 /** BVN match details come from the API response after submitBvn. */
 export const DEMO_BVN = "";
 export const DEMO_NIN_LENGTH = 11;

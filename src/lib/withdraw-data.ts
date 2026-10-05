@@ -38,8 +38,48 @@ export const TIER = {
   singleLimit: 2_000_000,
 };
 
-export const WITHDRAWAL_FEE = 0;
-export const MIN_WITHDRAWAL = 1_000;
+export let WITHDRAWAL_FEE = 0;
+export let MIN_WITHDRAWAL = 1_000;
+export let MIN_FIXED_PLACEMENT = 100_000;
+export let MIN_CALL_DEPOSIT = 10_000;
+
+/** Apply live System settings limits/fees from GET /v1/app/config. */
+export function applyOpsLimitsFromConfig(cfg: {
+  limits?: {
+    tier1DailyWithdrawal?: number;
+    tier2DailyWithdrawal?: number;
+    singlePayoutMax?: number;
+    minFixedPlacement?: number;
+    minCallDeposit?: number;
+  };
+  fees?: { withdrawal?: number };
+}) {
+  if (cfg.limits?.tier2DailyWithdrawal && cfg.limits.tier2DailyWithdrawal > 0) {
+    TIER.dailyLimit = cfg.limits.tier2DailyWithdrawal;
+  }
+  if (cfg.limits?.singlePayoutMax && cfg.limits.singlePayoutMax > 0) {
+    TIER.singleLimit = cfg.limits.singlePayoutMax;
+  }
+  if (cfg.limits?.minFixedPlacement && cfg.limits.minFixedPlacement > 0) {
+    MIN_FIXED_PLACEMENT = cfg.limits.minFixedPlacement;
+  }
+  if (cfg.limits?.minCallDeposit && cfg.limits.minCallDeposit > 0) {
+    MIN_CALL_DEPOSIT = cfg.limits.minCallDeposit;
+  }
+  if (cfg.fees?.withdrawal != null && Number.isFinite(cfg.fees.withdrawal) && cfg.fees.withdrawal >= 0) {
+    WITHDRAWAL_FEE = cfg.fees.withdrawal;
+  }
+  try {
+    // Keep verification copy in sync when present.
+    void import("@/lib/kyc-data").then((mod) => {
+      if (typeof mod.applyTierLimitsFromConfig === "function") {
+        mod.applyTierLimitsFromConfig(cfg.limits);
+      }
+    });
+  } catch {
+    /* optional */
+  }
+}
 
 export const maskAccount = (number: string) =>
   number.length >= 6
