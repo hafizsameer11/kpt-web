@@ -170,16 +170,17 @@ function mapNextMaturity(nm: LiveNextMaturity, holdings: LiveHolding[]) {
 function WeekStrip() {
   const live = useLiveBalances();
   const series = live.interestWeekSeries;
+  const labels = live.interestWeekLabels;
   const max = Math.max(...series, 1);
   const total = series.reduce((a, b) => a + b, 0);
-  const todayIdx = (new Date().getDay() + 6) % 7; // Mon=0
+  const todayIdx = 6; // series is oldest → today
   return (
     <div className="flex h-14 items-end justify-between gap-1">
       {series.map((v, i) => {
         const isToday = i === todayIdx;
         const pct = total > 0 ? 18 + (v / max) * 82 : 18;
         return (
-          <div key={WEEK_LABELS[i]} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
+          <div key={`${labels[i]}-${i}`} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
             <div
               className={`k-grow w-1 rounded-full ${
                 isToday && total > 0 ? "bg-gold" : "bg-brand/20"
@@ -189,7 +190,7 @@ function WeekStrip() {
             <span
               className={`text-[9px] font-semibold ${isToday && total > 0 ? "text-foreground" : "text-muted-foreground/70"}`}
             >
-              {WEEK_LABELS[i]?.slice(0, 1)}
+              {labels[i] || WEEK_LABELS[i]?.slice(0, 1)}
             </span>
           </div>
         );
@@ -607,16 +608,17 @@ function MobileHome() {
 function DesktopWeekChart({ hidden }: { hidden: boolean }) {
   const live = useLiveBalances();
   const series = live.interestWeekSeries;
+  const labels = live.interestWeekLabels;
   const max = Math.max(...series, 1);
   const total = series.reduce((a, b) => a + b, 0);
-  const todayIdx = (new Date().getDay() + 6) % 7;
+  const todayIdx = 6;
   return (
     <div className="flex h-36 items-end justify-between gap-2">
       {series.map((v, i) => {
         const isToday = i === todayIdx;
         const pct = total > 0 ? 22 + (v / max) * 78 : 22;
         return (
-          <div key={WEEK_LABELS[i]} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
+          <div key={`${labels[i]}-${i}`} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
             <span className="text-[10px] font-bold text-muted-foreground">
               {hidden ? "••" : naira(v)}
             </span>
@@ -627,7 +629,7 @@ function DesktopWeekChart({ hidden }: { hidden: boolean }) {
             <span
               className={`text-[10px] font-semibold ${isToday && total > 0 ? "text-foreground" : "text-muted-foreground/70"}`}
             >
-              {WEEK_LABELS[i]}
+              {labels[i] || WEEK_LABELS[i]}
             </span>
           </div>
         );

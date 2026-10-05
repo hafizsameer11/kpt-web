@@ -22,8 +22,7 @@ export const CALL_ACCOUNT = {
 export function syncCallAccountFromLive(balance: number, ratePct: number) {
   CALL_ACCOUNT.balance = Math.max(0, Math.round(balance));
   CALL_ACCOUNT.rate = ratePct ? `${ratePct}% p.a.` : "—";
-  CALL_ACCOUNT.accruedToday = 0;
-  CALL_ACCOUNT.accruedThisMonth = 0;
+  // accruedToday / accruedThisMonth come from Call activity hydration — don't wipe them.
 }
 
 export type FixedPlan = {
