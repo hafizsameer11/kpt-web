@@ -417,8 +417,11 @@ export async function fetchHome() {
   return api<{
     greetingName: string;
     interestThisWeek: number;
+    /** Overall interest today (Call + maturity interest). */
     interestToday?: number;
-    /** Rolling last 7 Lagos days (oldest→today), naira. */
+    /** Call Account daily interest only — for Call “earned today”. */
+    callInterestToday?: number;
+    /** Rolling last 7 Lagos days overall interest (oldest→today), naira. */
     interestWeekSeries?: number[];
     /** Single-letter weekday labels matching interestWeekSeries. */
     interestWeekLabels?: string[];
