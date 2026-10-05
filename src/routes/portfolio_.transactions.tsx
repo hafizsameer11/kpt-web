@@ -109,8 +109,10 @@ function TransactionHistoryScreen() {
         const mapped: Transaction[] = [];
         for (const row of apiRows ?? []) {
           if (!row?.id || seen.has(row.id)) continue;
+          const txn = mapApiPortfolioTransaction(row);
+          if (!txn) continue;
           seen.add(row.id);
-          mapped.push(mapApiPortfolioTransaction(row));
+          mapped.push(txn);
         }
         if (alive) setRows(mapped);
       } catch {

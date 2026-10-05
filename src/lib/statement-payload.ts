@@ -89,6 +89,7 @@ export async function buildStatementPayload(input: {
   const all = (txnsRaw ?? [])
     .filter((t) => inPeriod(t.createdAt, start, end))
     .map(mapApiPortfolioTransaction)
+    .filter((t): t is Transaction => t != null)
     .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 
   const header = [
