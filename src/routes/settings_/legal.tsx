@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { CheckCircle2, ChevronRight, Download, FileText, Scale } from "lucide-react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
-import { downloadDocumentPdf } from "@/lib/document-pdf";
+import { documentHtml } from "@/lib/document-pdf";
 import { LEGAL_DOCS } from "@/lib/settings-data";
 import { naira } from "@/lib/home-data";
 import {
@@ -11,6 +11,7 @@ import {
   listTermsAcceptances,
   type TermsAcceptance,
 } from "@/lib/terms-acceptance";
+import { downloadBlob, zipTextFiles } from "@/lib/zip-store";
 import {
   Dialog,
   DialogContent,
@@ -63,26 +64,35 @@ const DOC_BODY: Record<string, string[]> = {
 function LegalScreen() {
   const [openDoc, setOpenDoc] = useState<(typeof LEGAL_DOCS)[number] | null>(null);
   const [accepted, setAccepted] = useState<TermsAcceptance[]>([]);
+  const [downloadingAll, setDownloadingAll] = useState(false);
 
   useEffect(() => {
     setAccepted(listTermsAcceptances());
   }, []);
 
   function downloadAll() {
+    if (downloadingAll) return;
+    setDownloadingAll(true);
     try {
-      for (const d of LEGAL_DOCS) {
+      // One ZIP with all four docs — browsers block multi-file download loops.
+      const files = LEGAL_DOCS.map((d) => {
         const body = `${d.desc}\n\n${(DOC_BODY[d.title] ?? []).join("\n\n")}`;
-        const slug = d.title.replace(/\s+/g, "-").toLowerCase();
-        downloadDocumentPdf({
-          title: d.title,
-          subtitle: `${d.version} · ${d.accepted}`,
-          body,
-          filename: `kipit-${slug}.html`,
-        });
-      }
-      toast.success(`${LEGAL_DOCS.length} legal documents downloaded.`);
+        const slug = d.title.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase();
+        return {
+          name: `kipit-${slug}.html`,
+          content: documentHtml({
+            title: d.title,
+            subtitle: `${d.version} · ${d.accepted}`,
+            body,
+          }),
+        };
+      });
+      downloadBlob(zipTextFiles(files), "kipit-legal-documents.zip");
+      toast.success(`${LEGAL_DOCS.length} legal documents downloaded in one ZIP.`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not download documents.");
+    } finally {
+      setDownloadingAll(false);
     }
   }
 
@@ -130,10 +140,12 @@ function LegalScreen() {
 
       <button
         type="button"
+        disabled={downloadingAll}
         onClick={downloadAll}
-        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press md:hidden"
+        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press disabled:opacity-40 md:hidden"
       >
-        <Download className="size-4" strokeWidth={2.4} /> Download all documents
+        <Download className="size-4" strokeWidth={2.4} />{" "}
+        {downloadingAll ? "Downloading…" : "Download all documents"}
       </button>
 
       {accepted.length > 0 ? (
@@ -208,10 +220,12 @@ function LegalScreen() {
               </p>
               <button
                 type="button"
+                disabled={downloadingAll}
                 onClick={downloadAll}
-                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3 text-[13px] font-extrabold text-primary-foreground shadow-float press"
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3 text-[13px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40"
               >
-                <Download className="size-4" strokeWidth={2.4} /> Download all documents
+                <Download className="size-4" strokeWidth={2.4} />{" "}
+                {downloadingAll ? "Downloading…" : "Download all documents"}
               </button>
             </section>
 

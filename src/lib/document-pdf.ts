@@ -123,5 +123,6 @@ export function downloadDocumentPdf(input: {
   document.body.appendChild(a);
   a.click();
   a.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 2_000);
+  // Keep the blob alive long enough for staggered multi-file downloads.
+  window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
