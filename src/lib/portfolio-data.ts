@@ -427,16 +427,22 @@ export function mapApiPortfolioTransaction(row: {
   direction: "credit" | "debit" | string;
   createdAt: string;
   accountType?: string | null;
-}): Transaction {
+}): Transaction | null {
   const k = row.kind.toUpperCase();
-  const desc = String(row.description || "").toLowerCase();
+  const rawDesc = String(row.description || "");
+  const desc = rawDesc.toLowerCase();
   const account = String(row.accountType || "").toUpperCase();
+  // Hide legacy split maturity interest rows — payout already includes interest.
+  if (k === "INTEREST" && /maturity\s*interest/i.test(rawDesc)) return null;
+
   let type: TxnType = "Adjustment";
-  if (
+  if (k.includes("MATURITY") || /maturity\s*payout|early\s*maturity/i.test(rawDesc)) {
+    type = "Deposit";
+  } else if (
     k.includes("INTEREST") ||
     k.includes("ACCRUAL") ||
     k.includes("CALL_INTEREST") ||
-    desc.includes("interest")
+    (desc.includes("interest") && !desc.includes("maturity"))
   ) {
     type = "Interest";
   } else if (k.includes("DEPOSIT") || k.includes("FUND") || k.includes("CALL_DEPOSIT")) {
@@ -444,7 +450,6 @@ export function mapApiPortfolioTransaction(row: {
   } else if (
     k.includes("WITHDRAW") ||
     k.includes("PAYOUT") ||
-    k.includes("MATURITY") ||
     k.includes("CALL_WITHDRAW")
   ) {
     type = "Withdrawal";
@@ -454,10 +459,18 @@ export function mapApiPortfolioTransaction(row: {
 
   const created = new Date(row.createdAt);
   const credit = String(row.direction).toLowerCase() !== "debit";
-  const label =
+  let label =
     type === "Interest"
       ? row.description || "Interest credited"
       : row.description || row.kind || "Transaction";
+  if (k.includes("MATURITY") || /maturity\s*payout|early\s*maturity/i.test(rawDesc)) {
+    const name = rawDesc
+      .replace(/^(Early\s+)?Maturity(\s+payout)?\s*[:·-]\s*/i, "")
+      .replace(/^Maturity interest funding\s*[:·-]?\s*/i, "")
+      .replace(/\(full profit\)\s*/i, "")
+      .trim();
+    label = name ? `Maturity payout · ${name}` : "Maturity payout";
+  }
   return {
     id: row.id,
     reference: row.reference || row.id,
@@ -480,7 +493,11 @@ export function mapApiPortfolioTransaction(row: {
     createdAt: row.createdAt,
     amount: Number(row.amount) || 0,
     direction: credit ? "in" : "out",
-    source: credit ? (type === "Interest" ? "Investment" : "External") : "Kipit Wallet",
+    source: credit
+      ? k.includes("MATURITY") || type === "Interest"
+        ? "Investment"
+        : "External"
+      : "Kipit Wallet",
     destination: credit ? "Kipit Wallet" : "External",
   };
 }
@@ -495,7 +512,7 @@ export async function loadPortfolioTransaction(
     const { fetchPortfolioTransactions } = await import("./api");
     const rows = await fetchPortfolioTransactions();
     const row = (rows ?? []).find((r) => r.id === id);
-    if (row) return mapApiPortfolioTransaction(row);
+    if (row) return mapApiPortfolioTransaction(row) ?? undefined;
   } catch {
     /* no fixture fallback — only live API rows */
   }

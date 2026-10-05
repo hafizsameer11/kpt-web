@@ -294,7 +294,12 @@ export const MATURED_PLANS: {
 }[] = [];
 
 /** Auto-invest rules — recurring funding schedules for Kipit plans. */
-export type AutoInvestFrequency = "Weekly" | "Every 2 weeks" | "Monthly";
+export type AutoInvestFrequency =
+  | "Every 10 minutes"
+  | "Every hour"
+  | "Weekly"
+  | "Every 2 weeks"
+  | "Monthly";
 
 export type AutoInvestRule = {
   id: string;
@@ -309,6 +314,8 @@ export type AutoInvestRule = {
 };
 
 export const AUTO_INVEST_FREQUENCIES: AutoInvestFrequency[] = [
+  "Every 10 minutes",
+  "Every hour",
   "Weekly",
   "Every 2 weeks",
   "Monthly",

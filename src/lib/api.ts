@@ -854,7 +854,12 @@ export type ApiAutoInvestRule = {
   amount: number;
   dayOfMonth: number;
   active: boolean;
-  frequency?: "Weekly" | "Every 2 weeks" | "Monthly";
+  frequency?:
+    | "Every 10 minutes"
+    | "Every hour"
+    | "Weekly"
+    | "Every 2 weeks"
+    | "Monthly";
   nextRun?: string | null;
 };
 
@@ -866,7 +871,12 @@ export async function createAutoInvestRule(input: {
   label: string;
   amount: number;
   dayOfMonth: number;
-  frequency?: "Weekly" | "Every 2 weeks" | "Monthly";
+  frequency?:
+    | "Every 10 minutes"
+    | "Every hour"
+    | "Weekly"
+    | "Every 2 weeks"
+    | "Monthly";
 }) {
   return api<{ id: string; frequency?: string; nextRun?: string | null }>(
     "/v1/invest/auto-invest",

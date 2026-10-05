@@ -66,9 +66,46 @@ export const Route = createFileRoute("/auto-invest")({
   component: AutoInvestScreen,
 });
 
+function formatApiNextRun(nextRun: string | null | undefined, frequency: AutoInvestFrequency) {
+  if (!nextRun) return null;
+  const d = new Date(nextRun);
+  if (Number.isNaN(d.getTime())) return nextRun;
+  if (frequency === "Every 10 minutes" || frequency === "Every hour") {
+    return d.toLocaleString("en-NG", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+  return d.toLocaleDateString("en-NG", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 function nextRunLabel(frequency: AutoInvestFrequency, active: boolean) {
   if (!active) return "Paused";
   const d = new Date();
+  if (frequency === "Every 10 minutes") {
+    d.setMinutes(d.getMinutes() + 10);
+    return d.toLocaleString("en-NG", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+  if (frequency === "Every hour") {
+    d.setHours(d.getHours() + 1);
+    return d.toLocaleString("en-NG", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
   if (frequency === "Weekly") {
     d.setDate(d.getDate() + 7);
   } else if (frequency === "Every 2 weeks") {
@@ -97,13 +134,7 @@ function mapApiRule(r: ApiAutoInvestRule): AutoInvestRule {
     amount: r.amount,
     frequency,
     nextRun: r.active
-      ? r.nextRun
-        ? new Date(r.nextRun).toLocaleDateString("en-NG", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })
-        : nextRunLabel(frequency, true)
+      ? formatApiNextRun(r.nextRun, frequency) ?? nextRunLabel(frequency, true)
       : "Paused",
     fundedFrom: "Kipit wallet",
     investedToDate: 0,
@@ -113,7 +144,9 @@ function mapApiRule(r: ApiAutoInvestRule): AutoInvestRule {
 
 /** Approximate monthly commitment from a rule's frequency. */
 const monthlyValue = (r: AutoInvestRule) =>
-  r.frequency === "Weekly"
+  r.frequency === "Every 10 minutes" || r.frequency === "Every hour"
+    ? r.amount
+    : r.frequency === "Weekly"
     ? r.amount * 4
     : r.frequency === "Every 2 weeks"
       ? r.amount * 2
@@ -579,7 +612,7 @@ function NewRuleForm({
       <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
         Frequency
       </p>
-      <div className="mt-2 grid grid-cols-3 gap-2">
+      <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
         {AUTO_INVEST_FREQUENCIES.map((f) => (
           <button
             key={f}
