@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Check, FileText, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
 import { STATEMENT_KINDS, type StatementKind } from "@/lib/settings-data";
 
@@ -29,12 +29,26 @@ const PRESETS = [
   { label: "Year to date", days: 0 },
 ] as const;
 
+/** Local calendar day — avoids UTC shifting "today" past midnight. */
 function iso(d: Date) {
-  return d.toISOString().slice(0, 10);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function todayIso() {
+  return iso(new Date());
+}
+
+function clampToToday(value: string) {
+  const today = todayIso();
+  if (!value) return today;
+  return value > today ? today : value;
 }
 
 function fmt(d: string) {
-  const date = new Date(d);
+  const date = new Date(`${d}T12:00:00`);
   return Number.isNaN(date.getTime())
     ? d
     : date.toLocaleDateString("en-NG", { day: "2-digit", month: "short", year: "numeric" });
@@ -50,21 +64,47 @@ function defaultRange() {
 function StatementsScreen() {
   const navigate = useNavigate();
   const initial = defaultRange();
+  const today = todayIso();
   const [kind, setKind] = useState<StatementKind>("Account statement");
   const [start, setStart] = useState(initial.start);
   const [end, setEnd] = useState(initial.end);
 
-  const generate = () =>
-    navigate({ to: "/settings/statements/generated", search: { kind, start, end } });
+  const rangeError = useMemo(() => {
+    if (!start || !end) return "Choose a start and end date.";
+    if (start > today || end > today) return "Dates cannot be in the future.";
+    if (start > end) return "Start date must be on or before the end date.";
+    return null;
+  }, [start, end, today]);
+
+  const generate = () => {
+    if (rangeError) return;
+    const safeStart = clampToToday(start);
+    const safeEnd = clampToToday(end);
+    const from = safeStart <= safeEnd ? safeStart : safeEnd;
+    const to = safeStart <= safeEnd ? safeEnd : safeStart;
+    navigate({ to: "/settings/statements/generated", search: { kind, start: from, end: to } });
+  };
+
+  const setStartDate = (value: string) => {
+    const next = clampToToday(value);
+    setStart(next);
+    if (end && next > end) setEnd(next);
+  };
+
+  const setEndDate = (value: string) => {
+    const next = clampToToday(value);
+    setEnd(next);
+    if (start && next < start) setStart(next);
+  };
 
   const applyPreset = (days: number) => {
-    const today = new Date();
-    setEnd(iso(today));
+    const now = new Date();
+    setEnd(iso(now));
     if (days === 0) {
-      setStart(`${today.getFullYear()}-01-01`);
+      setStart(`${now.getFullYear()}-01-01`);
       return;
     }
-    const from = new Date(today);
+    const from = new Date(now);
     from.setDate(from.getDate() - days);
     setStart(iso(from));
   };
@@ -124,7 +164,8 @@ function StatementsScreen() {
               <input
                 type="date"
                 value={start}
-                onChange={(e) => setStart(e.target.value)}
+                max={today}
+                onChange={(e) => setStartDate(e.target.value)}
                 className="mt-1 w-full rounded-xl border border-border bg-secondary px-3 py-2.5 text-[13px] font-semibold outline-none focus:border-brand"
               />
             </label>
@@ -133,17 +174,23 @@ function StatementsScreen() {
               <input
                 type="date"
                 value={end}
-                onChange={(e) => setEnd(e.target.value)}
+                max={today}
+                min={start || undefined}
+                onChange={(e) => setEndDate(e.target.value)}
                 className="mt-1 w-full rounded-xl border border-border bg-secondary px-3 py-2.5 text-[13px] font-semibold outline-none focus:border-brand"
               />
             </label>
           </div>
+          {rangeError ? (
+            <p className="mt-2 text-[12px] font-semibold text-destructive">{rangeError}</p>
+          ) : null}
         </section>
 
         <button
           type="button"
+          disabled={Boolean(rangeError)}
           onClick={generate}
-          className="inline-flex w-full items-center justify-center rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press"
+          className="inline-flex w-full items-center justify-center rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40"
         >
           Generate statement
         </button>
@@ -222,7 +269,8 @@ function StatementsScreen() {
                   <input
                     type="date"
                     value={start}
-                    onChange={(e) => setStart(e.target.value)}
+                    max={today}
+                    onChange={(e) => setStartDate(e.target.value)}
                     className="mt-1.5 w-full rounded-xl border border-border bg-secondary px-3.5 py-3 text-[13.5px] font-semibold outline-none focus:border-brand"
                   />
                 </label>
@@ -233,11 +281,16 @@ function StatementsScreen() {
                   <input
                     type="date"
                     value={end}
-                    onChange={(e) => setEnd(e.target.value)}
+                    max={today}
+                    min={start || undefined}
+                    onChange={(e) => setEndDate(e.target.value)}
                     className="mt-1.5 w-full rounded-xl border border-border bg-secondary px-3.5 py-3 text-[13.5px] font-semibold outline-none focus:border-brand"
                   />
                 </label>
               </div>
+              {rangeError ? (
+                <p className="mt-3 text-[12.5px] font-semibold text-destructive">{rangeError}</p>
+              ) : null}
             </section>
           </div>
 
@@ -265,8 +318,9 @@ function StatementsScreen() {
               <div className="p-5 pt-1">
                 <button
                   type="button"
+                  disabled={Boolean(rangeError)}
                   onClick={generate}
-                  className="inline-flex w-full items-center justify-center rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press"
+                  className="inline-flex w-full items-center justify-center rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40"
                 >
                   Generate statement
                 </button>
