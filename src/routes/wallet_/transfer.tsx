@@ -68,17 +68,13 @@ function TransferDetails() {
       return;
     }
     setBusy(true);
-    const watchAfter = new Date().toISOString();
     try {
       const result = await confirmTransferFunding(amount);
-      if (typeof window !== "undefined") {
-        window.sessionStorage.setItem("kipit:transfer-watch-after", watchAfter);
-        window.sessionStorage.setItem("kipit:transfer-confirmed", "1");
-      }
       if (result.pending) {
+        // Don't keep the user on a waiting/polling page — transfers credit when Monnify posts.
         void navigate({
           to: "/wallet/processing",
-          search: { amount, method: "transfer", pending: true },
+          search: { amount, method: "transfer", pending: true, ack: true },
         });
       } else {
         void navigate({
