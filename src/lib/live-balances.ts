@@ -11,6 +11,8 @@ import {
 } from "@/lib/api";
 import { refreshWalletFromApi } from "@/lib/wallet-balance";
 
+const WEEKDAY_FALLBACK = ["M", "T", "W", "T", "F", "S", "S"];
+
 export type LiveHolding = {
   id: string;
   name: string;
@@ -33,6 +35,7 @@ type LiveState = {
   invested: number;
   interestThisWeek: number;
   interestWeekSeries: number[];
+  interestWeekLabels: string[];
   holdings: LiveHolding[];
   nextMaturity: LiveNextMaturity;
   callBalance: number;
@@ -45,6 +48,7 @@ const EMPTY: LiveState = {
   invested: 0,
   interestThisWeek: 0,
   interestWeekSeries: [0, 0, 0, 0, 0, 0, 0],
+  interestWeekLabels: ["M", "T", "W", "T", "F", "S", "S"],
   holdings: [],
   nextMaturity: null,
   callBalance: 0,
@@ -93,6 +97,10 @@ export async function hydrateLiveBalances() {
       interestWeekSeries: Array.from({ length: 7 }, (_, i) =>
         Math.max(0, Math.round(Number(home.interestWeekSeries?.[i]) || 0)),
       ),
+      interestWeekLabels: Array.from({ length: 7 }, (_, i) => {
+        const raw = String(home.interestWeekLabels?.[i] || WEEKDAY_FALLBACK[i] || "").slice(0, 1);
+        return raw || WEEKDAY_FALLBACK[i]!;
+      }),
       holdings: home.holdings ?? [],
       nextMaturity: home.nextMaturity,
       callBalance: Math.max(0, Math.round(call.balance ?? 0)),
