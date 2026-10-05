@@ -223,9 +223,15 @@ export async function hydrateLiveBalances() {
     } catch {
       /* call activity optional */
     }
-    // Prefer home API Call-ledger figure so this matches "interest this week".
-    if (typeof home.interestToday === "number") {
-      CALL_ACCOUNT.accruedToday = Math.max(0, Math.round(home.interestToday));
+    // Call screen: daily Call interest only (not maturity / overall home interest).
+    const callToday =
+      typeof home.callInterestToday === "number"
+        ? home.callInterestToday
+        : typeof home.interestToday === "number"
+          ? home.interestToday
+          : null;
+    if (callToday != null) {
+      CALL_ACCOUNT.accruedToday = Math.max(0, Math.round(callToday));
     }
     try {
       const placements = await fetchPlacements();
