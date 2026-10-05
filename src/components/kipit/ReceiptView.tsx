@@ -7,7 +7,8 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { downloadDocumentPdf, printDocumentPdf } from "@/lib/document-pdf";
+import { printDocumentPdf } from "@/lib/document-pdf";
+import { buildReceiptImageFile } from "@/lib/receipt-image";
 import { naira, type Transaction } from "@/lib/portfolio-data";
 
 function Line({ label, value }: { label: string; value: string }) {
@@ -35,44 +36,52 @@ function receiptPayload(txn: Transaction) {
       { label: "Reference", value: txn.reference },
     ],
     body: "Issued by Kipit. Investments are administered by Kipit's SEC-licensed partner.",
-    filename: `kipit-receipt-${txn.reference}.html`,
+    filename: `kipit-receipt-${txn.reference}.png`,
   };
 }
 
+function downloadImageFile(file: File) {
+  const url = URL.createObjectURL(file);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = file.name;
+  a.rel = "noopener";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 2_000);
+}
+
 export async function shareReceipt(txn: Transaction) {
-  const payload = receiptPayload(txn);
-  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${payload.title}</title></head><body>
-    <h1>${payload.title}</h1>
-    ${payload.rows.map((r) => `<p><strong>${r.label}:</strong> ${r.value}</p>`).join("")}
-    <p>${payload.body}</p>
-  </body></html>`;
-  const blob = new Blob([html], { type: "text/html" });
-  const file = new File([blob], payload.filename!, { type: "text/html" });
-
-  if (typeof navigator !== "undefined" && navigator.share && navigator.canShare?.({ files: [file] })) {
-    try {
-      await navigator.share({
-        title: "Kipit receipt",
-        files: [file],
-      });
-      return;
-    } catch {
-      /* user dismissed or share failed — fall through */
-    }
-  }
-
   try {
-    downloadDocumentPdf(payload);
-    toast.success("Receipt downloaded — attach or share the file from your device.");
+    const file = await buildReceiptImageFile(txn);
+    if (
+      typeof navigator !== "undefined" &&
+      navigator.share &&
+      navigator.canShare?.({ files: [file] })
+    ) {
+      try {
+        await navigator.share({
+          title: "Kipit receipt",
+          files: [file],
+        });
+        return;
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+      }
+    }
+    downloadImageFile(file);
+    toast.success("Receipt image downloaded — share it from your device.");
   } catch (err) {
     toast.error(err instanceof Error ? err.message : "Could not share receipt.");
   }
 }
 
-function downloadReceipt(txn: Transaction) {
+async function downloadReceipt(txn: Transaction) {
   try {
-    downloadDocumentPdf(receiptPayload(txn));
-    toast.success("Receipt downloaded");
+    const file = await buildReceiptImageFile(txn);
+    downloadImageFile(file);
+    toast.success("Receipt image downloaded");
   } catch (err) {
     toast.error(err instanceof Error ? err.message : "Could not download receipt.");
   }
@@ -155,7 +164,7 @@ export function ReceiptActions({ txn }: { txn: Transaction }) {
       </button>
       <button
         type="button"
-        onClick={() => downloadReceipt(txn)}
+        onClick={() => void downloadReceipt(txn)}
         className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-extrabold text-foreground press"
       >
         <Download className="size-4" strokeWidth={2.4} /> Download
