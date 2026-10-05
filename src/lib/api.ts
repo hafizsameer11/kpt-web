@@ -417,6 +417,9 @@ export async function fetchHome() {
   return api<{
     greetingName: string;
     interestThisWeek: number;
+    interestToday?: number;
+    /** Mon→Sun Call interest (Africa/Lagos), naira. */
+    interestWeekSeries?: number[];
     wallet: { balance: number };
     invested: { balance: number };
     total: { balance: number };

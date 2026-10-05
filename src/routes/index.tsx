@@ -22,7 +22,6 @@ import {
   MONTH_CHANGE_PCT,
   QUICK_ACTIONS,
   WEEK_LABELS,
-  WEEK_SERIES,
   naira,
 } from "@/lib/home-data";
 import { displayInitials, displayName } from "@/lib/auth-session";
@@ -169,23 +168,26 @@ function mapNextMaturity(nm: LiveNextMaturity, holdings: LiveHolding[]) {
 }
 
 function WeekStrip() {
-  const max = Math.max(...WEEK_SERIES);
-  const min = Math.min(...WEEK_SERIES);
+  const live = useLiveBalances();
+  const series = live.interestWeekSeries;
+  const max = Math.max(...series, 1);
+  const total = series.reduce((a, b) => a + b, 0);
+  const todayIdx = (new Date().getDay() + 6) % 7; // Mon=0
   return (
     <div className="flex h-14 items-end justify-between gap-1">
-      {WEEK_SERIES.map((v, i) => {
-        const peak = v === max;
-        const pct = 18 + ((v - min) / Math.max(max - min, 1)) * 82;
+      {series.map((v, i) => {
+        const isToday = i === todayIdx;
+        const pct = total > 0 ? 18 + (v / max) * 82 : 18;
         return (
           <div key={WEEK_LABELS[i]} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
             <div
               className={`k-grow w-1 rounded-full ${
-                peak ? "bg-gold" : "bg-brand/20"
+                isToday && total > 0 ? "bg-gold" : "bg-brand/20"
               }`}
               style={{ height: `${pct}%`, ["--d" as string]: `${i * 70}ms` }}
             />
             <span
-              className={`text-[9px] font-semibold ${peak ? "text-foreground" : "text-muted-foreground/70"}`}
+              className={`text-[9px] font-semibold ${isToday && total > 0 ? "text-foreground" : "text-muted-foreground/70"}`}
             >
               {WEEK_LABELS[i]?.slice(0, 1)}
             </span>
@@ -603,24 +605,27 @@ function MobileHome() {
    ───────────────────────────────────────────────────────────── */
 
 function DesktopWeekChart({ hidden }: { hidden: boolean }) {
-  const max = Math.max(...WEEK_SERIES);
-  const min = Math.min(...WEEK_SERIES);
+  const live = useLiveBalances();
+  const series = live.interestWeekSeries;
+  const max = Math.max(...series, 1);
+  const total = series.reduce((a, b) => a + b, 0);
+  const todayIdx = (new Date().getDay() + 6) % 7;
   return (
     <div className="flex h-36 items-end justify-between gap-2">
-      {WEEK_SERIES.map((v, i) => {
-        const peak = v === max;
-        const pct = 22 + ((v - min) / Math.max(max - min, 1)) * 78;
+      {series.map((v, i) => {
+        const isToday = i === todayIdx;
+        const pct = total > 0 ? 22 + (v / max) * 78 : 22;
         return (
           <div key={WEEK_LABELS[i]} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
             <span className="text-[10px] font-bold text-muted-foreground">
-              {hidden ? "••" : `₦${(v / 1000).toFixed(1)}k`}
+              {hidden ? "••" : naira(v)}
             </span>
             <div
-              className={`k-grow w-full rounded-t-lg ${peak ? "bg-gold-gradient" : "bg-brand/15"}`}
+              className={`k-grow w-full rounded-t-lg ${isToday && total > 0 ? "bg-gold-gradient" : "bg-brand/15"}`}
               style={{ height: `${pct}%`, ["--d" as string]: `${i * 70}ms` }}
             />
             <span
-              className={`text-[10px] font-semibold ${peak ? "text-foreground" : "text-muted-foreground/70"}`}
+              className={`text-[10px] font-semibold ${isToday && total > 0 ? "text-foreground" : "text-muted-foreground/70"}`}
             >
               {WEEK_LABELS[i]}
             </span>
