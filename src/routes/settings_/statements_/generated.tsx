@@ -1,19 +1,34 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Download, Eye, FileText, Mail } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { SettingsPage } from "@/components/kipit/SettingsPage";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { ApiError, emailStatement } from "@/lib/api";
-import { documentHtml, downloadDocumentPdf, printDocumentPdf } from "@/lib/document-pdf";
+import { documentHtml, downloadDocumentPdf, openDocumentHtml } from "@/lib/document-pdf";
 import { useDisplayProfile } from "@/lib/profile-live";
 import { buildStatementPayload, type StatementDoc } from "@/lib/statement-payload";
+
+function defaultEnd() {
+  return new Date().toISOString().slice(0, 10);
+}
+function defaultStart() {
+  const d = new Date();
+  d.setDate(d.getDate() - 90);
+  return d.toISOString().slice(0, 10);
+}
 
 export const Route = createFileRoute("/settings_/statements_/generated")({
   validateSearch: z.object({
     kind: z.string().catch("Account statement"),
-    start: z.string().catch("2026-01-01"),
-    end: z.string().catch("2026-09-03"),
+    start: z.string().catch(defaultStart()),
+    end: z.string().catch(defaultEnd()),
   }),
   head: () => ({
     meta: [
@@ -44,17 +59,23 @@ function GeneratedStatement() {
   const profile = useDisplayProfile();
   const [doc, setDoc] = useState<StatementDoc | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [emailBusy, setEmailBusy] = useState(false);
+  const [viewerOpen, setViewerOpen] = useState(false);
 
   useEffect(() => {
     let alive = true;
     setLoading(true);
+    setLoadError(null);
     void buildStatementPayload({ kind, start, end })
       .then((payload) => {
         if (alive) setDoc(payload);
       })
-      .catch(() => {
-        if (alive) setDoc(null);
+      .catch((err) => {
+        if (alive) {
+          setDoc(null);
+          setLoadError(err instanceof Error ? err.message : "Could not load statement data.");
+        }
       })
       .finally(() => {
         if (alive) setLoading(false);
@@ -71,13 +92,14 @@ function GeneratedStatement() {
     month: "short",
     year: "numeric",
   });
+  const viewerHtml = useMemo(() => (doc ? documentHtml(doc) : ""), [doc]);
 
   function viewDoc() {
     if (!doc) return;
-    try {
-      printDocumentPdf(doc);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not open statement.");
+    const result = openDocumentHtml(doc);
+    if (!result.opened) {
+      // Pop-up blocked — show the statement in-app instead of an error toast loop.
+      setViewerOpen(true);
     }
   }
 
@@ -88,7 +110,7 @@ function GeneratedStatement() {
         ...doc,
         filename: `${kind.replace(/\s+/g, "-").toLowerCase()}-${start}-${end}.html`,
       });
-      toast.success("Statement downloaded — open it and print to PDF if needed.");
+      toast.success("Statement downloaded");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not download statement.");
     }
@@ -193,9 +215,12 @@ function GeneratedStatement() {
           </button>
         </div>
 
+        {loadError ? (
+          <p className="mt-3 px-1 text-[12px] font-semibold text-destructive">{loadError}</p>
+        ) : null}
         <p className="mt-4 px-1 text-[11.5px] leading-relaxed text-muted-foreground">
-          View opens a printable document. Download saves it locally. Email sends the statement file
-          to your Kipit account email with the attachment included.
+          View opens the full statement with dates and amounts. Download saves that file. Email sends
+          it to your Kipit account email with the attachment included.
         </p>
       </div>
 
@@ -230,15 +255,15 @@ function GeneratedStatement() {
                   <p className="mt-5 text-[12.5px] text-muted-foreground">Loading statement data…</p>
                 ) : (
                   <dl className="mt-5 space-y-2 text-[12px]">
-                    {(doc?.rows ?? []).slice(0, 12).map((row) => (
-                      <div key={`${row.label}-${row.value}`} className="flex justify-between gap-3">
+                    {(doc?.rows ?? []).slice(0, 24).map((row, i) => (
+                      <div key={`${i}-${row.label}`} className="flex justify-between gap-3">
                         <dt className="text-muted-foreground">{row.label}</dt>
                         <dd className="text-right font-semibold text-foreground">{row.value}</dd>
                       </div>
                     ))}
-                    {(doc?.rows.length ?? 0) > 12 ? (
+                    {(doc?.rows.length ?? 0) > 24 ? (
                       <p className="pt-1 text-[11px] text-muted-foreground">
-                        …and {(doc?.rows.length ?? 0) - 12} more lines in View / Download
+                        …and {(doc?.rows.length ?? 0) - 24} more lines in View / Download
                       </p>
                     ) : null}
                   </dl>
@@ -305,10 +330,46 @@ function GeneratedStatement() {
                 Email sends the statement as an attachment to the email on your Kipit account. Only
                 you receive it.
               </p>
+              {loadError ? (
+                <p className="mt-3 text-[12px] font-semibold text-destructive">{loadError}</p>
+              ) : null}
             </section>
           </aside>
         </div>
       </div>
+
+      <Dialog open={viewerOpen} onOpenChange={setViewerOpen}>
+        <DialogContent className="flex max-h-[90vh] w-[min(96vw,48rem)] max-w-3xl flex-col gap-3 overflow-hidden p-4 sm:p-5">
+          <DialogTitle className="pr-8 text-[15px] font-extrabold">{kind}</DialogTitle>
+          <DialogDescription className="text-[12.5px] text-muted-foreground">
+            {fmt(start)} — {fmt(end)} · {reference}
+          </DialogDescription>
+          {viewerHtml ? (
+            <iframe
+              title="Statement preview"
+              srcDoc={viewerHtml}
+              className="min-h-0 w-full flex-1 rounded-lg border border-border bg-white"
+              style={{ height: "min(70vh, 640px)" }}
+            />
+          ) : null}
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={downloadDoc}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 py-2.5 text-[12.5px] font-extrabold text-primary-foreground"
+            >
+              <Download className="size-3.5" /> Download
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewerOpen(false)}
+              className="inline-flex items-center justify-center rounded-xl border border-border px-4 py-2.5 text-[12.5px] font-bold"
+            >
+              Close
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </SettingsPage>
   );
 }

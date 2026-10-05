@@ -27,17 +27,36 @@ function fmt(d: string) {
     : date.toLocaleDateString("en-NG", { day: "2-digit", month: "short", year: "numeric" });
 }
 
+/** Compare calendar days in UTC so local timezone does not drop same-day rows. */
+function dayKey(iso: string) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toISOString().slice(0, 10);
+}
+
 function inPeriod(iso: string, start: string, end: string) {
-  const t = new Date(iso).getTime();
-  const a = new Date(`${start}T00:00:00`).getTime();
-  const b = new Date(`${end}T23:59:59`).getTime();
-  return !Number.isNaN(t) && t >= a && t <= b;
+  const day = dayKey(iso);
+  if (!day || !start || !end) return false;
+  return day >= start && day <= end;
 }
 
 function isWalletFlowTxn(t: Transaction) {
   if (t.type === "Deposit" || t.type === "Withdrawal") return true;
   const hay = `${t.label} ${t.source} ${t.destination}`.toLowerCase();
   return hay.includes("wallet") || hay.includes("transfer") || hay.includes("card");
+}
+
+function txnRows(txns: Transaction[]) {
+  return txns.flatMap((t) => [
+    {
+      label: `${t.date}${t.time ? ` ${t.time}` : ""} · ${t.type}`,
+      value: `${t.direction === "in" ? "+" : "−"}${naira(t.amount)}`,
+    },
+    {
+      label: t.label,
+      value: `${t.status} · ${t.reference}`,
+    },
+  ]);
 }
 
 export async function buildStatementPayload(input: {
@@ -69,12 +88,14 @@ export async function buildStatementPayload(input: {
 
   const all = (txnsRaw ?? [])
     .filter((t) => inPeriod(t.createdAt, start, end))
-    .map(mapApiPortfolioTransaction);
+    .map(mapApiPortfolioTransaction)
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 
   const header = [
     { label: "Account holder", value: holder },
     { label: "Email", value: email },
     { label: "Statement type", value: kind },
+    { label: "Period", value: `${fmt(start)} — ${fmt(end)}` },
     { label: "Reference", value: reference },
     { label: "Generated", value: generated },
   ];
@@ -109,6 +130,9 @@ export async function buildStatementPayload(input: {
             value: h.maturityDate ? fmt(h.maturityDate) : "—",
           },
         ]),
+        ...(all.length
+          ? [{ label: "Period activity", value: `${all.length} transaction(s)` }, ...txnRows(all.slice(0, 60))]
+          : []),
       ],
       body: holdings.length
         ? "Kipit portfolio statement — active holdings, expected payouts and interest for the selected period."
@@ -124,30 +148,24 @@ export async function buildStatementPayload(input: {
       rows: [
         ...header,
         { label: "Transactions", value: String(all.length) },
-        ...all.slice(0, 40).flatMap((t) => [
-          {
-            label: `${t.date} ${t.time || ""} · ${t.type} · ${t.reference}`.trim(),
-            value: `${t.direction === "in" ? "+" : "−"}${naira(t.amount)} · ${t.status}`,
-          },
-          {
-            label: t.label,
-            value: `${t.source || "—"} → ${t.destination || "—"}`,
-          },
-        ]),
+        ...(all.length
+          ? txnRows(all.slice(0, 80))
+          : [{ label: "Transactions in period", value: "None" }]),
       ],
       body: all.length
-        ? "Kipit transaction statement — every movement with type, status and reference for the selected period."
-        : "No transactions fell in this period.",
+        ? "Kipit transaction statement — every movement with type, amount, status and reference for the selected period."
+        : "No transactions fell in this period. Try a wider date range.",
     };
   }
 
-  // Account statement
+  // Account statement — balances + every movement in the period (dates & amounts).
   const walletTxns = all.filter(isWalletFlowTxn);
   const inflows = walletTxns.filter((t) => t.direction === "in").reduce((s, t) => s + t.amount, 0);
   const outflows = walletTxns.filter((t) => t.direction === "out").reduce((s, t) => s + t.amount, 0);
   const wallet = home?.wallet?.balance ?? getWalletBalance();
   const callBal = call.balance ?? 0;
   const net = inflows - outflows;
+  const listed = all.length ? all : walletTxns;
 
   return {
     title: kind,
@@ -163,12 +181,13 @@ export async function buildStatementPayload(input: {
         label: "Net movement",
         value: `${net >= 0 ? "+" : "−"}${naira(Math.abs(net))}`,
       },
-      { label: "Wallet movements listed", value: String(walletTxns.length) },
-      ...walletTxns.slice(0, 40).map((t) => ({
-        label: `${t.date} · ${t.label}`,
-        value: `${t.direction === "in" ? "+" : "−"}${naira(t.amount)}`,
-      })),
+      { label: "Transactions listed", value: String(listed.length) },
+      ...(listed.length
+        ? txnRows(listed.slice(0, 80))
+        : [{ label: "Transactions in period", value: "None — widen the date range" }]),
     ],
-    body: "Kipit account statement — wallet and Call balances with inflows and outflows for the selected period.",
+    body: listed.length
+      ? "Kipit account statement — wallet and Call balances with transaction dates and amounts for the selected period."
+      : "Kipit account statement — no transactions in this period. Balances above are current.",
   };
 }
