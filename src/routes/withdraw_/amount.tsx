@@ -16,6 +16,7 @@ import {
   TIER,
   WITHDRAWAL_FEE,
 } from "@/lib/withdraw-data";
+import { fetchAppConfig } from "@/lib/api";
 
 export const Route = createFileRoute("/withdraw_/amount")({
   validateSearch: z.object({ acct: z.string().catch("") }),
@@ -54,6 +55,7 @@ function AmountScreen() {
   const amount = Number(raw.replace(/[^0-9]/g, "")) || 0;
 
   useEffect(() => {
+    void fetchAppConfig().catch(() => undefined);
     void hydratePayoutFromApi().then(() => {
       const found = findAccount(acct);
       if (!found) {

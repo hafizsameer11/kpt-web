@@ -1218,12 +1218,23 @@ export type AppPublicConfig = {
     giftInvest?: boolean;
     explore?: boolean;
   };
+  limits?: {
+    tier1DailyWithdrawal?: number;
+    tier2DailyWithdrawal?: number;
+    singlePayoutMax?: number;
+    minFixedPlacement?: number;
+    minCallDeposit?: number;
+  };
+  fees?: {
+    withdrawal?: number;
+    cardFundingPct?: number;
+  };
 };
 
 export async function fetchAppConfig() {
   const data = await api<AppPublicConfig>("/v1/app/config", { auth: false });
   const maintenance = data?.maintenance ?? { enabled: false, message: "" };
-  return {
+  const config = {
     ...data,
     support: {
       phone: String(data?.support?.phone || ""),
@@ -1243,7 +1254,39 @@ export async function fetchAppConfig() {
       giftInvest: data?.featureFlags?.giftInvest !== false,
       explore: data?.featureFlags?.explore !== false,
     },
+    limits: {
+      tier1DailyWithdrawal: Number.isFinite(Number(data?.limits?.tier1DailyWithdrawal))
+        ? Number(data?.limits?.tier1DailyWithdrawal)
+        : 200_000,
+      tier2DailyWithdrawal: Number.isFinite(Number(data?.limits?.tier2DailyWithdrawal))
+        ? Number(data?.limits?.tier2DailyWithdrawal)
+        : 5_000_000,
+      singlePayoutMax: Number.isFinite(Number(data?.limits?.singlePayoutMax))
+        ? Number(data?.limits?.singlePayoutMax)
+        : 10_000_000,
+      minFixedPlacement: Number.isFinite(Number(data?.limits?.minFixedPlacement))
+        ? Number(data?.limits?.minFixedPlacement)
+        : 100_000,
+      minCallDeposit: Number.isFinite(Number(data?.limits?.minCallDeposit))
+        ? Number(data?.limits?.minCallDeposit)
+        : 10_000,
+    },
+    fees: {
+      withdrawal: Number.isFinite(Number(data?.fees?.withdrawal))
+        ? Number(data?.fees?.withdrawal)
+        : 0,
+      cardFundingPct: Number.isFinite(Number(data?.fees?.cardFundingPct))
+        ? Number(data?.fees?.cardFundingPct)
+        : 1.4,
+    },
   };
+  try {
+    const { applyOpsLimitsFromConfig } = await import("@/lib/withdraw-data");
+    applyOpsLimitsFromConfig(config);
+  } catch {
+    /* ignore circular hydrate failures */
+  }
+  return config;
 }
 
 /** Build a WhatsApp deep link from an admin-configured number (digits / + / spaces OK). */

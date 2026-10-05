@@ -23,6 +23,7 @@ import {
   TIER,
   WITHDRAWAL_FEE,
 } from "@/lib/withdraw-data";
+import { fetchAppConfig } from "@/lib/api";
 
 export const Route = createFileRoute("/withdraw")({
   head: () => ({
@@ -54,6 +55,7 @@ function WithdrawEntry() {
   const [accounts, setAccounts] = useState<PayoutAccount[]>([]);
 
   useEffect(() => {
+    void fetchAppConfig().then(() => setAccounts((a) => [...a]));
     void hydratePayoutFromApi().then(setAccounts);
   }, []);
 

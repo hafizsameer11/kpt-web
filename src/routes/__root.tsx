@@ -141,6 +141,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   useEffect(() => {
+    void import("@/lib/api").then((m) => m.fetchAppConfig().catch(() => undefined));
     void import("@/lib/invest-data").then((m) => m.hydrateInvestRatesFromApi());
     void import("@/lib/explore-data").then((m) => m.hydrateExploreFromApi());
     void (async () => {
