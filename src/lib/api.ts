@@ -799,7 +799,8 @@ export async function fetchGift(id: string) {
 
 export async function createGift(input: {
   amount: number;
-  recipientPhone: string;
+  recipientPhone?: string;
+  recipientEmail?: string;
   recipientName?: string;
   message?: string;
   tenorDays?: number;
@@ -812,6 +813,7 @@ export async function createGift(input: {
     amount: number;
     status: string;
     tenorDays?: number;
+    invitedEmail?: string | null;
   }>("/v1/gifts", {
     method: "POST",
     body: JSON.stringify(input),

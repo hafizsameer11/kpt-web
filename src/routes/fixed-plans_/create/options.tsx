@@ -14,6 +14,7 @@ import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { AmountCounter, Rise } from "@/components/kipit/motion";
 import { naira } from "@/lib/home-data";
+import { parseGiftContact } from "@/lib/gift-data";
 import { TENOR_BANDS } from "@/lib/invest-data";
 import { useWalletBalance } from "@/lib/wallet-balance";
 
@@ -108,7 +109,8 @@ function PlanOptionsScreen() {
     : null;
 
   const giftValid =
-    forWhom === "self" || (recipient.trim().length > 1 && recipientContact.trim().length > 3);
+    forWhom === "self" ||
+    (recipient.trim().length > 1 && Boolean(parseGiftContact(recipientContact)));
 
   const reviewSearch = {
     amount,
@@ -347,8 +349,8 @@ function PlanOptionsScreen() {
                   <input
                     value={recipientContact}
                     onChange={(e) => setRecipientContact(e.target.value)}
-                    placeholder="Recipient phone (e.g. 0803…)"
-                    aria-label="Recipient phone"
+                    placeholder="name@email.com or 0803 000 0000"
+                    aria-label="Recipient email or phone"
                     className="w-full rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
                   />
                   <textarea
@@ -360,9 +362,9 @@ function PlanOptionsScreen() {
                     aria-label="Personal message"
                     className="w-full resize-none rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
                   />
-                  {!giftValid && (recipient || recipientContact) && (
+                  {forWhom === "gift" && !giftValid && (
                     <p className="k-shake rounded-xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
-                      Add the recipient&apos;s name and phone number to gift this plan.
+                      Add the recipient&apos;s name and a valid email or phone to gift this plan.
                     </p>
                   )}
                 </div>
@@ -711,8 +713,8 @@ function PlanOptionsScreen() {
                     <input
                       value={recipientContact}
                       onChange={(e) => setRecipientContact(e.target.value)}
-                      placeholder="Recipient phone (e.g. 0803…)"
-                      aria-label="Recipient phone"
+                      placeholder="name@email.com or 0803 000 0000"
+                      aria-label="Recipient email or phone"
                       className="w-full rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
                     />
                     <textarea
@@ -724,9 +726,9 @@ function PlanOptionsScreen() {
                       aria-label="Personal message"
                       className="w-full resize-none rounded-xl border border-border/70 bg-background px-3.5 py-3 text-[13.5px] font-medium outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-gold/60"
                     />
-                    {!giftValid && (recipient || recipientContact) && (
+                    {forWhom === "gift" && !giftValid && (
                       <p className="k-shake rounded-xl bg-destructive/10 px-3 py-2.5 text-[12px] font-semibold text-destructive">
-                        Add the recipient&apos;s name and phone number to gift this plan.
+                        Add the recipient&apos;s name and a valid email or phone to gift this plan.
                       </p>
                     )}
                   </div>

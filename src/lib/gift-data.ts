@@ -5,6 +5,42 @@
 
 import { fetchGifts, fetchGift, getAccessToken } from "./api";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+
+function isValidEmail(value: string): boolean {
+  return EMAIL_REGEX.test(value.trim());
+}
+
+/** Nigerian mobile: 11 digits starting with 0, or 10 without leading 0, or 234… */
+export function normalizeNgPhone(raw: string): string | null {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("0") && /^0[789]/.test(digits)) {
+    return `234${digits.slice(1)}`;
+  }
+  if (digits.length === 10 && /^[789]/.test(digits)) {
+    return `234${digits}`;
+  }
+  if (digits.length === 13 && digits.startsWith("234") && /^234[789]/.test(digits)) {
+    return digits;
+  }
+  return null;
+}
+
+/** Normalize NG phone for POST /v1/gifts (digits with 234 country code when possible). */
+export function normalizeGiftPhone(raw: string): string | null {
+  return normalizeNgPhone(raw);
+}
+
+/** Accept phone or email for gift recipient contact (same rules as mobile). */
+export function parseGiftContact(raw: string): { phone?: string; email?: string } | null {
+  const value = raw.trim();
+  if (!value) return null;
+  if (isValidEmail(value)) return { email: value.toLowerCase() };
+  const phone = normalizeNgPhone(value);
+  if (phone) return { phone };
+  return null;
+}
+
 export type GiftStatus = "Pending" | "Claimed" | "Expired";
 
 export type Gift = {

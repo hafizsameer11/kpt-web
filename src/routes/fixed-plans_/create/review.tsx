@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ApiError, createAutoInvestRule, createFixedPlan, createGift } from "@/lib/api";
+import { parseGiftContact } from "@/lib/gift-data";
 import { naira } from "@/lib/home-data";
 import { TENOR_BANDS } from "@/lib/invest-data";
 import { refreshWalletFromApi, useWalletBalance } from "@/lib/wallet-balance";
@@ -114,14 +115,6 @@ function PlanReviewScreen() {
 /* Shared authorization flow (PIN pad in Drawer on mobile, Dialog on desktop) */
 /* ------------------------------------------------------------------ */
 
-function normalizeGiftPhone(raw: string): string | null {
-  const digits = raw.replace(/\D/g, "");
-  if (digits.length < 10) return null;
-  if (digits.length === 11 && digits.startsWith("0")) return `234${digits.slice(1)}`;
-  if (digits.length === 10) return `234${digits}`;
-  return digits;
-}
-
 function useAuthFlow() {
   const { amount, days, name, maturity, gift, giftPhone, giftMessage, autoAmount } =
     Route.useSearch();
@@ -144,17 +137,18 @@ function useAuthFlow() {
     setError(null);
     try {
       if (gift) {
-        const phone = normalizeGiftPhone(giftPhone);
-        if (!phone) {
-          setError("Add a valid recipient phone number to send this gift.");
+        const contact = parseGiftContact(giftPhone || "");
+        if (!contact) {
+          setError("Add a valid recipient phone number or email to send this gift.");
           setBusy(false);
           return;
         }
         const created = await createGift({
           amount,
-          recipientPhone: phone,
           recipientName: gift,
           pin: next,
+          ...(contact.phone ? { recipientPhone: contact.phone } : {}),
+          ...(contact.email ? { recipientEmail: contact.email } : {}),
           ...(giftMessage.trim() ? { message: giftMessage.trim() } : {}),
           ...(days > 0 ? { tenorDays: days } : {}),
         });
