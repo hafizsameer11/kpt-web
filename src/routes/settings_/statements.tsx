@@ -40,11 +40,19 @@ function fmt(d: string) {
     : date.toLocaleDateString("en-NG", { day: "2-digit", month: "short", year: "numeric" });
 }
 
+function defaultRange() {
+  const today = new Date();
+  const from = new Date(today);
+  from.setDate(from.getDate() - 90);
+  return { start: iso(from), end: iso(today) };
+}
+
 function StatementsScreen() {
   const navigate = useNavigate();
+  const initial = defaultRange();
   const [kind, setKind] = useState<StatementKind>("Account statement");
-  const [start, setStart] = useState("2026-01-01");
-  const [end, setEnd] = useState("2026-09-03");
+  const [start, setStart] = useState(initial.start);
+  const [end, setEnd] = useState(initial.end);
 
   const generate = () =>
     navigate({ to: "/settings/statements/generated", search: { kind, start, end } });
