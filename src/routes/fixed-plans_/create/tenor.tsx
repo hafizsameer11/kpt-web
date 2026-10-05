@@ -80,10 +80,13 @@ function CreatePlanTenorScreen() {
 
   const [customDays, setCustomDays] = useState("");
 
+  /** Testing: allow 1-day custom tenors (prod product floor was 30). */
+  const MIN_CUSTOM_DAYS = 1;
+
   const days = useMemo(() => {
     if (selected === "custom") {
       const d = Number(customDays.replace(/[^0-9]/g, "")) || 0;
-      return d >= 30 ? d : 0;
+      return d >= MIN_CUSTOM_DAYS ? d : 0;
     }
     const band = TENOR_BANDS.find((b) => b.days === selected);
     return band ? Number(band.days.replace(/\D/g, "")) : 0;
@@ -320,7 +323,7 @@ function CreatePlanTenorScreen() {
                         type="button"
                         aria-label="Decrease days"
                         onClick={() =>
-                          setCustomDays((v) => String(Math.max(30, (Number(v) || 30) - 10)))
+                          setCustomDays((v) => String(Math.max(MIN_CUSTOM_DAYS, (Number(v) || MIN_CUSTOM_DAYS) - 1)))
                         }
                         className="grid size-11 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-primary-foreground press"
                       >
@@ -344,7 +347,7 @@ function CreatePlanTenorScreen() {
                       <button
                         type="button"
                         aria-label="Increase days"
-                        onClick={() => setCustomDays((v) => String((Number(v) || 30) + 10))}
+                        onClick={() => setCustomDays((v) => String(Math.min(365, (Number(v) || MIN_CUSTOM_DAYS) + 1)))}
                         className="grid size-11 shrink-0 place-items-center rounded-full bg-gold text-gold-foreground shadow-glow press"
                       >
                         <Plus className="size-4" strokeWidth={3} />
@@ -353,7 +356,7 @@ function CreatePlanTenorScreen() {
                   )}
                   {selected === "custom" && (
                     <p className="mt-3 text-center text-[13px] font-medium leading-snug text-primary-foreground/70">
-                      Minimum 30 days · rate set by the band your days fall into
+                      Minimum {MIN_CUSTOM_DAYS} day · rate set by the band your days fall into
                     </p>
                   )}
                 </div>
@@ -547,7 +550,7 @@ function CreatePlanTenorScreen() {
                       type="button"
                       aria-label="Decrease days"
                       onClick={() =>
-                        setCustomDays((v) => String(Math.max(30, (Number(v) || 30) - 10)))
+                        setCustomDays((v) => String(Math.max(MIN_CUSTOM_DAYS, (Number(v) || MIN_CUSTOM_DAYS) - 1)))
                       }
                       className="grid size-11 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-primary-foreground press"
                     >
@@ -571,7 +574,7 @@ function CreatePlanTenorScreen() {
                     <button
                       type="button"
                       aria-label="Increase days"
-                      onClick={() => setCustomDays((v) => String((Number(v) || 30) + 10))}
+                      onClick={() => setCustomDays((v) => String(Math.min(365, (Number(v) || MIN_CUSTOM_DAYS) + 1)))}
                       className="grid size-11 shrink-0 place-items-center rounded-full bg-gold text-gold-foreground shadow-glow press"
                     >
                       <Plus className="size-4" strokeWidth={3} />
@@ -580,7 +583,7 @@ function CreatePlanTenorScreen() {
                 )}
                 {selected === "custom" && (
                   <p className="mt-3 text-center text-[13px] font-medium leading-snug text-primary-foreground/70">
-                    Minimum 30 days · rate set by the band your days fall into
+                    Minimum {MIN_CUSTOM_DAYS} day · rate set by the band your days fall into
                   </p>
                 )}
               </div>
