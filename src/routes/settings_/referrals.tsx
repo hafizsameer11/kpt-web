@@ -39,6 +39,7 @@ function ReferralsScreen() {
   const [code, setCode] = useState("");
   const [link, setLink] = useState("");
   const [successful, setSuccessful] = useState(0);
+  const [total, setTotal] = useState(0);
   const [rewards, setRewards] = useState(0);
   const [tab, setTab] = useState<"all" | ReferralStatus>("all");
   const [list, setList] = useState<ReferralRow[]>([]);
@@ -49,6 +50,7 @@ function ReferralsScreen() {
         setCode(data.code || "");
         setLink(data.link || "");
         setSuccessful(data.successfulReferrals ?? 0);
+        setTotal(data.totalReferrals ?? data.people?.length ?? data.successfulReferrals ?? 0);
         setRewards(data.rewardsEarned ?? 0);
         setList(
           (data.people ?? []).map((p) => ({
@@ -69,6 +71,7 @@ function ReferralsScreen() {
         setCode("");
         setLink("");
         setSuccessful(0);
+        setTotal(0);
         setRewards(0);
         setList([]);
       });
@@ -83,7 +86,7 @@ function ReferralsScreen() {
   }
 
   const stats = [
-    { label: "Total referrals", value: String(successful) },
+    { label: "Total referrals", value: String(total) },
     { label: "Successful referrals", value: String(successful) },
     { label: "Rewards earned", value: naira(rewards) },
   ];
