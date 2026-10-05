@@ -32,6 +32,7 @@ type LiveState = {
   greetingName: string;
   invested: number;
   interestThisWeek: number;
+  interestWeekSeries: number[];
   holdings: LiveHolding[];
   nextMaturity: LiveNextMaturity;
   callBalance: number;
@@ -43,6 +44,7 @@ const EMPTY: LiveState = {
   greetingName: "",
   invested: 0,
   interestThisWeek: 0,
+  interestWeekSeries: [0, 0, 0, 0, 0, 0, 0],
   holdings: [],
   nextMaturity: null,
   callBalance: 0,
@@ -88,14 +90,18 @@ export async function hydrateLiveBalances() {
       greetingName: home.greetingName || home.user?.firstName || "",
       invested: Math.max(0, Math.round(home.invested?.balance ?? 0)),
       interestThisWeek: Math.max(0, Math.round(home.interestThisWeek ?? 0)),
+      interestWeekSeries: Array.from({ length: 7 }, (_, i) =>
+        Math.max(0, Math.round(Number(home.interestWeekSeries?.[i]) || 0)),
+      ),
       holdings: home.holdings ?? [],
       nextMaturity: home.nextMaturity,
       callBalance: Math.max(0, Math.round(call.balance ?? 0)),
       callRatePct: call.ratePct ?? 0,
       user: home.user ?? null,
     };
-    const { setInvestedTotal } = await import("@/lib/home-data");
+    const { setInvestedTotal, setWeekInterestSeries } = await import("@/lib/home-data");
     setInvestedTotal(state.invested);
+    setWeekInterestSeries(state.interestWeekSeries);
     const homeData = await import("@/lib/home-data");
     if (home.feed?.length) {
       homeData.setHomeFeed(home.feed);

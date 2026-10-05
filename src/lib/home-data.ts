@@ -152,6 +152,13 @@ export async function hydrateHomeFeedFromApi() {
   return FEED;
 }
 
-/** Weekly interest series — zeros until API provides a chart series. */
-export const WEEK_SERIES = [0, 0, 0, 0, 0, 0, 0];
+/** Weekly interest series — Mon→Sun (Africa/Lagos); filled from /v1/me/home. */
+export let WEEK_SERIES = [0, 0, 0, 0, 0, 0, 0];
 export const WEEK_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+export function setWeekInterestSeries(series: number[] | undefined | null) {
+  const next = Array.from({ length: 7 }, (_, i) =>
+    Math.max(0, Math.round(Number(series?.[i]) || 0)),
+  );
+  WEEK_SERIES = next;
+}
