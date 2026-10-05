@@ -184,32 +184,31 @@ export async function hydrateLiveBalances() {
         .slice(0, 5)
         .map(({ label, date, amount }) => ({ label, date, amount })),
     );
-    const { syncCallAccountFromLive, setCallActivityFromApi } = await import("@/lib/invest-data");
+    const { syncCallAccountFromLive, setCallActivityFromApi, CALL_ACCOUNT } =
+      await import("@/lib/invest-data");
     syncCallAccountFromLive(state.callBalance, state.callRatePct);
     try {
       const { fetchPortfolioTransactions } = await import("@/lib/api");
       const txns = await fetchPortfolioTransactions();
       setCallActivityFromApi(
         (txns ?? [])
-          .filter((t) => {
-            const k = String(t.kind).toUpperCase();
-            const d = String(t.description || "").toLowerCase();
-            return (
-              k.includes("CALL") ||
-              d.includes("call account") ||
-              d.includes("call deposit") ||
-              d.includes("call withdraw")
-            );
-          })
           .map((t) => {
             const k = String(t.kind).toUpperCase();
+            const acct = String(t.accountType || "").toUpperCase();
             const d = String(t.description || "").toLowerCase();
-            const kind: "deposit" | "withdrawal" | "interest" =
-              k.includes("INTEREST") || d.includes("interest")
-                ? "interest"
-                : k.includes("WITHDRAW") || t.direction === "debit"
-                  ? "withdrawal"
-                  : "deposit";
+            // Call ledger only — never count wallet maturity payouts as Call interest.
+            const isCallInterest =
+              k === "INTEREST" &&
+              !/maturity/i.test(d) &&
+              (acct === "USER_CALL" || d.includes("call account"));
+            const isCallDeposit = k === "CALL_DEPOSIT";
+            const isCallWithdraw = k === "CALL_WITHDRAW";
+            if (!isCallInterest && !isCallDeposit && !isCallWithdraw) return null;
+            const kind: "deposit" | "withdrawal" | "interest" = isCallInterest
+              ? "interest"
+              : isCallWithdraw
+                ? "withdrawal"
+                : "deposit";
             return {
               id: t.id,
               kind,
@@ -218,10 +217,15 @@ export async function hydrateLiveBalances() {
               amount: Math.abs(t.amount),
               status: "successful" as const,
             };
-          }),
+          })
+          .filter((row): row is NonNullable<typeof row> => row != null),
       );
     } catch {
       /* call activity optional */
+    }
+    // Prefer home API Call-ledger figure so this matches "interest this week".
+    if (typeof home.interestToday === "number") {
+      CALL_ACCOUNT.accruedToday = Math.max(0, Math.round(home.interestToday));
     }
     try {
       const placements = await fetchPlacements();
