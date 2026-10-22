@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /var/www/kipit-web/.output
+cd /var/www/web
 export PORT=3002
 export HOST=127.0.0.1
 export NITRO_PORT=3002
