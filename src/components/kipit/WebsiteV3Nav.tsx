@@ -71,7 +71,7 @@ export function WebsiteV3Nav({
           })}
         </div>
         <div className="hidden items-center gap-5 lg:flex">
-          <Link to="/login" className="v3-nav-link font-semibold">
+          <Link to="/login" search={{}} className="v3-nav-link font-semibold">
             Log in
           </Link>
           <Button className="v3-btn v3-btn-primary !h-11 !px-5 !text-sm" onClick={onOpenAccess}>
@@ -103,7 +103,7 @@ export function WebsiteV3Nav({
               </Link>
             );
           })}
-          <Link to="/login" className="v3-nav-link text-base font-semibold" onClick={() => setMenu(false)}>
+          <Link to="/login" search={{}} className="v3-nav-link text-base font-semibold" onClick={() => setMenu(false)}>
             Log in
           </Link>
           <Button className="v3-btn v3-btn-primary justify-center" onClick={() => { setMenu(false); onOpenAccess(); }}>
