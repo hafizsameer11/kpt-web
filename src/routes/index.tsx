@@ -34,6 +34,7 @@ import imgLagos from "@/assets/v3-lagos.jpg";
 import imgStepSignup from "@/assets/v3-step-signup.jpg";
 import imgStepFund from "@/assets/v3-step-fund.jpg";
 import imgStepGrow from "@/assets/v3-step-grow.jpg";
+import investScreen from "@/assets/v3-invest-screen.png";
 import { GraduationCap, Globe, Home as HomeIcon, HeartHandshake, Plane } from "lucide-react";
 import { AppleLogo, GooglePlayLogo } from "@/components/kipit/brand-icons";
 
@@ -473,7 +474,12 @@ function WebsiteV3Page() {
             </div>
             </div>
             <div className="v3-security-art">
-              <WebsiteAppPreview />
+              <div className="website-device" aria-label="Kipit app invest screen preview">
+                <span className="website-device-island" aria-hidden />
+                <div className="website-device-screen">
+                  <img src={investScreen} alt="The real Kipit Invest screen showing the Call Account balance and fixed plans" loading="lazy" />
+                </div>
+              </div>
               <div className="v3-security-caption"><ShieldCheck size={17} /><span>Protection at every step.</span></div>
             </div>
           </div>
