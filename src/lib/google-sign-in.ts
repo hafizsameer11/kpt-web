@@ -1,4 +1,4 @@
-import { ApiError, loginWithGoogle, tierNumber } from "@/lib/api";
+import { ApiError, fetchMe, loginWithGoogle, setSession, getAccessToken, tierNumber } from "@/lib/api";
 import {
   requestGoogleIdToken,
   isGoogleSignInConfigured,
@@ -12,7 +12,7 @@ export { isGoogleSignInConfigured, resolveGoogleClientId };
 
 /**
  * Full Google continue flow: GIS token → API session → hydrate.
- * Returns the session user (with hasPin).
+ * Returns the session user (with hasPassword / hasPin from /me).
  */
 export async function continueWithGoogle() {
   const clientId = await resolveGoogleClientId();
@@ -23,6 +23,20 @@ export async function continueWithGoogle() {
   try {
     const session = await loginWithGoogle(idToken);
     setKycTier(tierNumber(session.user.kycTier));
+    // Prefer /me flags so onboarding routing matches the database.
+    try {
+      const me = await fetchMe();
+      const token = getAccessToken();
+      if (token && me?.user) {
+        setSession({
+          accessToken: token,
+          user: { ...session.user, ...me.user },
+        });
+        session.user = { ...session.user, ...me.user };
+      }
+    } catch {
+      /* keep login payload */
+    }
     await refreshWalletFromApi().catch(() => undefined);
     await hydrateLiveBalances().catch(() => undefined);
     return session;

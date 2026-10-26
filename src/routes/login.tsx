@@ -89,14 +89,14 @@ function Login() {
       await claimPendingGifts().catch(() => undefined);
     }
     if (social) {
-      void navigate({ to: nextPathAfterSocialAuth(user) });
+      void navigate({ to: nextPathAfterSocialAuth(user), replace: true });
       return;
     }
-    if (!user.hasPin) {
-      void navigate({ to: "/signup/pin" });
+    if (user.hasPin !== true) {
+      void navigate({ to: "/signup/pin", replace: true });
       return;
     }
-    navigate({ to: "/home" });
+    void navigate({ to: "/home", replace: true });
   }
 
   async function onGoogle() {

@@ -97,7 +97,7 @@ function SignupMethod() {
         email: session.user.email || undefined,
         completed: true,
       });
-      void navigate({ to: nextPathAfterSocialAuth(session.user) });
+      void navigate({ to: nextPathAfterSocialAuth(session.user), replace: true });
     } catch (err) {
       toast.error(
         err instanceof ApiError
