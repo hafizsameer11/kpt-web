@@ -1,12 +1,44 @@
 /**
  * Google Identity Services (GIS) — load once, request an ID token for Kipit API.
+ *
+ * Client ID can come from Vite build env OR runtime GET /v1/app/config
+ * (API GOOGLE_CLIENT_ID). Prefer runtime so production works without baking
+ * VITE_GOOGLE_CLIENT_ID into every deploy.
  */
 
-export const GOOGLE_CLIENT_ID =
+const GOOGLE_CLIENT_ID_ENV =
   (typeof import.meta !== "undefined" &&
     (import.meta as { env?: { VITE_GOOGLE_CLIENT_ID?: string } }).env
       ?.VITE_GOOGLE_CLIENT_ID) ||
   "";
+
+let runtimeGoogleClientId = "";
+
+export function setRuntimeGoogleClientId(id: string | undefined | null) {
+  if (typeof id === "string" && id.trim()) {
+    runtimeGoogleClientId = id.trim();
+  }
+}
+
+export function getGoogleClientId() {
+  return (GOOGLE_CLIENT_ID_ENV.trim() || runtimeGoogleClientId).trim();
+}
+
+/** Resolve client ID from env or public app config. */
+export async function resolveGoogleClientId() {
+  const existing = getGoogleClientId();
+  if (existing) return existing;
+  try {
+    const { fetchAppConfig } = await import("@/lib/api");
+    await fetchAppConfig();
+  } catch {
+    /* ignore */
+  }
+  return getGoogleClientId();
+}
+
+/** @deprecated Prefer getGoogleClientId() — kept as alias for older imports. */
+export const GOOGLE_CLIENT_ID = GOOGLE_CLIENT_ID_ENV;
 
 type CredentialResponse = { credential?: string; select_by?: string };
 
@@ -72,7 +104,8 @@ function loadGisScript() {
 
 /** Returns a Google ID token, or throws a user-facing Error. */
 export async function requestGoogleIdToken(): Promise<string> {
-  if (!GOOGLE_CLIENT_ID.trim()) {
+  const clientId = await resolveGoogleClientId();
+  if (!clientId) {
     throw new Error("Google sign-in is not configured yet.");
   }
   await loadGisScript();
@@ -95,7 +128,7 @@ export async function requestGoogleIdToken(): Promise<string> {
     };
 
     window.google!.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
+      client_id: clientId,
       callback: (res) => {
         if (res.credential) finish(undefined, res.credential);
         else finish(new Error("Google did not return a credential. Try again."));
@@ -106,9 +139,6 @@ export async function requestGoogleIdToken(): Promise<string> {
 
     window.google!.accounts.id.prompt((notification) => {
       if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        // Fall back to a temporary One Tap–style button render in a hidden host,
-        // then programmatically open via a second prompt isn't possible — use
-        // renderButton click simulation instead.
         const host = document.createElement("div");
         host.style.position = "fixed";
         host.style.left = "-9999px";
@@ -126,7 +156,6 @@ export async function requestGoogleIdToken(): Promise<string> {
           const btn = host.querySelector("div[role=button]") as HTMLElement | null;
           if (btn) {
             btn.click();
-            // Leave host briefly so popup can open; remove after a beat.
             window.setTimeout(() => host.remove(), 4000);
           } else {
             host.remove();
@@ -150,5 +179,5 @@ export async function requestGoogleIdToken(): Promise<string> {
 }
 
 export function isGoogleSignInConfigured() {
-  return Boolean(GOOGLE_CLIENT_ID.trim());
+  return Boolean(getGoogleClientId());
 }

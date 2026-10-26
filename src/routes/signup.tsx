@@ -8,6 +8,7 @@ import { resetSignupDraft, signupDraft } from "@/lib/auth-data";
 import {
   continueWithGoogle,
   isGoogleSignInConfigured,
+  resolveGoogleClientId,
 } from "@/lib/google-sign-in";
 import { nextPathAfterSocialAuth } from "@/lib/post-auth-navigation";
 import {
@@ -67,8 +68,8 @@ function SignupMethod() {
   const navigate = useNavigate();
   const [openDoc, setOpenDoc] = useState<DocKey>(null);
   const [googleBusy, setGoogleBusy] = useState(false);
+  const [googleReady, setGoogleReady] = useState(() => isGoogleSignInConfigured());
   const activeDoc = openDoc ? DOCS[openDoc] : null;
-  const googleReady = isGoogleSignInConfigured();
 
   useEffect(() => {
     resetSignupDraft();
@@ -76,11 +77,14 @@ function SignupMethod() {
       step: "method",
       deviceId: signupDraft.deviceId,
     });
+    void resolveGoogleClientId().then((id) => setGoogleReady(Boolean(id)));
   }, []);
 
   async function onGoogle() {
     if (googleBusy) return;
-    if (!googleReady) {
+    const clientId = await resolveGoogleClientId();
+    setGoogleReady(Boolean(clientId));
+    if (!clientId) {
       toast.message("Google sign-in is not configured yet.");
       return;
     }

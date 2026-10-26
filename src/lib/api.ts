@@ -1264,6 +1264,8 @@ export type AppPublicConfig = {
     withdrawal?: number;
     cardFundingPct?: number;
   };
+  /** Google Sign-In Web client ID from API GOOGLE_CLIENT_ID (public). */
+  googleClientId?: string;
 };
 
 export async function fetchAppConfig() {
@@ -1320,6 +1322,12 @@ export async function fetchAppConfig() {
     applyOpsLimitsFromConfig(config);
   } catch {
     /* ignore circular hydrate failures */
+  }
+  try {
+    const { setRuntimeGoogleClientId } = await import("@/lib/google-auth");
+    setRuntimeGoogleClientId(data?.googleClientId);
+  } catch {
+    /* ignore */
   }
   return config;
 }

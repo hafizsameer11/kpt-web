@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   AuthField,
@@ -20,6 +20,7 @@ import {
 import {
   continueWithGoogle,
   isGoogleSignInConfigured,
+  resolveGoogleClientId,
 } from "@/lib/google-sign-in";
 import { nextPathAfterSocialAuth } from "@/lib/post-auth-navigation";
 import { setKycTier } from "@/lib/kyc-state";
@@ -56,10 +57,14 @@ function Login() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [googleBusy, setGoogleBusy] = useState(false);
+  const [googleReady, setGoogleReady] = useState(() => isGoogleSignInConfigured());
 
   const locked = attempts >= 3;
   const emailOk = isValidEmailFormat(identifier);
-  const googleReady = isGoogleSignInConfigured();
+
+  useEffect(() => {
+    void resolveGoogleClientId().then((id) => setGoogleReady(Boolean(id)));
+  }, []);
 
   async function finishAfterAuth(user: { hasPin?: boolean; hasPassword?: boolean }, social = false) {
     const giftCode =
@@ -96,7 +101,9 @@ function Login() {
 
   async function onGoogle() {
     if (googleBusy || locked) return;
-    if (!googleReady) {
+    const clientId = await resolveGoogleClientId();
+    setGoogleReady(Boolean(clientId));
+    if (!clientId) {
       toast.message("Google sign-in is not configured yet.");
       return;
     }
