@@ -140,12 +140,20 @@ async function refreshAccessToken(): Promise<boolean> {
   return refreshInFlight;
 }
 
+function rememberMeUser(user: ApiUser | undefined) {
+  if (!user || !isBrowser()) return;
+  const token = getAccessToken();
+  if (!token) return;
+  setSession({ accessToken: token, user: { ...(getStoredUser() ?? user), ...user } });
+}
+
 /** Cold-start restore: refresh if access expired. */
 export async function restoreSession(): Promise<boolean> {
   if (!isBrowser() || wasExplicitLogout()) return false;
   if (!getAccessToken() && !getRefreshToken()) return false;
   try {
-    await api<{ user: ApiUser }>("/v1/auth/me");
+    const me = await api<{ user: ApiUser }>("/v1/auth/me");
+    rememberMeUser(me?.user);
     return true;
   } catch (err) {
     if (err instanceof ApiError && err.status === 401) {
@@ -155,7 +163,8 @@ export async function restoreSession(): Promise<boolean> {
         return false;
       }
       try {
-        await api<{ user: ApiUser }>("/v1/auth/me");
+        const me = await api<{ user: ApiUser }>("/v1/auth/me");
+        rememberMeUser(me?.user);
         return true;
       } catch {
         clearSession();

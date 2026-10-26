@@ -1,5 +1,6 @@
 import { redirect } from "@tanstack/react-router";
-import { isAuthenticated, restoreSession } from "@/lib/api";
+import { getStoredUser, isAuthenticated, restoreSession } from "@/lib/api";
+import { isAuthOnboardingPath } from "@/lib/post-auth-navigation";
 
 /** Routes reachable without a session (marketing site + auth + gift claim). */
 const PUBLIC_PATHS = [
@@ -41,9 +42,22 @@ export function isPublicAuthPath(pathname: string) {
   );
 }
 
+function isPinOnboardingPath(pathname: string) {
+  return (
+    pathname === "/signup/pin" ||
+    pathname.startsWith("/signup/pin/") ||
+    pathname === "/signup/confirm-pin" ||
+    pathname.startsWith("/signup/confirm-pin/") ||
+    pathname === "/signup/biometrics" ||
+    pathname.startsWith("/signup/biometrics/") ||
+    pathname === "/signup/success" ||
+    pathname.startsWith("/signup/success/")
+  );
+}
+
 /**
  * Root auth gate — unauthenticated users go to the marketing landing.
- * Signed-in users hitting welcome/login/signup go to the app home (/home).
+ * Signed-in users must finish password + PIN before the app shell.
  * Skip on SSR (no localStorage); client navigation enforces the gate.
  */
 export async function authGateBeforeLoad(pathname: string) {
@@ -51,18 +65,28 @@ export async function authGateBeforeLoad(pathname: string) {
 
   await ensureSessionRestored();
   const authed = isAuthenticated();
+  const user = getStoredUser();
+
+  // Incomplete Google / social accounts cannot enter the dashboard yet.
+  if (authed && user) {
+    if (user.hasPassword !== true) {
+      if (
+        pathname !== "/signup/set-password" &&
+        !pathname.startsWith("/signup/set-password/")
+      ) {
+        throw redirect({ to: "/signup/set-password" });
+      }
+    } else if (user.hasPin !== true) {
+      if (!isPinOnboardingPath(pathname)) {
+        throw redirect({ to: "/signup/pin" });
+      }
+    }
+  }
 
   if (isPublicAuthPath(pathname)) {
-    // Authed users still need /signup/pin after Google (or other social) signup.
-    const pinOnboarding =
-      pathname === "/signup/set-password" ||
-      pathname === "/signup/pin" ||
-      pathname === "/signup/confirm-pin" ||
-      pathname === "/signup/biometrics" ||
-      pathname === "/signup/success";
     if (
       authed &&
-      !pinOnboarding &&
+      !isAuthOnboardingPath(pathname) &&
       (pathname === "/welcome" ||
         pathname === "/splash" ||
         pathname === "/login" ||
