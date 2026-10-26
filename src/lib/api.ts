@@ -86,6 +86,10 @@ export function setSession(input: {
   if (input.refreshToken) window.localStorage.setItem(REFRESH_KEY, input.refreshToken);
   if (input.user) window.localStorage.setItem(USER_KEY, JSON.stringify(input.user));
   window.localStorage.removeItem(LOGGED_OUT_KEY);
+  // Auth-gate caches restoreSession — clear so the next navigation re-reads flags.
+  void import("@/lib/auth-guard")
+    .then((m) => m.resetSessionRestore())
+    .catch(() => undefined);
   emitAuth();
 }
 
@@ -342,10 +346,28 @@ export async function verifySignupOtp(email: string, code: string) {
 }
 
 export async function setTransactionPin(pin: string, confirmPin: string) {
-  return api<{ user: ApiUser }>("/v1/auth/pin", {
+  const data = await api<{ user: ApiUser }>("/v1/auth/pin", {
     method: "POST",
     body: JSON.stringify({ pin, confirmPin }),
   });
+  const token = getAccessToken();
+  const existing = getStoredUser();
+  if (token && data.user) {
+    setSession({
+      accessToken: token,
+      user: {
+        ...(existing ?? data.user),
+        ...data.user,
+        hasPin: true,
+      },
+    });
+  } else if (token && existing) {
+    setSession({
+      accessToken: token,
+      user: { ...existing, hasPin: true },
+    });
+  }
+  return data;
 }
 
 /** Register → login → set PIN. Mirrors mobile completeSignup. */

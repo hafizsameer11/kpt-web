@@ -68,17 +68,27 @@ export async function authGateBeforeLoad(pathname: string) {
   const user = getStoredUser();
 
   // Incomplete Google / social accounts cannot enter the dashboard yet.
+  // Biometrics + success are always allowed once the user reached them (PIN
+  // may already be saved server-side even if local flags were stale).
   if (authed && user) {
-    if (user.hasPassword !== true) {
-      if (
-        pathname !== "/signup/set-password" &&
-        !pathname.startsWith("/signup/set-password/")
-      ) {
-        throw redirect({ to: "/signup/set-password" });
-      }
-    } else if (user.hasPin !== true) {
-      if (!isPinOnboardingPath(pathname)) {
-        throw redirect({ to: "/signup/pin" });
+    const onLateOnboarding =
+      pathname === "/signup/biometrics" ||
+      pathname.startsWith("/signup/biometrics/") ||
+      pathname === "/signup/success" ||
+      pathname.startsWith("/signup/success/");
+
+    if (!onLateOnboarding) {
+      if (user.hasPassword !== true) {
+        if (
+          pathname !== "/signup/set-password" &&
+          !pathname.startsWith("/signup/set-password/")
+        ) {
+          throw redirect({ to: "/signup/set-password" });
+        }
+      } else if (user.hasPin !== true) {
+        if (!isPinOnboardingPath(pathname)) {
+          throw redirect({ to: "/signup/pin" });
+        }
       }
     }
   }

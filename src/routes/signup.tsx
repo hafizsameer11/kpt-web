@@ -24,7 +24,7 @@ export const Route = createFileRoute("/signup")({
       { title: "Create your Kipit account" },
       {
         name: "description",
-        content: "Sign up with your phone number, Google or Apple to open a Kipit account.",
+        content: "Sign up with your email or Google to open a Kipit account.",
       },
       { property: "og:title", content: "Create your Kipit account" },
       { property: "og:description", content: "Open a Kipit account in a few minutes." },
@@ -144,17 +144,6 @@ function SignupMethod() {
               {googleBusy ? "Connecting…" : "Continue with Google"}
             </span>
           </GhostButton>
-
-          <GhostButton
-            onClick={() =>
-              toast.message("Apple sign-up is coming soon. Continue with email for now.")
-            }
-          >
-            <span className="flex items-center justify-center gap-3">
-              <AppleMark />
-              Continue with Apple
-            </span>
-          </GhostButton>
         </div>
 
         <p className="mt-6 text-center text-[11px] leading-relaxed text-brand-foreground/55">
@@ -222,13 +211,3 @@ function GoogleMark() {
   );
 }
 
-function AppleMark() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.06 1.87-2.54 6.98.22 8.13-.57 1.5-1.31 2.99-2.27 4.08zm-5.85-15.1c.07-2.04 1.76-3.79 3.74-4.04.29 2.32-1.97 4.48-3.74 4.04z"
-      />
-    </svg>
-  );
-}
