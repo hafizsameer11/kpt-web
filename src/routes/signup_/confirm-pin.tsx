@@ -2,7 +2,13 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { AuthShell, Keypad, PinDots } from "@/components/kipit/AuthShell";
 import { signupDraft } from "@/lib/auth-data";
-import { ApiError, completeSignup } from "@/lib/api";
+import {
+  ApiError,
+  completeSignup,
+  getStoredUser,
+  isAuthenticated,
+  setTransactionPin,
+} from "@/lib/api";
 import { refreshWalletFromApi } from "@/lib/wallet-balance";
 import { hydrateLiveBalances } from "@/lib/live-balances";
 
@@ -43,14 +49,22 @@ function ConfirmPin() {
         setBusy(true);
         setError(null);
         try {
+          if (!signupDraft.pin) {
+            throw new Error("PIN was not saved. Go back and create your PIN again.");
+          }
+          // Google (and other social) users already have a session — only set PIN.
+          if (isAuthenticated() && getStoredUser()) {
+            await setTransactionPin(signupDraft.pin, pin);
+            await refreshWalletFromApi().catch(() => undefined);
+            await hydrateLiveBalances().catch(() => undefined);
+            if (!cancelled) void navigate({ to: "/signup/biometrics" });
+            return;
+          }
           if (!signupDraft.email || !signupDraft.password || signupDraft.password.length < 8) {
             throw new Error("Password was not saved. Go back and set your password again.");
           }
           if (!signupDraft.firstName || !signupDraft.lastName) {
             throw new Error("Name details are incomplete. Go back and try again.");
-          }
-          if (!signupDraft.pin) {
-            throw new Error("PIN was not saved. Go back and create your PIN again.");
           }
           const phone = signupDraft.phone.trim();
           await completeSignup({

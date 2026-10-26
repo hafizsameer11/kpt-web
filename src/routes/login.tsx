@@ -1,9 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   AuthField,
   AuthShell,
+  GhostButton,
   PrimaryButton,
   authInputClass,
 } from "@/components/kipit/AuthShell";
@@ -15,6 +17,10 @@ import {
   loginWithPassword,
   tierNumber,
 } from "@/lib/api";
+import {
+  continueWithGoogle,
+  isGoogleSignInConfigured,
+} from "@/lib/google-sign-in";
 import { setKycTier } from "@/lib/kyc-state";
 import { refreshWalletFromApi } from "@/lib/wallet-balance";
 import { hydrateLiveBalances } from "@/lib/live-balances";
@@ -48,9 +54,64 @@ function Login() {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
 
   const locked = attempts >= 3;
   const emailOk = isValidEmailFormat(identifier);
+  const googleReady = isGoogleSignInConfigured();
+
+  async function finishAfterAuth(hasPin?: boolean) {
+    const giftCode =
+      giftFromSearch ||
+      (typeof window !== "undefined"
+        ? window.sessionStorage.getItem(PENDING_GIFT_KEY)
+        : null);
+    if (giftCode) {
+      try {
+        const claimed = await claimGift(giftCode);
+        window.sessionStorage.removeItem(PENDING_GIFT_KEY);
+        void navigate({
+          to: "/portfolio/$holdingId",
+          params: { holdingId: claimed.placementId },
+          replace: true,
+        });
+        return;
+      } catch {
+        await claimPendingGifts().catch(() => undefined);
+      }
+    } else {
+      await claimPendingGifts().catch(() => undefined);
+    }
+    if (!hasPin) {
+      void navigate({ to: "/signup/pin" });
+      return;
+    }
+    navigate({ to: "/home" });
+  }
+
+  async function onGoogle() {
+    if (googleBusy || locked) return;
+    if (!googleReady) {
+      toast.message("Google sign-in is not configured yet.");
+      return;
+    }
+    setGoogleBusy(true);
+    setError(null);
+    try {
+      const session = await continueWithGoogle();
+      await finishAfterAuth(session.user.hasPin);
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : err instanceof Error
+            ? err.message
+            : "Google sign-in failed.",
+      );
+    } finally {
+      setGoogleBusy(false);
+    }
+  }
 
   const submit = async () => {
     if (locked) return;
@@ -67,28 +128,7 @@ function Login() {
       setKycTier(tierNumber(session.user.kycTier));
       await refreshWalletFromApi();
       await hydrateLiveBalances();
-      const giftCode =
-        giftFromSearch ||
-        (typeof window !== "undefined"
-          ? window.sessionStorage.getItem(PENDING_GIFT_KEY)
-          : null);
-      if (giftCode) {
-        try {
-          const claimed = await claimGift(giftCode);
-          window.sessionStorage.removeItem(PENDING_GIFT_KEY);
-          void navigate({
-            to: "/portfolio/$holdingId",
-            params: { holdingId: claimed.placementId },
-            replace: true,
-          });
-          return;
-        } catch {
-          await claimPendingGifts().catch(() => undefined);
-        }
-      } else {
-        await claimPendingGifts().catch(() => undefined);
-      }
-      navigate({ to: "/home" });
+      await finishAfterAuth(session.user.hasPin);
     } catch (err) {
       const next = attempts + 1;
       setAttempts(next);
@@ -161,12 +201,39 @@ function Login() {
 
       <div className="mt-7 space-y-3">
         <PrimaryButton
-          disabled={!emailOk || password.length < 4 || busy || locked}
+          disabled={!emailOk || password.length < 4 || busy || locked || googleBusy}
           onClick={() => void submit()}
         >
           {busy ? "Signing in…" : "Log in"}
         </PrimaryButton>
+        <div className="flex items-center gap-3 py-1">
+          <span className="h-px flex-1 bg-white/15" />
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-brand-foreground/45">
+            or
+          </span>
+          <span className="h-px flex-1 bg-white/15" />
+        </div>
+        <GhostButton
+          disabled={googleBusy || locked}
+          onClick={() => void onGoogle()}
+        >
+          <span className="inline-flex items-center justify-center gap-3">
+            <GoogleMark />
+            {googleBusy ? "Connecting…" : "Continue with Google"}
+          </span>
+        </GhostButton>
       </div>
     </AuthShell>
+  );
+}
+
+function GoogleMark() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true">
+      <path
+        fill="#EA4335"
+        d="M12 10.2v3.9h5.5c-.24 1.4-1.7 4.1-5.5 4.1a6.2 6.2 0 1 1 0-12.4c1.9 0 3.2.8 3.9 1.5l2.7-2.6C16.9 3 14.7 2 12 2a10 10 0 1 0 0 20c5.8 0 9.6-4 9.6-9.7 0-.7-.1-1.2-.2-1.7H12z"
+      />
+    </svg>
   );
 }

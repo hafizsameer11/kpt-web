@@ -53,8 +53,15 @@ export async function authGateBeforeLoad(pathname: string) {
   const authed = isAuthenticated();
 
   if (isPublicAuthPath(pathname)) {
+    // Authed users still need /signup/pin after Google (or other social) signup.
+    const pinOnboarding =
+      pathname === "/signup/pin" ||
+      pathname === "/signup/confirm-pin" ||
+      pathname === "/signup/biometrics" ||
+      pathname === "/signup/success";
     if (
       authed &&
+      !pinOnboarding &&
       (pathname === "/welcome" ||
         pathname === "/splash" ||
         pathname === "/login" ||

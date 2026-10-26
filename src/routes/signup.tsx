@@ -3,8 +3,12 @@ import { Mail, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AuthShell, GhostButton } from "@/components/kipit/AuthShell";
-import { logSignupFunnel } from "@/lib/api";
+import { ApiError, logSignupFunnel } from "@/lib/api";
 import { resetSignupDraft, signupDraft } from "@/lib/auth-data";
+import {
+  continueWithGoogle,
+  isGoogleSignInConfigured,
+} from "@/lib/google-sign-in";
 import {
   Drawer,
   DrawerContent,
@@ -61,7 +65,9 @@ const DOCS: Record<Exclude<DocKey, null>, { title: string; version: string; upda
 function SignupMethod() {
   const navigate = useNavigate();
   const [openDoc, setOpenDoc] = useState<DocKey>(null);
+  const [googleBusy, setGoogleBusy] = useState(false);
   const activeDoc = openDoc ? DOCS[openDoc] : null;
+  const googleReady = isGoogleSignInConfigured();
 
   useEffect(() => {
     resetSignupDraft();
@@ -70,6 +76,39 @@ function SignupMethod() {
       deviceId: signupDraft.deviceId,
     });
   }, []);
+
+  async function onGoogle() {
+    if (googleBusy) return;
+    if (!googleReady) {
+      toast.message("Google sign-in is not configured yet.");
+      return;
+    }
+    setGoogleBusy(true);
+    try {
+      const session = await continueWithGoogle();
+      void logSignupFunnel({
+        step: "google",
+        deviceId: signupDraft.deviceId,
+        email: session.user.email || undefined,
+        completed: true,
+      });
+      if (!session.user.hasPin) {
+        void navigate({ to: "/signup/pin" });
+      } else {
+        void navigate({ to: "/home" });
+      }
+    } catch (err) {
+      toast.error(
+        err instanceof ApiError
+          ? err.message
+          : err instanceof Error
+            ? err.message
+            : "Google sign-in failed.",
+      );
+    } finally {
+      setGoogleBusy(false);
+    }
+  }
 
   return (
     <>
@@ -98,14 +137,10 @@ function SignupMethod() {
             Continue with email
           </button>
 
-          <GhostButton
-            onClick={() =>
-              toast.message("Google sign-up is coming soon. Continue with email for now.")
-            }
-          >
+          <GhostButton onClick={() => void onGoogle()} disabled={googleBusy}>
             <span className="flex items-center justify-center gap-3">
               <GoogleMark />
-              Continue with Google
+              {googleBusy ? "Connecting…" : "Continue with Google"}
             </span>
           </GhostButton>
 

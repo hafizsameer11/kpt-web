@@ -219,6 +219,21 @@ export async function loginWithPassword(email: string, password: string) {
   return data;
 }
 
+/** Sign in / register with a Google Identity Services ID token. */
+export async function loginWithGoogle(idToken: string) {
+  const data = await api<{
+    accessToken: string;
+    refreshToken?: string;
+    user: ApiUser;
+  }>("/v1/auth/google", {
+    method: "POST",
+    auth: false,
+    body: JSON.stringify({ idToken, deviceName: "Kipit Web" }),
+  });
+  setSession(data);
+  return data;
+}
+
 export async function fetchMe() {
   return api<{ user: ApiUser; wallet: { balance: number } }>("/v1/auth/me");
 }
