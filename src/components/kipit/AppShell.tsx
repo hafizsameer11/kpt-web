@@ -15,7 +15,7 @@ import { isAuthenticated } from "@/lib/api";
 type Tab = { label: string; to: string; icon: LucideIcon };
 
 const TABS: Tab[] = [
-  { label: "Home", to: "/", icon: Home },
+  { label: "Home", to: "/home", icon: Home },
   { label: "Invest", to: "/invest", icon: TrendingUp },
   { label: "Explore", to: "/explore", icon: Compass },
   { label: "Portfolio", to: "/portfolio", icon: PieChart },
@@ -38,7 +38,7 @@ export function AppShell({
 
   useEffect(() => {
     if (!isAuthenticated()) {
-      void navigate({ to: "/welcome", replace: true });
+      void navigate({ to: "/", replace: true });
     }
   }, [navigate, pathname]);
 

@@ -1,969 +1,712 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { WebsiteV3Access, WEB_APP_URL, WEB_APP_LOGIN_URL, WEB_APP_SIGNUP_URL, type AccessMode } from "@/components/kipit/WebsiteV3Access";
 import {
+  ArrowRight,
   ArrowUpRight,
+  BadgeCheck,
   Bell,
-  ChevronRight,
-  Eye,
-  EyeOff,
-  Lightbulb,
+  CalendarClock,
+  ChevronDown,
+  Gift,
+  Landmark,
+  Layers3,
+  Lock,
+  MessageCircle,
+  PiggyBank,
+  ShieldCheck,
+  Smartphone,
+  Star,
+  TrendingUp,
   Wallet,
 } from "lucide-react";
-import { useWalletBalance } from "@/lib/wallet-balance";
-import { AppShell } from "@/components/kipit/AppShell";
 import { Logo } from "@/components/kipit/Logo";
-import { NewUserEmptyState } from "@/components/kipit/NewUserEmptyState";
-import { ForYouFeature } from "@/components/kipit/ForYouVariants";
-import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility";
-import { GreetingText } from "@/components/kipit/SpecBlocks";
-import { AmountCounter } from "@/components/kipit/motion";
-import {
-  MONTH_CHANGE,
-  MONTH_CHANGE_PCT,
-  QUICK_ACTIONS,
-  WEEK_LABELS,
-  naira,
-} from "@/lib/home-data";
-import { displayInitials, displayName } from "@/lib/auth-session";
-import {
-  hydrateLiveBalances,
-  nextMaturityPayout,
-  useLiveBalances,
-  type LiveHolding,
-  type LiveNextMaturity,
-} from "@/lib/live-balances";
+import { WebsiteV3Nav } from "@/components/kipit/WebsiteV3Nav";
+import { WebsiteV3Calculator } from "@/components/kipit/WebsiteV3Calculator";
+import { WebsiteAppPreview } from "@/components/kipit/WebsiteAppPreview";
+import "@/components/kipit/website-v3.css";
+import { ARTICLES } from "@/lib/articles";
+import imgLife1 from "@/assets/v3-lifestyle-1.jpg";
+import imgLife2 from "@/assets/v3-lifestyle-2.jpg";
+import imgLife3 from "@/assets/v3-lifestyle-3.jpg";
+import imgLagos from "@/assets/v3-lagos.jpg";
+import imgStepSignup from "@/assets/v3-step-signup.jpg";
+import imgStepFund from "@/assets/v3-step-fund.jpg";
+import imgStepGrow from "@/assets/v3-step-grow.jpg";
+import { GraduationCap, Globe, Home as HomeIcon, HeartHandshake, Plane } from "lucide-react";
+import { AppleLogo, GooglePlayLogo } from "@/components/kipit/brand-icons";
 
-const DAY_MS = 86_400_000;
+const GOALS = [
+  { icon: HomeIcon, value: "₦2.4m", label: "Rent goal" },
+  { icon: GraduationCap, value: "₦850k", label: "School fees" },
+  { icon: HeartHandshake, value: "₦1.2m", label: "Wedding" },
+  { icon: Plane, value: "₦600k", label: "December trip" },
+];
 
-function comingUpFromHoldings(holdings: LiveHolding[]) {
-  return holdings
-    .filter((h) => h.maturityDate)
-    .map((h) => {
-      const d = new Date(h.maturityDate!);
-      const daysLeft = Number.isNaN(d.getTime())
-        ? 0
-        : Math.max(0, Math.ceil((d.getTime() - Date.now()) / DAY_MS));
-      return {
-        label: h.name,
-        date: Number.isNaN(d.getTime())
-          ? "—"
-          : d.toLocaleDateString("en-NG", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            }),
-        amount: h.amount,
-        daysLeft,
-      };
-    })
-    .sort((a, b) => a.daysLeft - b.daysLeft)
-    .slice(0, 5);
+function CountUp({ value }: { value: string }) {
+  const m = value.match(/^(\D*)([\d.]+)(.*)$/);
+  const [shown, setShown] = useState(m ? `${m[1]}0${m[3]}` : value);
+  useEffect(() => {
+    if (!m) return;
+    const target = parseFloat(m[2]!);
+    const decimals = (m[2]!.split(".")[1] ?? "").length;
+    let raf = 0;
+    const start = performance.now();
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / 1400);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setShown(`${m[1]}${(target * eased).toFixed(decimals)}${m[3]}`);
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+  return <>{shown}</>;
 }
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: "Kipit — Invest with clarity" },
+      { title: "Kipit — Your money, working beautifully" },
       {
         name: "description",
         content:
-          "A mobile-first Kipit home: immersive balance canvas, wallet and invested switch, stacked plan cards, maturity countdown, weekly interest and payout timeline.",
+          "Save, invest and plan with Kipit. A wallet, a daily-interest Call Account and fixed plans up to 19.2% p.a. — all in one bright, simple account.",
       },
-      { property: "og:title", content: "Kipit — Invest with clarity" },
+      { property: "og:title", content: "Kipit — Your money, working beautifully" },
       {
         property: "og:description",
-        content:
-          "Immersive mobile home for Kipit: balances, plans, maturities, payouts and insights in one thumb-friendly screen.",
+        content: "Wallet, Call Account and fixed plans up to 19.2% p.a. in one simple account.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: HomeV2Screen,
+  component: WebsiteV3Page,
 });
 
-const lenses = (wallet: number, invested: number) =>
-  [
-    {
-      key: "total",
-      label: "Total",
-      value: wallet + invested,
-      note: "Wallet + all active plans",
-    },
-    {
-      key: "invested",
-      label: "Invested",
-      value: invested,
-      note: invested > 0 ? "Across your active plans" : "No active plans yet",
-    },
-    { key: "wallet", label: "Wallet", value: wallet, note: "Available to invest now" },
-  ] as const;
-
-type LensKey = ReturnType<typeof lenses>[number]["key"];
-
-function mapHolding(h: LiveHolding) {
-  const daysLeft = h.maturityDate
-    ? Math.max(
-        0,
-        Math.ceil((new Date(h.maturityDate).getTime() - Date.now()) / (24 * 60 * 60 * 1000)),
-      )
-    : 0;
-  const date = h.maturityDate
-    ? new Date(h.maturityDate).toLocaleDateString("en-NG", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
-    : "—";
-  return {
-    id: h.id,
-    name: h.name,
-    rate: `${h.ratePct}% p.a.`,
-    amount: h.amount,
-    date,
-    daysLeft,
-    totalDays: Math.max(daysLeft, 1),
-    expectedPayout: h.amount,
-  };
-}
-
-function mapNextMaturity(nm: LiveNextMaturity, holdings: LiveHolding[]) {
-  if (!nm) {
-    return {
-      id: "",
-      name: "No upcoming maturity",
-      tenor: "",
-      rate: "—",
-      date: "—",
-      daysLeft: 0,
-      totalDays: 1,
-      amount: 0,
-      expectedPayout: 0,
-    };
-  }
-  const match = holdings.find((h) => h.id === nm.id);
-  const date = new Date(nm.date).toLocaleDateString("en-NG", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-  const ratePct =
-    (nm.ratePct && nm.ratePct > 0 ? nm.ratePct : null) ??
-    (match && match.ratePct > 0 ? match.ratePct : 0);
-  const rate = ratePct > 0 ? `${ratePct}% p.a.` : "—";
-  const tenor =
-    nm.daysLeft >= 0 ? `${Math.max(nm.daysLeft, 1)} days left` : "";
-  return {
-    id: nm.id,
-    name: nm.name,
-    tenor,
-    rate,
-    date,
-    daysLeft: nm.daysLeft,
-    totalDays: Math.max(nm.daysLeft, nm.tenorDays || 0, 1),
-    amount: nm.amount,
-    expectedPayout: nextMaturityPayout(nm),
-  };
-}
-
-function WeekStrip() {
-  const live = useLiveBalances();
-  const series = live.interestWeekSeries;
-  const labels = live.interestWeekLabels;
-  const max = Math.max(...series, 1);
-  const total = series.reduce((a, b) => a + b, 0);
-  const todayIdx = 6; // series is oldest → today
-  return (
-    <div className="flex h-14 items-end justify-between gap-1">
-      {series.map((v, i) => {
-        const isToday = i === todayIdx;
-        const pct = total > 0 ? 18 + (v / max) * 82 : 18;
-        return (
-          <div key={`${labels[i]}-${i}`} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
-            <div
-              className={`k-grow w-1 rounded-full ${
-                isToday && total > 0 ? "bg-gold" : "bg-brand/20"
-              }`}
-              style={{ height: `${pct}%`, ["--d" as string]: `${i * 70}ms` }}
-            />
-            <span
-              className={`text-[9px] font-semibold ${isToday && total > 0 ? "text-foreground" : "text-muted-foreground/70"}`}
-            >
-              {labels[i] || WEEK_LABELS[i]?.slice(0, 1)}
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
+const naira = (v: number) => `₦${Math.round(v).toLocaleString("en-NG")}`;
 
 
-function HomeV2Screen() {
-  const isNewUser = useIsNewUser();
+const STRIP = [
+  "Held by Kipit Investment Ltd",
+  "Interest accrues daily",
+  "Same-day wallet settlement",
+  "Bank-grade encryption",
+  "BVN & NIN verified",
+  "WhatsApp support",
+  "Web & mobile",
+];
+
+const STATS = [
+  { value: "₦4.2bn+", label: "Funds under management" },
+  { value: "38k+", label: "Savers & investors" },
+  { value: "19.2%", label: "Top fixed rate p.a." },
+  { value: "T+0", label: "Wallet settlement" },
+];
+
+const STEPS = [
+  { title: "Create your account", body: "Sign up with your email in under two minutes and verify with BVN or NIN.", img: imgStepSignup },
+  { title: "Fund your wallet", body: "Bank transfer or card. Your wallet is the home base for every plan.", img: imgStepFund },
+  { title: "Choose how to grow", body: "Earn daily in the Call Account or lock a fixed plan for a higher rate.", img: imgStepGrow },
+];
+
+const PRODUCTS = [
+  { rate: "14.5%", name: "Call Account", body: "Earn daily on everyday money. Move to your wallet any time." },
+  { rate: "19.2%", name: "Fixed Plans", body: "Lock 30–365 days, see a countdown to a guaranteed payout." },
+  { rate: "Curated", name: "Explore", body: "Treasury bills, bonds and partner funds, vetted for you." },
+];
+
+const FEATURES = [
+  { icon: CalendarClock, title: "Maturity countdowns", body: "Always know when your next payout lands." },
+  { icon: Bell, title: "Smart nudges", body: "Salary-day reminders and rollover offers." },
+  { icon: Gift, title: "Gift an investment", body: "Send a plan to someone you love." },
+  { icon: MessageCircle, title: "Ask AI", body: "Instant answers about balances and plans." },
+];
+
+const TESTIMONIALS = [
+  { quote: "I finally see all my money in one place. The maturity countdown is oddly satisfying.", name: "Adaeze O.", role: "Product designer, Lagos" },
+  { quote: "Moved my emergency fund to the Call Account. It earns daily and I can still reach it.", name: "Tunde B.", role: "Engineer, Abuja" },
+  { quote: "Clean, calm and clear. It feels like a private bank in my pocket.", name: "Halima S.", role: "Founder, Kano" },
+];
+
+const FAQS = [
+  { q: "Is my money safe with Kipit?", a: "Your investments are held by Kipit Investment Ltd, an asset manager licensed by the SEC, and your account is protected with encryption, PIN and verified identity." },
+  { q: "How quickly can I withdraw?", a: "Call Account funds move to your wallet instantly. Wallet withdrawals to your bank settle the same day." },
+  { q: "What's the minimum to start?", a: "You can start with as little as ₦1,000 in the Call Account." },
+  { q: "What happens when a fixed plan matures?", a: "Principal and interest settle to your wallet. You can roll over at the current rate or withdraw." },
+];
+
+const TENORS = [
+  { days: 30, rate: 15.5 },
+  { days: 90, rate: 17.0 },
+  { days: 180, rate: 18.2 },
+  { days: 365, rate: 19.2 },
+];
+
+function WebsiteV3Page() {
+  const [amount, setAmount] = useState(500_000);
+  const [tenor, setTenor] = useState<(typeof TENORS)[number]>(TENORS[1] ?? TENORS[0] ?? { days: 30, rate: 15.5 });
+  const [faq, setFaq] = useState<number | null>(0);
+  const [chooser, setChooser] = useState<AccessMode>(null);
+
+
+  const interest = (amount * tenor.rate * tenor.days) / 36500;
+
   useEffect(() => {
-    void hydrateLiveBalances();
+    const els = document.querySelectorAll<HTMLElement>(
+      ".kipit-website-v3 .v3-card, .kipit-website-v3 .v3-heading, .kipit-website-v3 .v3-article, .kipit-website-v3 .v3-reveal",
+    );
+    els.forEach((el) => el.classList.add("v3-anim"));
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("v3-in");
+            io.unobserve(e.target);
+          }
+        }),
+      { threshold: 0.12 },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
   }, []);
 
   return (
-    <AppShell title="Home" navVariant="elevated">
-      {isNewUser ? (
-        <div className="pt-5">
-          <NewUserEmptyState />
-        </div>
-      ) : (
-        <>
-          <DesktopHome />
-          <MobileHome />
-        </>
-      )}
-    </AppShell>
-  );
-}
+    <div className="kipit-website-v3 min-h-screen">
+      {/* Nav */}
+      <WebsiteV3Nav home onOpenAccess={() => setChooser("access")} />
 
-function MobileHome() {
-  const WALLET = useWalletBalance();
-  const live = useLiveBalances();
-  const INVESTED = live.invested;
-  const HOLDINGS = useMemo(() => live.holdings.map(mapHolding), [live.holdings]);
-  const NEXT_MATURITY = useMemo(
-    () => mapNextMaturity(live.nextMaturity, live.holdings),
-    [live.nextMaturity, live.holdings],
-  );
-  const COMING_UP = useMemo(() => comingUpFromHoldings(live.holdings), [live.holdings]);
-  const firstName = live.greetingName || displayName().split(" ")[0] || "";
-  const initials = displayInitials();
-  const LENSES = lenses(WALLET, INVESTED);
-  const { hidden, toggle, mask } = useBalanceVisibility();
-  const [lens, setLens] = useState<LensKey>("total");
-  const active = LENSES.find((l) => l.key === lens) ?? LENSES[0];
-
-  return (
-    <div className="md:hidden">
-        <div className="pb-2">
-          {/* ── Immersive navy canvas (full-bleed on mobile) ───────────── */}
-          <section className="relative -mx-4 overflow-hidden bg-brand-gradient px-5 pb-14 pt-5 text-primary-foreground md:mx-0 md:rounded-xl md:px-8 md:pb-10 md:pt-8 md:shadow-float">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -right-20 -top-24 size-64 rounded-full bg-gold/25 blur-3xl"
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -left-24 bottom-0 size-56 rounded-full bg-white/10 blur-3xl"
-            />
-
-            <header className="relative flex items-center justify-between gap-3 md:hidden">
-              <div className="min-w-0">
-                <Logo tone="light" className="font-display text-xl" />
-                <p className="mt-1 truncate text-[11px] text-primary-foreground/70">
-                  <GreetingText />, {firstName}
-                </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-2.5">
-
-                <Link
-                  to="/notifications"
-                  aria-label="Notifications"
-                  className="relative grid size-10 place-items-center rounded-full border border-white/20 bg-white/10 press"
-                >
-                  <Bell className="size-[18px]" strokeWidth={1.8} />
-                  <span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-gold" />
-                </Link>
-                <Link
-                  to="/settings"
-                  aria-label="Profile"
-                  className="grid size-10 place-items-center rounded-full bg-white/15 text-xs font-bold press"
-                >
-                  {initials}
-                </Link>
-              </div>
-            </header>
-
-            <div className="relative md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] md:items-end md:gap-10">
-              <div className="min-w-0">
-                {/* Lens switcher — one balance surface, three views */}
-                <div className="mt-5 inline-flex rounded-full border border-white/15 bg-white/10 p-1 md:mt-0">
-                  {LENSES.map((l) => (
-                    <button
-                      key={l.key}
-                      type="button"
-                      onClick={() => setLens(l.key)}
-                      className={`rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-colors ${
-                        lens === l.key
-                          ? "bg-surface text-brand"
-                          : "text-primary-foreground/70"
-                      }`}
-                    >
-                      {l.label}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="mt-4 flex items-end gap-3">
-                  <AmountCounter
-                    value={active.value}
-                    hidden={hidden}
-                    mask={mask}
-                    className="font-display text-[40px] font-extrabold leading-none tracking-[-0.045em] text-num md:text-[56px]"
-                  />
-                  <button
-                    type="button"
-                    onClick={toggle}
-                    aria-label={hidden ? "Show balances" : "Hide balances"}
-                    className="mb-1 grid size-8 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 press"
-                  >
-                    {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                  </button>
-                </div>
-                <p className="mt-2 text-[11px] text-primary-foreground/70">{active.note}</p>
-                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-[11px] font-bold text-gold">
-                  <ArrowUpRight className="size-3.5" /> +{naira(live.interestThisWeek)} interest this week
-                </p>
-
-                {/* Desktop-only split of balances */}
-                <dl className="mt-6 hidden gap-3 md:grid md:grid-cols-2">
-                  {LENSES.filter((l) => l.key !== "total").map((l) => (
-                    <div
-                      key={l.key}
-                      className="rounded-xl border border-white/15 bg-white/5 px-4 py-3"
-                    >
-                      <dt className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary-foreground/60">
-                        {l.label}
-                      </dt>
-                      <dd className="mt-1 text-lg font-extrabold text-num">
-                        <AmountCounter value={l.value} hidden={hidden} mask={mask} />
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-
-              {/* Quick actions — thumb row on mobile, panel on desktop */}
-              <div className="mt-6 grid grid-cols-4 gap-2 md:mt-0 md:grid-cols-2 md:gap-3 md:rounded-xl md:border md:border-white/15 md:bg-white/5 md:p-4">
-                {QUICK_ACTIONS.map((a, i) => (
-                  <Link
-                    key={a.label}
-                    to={a.to}
-                    style={{ ["--d" as string]: `${120 + i * 70}ms` }}
-                    className="k-rise flex flex-col items-center gap-2 rounded-xl py-1 text-[10px] font-semibold text-primary-foreground/85 press md:flex-row md:gap-3 md:rounded-xl md:bg-white/5 md:px-3 md:py-3 md:text-xs md:hover:bg-white/10"
-                  >
-                    <span className="grid size-12 place-items-center rounded-xl border border-white/15 bg-white/10 md:size-9">
-                      <a.icon className="size-5 md:size-4" strokeWidth={1.9} />
-                    </span>
-                    <span className="text-center leading-tight md:text-left">{a.label}</span>
-                  </Link>
+      {/* Hero */}
+      <header className="v3-hero">
+        <div className="v3-hero-bg" />
+        <div className="v3-container relative grid items-center gap-12 lg:grid-cols-[1.05fr_1fr]">
+          <div className="v3-fade">
+            <span className="v3-badge"><b>New</b> Fixed plans now settle same-day</span>
+            <h1 className="v3-title mt-7">
+              Earn up to 19.2%<br /> on your <span className="v3-serif v3-gold-text">naira.</span>
+            </h1>
+            <p className="mt-6 max-w-[520px] text-lg text-muted-foreground">
+              A wallet, a daily-interest Call Account and fixed plans up to 19.2% p.a. — all in one account. Start with ₦1,000.
+            </p>
+            <div className="mt-9 flex flex-wrap gap-3">
+              <button type="button" className="v3-btn v3-btn-primary" onClick={() => setChooser("access")}>Start with ₦1,000 <ArrowRight className="size-4" /></button>
+              <a href="#calculator" className="v3-btn v3-btn-outline">See what you could earn</a>
+            </div>
+            <div className="mt-10 flex items-center gap-4">
+              <div className="flex -space-x-2">
+                {["AO", "TB", "HS", "KE"].map((i, idx) => (
+                  <span key={i} className={`grid size-10 place-items-center rounded-full border-2 border-background text-xs font-bold ${idx % 2 ? "bg-brand text-brand-foreground" : "bg-gold text-gold-foreground"}`}>{i}</span>
                 ))}
               </div>
+              <div>
+                <div className="flex text-gold">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="size-4 fill-current" />)}</div>
+                <p className="text-sm text-muted-foreground">Loved by 38,000+ savers</p>
+              </div>
             </div>
+          </div>
 
-          </section>
-
-          {/* ── Sheet that slides over the canvas ──────────────────────── */}
-          <div className="relative -mx-4 -mt-8 rounded-t-[2rem] bg-background px-4 pt-5 md:mx-0 md:mt-6 md:rounded-none md:bg-transparent md:px-0 md:pt-0">
-            <span
-              aria-hidden
-              className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
-            />
-
-            <div className="grid gap-3 md:gap-4 lg:grid-cols-3">
-              {/* Maturity countdown */}
-              <Link
-                to="/portfolio/$holdingId"
-                params={{ holdingId: NEXT_MATURITY.id || "none" }}
-                className="card-surface block p-4 press md:p-6 lg:col-span-2"
-              >
-                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                      Next maturity
-                    </p>
-                    <h2 className="mt-1.5 truncate font-display text-lg font-extrabold">
-                      {NEXT_MATURITY.name}
-                    </h2>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {NEXT_MATURITY.tenor} · {NEXT_MATURITY.rate} · matures {NEXT_MATURITY.date}
-                    </p>
-                  </div>
-                  <div className="shrink-0 rounded-xl bg-brand px-3 py-2 text-center text-brand-foreground">
-                    <p className="text-lg font-extrabold leading-none text-num">
-                      {NEXT_MATURITY.daysLeft}
-                    </p>
-                    <p className="text-[9px] font-semibold uppercase tracking-wider opacity-75">
-                      days
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary">
-                  <div
-                    className="k-fill h-full rounded-full bg-gold-gradient"
-                    style={{
-                      width: `${Math.round(
-                        ((NEXT_MATURITY.totalDays - NEXT_MATURITY.daysLeft) /
-                          NEXT_MATURITY.totalDays) *
-                          100,
-                      )}%`,
-                    }}
-                  />
-                </div>
-                <div className="mt-3 flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Principal {mask(NEXT_MATURITY.amount)}</span>
-                  <span className="font-bold">
-                    Payout {mask(NEXT_MATURITY.expectedPayout)}
-                  </span>
-                </div>
-              </Link>
-
-              {/* Weekly interest */}
-              <Link to="/call-account" className="card-surface block p-4 press md:p-6">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                  Interest this week
-                </p>
-                <p className="mt-1.5 font-display text-2xl font-extrabold text-num">
-                  {mask(live.interestThisWeek)}
-                </p>
-                <div className="mt-4">
-                  <WeekStrip />
-                </div>
-              </Link>
+          <div className="v3-hero-stage">
+            <div className="v3-arch" />
+            <WebsiteAppPreview />
+            <div className="v3-float-card v3-float left-0 top-24 w-[210px] sm:left-4">
+              <div className="flex items-center gap-2">
+                <span className="grid size-8 place-items-center rounded-full bg-secondary text-brand"><TrendingUp className="size-4" /></span>
+                <p className="text-xs text-muted-foreground">Earned this week</p>
+              </div>
+              <p className="mt-2 text-2xl font-bold tracking-tight">+₦12,480</p>
+              <div className="mt-2 flex h-8 items-end gap-1">
+                {[40, 55, 50, 70, 65, 80, 72].map((h, i) => <span key={i} className="block flex-1 rounded-[3px] bg-gold" style={{ height: `${h}%` }} />)}
+              </div>
             </div>
-
-            {/* Stacked plan cards */}
-            <section className="mt-5">
-              <div className="mb-2.5 flex items-center justify-between">
-                <h2 className="font-display text-base font-extrabold">Your plans</h2>
-                <Link
-                  to="/portfolio"
-                  className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
-                >
-                  All plans <ChevronRight className="size-3.5" />
-                </Link>
-              </div>
-              <div className="grid gap-2.5 md:grid-cols-3 md:gap-4">
-                {HOLDINGS.map((h, i) => {
-                  const progress = Math.round(
-                    ((h.totalDays - h.daysLeft) / h.totalDays) * 100,
-                  );
-                  const rail = i === 0 ? "bg-gold" : i === 1 ? "bg-brand" : "bg-teal";
-                  return (
-                    <Link
-                      key={h.id || h.name}
-                      to="/portfolio/$holdingId"
-                      params={{ holdingId: h.id || `plan-${i}` }}
-                      style={{ ["--d" as string]: `${150 + i * 90}ms` }}
-                      className="k-rise card-surface flex items-center gap-3 p-4 press md:block md:p-5 md:transition-all md:hover:-translate-y-0.5 md:hover:shadow-float"
-                    >
-                      <span
-                        className={`h-11 w-1.5 shrink-0 rounded-full md:mb-3 md:h-1.5 md:w-12 ${rail}`}
-                      />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-bold md:text-base">{h.name}</p>
-                        <p className="mt-0.5 text-[11px] text-muted-foreground md:hidden">
-                          {h.rate} · {h.daysLeft} days left · {h.date}
-                        </p>
-                        <div className="mt-1 hidden items-center gap-2 md:flex">
-                          <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-foreground">
-                            {h.rate}
-                          </span>
-                          <span className="text-[11px] text-muted-foreground">
-                            {h.daysLeft} days left
-                          </span>
-                        </div>
-                        <p className="mt-3 hidden font-display text-xl font-extrabold text-num md:block">
-                          {mask(h.amount)}
-                        </p>
-                        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary md:mt-3">
-                          <div
-                            className={`k-fill h-full rounded-full ${i === 0 ? "bg-gold-gradient" : "bg-brand"}`}
-                            style={{ width: `${progress}%`, ["--d" as string]: `${250 + i * 90}ms` }}
-                          />
-                        </div>
-                        <div className="mt-2 hidden items-center justify-between text-[11px] md:flex">
-                          <span className="text-muted-foreground">{progress}% complete</span>
-                          <span className="font-semibold">Matures {h.date}</span>
-                        </div>
-                      </div>
-                      <p className="shrink-0 text-sm font-extrabold text-num md:hidden">
-                        {mask(h.amount)}
-                      </p>
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-
-            {/* Idle wallet nudge + payout timeline */}
-            <div className="mt-5 grid gap-3 md:gap-4 lg:grid-cols-3 lg:items-start">
-            <section className="relative overflow-hidden rounded-xl bg-brand p-5 text-brand-foreground shadow-card md:p-6 lg:col-span-2">
-
-              <span
-                aria-hidden
-                className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-gold-gradient opacity-20 blur-2xl"
-              />
-              <div className="relative">
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex size-7 items-center justify-center rounded-full bg-brand-foreground/10">
-                    <Wallet className="size-3.5" strokeWidth={2.2} />
-                  </span>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-foreground/70">
-                    Idle cash
-                  </p>
-                </div>
-
-                <div className="mt-3 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
-                  <div className="min-w-0">
-                    <p className="text-3xl font-extrabold tracking-tight text-num">
-                      <AmountCounter value={WALLET} hidden={hidden} mask={mask} />
-                    </p>
-                    <p className="mt-1 text-xs text-brand-foreground/70">
-                      Sitting idle — earning nothing today.
-                    </p>
-                  </div>
-                  <p className="text-right text-xs text-brand-foreground/70">
-                    Could earn{" "}
-                    <span className="block text-lg font-extrabold text-gold text-num">₦8,958</span>
-                    per month
-                  </p>
-                </div>
-
-                <div className="mt-4 h-px w-full bg-brand-foreground/12" />
-
-                <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-[11px] text-brand-foreground/65">
-                    Kipit Vault · 21.5% p.a. · 365-day tenor
-                  </p>
-                  <Link
-                    to="/invest"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-full bg-gold-gradient px-5 py-3 text-xs font-bold text-brand press"
-                  >
-                    Invest wallet <ArrowUpRight className="size-3.5" />
-                  </Link>
-                </div>
-              </div>
-            </section>
-
-            {/* Payout timeline */}
-            <section className="card-surface mt-3 p-4 md:p-6 lg:mt-0">
+            <div className="v3-float-card v3-float-delay bottom-20 right-0 w-[220px] sm:right-2">
               <div className="flex items-center justify-between">
-                <h2 className="font-display text-base font-extrabold">Coming up</h2>
-                <Link
-                  to="/portfolio/maturities"
-                  className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
-                >
-                  Calendar <ChevronRight className="size-3.5" />
-                </Link>
+                <p className="text-xs text-muted-foreground">Fixed plan matured</p>
+                <BadgeCheck className="size-4 text-brand" />
               </div>
-              <ol className="mt-3.5 space-y-3.5">
-                {COMING_UP.length === 0 ? (
-                  <li className="text-[12.5px] text-muted-foreground">
-                    No upcoming maturities yet.
-                  </li>
-                ) : (
-                  COMING_UP.map((p, i) => (
-                    <li
-                      key={`${p.label}-${p.date}`}
-                      style={{ ["--d" as string]: `${i * 90}ms` }}
-                      className={`k-rise relative grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3 ${
-                        i === 3 ? "lg:hidden" : ""
-                      }`}
-                    >
-                      <span className="relative flex w-3 justify-center">
-                        <span
-                          className={`z-10 mt-1.5 size-2.5 rounded-full ring-4 ring-surface ${
-                            i === 0 ? "bg-gold k-glow" : "bg-brand/30"
-                          }`}
-                        />
-                        {i < COMING_UP.length - 1 && (
-                          <span className="absolute top-3 h-full w-px bg-border" />
-                        )}
-                      </span>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold">{p.label}</p>
-                        <p className="text-[11px] text-muted-foreground">{p.date}</p>
-                      </div>
-                      <p className="shrink-0 text-sm font-bold text-num">{mask(p.amount)}</p>
-                    </li>
-                  ))
-                )}
-              </ol>
-            </section>
+              <p className="mt-1 text-lg font-bold">₦785,500</p>
+              <p className="text-xs text-muted-foreground">Settled to wallet · today</p>
             </div>
-
-
-
-
-            {/* For you */}
-            <ForYouFeature className="mt-5" />
-
           </div>
         </div>
-    </div>
-  );
-}
+      </header>
 
-/* ─────────────────────────────────────────────────────────────
-   Desktop dashboard — a distinct layout from the mobile app view.
-   ───────────────────────────────────────────────────────────── */
-
-function DesktopWeekChart({ hidden }: { hidden: boolean }) {
-  const live = useLiveBalances();
-  const series = live.interestWeekSeries;
-  const labels = live.interestWeekLabels;
-  const max = Math.max(...series, 1);
-  const total = series.reduce((a, b) => a + b, 0);
-  const todayIdx = 6;
-  return (
-    <div className="flex h-36 items-end justify-between gap-2">
-      {series.map((v, i) => {
-        const isToday = i === todayIdx;
-        const pct = total > 0 ? 22 + (v / max) * 78 : 22;
-        return (
-          <div key={`${labels[i]}-${i}`} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
-            <span className="text-[10px] font-bold text-muted-foreground">
-              {hidden ? "••" : naira(v)}
-            </span>
-            <div
-              className={`k-grow w-full rounded-t-lg ${isToday && total > 0 ? "bg-gold-gradient" : "bg-brand/15"}`}
-              style={{ height: `${pct}%`, ["--d" as string]: `${i * 70}ms` }}
-            />
-            <span
-              className={`text-[10px] font-semibold ${isToday && total > 0 ? "text-foreground" : "text-muted-foreground/70"}`}
-            >
-              {labels[i] || WEEK_LABELS[i]}
-            </span>
+      {/* Strip */}
+      <div className="v3-strip">
+        <div className="v3-marquee">
+          <div className="v3-marquee-track">
+            {[...STRIP, ...STRIP].map((s, i) => (
+              <span key={i} className="flex items-center gap-3 whitespace-nowrap text-sm font-medium text-muted-foreground">
+                <ShieldCheck className="size-4 text-gold" /> {s}
+              </span>
+            ))}
           </div>
-        );
-      })}
-    </div>
-  );
-}
+        </div>
+      </div>
 
-function DesktopHome() {
-  const WALLET = useWalletBalance();
-  const live = useLiveBalances();
-  const INVESTED = live.invested;
-  const HOLDINGS = useMemo(() => live.holdings.map(mapHolding), [live.holdings]);
-  const NEXT_MATURITY = useMemo(
-    () => mapNextMaturity(live.nextMaturity, live.holdings),
-    [live.nextMaturity, live.holdings],
-  );
-  const COMING_UP = useMemo(() => comingUpFromHoldings(live.holdings), [live.holdings]);
-  const TOTAL = WALLET + INVESTED || 1;
-  const { hidden, toggle, mask } = useBalanceVisibility();
-  const investedPct = TOTAL > 0 ? Math.round((INVESTED / TOTAL) * 100) : 0;
-
-  return (
-    <div className="hidden pb-4 md:block">
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(18rem,1fr)]">
-        <div className="grid min-w-0 gap-2">
-        <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 pt-6 pb-4 text-primary-foreground shadow-float">
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -right-20 -top-28 size-72 rounded-full bg-gold/25 blur-3xl"
-          />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -left-24 bottom-[-6rem] size-72 rounded-full bg-white/10 blur-3xl"
-          />
-          <div className="relative">
-            <div className="flex items-start justify-between gap-6">
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary-foreground/60">
-                  Total portfolio value
-                </p>
-                <div className="mt-3 flex items-end gap-3">
-                  <AmountCounter
-                    value={TOTAL}
-                    hidden={hidden}
-                    mask={mask}
-                    className="font-display text-[52px] font-extrabold leading-none tracking-[-0.045em] text-num"
-                  />
-                  <button
-                    type="button"
-                    onClick={toggle}
-                    aria-label={hidden ? "Show balances" : "Hide balances"}
-                    className="mb-1.5 grid size-9 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 press hover:bg-white/20"
-                  >
-                    {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                  </button>
-                </div>
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1.5 text-[11px] font-bold text-gold">
-                    <ArrowUpRight className="size-3.5" /> +{naira(live.interestThisWeek)} this week
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-primary-foreground/75">
-                    +{naira(MONTH_CHANGE)} ({MONTH_CHANGE_PCT}%) this month
-                  </span>
-                </div>
-              </div>
-              <Link
-                to="/portfolio"
-                className="hidden shrink-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold press hover:bg-white/20 lg:inline-flex"
-              >
-                View portfolio <ChevronRight className="size-3.5" />
-              </Link>
-            </div>
-
-            {/* Allocation bar */}
-            <div className="mt-6">
-              <div className="flex h-2.5 overflow-hidden rounded-full bg-white/15">
-                <span
-                  className="k-fill h-full rounded-full bg-gold-gradient"
-                  style={{ width: `${investedPct}%` }}
-                />
-              </div>
-              <dl className="mt-3 grid grid-cols-2 gap-4">
-                <div className="rounded-xl border border-white/15 bg-white/5 px-4 py-3">
-                  <dt className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary-foreground/60">
-                    Invested · {investedPct}%
-                  </dt>
-                  <dd className="mt-1 text-xl font-extrabold text-num">
-                    <AmountCounter value={INVESTED} hidden={hidden} mask={mask} />
-                  </dd>
-                  <dd className="mt-0.5 text-[11px] text-primary-foreground/60">
-                    Across {HOLDINGS.length} active plans
-                  </dd>
-                </div>
-                <div className="rounded-xl border border-white/15 bg-white/5 px-4 py-3">
-                  <dt className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary-foreground/60">
-                    Wallet · {100 - investedPct}%
-                  </dt>
-                  <dd className="mt-1 text-xl font-extrabold text-num">
-                    <AmountCounter value={WALLET} hidden={hidden} mask={mask} />
-                  </dd>
-                  <dd className="mt-0.5 text-[11px] text-primary-foreground/60">
-                    Available to invest now
-                  </dd>
-                </div>
-              </dl>
-            </div>
+      {/* Stats */}
+      <section className="v3-container grid grid-cols-2 gap-8 py-16 lg:grid-cols-4">
+        {STATS.map((s) => (
+          <div key={s.label} className="v3-reveal border-l border-border pl-6">
+            <p className="text-4xl font-bold tracking-tight lg:text-5xl"><CountUp value={s.value} /></p>
+            <p className="mt-2 text-sm text-muted-foreground">{s.label}</p>
           </div>
-        </section>
+        ))}
+      </section>
 
-        {/* Interest follows the hero independently of the right column height. */}
-        <section className="card-surface p-6">
-          <div className="flex items-start justify-between gap-3">
+      {/* Products bento */}
+      <section id="products" className="v3-section v3-glow v3-glow-mint-tr !pt-6">
+        <div className="v3-container">
+          <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                Interest this week
-              </p>
-              <p className="mt-1.5 font-display text-2xl font-extrabold text-num">
-                {mask(live.interestThisWeek)}
-              </p>
+              <span className="v3-eyebrow">Products</span>
+              <h2 className="v3-heading mt-4 max-w-[640px]">Pick how long you want to <span className="v3-serif">save.</span></h2>
             </div>
-            <Link
-              to="/call-account"
-              className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
-            >
-              Details <ChevronRight className="size-3.5" />
-            </Link>
+            <a href={WEB_APP_SIGNUP_URL} className="v3-btn v3-btn-outline">Compare plans <ArrowUpRight className="size-4" /></a>
           </div>
-          <div className="mt-4">
-            <DesktopWeekChart hidden={hidden} />
-          </div>
-        </section>
-        </div>
 
-        {/* Quick actions + idle cash + next maturity */}
-        <div className="grid min-w-0 gap-4">
-          <section className="card-surface p-5">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-              Quick actions
-            </p>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              {QUICK_ACTIONS.map((a, i) => (
-                <Link
-                  key={a.label}
-                  to={a.to}
-                  style={{ ["--d" as string]: `${100 + i * 60}ms` }}
-                  className="k-rise flex items-center gap-3 rounded-xl border border-border bg-secondary/40 px-3.5 py-3 text-xs font-bold press hover:border-brand/30 hover:bg-secondary"
-                >
-                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-brand text-brand-foreground">
-                    <a.icon className="size-4" strokeWidth={1.9} />
-                  </span>
-                  <span className="min-w-0 truncate">{a.label}</span>
-                </Link>
+          <div className="v3-product-grid mt-12 grid gap-5 lg:grid-cols-3">
+            <div id="fixed-plans" className="v3-card v3-card-navy lg:col-span-2 lg:row-span-2 flex flex-col justify-between min-h-[420px]">
+              <div className="flex items-start justify-between">
+                <span className="v3-icon"><Lock className="size-5" /></span>
+                <span className="rounded-full bg-gold px-3 py-1 text-xs font-bold text-gold-foreground">Most popular</span>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Fixed Plans · up to</p>
+                <p className="v3-product-rate text-[88px] font-bold leading-none tracking-[-0.05em]">19.2<span className="text-4xl">% <span className="v3-product-rate-unit">p.a.</span></span></p>
+                <p className="mt-4 max-w-[460px] text-muted-foreground">Lock 30 to 365 days and get a fixed payout date — principal plus interest, settled straight to your wallet.</p>
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {["30–365 day tenors", "Auto-rollover", "Same-day settlement"].map((c) => (
+                    <span key={c} className="rounded-full border border-white/20 px-3 py-1 text-xs">{c}</span>
+                  ))}
+                </div>
+                <div className="v3-product-tenors hidden lg:grid">
+                  {[30, 90, 180, 365].map((days) => <div key={days}><strong>{days}</strong><span>days</span></div>)}
+                </div>
+                <Button variant="ghost" className="v3-product-action hidden lg:flex" onClick={() => setChooser("access")}>Start a fixed plan <ArrowRight className="size-4" /></Button>
+              </div>
+            </div>
+            <div id="call-account" className="v3-card v3-card-gold">
+              <span className="v3-icon"><Wallet className="size-5" /></span>
+              <p className="mt-6 text-sm text-muted-foreground">Call Account</p>
+              <p className="text-5xl font-bold tracking-tight">14.5%</p>
+              <p className="mt-3 text-sm text-muted-foreground">Daily interest on everyday money. Move to your wallet any time.</p>
+              <Button variant="ghost" className="v3-product-action hidden lg:flex" onClick={() => setChooser("access")}>Open a Call Account <ArrowRight className="size-4" /></Button>
+            </div>
+            <div id="explore" className="v3-card v3-card-mint">
+              <span className="v3-icon"><Layers3 className="size-5" /></span>
+              <p className="mt-6 text-sm text-muted-foreground">Explore</p>
+              <p className="text-5xl font-bold tracking-tight">Curated</p>
+              <p className="mt-3 text-sm text-muted-foreground">T-bills, bonds and partner funds, vetted and explained.</p>
+              <Button variant="ghost" className="v3-product-action hidden lg:flex" onClick={() => setChooser("access")}>Explore investments <ArrowRight className="size-4" /></Button>
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {FEATURES.map((f) => (
+              <div key={f.title} className="v3-card !p-6">
+                <span className="v3-icon !size-10"><f.icon className="size-4" /></span>
+                <p className="mt-4 font-semibold">{f.title}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{f.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section id="how" className="v3-section v3-glow v3-glow-gold-bl border-y border-border">
+        <div className="v3-container">
+          <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div>
+              <span className="v3-eyebrow">How it works</span>
+              <h2 className="v3-heading mt-4 max-w-[560px]">Open an account in about <span className="v3-serif v3-gold-text">5 minutes.</span></h2>
+              <p className="mt-5 max-w-[480px] text-muted-foreground">You need your BVN, a selfie and a debit card. No branch visit.</p>
+            </div>
+            <div className="flex gap-3">
+              <Button variant="ghost" className="v3-btn v3-btn-outline !h-12" onClick={() => setChooser("soon")}><Smartphone className="size-4" /> iOS & Android</Button>
+              <a href={WEB_APP_URL} className="v3-btn v3-btn-outline !h-12"><Landmark className="size-4" /> Web app</a>
+            </div>
+          </div>
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            {STEPS.map((s, i) => (
+              <div key={s.title} className="v3-step-card v3-reveal" style={{ transitionDelay: `${i * 100}ms` }}>
+                <div className="v3-step-media">
+                  <img src={s.img} alt={s.title} loading="lazy" width={1024} height={768} />
+                  <span className="v3-step-num-badge">0{i + 1}</span>
+                </div>
+                <div className="p-6 pt-5">
+                  <p className="text-lg font-semibold">{s.title}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{s.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Calculator */}
+      <section id="calculator" className="v3-section v3-glow v3-glow-navy-tr">
+        <WebsiteV3Calculator onAccess={() => setChooser("access")} />
+        <div className="v3-container grid gap-10 lg:hidden">
+          <div>
+            <span className="v3-eyebrow">Calculator</span>
+            <h2 className="v3-heading mt-4">Work out what you’d <span className="v3-serif">earn.</span></h2>
+            <p className="mt-5 max-w-[440px] text-muted-foreground">Illustrative figures based on current fixed-plan rates. Actual rates are confirmed when you subscribe.</p>
+            <div className="mt-10 hidden lg:block" aria-live="polite">
+              <p className="text-sm text-muted-foreground">Total payout</p>
+              <p className="mt-3 whitespace-nowrap text-5xl font-bold tabular-nums text-brand">{naira(amount + interest)}</p>
+              <p className="mt-4 text-sm text-muted-foreground">Includes <span className="font-semibold text-foreground">{naira(interest)}</span> interest earned</p>
+              <p className="mt-2 text-xs text-muted-foreground">at {tenor.rate}% p.a. over {tenor.days} days</p>
+            </div>
+            <ul className="mt-8 space-y-3 text-sm">
+              {["No hidden fees", "Rate locked at subscription", "Payout settles to your wallet"].map((t) => (
+                <li key={t} className="flex items-center gap-3"><BadgeCheck className="size-5 text-gold" /> {t}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="v3-card !p-9 shadow-[var(--v3-shadow)]">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">Amount</p>
+              <p className="text-2xl font-bold">{naira(amount)}</p>
+            </div>
+            <input aria-label="Investment amount" type="range" min={10_000} max={10_000_000} step={10_000} value={amount} onChange={(e) => setAmount(Number(e.target.value))} className="v3-range mt-4" />
+            <p className="mt-8 text-sm text-muted-foreground">Tenor</p>
+            <div className="mt-3 grid grid-cols-4 gap-2">
+              {TENORS.map((t) => (
+                <button key={t.days} className="v3-seg" data-active={t.days === tenor.days} onClick={() => setTenor(t)}>{t.days}d</button>
               ))}
             </div>
-          </section>
-
-          <section className="relative overflow-hidden rounded-2xl bg-brand p-5 text-brand-foreground shadow-card">
-            <span
-              aria-hidden
-              className="pointer-events-none absolute -right-14 -top-16 size-48 rounded-full bg-gold-gradient opacity-20 blur-2xl"
-            />
-            <div className="relative">
-              <div className="flex items-center gap-2">
-                <span className="grid size-7 place-items-center rounded-full bg-brand-foreground/10">
-                  <Wallet className="size-3.5" strokeWidth={2.2} />
-                </span>
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-foreground/70">
-                  Idle cash
-                </p>
+            <div className="mt-8 rounded-2xl bg-[var(--v3-cream)] p-5 sm:p-6 lg:hidden">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="min-w-0">
+                  <p className="text-xs text-muted-foreground">Interest earned</p>
+                  <p className="mt-1 whitespace-nowrap text-lg font-bold tabular-nums text-brand sm:text-2xl">+{naira(interest)}</p>
+                </div>
+                <div className="min-w-0 border-l border-border pl-3 sm:pl-4">
+                  <p className="text-xs text-muted-foreground">Total payout</p>
+                  <p className="mt-1 whitespace-nowrap text-lg font-bold tabular-nums sm:text-2xl">{naira(amount + interest)}</p>
+                </div>
               </div>
-              <p className="mt-3 text-2xl font-extrabold tracking-tight text-num">
-                <AmountCounter value={WALLET} hidden={hidden} mask={mask} />
-              </p>
-              <p className="mt-1 text-[11px] text-brand-foreground/70">
-                Could earn <span className="font-bold text-gold">₦8,958</span> a month in Kipit
-                Vault · 21.5% p.a.
-              </p>
-              <Link
-                to="/invest"
-                className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-gold-gradient px-5 py-2.5 text-xs font-bold text-brand press hover:opacity-95"
-              >
-                Invest wallet <ArrowUpRight className="size-3.5" />
-              </Link>
+              <p className="mt-4 border-t border-border pt-3 text-xs text-muted-foreground">at {tenor.rate}% p.a. over {tenor.days} days</p>
             </div>
-          </section>
-        <Link
-          to="/portfolio/$holdingId"
-          params={{ holdingId: NEXT_MATURITY.id || "none" }}
-          className="card-surface block p-6 press hover:-translate-y-0.5 hover:shadow-float"
-        >
-          <div className="flex items-start justify-between gap-5">
-            <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                Next maturity
-              </p>
-              <h2 className="mt-1.5 truncate font-display text-xl font-extrabold">
-                {NEXT_MATURITY.name}
-              </h2>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {NEXT_MATURITY.tenor} · {NEXT_MATURITY.rate} · matures {NEXT_MATURITY.date}
-              </p>
-            </div>
-            <div className="shrink-0 rounded-xl bg-brand px-4 py-2.5 text-center text-brand-foreground">
-              <p className="text-xl font-extrabold leading-none text-num">
-                {NEXT_MATURITY.daysLeft}
-              </p>
-              <p className="text-[9px] font-semibold uppercase tracking-wider opacity-75">days</p>
-            </div>
+            <Button type="button" className="v3-btn v3-btn-primary mt-6 w-full justify-center" onClick={() => setChooser("access")}>Start this plan <ArrowRight className="size-4" /></Button>
           </div>
-          <div className="mt-5 h-2 overflow-hidden rounded-full bg-secondary">
-            <div
-              className="k-fill h-full rounded-full bg-gold-gradient"
-              style={{
-                width: `${Math.round(
-                  ((NEXT_MATURITY.totalDays - NEXT_MATURITY.daysLeft) /
-                    NEXT_MATURITY.totalDays) *
-                    100,
-                )}%`,
-              }}
-            />
-          </div>
-          <div className="mt-3 flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">
-              Principal {mask(NEXT_MATURITY.amount)}
-            </span>
-            <span className="font-bold">Payout {mask(NEXT_MATURITY.expectedPayout)}</span>
-          </div>
-        </Link>
         </div>
-      </div>
+      </section>
 
-      {/* Row 3 — plans table + payout timeline */}
-      <div className="mt-2 grid gap-4 xl:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
-        <section className="card-surface overflow-hidden">
-          <div className="flex items-center justify-between border-b border-border px-6 py-4">
-            <h2 className="font-display text-base font-extrabold">Your plans</h2>
-            <Link
-              to="/portfolio"
-              className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
-            >
-              All plans <ChevronRight className="size-3.5" />
-            </Link>
+      {/* Lifestyle mosaic */}
+      <section className="v3-section !pt-0">
+        <div className="v3-container">
+          <div className="grid gap-10 lg:grid-cols-2 lg:items-end">
+            <div>
+              <span className="v3-eyebrow">Life, planned</span>
+              <h2 className="v3-heading mt-4">What people save <span className="v3-serif v3-gold-text">for.</span></h2>
+            </div>
+            <p className="text-muted-foreground lg:max-w-[460px]">Rent next year, a wedding in December, school fees in September, or simply peace of mind — set a goal, pick a tenor, and let Kipit keep time.</p>
           </div>
-          <div className="grid grid-cols-[minmax(0,1fr)_7rem_9rem_8rem] gap-4 border-b border-border bg-secondary/40 px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-            <span>Plan</span>
-            <span>Rate</span>
-            <span>Progress</span>
-            <span className="text-right">Principal</span>
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { img: imgLife1, alt: "Woman checking her Kipit savings at home", tag: <>Emergency fund · <b>14.5% p.a.</b></> },
+              { img: imgLife2, alt: "Couple planning their finances together", tag: <>Wedding plan · <b>180 days</b></> },
+              { img: imgLife3, alt: "Professional reviewing his fixed plan", tag: <>Rent goal · <b>365 days</b></> },
+            ].map((p, i) => (
+              <figure key={p.alt} className="v3-photo v3-reveal h-[320px] sm:h-[380px]" style={{ transitionDelay: `${i * 100}ms` }}>
+                <img src={p.img} alt={p.alt} loading="lazy" />
+                <figcaption className="v3-photo-tag">{p.tag}</figcaption>
+              </figure>
+            ))}
           </div>
-          <ul>
-            {HOLDINGS.map((h, i) => {
-              const progress = Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100);
-              const rail = i === 0 ? "bg-gold" : i === 1 ? "bg-brand" : "bg-teal";
-              return (
-                <li key={h.name} className="border-b border-border last:border-0">
-                  <Link
-                    to="/portfolio/$holdingId"
-                    params={{ holdingId: h.id || `plan-${i}` }}
-                    className="grid grid-cols-[minmax(0,1fr)_7rem_9rem_8rem] items-center gap-4 px-6 py-4 press hover:bg-secondary/50"
-                  >
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span className={`h-9 w-1.5 shrink-0 rounded-full ${rail}`} />
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-bold">{h.name}</p>
-                        <p className="text-[11px] text-muted-foreground">
-                          Matures {h.date} · {h.daysLeft} days left
-                        </p>
-                      </div>
-                    </div>
-                    <span className="rounded-full bg-secondary px-2 py-1 text-center text-[11px] font-bold">
-                      {h.rate}
-                    </span>
-                    <div>
-                      <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
-                        <div
-                          className={`k-fill h-full rounded-full ${i === 0 ? "bg-gold-gradient" : "bg-brand"}`}
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-                      <p className="mt-1.5 text-[10px] text-muted-foreground">{progress}% complete</p>
-                    </div>
-                    <p className="text-right text-sm font-extrabold text-num">{mask(h.amount)}</p>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
+          <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {GOALS.map((g, i) => (
+              <div key={g.label} className="v3-card v3-reveal !p-6 flex items-center gap-4" style={{ transitionDelay: `${i * 80}ms` }}>
+                <span className="v3-icon !size-11 shrink-0"><g.icon className="size-4" /></span>
+                <div>
+                  <p className="text-xl font-bold leading-tight">{g.value}</p>
+                  <p className="text-xs text-muted-foreground">{g.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-        <section className="card-surface p-6">
-          <div className="flex items-center justify-between">
-            <h2 className="font-display text-base font-extrabold">Coming up</h2>
-            <Link
-              to="/portfolio/maturities"
-              className="inline-flex items-center gap-0.5 text-xs font-bold text-brand"
-            >
-              Calendar <ChevronRight className="size-3.5" />
-            </Link>
-          </div>
-          <ol className="mt-4 space-y-4">
-            {COMING_UP.length === 0 ? (
-              <li className="text-[12.5px] text-muted-foreground">
-                No upcoming maturities yet.
-              </li>
-            ) : (
-              COMING_UP.map((p, i) => (
-                <li
-                  key={`${p.label}-${p.date}`}
-                  style={{ ["--d" as string]: `${i * 80}ms` }}
-                  className="k-rise relative grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3"
-                >
-                  <span className="relative flex w-3 justify-center">
-                    <span
-                      className={`z-10 mt-1.5 size-2.5 rounded-full ring-4 ring-surface ${
-                        i === 0 ? "bg-gold k-glow" : "bg-brand/30"
-                      }`}
-                    />
-                    {i < COMING_UP.length - 1 && (
-                      <span className="absolute top-3 h-full w-px bg-border" />
-                    )}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">{p.label}</p>
-                    <p className="text-[11px] text-muted-foreground">{p.date}</p>
+      {/* Testimonials */}
+      <section className="v3-section v3-glow v3-glow-gold-tr">
+        <div className="v3-container">
+          <span className="v3-eyebrow">Stories</span>
+          <h2 className="v3-heading mt-4 max-w-[640px]">What customers <span className="v3-serif">say.</span></h2>
+          <div className="mt-12 grid gap-5 lg:grid-cols-3">
+            {TESTIMONIALS.map((t) => (
+              <figure key={t.name} className="v3-card flex flex-col justify-between">
+                <div className="flex text-gold">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="size-4 fill-current" />)}</div>
+                <blockquote className="mt-5 text-lg leading-relaxed">"{t.quote}"</blockquote>
+                <figcaption className="mt-8 flex items-center gap-3">
+                  <span className="grid size-10 place-items-center rounded-full bg-brand text-sm font-bold text-brand-foreground">{t.name[0]}</span>
+                  <div>
+                    <p className="font-semibold">{t.name}</p>
+                    <p className="text-xs text-muted-foreground">{t.role}</p>
                   </div>
-                  <p className="shrink-0 text-sm font-bold text-num">{mask(p.amount)}</p>
-                </li>
-              ))
-            )}
-          </ol>
-        </section>
-      </div>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      <ForYouFeature className="mt-3" />
+      {/* Security */}
+      <section className="v3-security-desktop" aria-labelledby="v3-security-title">
+        <div className="v3-container">
+          <div className="v3-security-layout">
+            <div>
+              <div className="v3-security-header">
+                <span className="v3-eyebrow">Built on trust</span>
+                <h2 id="v3-security-title">How we keep<br /><span>your money safe.</span></h2>
+                <p>Your investments are held by Kipit Investment Ltd, an SEC-licensed asset manager. Your account is protected by PIN and verified ID.</p>
+              </div>
+              <div className="v3-security-details">
+              <div className="v3-security-item"><span className="v3-security-icon"><Lock size={23} /></span><div><span className="v3-security-number">01 / ACCOUNT SECURITY</span><h3>Bank-grade encryption</h3><p>Data encrypted in transit and at rest, with PIN and biometric sign-in.</p><div className="v3-security-tags"><span>Encrypted data</span><span>PIN protection</span><span>Biometric sign-in</span></div></div></div>
+              <div className="v3-security-item"><span className="v3-security-icon"><Landmark size={23} /></span><div><span className="v3-security-number">02 / INVESTMENT CUSTODY</span><h3>SEC-licensed asset manager</h3><p>Your investments are held by Kipit Investment Ltd, licensed by the SEC as an asset manager, with funds kept in segregated custody.</p><div className="v3-security-tags"><span>Kipit Investment Ltd</span><span>SEC-licensed</span><span>Segregated custody</span></div></div></div>
+            </div>
+            </div>
+            <div className="v3-security-art">
+              <WebsiteAppPreview />
+              <div className="v3-security-caption"><ShieldCheck size={17} /><span>Protection at every step.</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="v3-section v3-glow v3-glow-navy-tr lg:hidden">
+        <div className="v3-container grid gap-5 lg:grid-cols-3">
+          <div className="v3-card v3-card-navy lg:col-span-1">
+            <span className="v3-icon"><ShieldCheck className="size-5" /></span>
+            <h3 className="mt-6 text-3xl font-bold tracking-tight">How your money is kept safe.</h3>
+            <p className="mt-3 text-muted-foreground">Your investments are held by Kipit Investment Ltd, an SEC-licensed asset manager. Your account is protected by PIN and verified ID.</p>
+          </div>
+          {[
+            { icon: Lock, t: "Bank-grade encryption", b: "Data encrypted in transit and at rest, with PIN and biometric sign-in." },
+            { icon: PiggyBank, t: "SEC-licensed asset manager", b: "Your investments are held by Kipit Investment Ltd, licensed by the SEC as an asset manager, with funds in segregated custody." },
+          ].map((x) => (
+            <div key={x.t} className="v3-card">
+              <span className="v3-icon"><x.icon className="size-5" /></span>
+              <h3 className="mt-6 text-xl font-semibold">{x.t}</h3>
+              <p className="mt-2 text-muted-foreground">{x.b}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Learn */}
+      <section id="learn" className="v3-section v3-glow v3-glow-mint-bl">
+        <div className="v3-container">
+          <div className="flex items-end justify-between gap-6">
+            <div>
+              <h2 className="v3-heading">Guides to saving and investing</h2>
+            </div>
+          </div>
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {ARTICLES.map((a) => (
+              <Link key={a.id} to="/learn/$articleId" params={{ articleId: a.id }} className="v3-article group">
+                <div className="v3-article-img">
+                  <img src={a.img} alt={a.title} loading="lazy" className="size-full object-cover" />
+                  <span className="v3-article-chip absolute left-4 top-4">{a.tag}</span>
+                </div>
+                <div className="flex flex-1 flex-col p-6">
+                  <p className="text-lg font-semibold leading-snug group-hover:text-brand">{a.title}</p>
+                  <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{a.excerpt}</p>
+                  <span className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-semibold text-brand">
+                    {a.mins} min read <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faqs" className="v3-section v3-glow v3-glow-cream">
+        <div className="v3-container grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="lg:sticky lg:top-28 lg:self-start">
+            <span className="v3-eyebrow">FAQs</span>
+            <h2 className="v3-heading mt-4">Common <span className="v3-serif">questions</span></h2>
+            <p className="mt-4 text-muted-foreground">Everything you need to know before you start.</p>
+            <a href="https://wa.me/" target="_blank" rel="noreferrer" className="v3-help-card mt-8">
+              <span className="v3-help-icon"><Globe className="size-5" /></span>
+              <span>
+                <span className="block font-semibold">Still curious?</span>
+                <span className="block text-sm text-muted-foreground">Chat with us on WhatsApp any time</span>
+              </span>
+            </a>
+          </div>
+          <div className="space-y-3">
+            {FAQS.map((f, i) => (
+              <div key={f.q} className={`v3-faq-card ${faq === i ? "is-open" : ""}`}>
+                <button className="flex w-full items-center gap-5 p-6 text-left text-lg font-semibold" onClick={() => setFaq(faq === i ? null : i)}>
+                  <span className="v3-faq-num">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="flex-1">{f.q}</span>
+                  <span className="v3-faq-toggle"><ChevronDown className={`size-4 transition-transform ${faq === i ? "rotate-180" : ""}`} /></span>
+                </button>
+                {faq === i && <p className="-mt-2 pb-6 pl-[76px] pr-6 text-muted-foreground">{f.a}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Promise */}
+      <section className="v3-section v3-glow v3-glow-gold-tr">
+        <div className="v3-container v3-promise-grid grid gap-12 lg:grid-cols-[1fr_1.05fr] lg:items-center">
+          <div className="v3-reveal">
+            <span className="v3-eyebrow">Our promise</span>
+            <h2 className="v3-heading mt-4">Why we started <span className="v3-serif v3-gold-text">Kipit.</span></h2>
+            <p className="mt-5 max-w-[460px] text-muted-foreground">Most savings accounts in Nigeria pay less than inflation. We wanted rates that are clear upfront, plans you can start with ₦1,000, and interest you can check every day.</p>
+            <ol className="mt-8 grid gap-3">
+              {[["Day one", "Interest starts the moment you invest"], ["Same day", "Matured plans land in your wallet"], ["₦1,000", "All it takes to get started"]].map(([v, l], i) => (
+                <li key={v} className="v3-promise-row">
+                  <span className="v3-promise-num">0{i + 1}</span>
+                  <div className="min-w-0 flex-1"><p className="text-lg font-bold text-brand">{v}</p><p className="text-sm text-muted-foreground">{l}</p></div>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div className="v3-reveal v3-promise-art">
+            <img src={imgLagos} alt="Lagos skyline at golden hour" loading="lazy" width={1600} height={912} className="v3-promise-img" />
+            <div className="v3-promise-badge">
+              <span className="v3-eyebrow !text-gold">Made for Nigeria</span>
+              <p className="mt-2 text-lg font-bold leading-snug">Every plan is in naira, with rates shown before you pay.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="v3-section">
+        <div className="v3-container">
+          <div className="v3-cta v3-reveal grid gap-10 p-10 lg:grid-cols-[1.2fr_1fr] lg:items-center lg:p-16">
+            <div>
+              <span className="v3-eyebrow !text-gold">Get Kipit</span>
+              <h2 className="v3-heading mt-4">Open your <span className="v3-serif text-gold">Kipit</span> account.</h2>
+              <p className="mt-4 max-w-[480px] opacity-75">Download the app or open the web app. Start with as little as ₦1,000.</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button variant="ghost" className="v3-store !h-auto" aria-label="Download on the App Store" onClick={() => setChooser("soon")}>
+                  <AppleLogo className="size-7" />
+                  <span><small>Download on the</small>App Store</span>
+                </Button>
+                <Button variant="ghost" className="v3-store !h-auto" aria-label="Get it on Google Play" onClick={() => setChooser("soon")}>
+                  <GooglePlayLogo className="size-6" />
+                  <span><small>Get it on</small>Google Play</span>
+                </Button>
+                <a href={WEB_APP_URL} className="v3-store" aria-label="Open the web app">
+                  <Globe className="size-6 text-gold" />
+                  <span><small>Use it in your browser</small>Web app</span>
+                </a>
+              </div>
+            </div>
+            <div className="relative hidden h-[300px] lg:block">
+              <img src={imgLife3} alt="Kipit user checking his plans" loading="lazy" className="v3-cta-photo" />
+              <div className="v3-float-card v3-float bottom-6 -left-6 w-[200px] !text-foreground">
+                <p className="text-xs text-muted-foreground">Rated by savers</p>
+                <p className="mt-1 flex items-center gap-1 text-xl font-bold">4.8 <Star className="size-4 fill-gold text-gold" /></p>
+                <p className="text-xs text-muted-foreground">App Store & Google Play</p>
+              </div>
+            </div>
+            <div className="v3-cta-photo-m">
+              <img src={imgLife3} alt="Kipit saver reviewing his plans" loading="lazy" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="v3-footer">
+        <div className="v3-container">
+          {/* Desktop footer */}
+          <div className="hidden gap-12 py-14 md:grid md:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
+            <div>
+              <Logo className="font-display text-2xl" />
+              <p className="mt-4 max-w-[280px] text-sm text-muted-foreground">Your wallet, Call Account and fixed plans in one place.</p>
+            </div>
+            {[
+              { h: "Products", l: [["Call Account", "#call-account"], ["Fixed Plans", "#fixed-plans"], ["Explore", "#explore"], ["Calculator", "#calculator"]] },
+              { h: "Company", l: [["About", "/about"], ["How it works", "#how"], ["Learn", "/#learn"], ["FAQs", "#faqs"]] },
+              { h: "Account", l: [["Open account", "chooser"], ["Log in", WEB_APP_LOGIN_URL], ["Web app", WEB_APP_URL]] },
+            ].map((c) => (
+              <div key={c.h}>
+                <p className="v3-footer-h">{c.h}</p>
+                <ul className="mt-4 space-y-3 text-sm">
+                  {c.l.map(([label, href]) => (
+                    <li key={label}>
+                      {href === "chooser" ? (
+                        <Button variant="link" className="v3-footer-link-btn !h-auto !justify-start" onClick={() => setChooser("access")}>{label}</Button>
+                      ) : (
+                        <a href={href}>{label}</a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+            <div>
+              <p className="v3-footer-h">Talk to us</p>
+              <ul className="mt-4 space-y-3 text-sm">
+                <li><Link to="/contact">Contact us</Link></li>
+                <li><Link to="/contact">Help & support</Link></li>
+                <li><a href="#faqs">Common questions</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="v3-footer-bottom hidden md:flex">
+            <p>© 2026 Kipit. Investments are held by Kipit Investment Ltd, an asset manager licensed by the SEC.</p>
+            <div className="flex gap-6"><Link to="/privacy">Legal documents & risk disclosure</Link><Link to="/terms">Terms & conditions</Link><Link to="/delete-account">Delete account</Link></div>
+          </div>
+          <p className="hidden pb-6 text-xs text-muted-foreground md:block">Investments carry risk; rates shown are illustrative and subject to change.</p>
+
+          {/* Mobile footer */}
+          <div className="v3-mfoot md:hidden">
+            <div className="v3-mfoot-card">
+              <Logo className="font-display text-2xl" />
+              <p className="v3-mfoot-tag">Your wallet, Call Account and fixed plans in one place.</p>
+              <div className="v3-mfoot-actions">
+                <button type="button" className="v3-btn v3-btn-gold" onClick={() => setChooser("access")}>Open account<ArrowRight className="size-4" /></button>
+                <a href={WEB_APP_LOGIN_URL} className="v3-btn v3-btn-outline">Log in</a>
+              </div>
+            </div>
+            {[
+              { h: "Products", l: [["Call Account", "#call-account"], ["Fixed Plans", "#fixed-plans"], ["Explore", "#explore"], ["Calculator", "#calculator"]] },
+              { h: "Company", l: [["About", "/about"], ["How it works", "#how"], ["Learn", "/#learn"], ["FAQs", "#faqs"]] },
+              { h: "Account", l: [["Open account", "chooser"], ["Log in", WEB_APP_LOGIN_URL], ["Web app", WEB_APP_URL]] },
+              { h: "Talk to us", l: [["Help & support", "/contact"], ["Common questions", "#faqs"], ["Privacy policy", "/privacy"], ["Terms & conditions", "/terms"], ["Delete account", "/delete-account"]] },
+            ].map((c) => (
+              <details key={c.h} className="v3-mfoot-col">
+                <summary>
+                  {c.h}
+                  <ChevronDown className="size-4" />
+                </summary>
+                <ul>
+                  {c.l.map(([label, href]) => (
+                    <li key={label}>
+                      {href === "chooser" ? (
+                        <button type="button" onClick={() => setChooser("access")}>{label}</button>
+                      ) : (
+                        <a href={href}>{label}</a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ))}
+            <p className="v3-mfoot-legal">© 2026 Kipit. Investments are held by Kipit Investment Ltd, an asset manager licensed by the SEC. Investments carry risk; rates shown are illustrative and subject to change.</p>
+            <p className="v3-mfoot-mark" aria-hidden>Kipit.</p>
+          </div>
+        </div>
+      </footer>
+
+      <WebsiteV3Access mode={chooser} onChange={setChooser} />
     </div>
   );
 }

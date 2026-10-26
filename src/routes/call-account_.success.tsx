@@ -131,7 +131,7 @@ function SuccessScreen() {
               View Call Account <ArrowRight className="size-4" strokeWidth={2.6} />
             </Link>
             <Link
-              to="/"
+              to="/home"
               className="inline-flex w-full items-center justify-center rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press md:w-auto md:px-8"
             >
               Back to home
