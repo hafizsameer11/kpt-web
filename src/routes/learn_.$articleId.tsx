@@ -1,16 +1,29 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, ArrowUpRight, Clock3 } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Clock3 } from "lucide-react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
 import { Rise } from "@/components/kipit/motion";
 import { articleArt } from "@/components/kipit/art";
+import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/kipit/Logo";
+import { WebsiteV3Nav } from "@/components/kipit/WebsiteV3Nav";
+import {
+  WebsiteV3Access,
+  WEB_APP_LOGIN_URL,
+  type AccessMode,
+} from "@/components/kipit/WebsiteV3Access";
+import { ARTICLES, getArticle, type Article as MarketingArticle } from "@/lib/articles";
 import { LEARN_ARTICLES, getLearnArticle } from "@/lib/learn-data";
+import "@/components/kipit/website-v3.css";
 
 export const Route = createFileRoute("/learn_/$articleId")({
   loader: ({ params }) => {
+    const marketing = getArticle(params.articleId);
+    if (marketing) return { kind: "marketing" as const, marketing };
     const article = getLearnArticle(params.articleId);
     if (!article) throw notFound();
-    return { article };
+    return { kind: "app" as const, article };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
@@ -18,6 +31,19 @@ export const Route = createFileRoute("/learn_/$articleId")({
         meta: [
           { title: "Article not found — Kipit Learn" },
           { name: "robots", content: "noindex" },
+        ],
+      };
+    }
+    if (loaderData.kind === "marketing") {
+      const article = loaderData.marketing;
+      return {
+        meta: [
+          { title: `${article.title} — Kipit Guides` },
+          { name: "description", content: article.excerpt },
+          { property: "og:title", content: `${article.title} — Kipit Guides` },
+          { property: "og:description", content: article.excerpt },
+          { property: "og:type", content: "article" },
+          { name: "twitter:card", content: "summary_large_image" },
         ],
       };
     }
@@ -34,8 +60,14 @@ export const Route = createFileRoute("/learn_/$articleId")({
       ],
     };
   },
-  component: ArticleScreen,
+  component: ArticleRoute,
 });
+
+function ArticleRoute() {
+  const data = Route.useLoaderData();
+  if (data.kind === "marketing") return <MarketingArticlePage article={data.marketing} />;
+  return <ArticleScreen article={data.article} />;
+}
 
 type Article = (typeof LEARN_ARTICLES)[number];
 
@@ -163,8 +195,7 @@ function DesktopArticle({
   );
 }
 
-function ArticleScreen() {
-  const { article } = Route.useLoaderData();
+function ArticleScreen({ article }: { article: Article }) {
   const index = LEARN_ARTICLES.findIndex((a) => a.id === article.id);
   const related = LEARN_ARTICLES.filter((a) => a.id !== article.id).slice(0, 2);
 
@@ -308,5 +339,130 @@ function ArticleScreen() {
         <div className="mt-8"><DisclosureStrip /></div>
       </div>
     </AppShell>
+  );
+}
+
+function MarketingArticlePage({ article }: { article: MarketingArticle }) {
+  const [access, setAccess] = useState<AccessMode>(null);
+  const related = ARTICLES.filter((a) => a.id !== article.id);
+
+  return (
+    <div className="kipit-website-v3 v3-legal-page v3-article-page min-h-screen">
+      <WebsiteV3Nav forceScrolled onOpenAccess={() => setAccess("access")} />
+
+      <main>
+        <header className="v3-legal-hero">
+          <div className="v3-container">
+            <Link to="/" hash="learn" className="v3-eyebrow inline-flex items-center gap-1 hover:underline">
+              Guides <ArrowUpRight className="size-3.5" />
+            </Link>
+            <h1 className="v3-legal-title mt-4 max-w-[760px]">
+              {article.title.split(" ").slice(0, -1).join(" ")}{" "}
+              <span className="v3-gold-text">{article.title.split(" ").slice(-1)}</span>
+            </h1>
+            <p className="mt-5 max-w-[620px] text-base leading-relaxed text-muted-foreground">
+              {article.excerpt}
+            </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              {article.tag} · {article.mins} min read
+            </p>
+          </div>
+        </header>
+
+        <div className="v3-container v3-article-body-layout">
+          <figure className="v3-article-hero">
+            <img src={article.img} alt={article.title} className="size-full object-cover" />
+          </figure>
+
+          <article>
+            {article.sections.map((s) => (
+              <section key={s.h} className="v3-legal-section v3-gsection">
+                <h2>{s.h}</h2>
+                {s.p.map((para) => (
+                  <p key={para.slice(0, 32)} className="whitespace-pre-line">
+                    {para}
+                  </p>
+                ))}
+              </section>
+            ))}
+
+            <div className="v3-gsection-cta">
+              <h3>Put it into practice</h3>
+              <p>
+                Open a Kipit account and start with as little as ₦1,000. Rates shown in guides are
+                illustrative — the app shows the live rate before you commit.
+              </p>
+              <Button className="v3-btn-gold" onClick={() => setAccess("access")}>
+                Open account <ArrowRight className="size-4" />
+              </Button>
+            </div>
+
+            <div className="v3-gsection-related">
+              <h3>Keep reading</h3>
+              <div className="mt-6 grid gap-5 md:grid-cols-2">
+                {related.map((a) => (
+                  <Link
+                    key={a.id}
+                    to="/learn/$articleId"
+                    params={{ articleId: a.id }}
+                    className="v3-article group"
+                  >
+                    <div className="v3-article-img">
+                      <img src={a.img} alt={a.title} loading="lazy" className="size-full object-cover" />
+                      <span className="v3-article-chip absolute left-4 top-4">{a.tag}</span>
+                    </div>
+                    <div className="flex flex-1 flex-col p-6">
+                      <p className="text-lg font-semibold leading-snug group-hover:text-brand">{a.title}</p>
+                      <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{a.excerpt}</p>
+                      <span className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-semibold text-brand">
+                        {a.mins} min read{" "}
+                        <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </article>
+        </div>
+      </main>
+
+      <footer className="v3-footer">
+        <div className="v3-container">
+          <div className="v3-contact-footer">
+            <div>
+              <Logo className="text-2xl" />
+              <p className="mt-3 text-sm text-muted-foreground">
+                Your wallet, Call Account and fixed plans in one place.
+              </p>
+            </div>
+            <nav aria-label="Footer navigation">
+              <Link to="/">Home</Link>
+              <Link to="/about">About</Link>
+              <Link to="/contact">Contact</Link>
+              <Link to="/privacy">Privacy</Link>
+              <Link to="/terms">Terms</Link>
+              <Link to="/delete-account">Delete account</Link>
+              <a href={WEB_APP_LOGIN_URL}>Log in</a>
+              <Button
+                variant="link"
+                className="v3-footer-link-btn"
+                onClick={() => setAccess("access")}
+              >
+                Open account <ArrowRight className="size-4" />
+              </Button>
+            </nav>
+          </div>
+          <div className="border-t border-border py-6 text-xs leading-relaxed text-muted-foreground">
+            <p>
+              © 2026 Kipit. Investments are held by Kipit Investment Ltd, an asset manager licensed by
+              the SEC.
+            </p>
+            <p className="mt-2">Investments carry risk; rates are subject to change.</p>
+          </div>
+        </div>
+      </footer>
+      <WebsiteV3Access mode={access} onChange={setAccess} />
+    </div>
   );
 }

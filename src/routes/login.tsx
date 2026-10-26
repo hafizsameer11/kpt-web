@@ -88,7 +88,7 @@ function Login() {
       } else {
         await claimPendingGifts().catch(() => undefined);
       }
-      navigate({ to: "/" });
+      navigate({ to: "/home" });
     } catch (err) {
       const next = attempts + 1;
       setAttempts(next);

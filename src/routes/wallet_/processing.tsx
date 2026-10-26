@@ -68,7 +68,7 @@ function DepositProcessing() {
       setTimedOut(true);
       setNote(message ?? "Your payment will be credited to your wallet when received");
       await sleep(2200);
-      if (!cancelled) void navigate({ to: "/", replace: true });
+      if (!cancelled) void navigate({ to: "/home", replace: true });
     };
 
     // Paystack callback often lands with ?reference= / ?trxref=

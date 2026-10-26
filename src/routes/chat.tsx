@@ -375,7 +375,7 @@ function ChatScreen() {
           <span className="pointer-events-none absolute -left-24 top-6 size-48 rounded-full border border-primary-foreground/10" />
           <div className="relative flex items-center gap-3">
             <Link
-              to="/"
+              to="/home"
               aria-label="Back"
               className="grid size-9 shrink-0 place-items-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10 press"
             >

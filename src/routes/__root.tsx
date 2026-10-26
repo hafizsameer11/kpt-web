@@ -20,7 +20,7 @@ import { refreshWalletFromApi } from "@/lib/wallet-balance";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
-  const homeTo = isAuthenticated() ? "/" : "/welcome";
+  const homeTo = isAuthenticated() ? "/home" : "/";
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
@@ -34,7 +34,7 @@ function NotFoundComponent() {
             to={homeTo}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            {isAuthenticated() ? "Go home" : "Go to welcome"}
+            {isAuthenticated() ? "Go home" : "Go to Kipit"}
           </Link>
         </div>
       </div>
@@ -49,7 +49,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
-  const homeHref = isAuthenticated() ? "/" : "/welcome";
+  const homeHref = isAuthenticated() ? "/home" : "/";
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -74,7 +74,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             href={homeHref}
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            {isAuthenticated() ? "Go home" : "Go to welcome"}
+            {isAuthenticated() ? "Go home" : "Go to Kipit"}
           </a>
         </div>
       </div>

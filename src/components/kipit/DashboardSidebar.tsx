@@ -22,7 +22,7 @@ import { displayInitials, displayName, signOut, tierLabel } from "@/lib/auth-ses
 export type SidebarItem = { label: string; to: string; icon: LucideIcon };
 
 export const SIDEBAR_NAV: SidebarItem[] = [
-  { label: "Home", to: "/", icon: Home },
+  { label: "Home", to: "/home", icon: Home },
   { label: "Invest", to: "/invest", icon: TrendingUp },
   { label: "Explore", to: "/explore", icon: Compass },
   { label: "Portfolio", to: "/portfolio", icon: PieChart },
@@ -56,7 +56,7 @@ export function DashboardSidebar({
 
   async function handleSignOut() {
     await signOut();
-    void navigate({ to: "/welcome", replace: true });
+    void navigate({ to: "/", replace: true });
   }
 
   return (

@@ -102,7 +102,7 @@ function AccountCreated() {
           </Link>
         ) : (
           <Link
-            to="/"
+            to="/home"
             className="mt-9 block w-full rounded-xl bg-gold px-5 py-3.5 text-sm font-semibold text-gold-foreground transition active:scale-[0.99]"
           >
             Continue to Kipit

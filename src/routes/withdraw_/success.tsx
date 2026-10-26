@@ -176,7 +176,7 @@ function MobileWithdrawSuccess({
 
         <div className="mt-5 flex flex-col gap-2.5">
           <Link
-            to="/"
+            to="/home"
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press"
           >
             Back to home <ArrowRight className="size-4" strokeWidth={2.6} />
@@ -274,7 +274,7 @@ function DesktopWithdrawSuccess({
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Link
-              to="/"
+              to="/home"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-gradient px-8 py-3 text-[13.5px] font-extrabold text-primary-foreground shadow-float press"
             >
               Back to home <ArrowRight className="size-4" strokeWidth={2.6} />

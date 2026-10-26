@@ -158,7 +158,7 @@ function NotificationsScreen() {
             <h1 className="flex items-center gap-2 text-xl font-extrabold tracking-tight">
               <Bell className="size-5 text-gold" /> Notifications
             </h1>
-            <Link to="/" className="text-xs font-bold text-brand">
+            <Link to="/home" className="text-xs font-bold text-brand">
               Back to Home
             </Link>
           </div>
