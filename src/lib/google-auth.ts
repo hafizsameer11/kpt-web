@@ -1,9 +1,10 @@
 /**
  * Google Identity Services (GIS) — load once, request an ID token for Kipit API.
  *
- * Client ID can come from Vite build env OR runtime GET /v1/app/config
- * (API GOOGLE_CLIENT_ID). Prefer runtime so production works without baking
- * VITE_GOOGLE_CLIENT_ID into every deploy.
+ * Uses the Sign in with Google *button* flow with FedCM (not One Tap prompt
+ * moment listeners, which Google is deprecating).
+ *
+ * Client ID: Vite `VITE_GOOGLE_CLIENT_ID` or runtime GET /v1/app/config.
  */
 
 const GOOGLE_CLIENT_ID_ENV =
@@ -48,14 +49,11 @@ type GoogleAccountsId = {
     callback: (res: CredentialResponse) => void;
     auto_select?: boolean;
     cancel_on_tap_outside?: boolean;
-    use_fedcm_for_prompt?: boolean;
+    use_fedcm_for_button?: boolean;
+    itp_support?: boolean;
   }) => void;
   prompt: (momentListener?: (notification: {
-    isNotDisplayed: () => boolean;
-    isSkippedMoment: () => boolean;
     isDismissedMoment: () => boolean;
-    getNotDisplayedReason?: () => string;
-    getSkippedReason?: () => string;
     getDismissedReason?: () => string;
   }) => void) => void;
   renderButton: (
@@ -102,6 +100,100 @@ function loadGisScript() {
   return scriptPromise;
 }
 
+function removeHost(host: HTMLElement | null) {
+  try {
+    host?.remove();
+  } catch {
+    /* ignore */
+  }
+}
+
+/**
+ * Show a short-lived overlay with the official Google button.
+ * FedCM requires a real button gesture; we auto-click when possible,
+ * and leave the overlay if the browser blocks the programmatic click.
+ */
+function presentGoogleButton(onCancel: () => void): {
+  host: HTMLElement;
+  clickOfficial: () => boolean;
+} {
+  const host = document.createElement("div");
+  host.setAttribute("data-kipit-google-host", "1");
+  host.style.cssText = [
+    "position:fixed",
+    "inset:0",
+    "z-index:2147483000",
+    "display:flex",
+    "align-items:center",
+    "justify-content:center",
+    "background:rgba(8,16,40,0.55)",
+    "padding:24px",
+  ].join(";");
+
+  const panel = document.createElement("div");
+  panel.style.cssText = [
+    "width:min(360px,100%)",
+    "border-radius:16px",
+    "background:#0b1c3f",
+    "border:1px solid rgba(255,255,255,0.14)",
+    "padding:20px",
+    "box-shadow:0 18px 50px rgba(0,0,0,0.35)",
+    "text-align:center",
+  ].join(";");
+
+  const title = document.createElement("p");
+  title.textContent = "Continue with Google";
+  title.style.cssText =
+    "margin:0 0 6px;font:600 16px/1.3 system-ui,sans-serif;color:#fff";
+
+  const hint = document.createElement("p");
+  hint.textContent = "Choose your Google account to continue.";
+  hint.style.cssText =
+    "margin:0 0 16px;font:400 13px/1.4 system-ui,sans-serif;color:rgba(255,255,255,0.7)";
+
+  const buttonMount = document.createElement("div");
+  buttonMount.style.cssText = "display:flex;justify-content:center;min-height:44px";
+
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.textContent = "Cancel";
+  cancel.style.cssText = [
+    "margin-top:14px",
+    "border:0",
+    "background:transparent",
+    "color:rgba(255,255,255,0.65)",
+    "font:600 13px/1 system-ui,sans-serif",
+    "cursor:pointer",
+  ].join(";");
+  cancel.addEventListener("click", () => {
+    removeHost(host);
+    onCancel();
+  });
+
+  panel.append(title, hint, buttonMount, cancel);
+  host.append(panel);
+  document.body.appendChild(host);
+
+  window.google!.accounts.id.renderButton(buttonMount, {
+    type: "standard",
+    theme: "outline",
+    size: "large",
+    text: "continue_with",
+    shape: "rectangular",
+    width: 280,
+    logo_alignment: "left",
+  });
+
+  const clickOfficial = () => {
+    const btn = buttonMount.querySelector("div[role=button]") as HTMLElement | null;
+    if (!btn) return false;
+    btn.click();
+    return true;
+  };
+
+  return { host, clickOfficial };
+}
+
 /** Returns a Google ID token, or throws a user-facing Error. */
 export async function requestGoogleIdToken(): Promise<string> {
   const clientId = await resolveGoogleClientId();
@@ -113,11 +205,25 @@ export async function requestGoogleIdToken(): Promise<string> {
     throw new Error("Google sign-in is unavailable. Refresh and try again.");
   }
 
+  // Drop any leftover overlay from a prior attempt.
+  document.querySelectorAll("[data-kipit-google-host]").forEach((el) => el.remove());
+
   return new Promise((resolve, reject) => {
     let settled = false;
+    let host: HTMLElement | null = null;
+    const timeout = window.setTimeout(() => {
+      finish(
+        new Error(
+          "Google sign-in timed out. If your browser blocked third-party sign-in, enable it for this site and try again.",
+        ),
+      );
+    }, 120_000);
+
     const finish = (err?: Error, token?: string) => {
       if (settled) return;
       settled = true;
+      window.clearTimeout(timeout);
+      removeHost(host);
       try {
         window.google?.accounts.id.cancel();
       } catch {
@@ -134,47 +240,27 @@ export async function requestGoogleIdToken(): Promise<string> {
         else finish(new Error("Google did not return a credential. Try again."));
       },
       auto_select: false,
-      cancel_on_tap_outside: true,
+      // FedCM button UX on Chrome (avoids deprecated One Tap prompt listeners).
+      use_fedcm_for_button: true,
+      itp_support: true,
     });
 
-    window.google!.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        const host = document.createElement("div");
-        host.style.position = "fixed";
-        host.style.left = "-9999px";
-        host.style.top = "0";
-        document.body.appendChild(host);
-        try {
-          window.google!.accounts.id.renderButton(host, {
-            type: "standard",
-            theme: "outline",
-            size: "large",
-            text: "continue_with",
-            shape: "rectangular",
-            width: 280,
-          });
-          const btn = host.querySelector("div[role=button]") as HTMLElement | null;
-          if (btn) {
-            btn.click();
-            window.setTimeout(() => host.remove(), 4000);
-          } else {
-            host.remove();
-            finish(
-              new Error(
-                "Google sign-in could not open. Allow popups for this site and try again.",
-              ),
-            );
-          }
-        } catch {
-          host.remove();
-          finish(new Error("Google sign-in could not open. Try again."));
-        }
-      } else if (notification.isDismissedMoment()) {
-        const reason = notification.getDismissedReason?.() || "";
-        if (reason === "credential_returned") return;
-        finish(new Error("Google sign-in was cancelled."));
-      }
-    });
+    try {
+      const ui = presentGoogleButton(() =>
+        finish(new Error("Google sign-in was cancelled.")),
+      );
+      host = ui.host;
+      // Same user gesture as "Continue with Google" — try to open the picker immediately.
+      window.requestAnimationFrame(() => {
+        ui.clickOfficial();
+      });
+    } catch {
+      finish(
+        new Error(
+          "Google sign-in could not open. Allow third-party sign-in for this site and try again.",
+        ),
+      );
+    }
   });
 }
 
