@@ -21,6 +21,7 @@ import {
   continueWithGoogle,
   isGoogleSignInConfigured,
 } from "@/lib/google-sign-in";
+import { nextPathAfterSocialAuth } from "@/lib/post-auth-navigation";
 import { setKycTier } from "@/lib/kyc-state";
 import { refreshWalletFromApi } from "@/lib/wallet-balance";
 import { hydrateLiveBalances } from "@/lib/live-balances";
@@ -60,7 +61,7 @@ function Login() {
   const emailOk = isValidEmailFormat(identifier);
   const googleReady = isGoogleSignInConfigured();
 
-  async function finishAfterAuth(hasPin?: boolean) {
+  async function finishAfterAuth(user: { hasPin?: boolean; hasPassword?: boolean }, social = false) {
     const giftCode =
       giftFromSearch ||
       (typeof window !== "undefined"
@@ -82,7 +83,11 @@ function Login() {
     } else {
       await claimPendingGifts().catch(() => undefined);
     }
-    if (!hasPin) {
+    if (social) {
+      void navigate({ to: nextPathAfterSocialAuth(user) });
+      return;
+    }
+    if (!user.hasPin) {
       void navigate({ to: "/signup/pin" });
       return;
     }
@@ -99,7 +104,7 @@ function Login() {
     setError(null);
     try {
       const session = await continueWithGoogle();
-      await finishAfterAuth(session.user.hasPin);
+      await finishAfterAuth(session.user, true);
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -128,7 +133,7 @@ function Login() {
       setKycTier(tierNumber(session.user.kycTier));
       await refreshWalletFromApi();
       await hydrateLiveBalances();
-      await finishAfterAuth(session.user.hasPin);
+      await finishAfterAuth(session.user);
     } catch (err) {
       const next = attempts + 1;
       setAttempts(next);
