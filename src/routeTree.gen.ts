@@ -67,6 +67,7 @@ import { Route as SignupEmailRouteImport } from './routes/signup_/email'
 import { Route as SignupOtpRouteImport } from './routes/signup_/otp'
 import { Route as SignupPasswordRouteImport } from './routes/signup_/password'
 import { Route as SignupPinRouteImport } from './routes/signup_/pin'
+import { Route as SignupSetPasswordRouteImport } from './routes/signup_/set-password'
 import { Route as SignupSuccessRouteImport } from './routes/signup_/success'
 import { Route as VerificationAddressRouteImport } from './routes/verification_/address'
 import { Route as VerificationAddressUploadRouteImport } from './routes/verification_/address-upload'
@@ -417,6 +418,11 @@ const SignupPasswordRoute = SignupPasswordRouteImport.update({
 const SignupPinRoute = SignupPinRouteImport.update({
   id: '/signup_/pin',
   path: '/signup/pin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupSetPasswordRoute = SignupSetPasswordRouteImport.update({
+  id: '/signup_/set-password',
+  path: '/signup/set-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupSuccessRoute = SignupSuccessRouteImport.update({
@@ -803,6 +809,7 @@ export interface FileRoutesByFullPath {
   '/signup/otp': typeof SignupOtpRoute
   '/signup/password': typeof SignupPasswordRoute
   '/signup/pin': typeof SignupPinRoute
+  '/signup/set-password': typeof SignupSetPasswordRoute
   '/signup/success': typeof SignupSuccessRoute
   '/verification/address': typeof VerificationAddressRoute
   '/verification/address-upload': typeof VerificationAddressUploadRoute
@@ -923,6 +930,7 @@ export interface FileRoutesByTo {
   '/signup/otp': typeof SignupOtpRoute
   '/signup/password': typeof SignupPasswordRoute
   '/signup/pin': typeof SignupPinRoute
+  '/signup/set-password': typeof SignupSetPasswordRoute
   '/signup/success': typeof SignupSuccessRoute
   '/verification/address': typeof VerificationAddressRoute
   '/verification/address-upload': typeof VerificationAddressUploadRoute
@@ -1045,6 +1053,7 @@ export interface FileRoutesById {
   '/signup_/otp': typeof SignupOtpRoute
   '/signup_/password': typeof SignupPasswordRoute
   '/signup_/pin': typeof SignupPinRoute
+  '/signup_/set-password': typeof SignupSetPasswordRoute
   '/signup_/success': typeof SignupSuccessRoute
   '/verification_/address': typeof VerificationAddressRoute
   '/verification_/address-upload': typeof VerificationAddressUploadRoute
@@ -1168,6 +1177,7 @@ export interface FileRouteTypes {
     | '/signup/otp'
     | '/signup/password'
     | '/signup/pin'
+    | '/signup/set-password'
     | '/signup/success'
     | '/verification/address'
     | '/verification/address-upload'
@@ -1288,6 +1298,7 @@ export interface FileRouteTypes {
     | '/signup/otp'
     | '/signup/password'
     | '/signup/pin'
+    | '/signup/set-password'
     | '/signup/success'
     | '/verification/address'
     | '/verification/address-upload'
@@ -1409,6 +1420,7 @@ export interface FileRouteTypes {
     | '/signup_/otp'
     | '/signup_/password'
     | '/signup_/pin'
+    | '/signup_/set-password'
     | '/signup_/success'
     | '/verification_/address'
     | '/verification_/address-upload'
@@ -1531,6 +1543,7 @@ export interface RootRouteChildren {
   SignupOtpRoute: typeof SignupOtpRoute
   SignupPasswordRoute: typeof SignupPasswordRoute
   SignupPinRoute: typeof SignupPinRoute
+  SignupSetPasswordRoute: typeof SignupSetPasswordRoute
   SignupSuccessRoute: typeof SignupSuccessRoute
   VerificationAddressRoute: typeof VerificationAddressRoute
   VerificationAddressUploadRoute: typeof VerificationAddressUploadRoute
@@ -1994,6 +2007,13 @@ declare module '@tanstack/react-router' {
       path: '/signup/pin'
       fullPath: '/signup/pin'
       preLoaderRoute: typeof SignupPinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup_/set-password': {
+      id: '/signup_/set-password'
+      path: '/signup/set-password'
+      fullPath: '/signup/set-password'
+      preLoaderRoute: typeof SignupSetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup_/success': {
@@ -2506,6 +2526,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupOtpRoute: SignupOtpRoute,
   SignupPasswordRoute: SignupPasswordRoute,
   SignupPinRoute: SignupPinRoute,
+  SignupSetPasswordRoute: SignupSetPasswordRoute,
   SignupSuccessRoute: SignupSuccessRoute,
   VerificationAddressRoute: VerificationAddressRoute,
   VerificationAddressUploadRoute: VerificationAddressUploadRoute,
@@ -2566,13 +2587,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

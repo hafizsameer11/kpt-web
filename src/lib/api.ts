@@ -19,6 +19,7 @@ export type ApiUser = {
   surname: string;
   kycTier: "TIER_0" | "TIER_1" | "TIER_2";
   hasPin?: boolean;
+  hasPassword?: boolean;
 };
 
 export type ApiSession = {
@@ -231,6 +232,23 @@ export async function loginWithGoogle(idToken: string) {
     body: JSON.stringify({ idToken, deviceName: "Kipit Web" }),
   });
   setSession(data);
+  return data;
+}
+
+/** First-time password for passwordless (e.g. Google) accounts. */
+export async function setAccountPassword(password: string, confirmPassword: string) {
+  const data = await api<{ user: ApiUser }>("/v1/auth/password/set", {
+    method: "POST",
+    body: JSON.stringify({ password, confirmPassword }),
+  });
+  const token = getAccessToken();
+  const existing = getStoredUser();
+  if (token && data.user) {
+    setSession({
+      accessToken: token,
+      user: { ...(existing ?? data.user), ...data.user },
+    });
+  }
   return data;
 }
 

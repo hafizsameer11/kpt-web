@@ -9,6 +9,7 @@ import {
   continueWithGoogle,
   isGoogleSignInConfigured,
 } from "@/lib/google-sign-in";
+import { nextPathAfterSocialAuth } from "@/lib/post-auth-navigation";
 import {
   Drawer,
   DrawerContent,
@@ -92,11 +93,7 @@ function SignupMethod() {
         email: session.user.email || undefined,
         completed: true,
       });
-      if (!session.user.hasPin) {
-        void navigate({ to: "/signup/pin" });
-      } else {
-        void navigate({ to: "/home" });
-      }
+      void navigate({ to: nextPathAfterSocialAuth(session.user) });
     } catch (err) {
       toast.error(
         err instanceof ApiError
