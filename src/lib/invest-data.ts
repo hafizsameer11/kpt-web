@@ -172,7 +172,7 @@ export const CALL_ACCOUNT_FACTS = [
   "Daily interest on your cleared balance.",
   "Credited monthly on the 1st.",
   "Withdraw anytime with no penalty.",
-  "Managed by Kipit's SEC-licensed partner.",
+  "Managed by Kipit Asset Management Limited",
 ];
 
 export type CallActivityStatus = "successful" | "processing" | "pending" | "failed";
