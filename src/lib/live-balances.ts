@@ -28,7 +28,28 @@ export type LiveNextMaturity = {
   date: string;
   daysLeft: number;
   ratePct?: number;
+  tenorDays?: number | null;
+  accrued?: number;
+  expectedInterest?: number;
+  expectedPayout?: number;
 } | null;
+
+/** Principal + expected interest at maturity (falls back to accrued / simple interest). */
+export function nextMaturityPayout(nm: NonNullable<LiveNextMaturity>): number {
+  const principal = Math.round(nm.amount || 0);
+  if (typeof nm.expectedPayout === "number" && nm.expectedPayout > principal) {
+    return Math.round(nm.expectedPayout);
+  }
+  const accrued = Math.round(nm.accrued || 0);
+  const fromApi = Math.round(nm.expectedInterest || 0);
+  let computed = 0;
+  const ratePct = nm.ratePct || 0;
+  const tenorDays = nm.tenorDays || 0;
+  if (ratePct > 0 && tenorDays > 0) {
+    computed = Math.round((principal * (ratePct / 100) * tenorDays) / 365);
+  }
+  return principal + Math.max(accrued, fromApi, computed);
+}
 
 type LiveState = {
   greetingName: string;
@@ -137,7 +158,7 @@ export async function hydrateLiveBalances() {
       homeData.NEXT_MATURITY.amount = state.nextMaturity.amount;
       homeData.NEXT_MATURITY.date = state.nextMaturity.date;
       homeData.NEXT_MATURITY.daysLeft = state.nextMaturity.daysLeft;
-      homeData.NEXT_MATURITY.expectedPayout = state.nextMaturity.amount;
+      homeData.NEXT_MATURITY.expectedPayout = nextMaturityPayout(state.nextMaturity);
       const ratePct =
         (state.nextMaturity.ratePct && state.nextMaturity.ratePct > 0
           ? state.nextMaturity.ratePct

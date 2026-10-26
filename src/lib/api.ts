@@ -10,7 +10,7 @@ const LOGGED_OUT_KEY = "kipit:explicit-logout";
 export const API_BASE =
   (typeof import.meta !== "undefined" &&
     (import.meta as { env?: { VITE_API_URL?: string } }).env?.VITE_API_URL) ||
-  "https://kipit-backend.amctraders.online";
+  "https://api.a-kipbackend.online";
 
 export type ApiUser = {
   id: string;
@@ -439,6 +439,8 @@ export async function fetchHome() {
       ratePct?: number;
       startDate?: string;
       accrued?: number;
+      expectedInterest?: number;
+      expectedPayout?: number;
     } | null;
     holdings: {
       id: string;
