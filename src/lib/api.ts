@@ -439,6 +439,8 @@ export async function fetchHome() {
       ratePct?: number;
       startDate?: string;
       accrued?: number;
+      expectedInterest?: number;
+      expectedPayout?: number;
     } | null;
     holdings: {
       id: string;
