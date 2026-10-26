@@ -27,6 +27,7 @@ import {
 import { displayInitials, displayName } from "@/lib/auth-session";
 import {
   hydrateLiveBalances,
+  nextMaturityPayout,
   useLiveBalances,
   type LiveHolding,
   type LiveNextMaturity,
@@ -146,14 +147,12 @@ function mapNextMaturity(nm: LiveNextMaturity, holdings: LiveHolding[]) {
     month: "short",
     year: "numeric",
   });
-  const rate =
-    match && Number.isFinite(match.ratePct) && match.ratePct > 0
-      ? `${match.ratePct}% p.a.`
-      : "—";
+  const ratePct =
+    (nm.ratePct && nm.ratePct > 0 ? nm.ratePct : null) ??
+    (match && match.ratePct > 0 ? match.ratePct : 0);
+  const rate = ratePct > 0 ? `${ratePct}% p.a.` : "—";
   const tenor =
-    match?.maturityDate && nm.daysLeft >= 0
-      ? `${Math.max(nm.daysLeft, 1)} days left`
-      : "";
+    nm.daysLeft >= 0 ? `${Math.max(nm.daysLeft, 1)} days left` : "";
   return {
     id: nm.id,
     name: nm.name,
@@ -161,9 +160,9 @@ function mapNextMaturity(nm: LiveNextMaturity, holdings: LiveHolding[]) {
     rate,
     date,
     daysLeft: nm.daysLeft,
-    totalDays: Math.max(nm.daysLeft, 1),
+    totalDays: Math.max(nm.daysLeft, nm.tenorDays || 0, 1),
     amount: nm.amount,
-    expectedPayout: nm.amount,
+    expectedPayout: nextMaturityPayout(nm),
   };
 }
 
