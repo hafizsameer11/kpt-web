@@ -102,7 +102,7 @@ function WalletAddMoney() {
             <div className="relative flex flex-wrap items-end justify-between gap-8">
               <div>
                 <Link
-                  to="/"
+                  to="/home"
                   className="press inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[12px] font-bold hover:bg-white/15"
                 >
                   <ArrowLeft className="size-4" /> Home
@@ -227,7 +227,7 @@ function WalletAddMoney() {
           <div className="relative md:max-w-3xl">
             <div className="flex items-center justify-between gap-3">
               <Link
-                to="/"
+                to="/home"
                 className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground press"
               >
                 <ArrowLeft className="size-3.5" /> Home

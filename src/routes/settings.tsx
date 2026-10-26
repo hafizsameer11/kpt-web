@@ -106,7 +106,7 @@ function SettingsHome() {
 
   async function handleSignOut() {
     await signOut();
-    void navigate({ to: "/welcome", replace: true });
+    void navigate({ to: "/", replace: true });
   }
 
   return (

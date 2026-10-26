@@ -210,7 +210,7 @@ function TransferDetails() {
                   {busy ? "Confirming…" : "I've sent the transfer"}
                 </button>
                 <Link
-                  to="/"
+                  to="/home"
                   className="press inline-flex w-full items-center justify-center rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground hover:border-primary/40"
                 >
                   Do this later
@@ -336,7 +336,7 @@ function TransferDetails() {
               {busy ? "Confirming…" : "I've sent the transfer"}
             </button>
             <Link
-              to="/"
+              to="/home"
               className="inline-flex w-full items-center justify-center rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-bold text-foreground press md:w-auto md:px-8"
             >
               Do this later

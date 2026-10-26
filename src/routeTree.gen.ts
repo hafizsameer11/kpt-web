@@ -10,23 +10,29 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as AutoInvestRouteImport } from './routes/auto-invest'
 import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as CallAccountRouteImport } from './routes/call-account'
 import { Route as ChatRouteImport } from './routes/chat'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DeleteAccountRouteImport } from './routes/delete-account'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as FixedPlansRouteImport } from './routes/fixed-plans'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as GiftsRouteImport } from './routes/gifts'
+import { Route as HomeRouteImport } from './routes/home'
 import { Route as InvestRouteImport } from './routes/invest'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SplashRouteImport } from './routes/splash'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WithdrawRouteImport } from './routes/withdraw'
@@ -128,6 +134,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AutoInvestRoute = AutoInvestRouteImport.update({
   id: '/auto-invest',
   path: '/auto-invest',
@@ -148,6 +159,16 @@ const ChatRoute = ChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeleteAccountRoute = DeleteAccountRouteImport.update({
+  id: '/delete-account',
+  path: '/delete-account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExploreRoute = ExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
@@ -166,6 +187,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
 const GiftsRoute = GiftsRouteImport.update({
   id: '/gifts',
   path: '/gifts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvestRoute = InvestRouteImport.update({
@@ -193,6 +219,11 @@ const PortfolioRoute = PortfolioRouteImport.update({
   path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReportsRoute = ReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
@@ -211,6 +242,11 @@ const SignupRoute = SignupRouteImport.update({
 const SplashRoute = SplashRouteImport.update({
   id: '/splash',
   path: '/splash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerificationRoute = VerificationRouteImport.update({
@@ -710,23 +746,29 @@ const SettingsHelpTicketsTicketIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
   '/chat': typeof ChatRoute
+  '/contact': typeof ContactRoute
+  '/delete-account': typeof DeleteAccountRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/gifts': typeof GiftsRoute
+  '/home': typeof HomeRoute
   '/invest': typeof InvestRoute
   '/learn': typeof LearnRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
+  '/privacy': typeof PrivacyRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
+  '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
@@ -825,23 +867,29 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
   '/chat': typeof ChatRoute
+  '/contact': typeof ContactRoute
+  '/delete-account': typeof DeleteAccountRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/gifts': typeof GiftsRoute
+  '/home': typeof HomeRoute
   '/invest': typeof InvestRoute
   '/learn': typeof LearnRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
+  '/privacy': typeof PrivacyRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
+  '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
@@ -940,23 +988,29 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/auto-invest': typeof AutoInvestRoute
   '/calculator': typeof CalculatorRoute
   '/call-account': typeof CallAccountRoute
   '/chat': typeof ChatRoute
+  '/contact': typeof ContactRoute
+  '/delete-account': typeof DeleteAccountRoute
   '/explore': typeof ExploreRoute
   '/fixed-plans': typeof FixedPlansRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/gifts': typeof GiftsRoute
+  '/home': typeof HomeRoute
   '/invest': typeof InvestRoute
   '/learn': typeof LearnRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/portfolio': typeof PortfolioRoute
+  '/privacy': typeof PrivacyRoute
   '/reports': typeof ReportsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/splash': typeof SplashRoute
+  '/terms': typeof TermsRoute
   '/verification': typeof VerificationRoute
   '/welcome': typeof WelcomeRoute
   '/withdraw': typeof WithdrawRoute
@@ -1057,23 +1111,29 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/auto-invest'
     | '/calculator'
     | '/call-account'
     | '/chat'
+    | '/contact'
+    | '/delete-account'
     | '/explore'
     | '/fixed-plans'
     | '/forgot-password'
     | '/gifts'
+    | '/home'
     | '/invest'
     | '/learn'
     | '/login'
     | '/notifications'
     | '/portfolio'
+    | '/privacy'
     | '/reports'
     | '/settings'
     | '/signup'
     | '/splash'
+    | '/terms'
     | '/verification'
     | '/welcome'
     | '/withdraw'
@@ -1172,23 +1232,29 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/auto-invest'
     | '/calculator'
     | '/call-account'
     | '/chat'
+    | '/contact'
+    | '/delete-account'
     | '/explore'
     | '/fixed-plans'
     | '/forgot-password'
     | '/gifts'
+    | '/home'
     | '/invest'
     | '/learn'
     | '/login'
     | '/notifications'
     | '/portfolio'
+    | '/privacy'
     | '/reports'
     | '/settings'
     | '/signup'
     | '/splash'
+    | '/terms'
     | '/verification'
     | '/welcome'
     | '/withdraw'
@@ -1286,23 +1352,29 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/auto-invest'
     | '/calculator'
     | '/call-account'
     | '/chat'
+    | '/contact'
+    | '/delete-account'
     | '/explore'
     | '/fixed-plans'
     | '/forgot-password'
     | '/gifts'
+    | '/home'
     | '/invest'
     | '/learn'
     | '/login'
     | '/notifications'
     | '/portfolio'
+    | '/privacy'
     | '/reports'
     | '/settings'
     | '/signup'
     | '/splash'
+    | '/terms'
     | '/verification'
     | '/welcome'
     | '/withdraw'
@@ -1402,23 +1474,29 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   AutoInvestRoute: typeof AutoInvestRoute
   CalculatorRoute: typeof CalculatorRoute
   CallAccountRoute: typeof CallAccountRoute
   ChatRoute: typeof ChatRoute
+  ContactRoute: typeof ContactRoute
+  DeleteAccountRoute: typeof DeleteAccountRoute
   ExploreRoute: typeof ExploreRoute
   FixedPlansRoute: typeof FixedPlansRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   GiftsRoute: typeof GiftsRoute
+  HomeRoute: typeof HomeRoute
   InvestRoute: typeof InvestRoute
   LearnRoute: typeof LearnRoute
   LoginRoute: typeof LoginRoute
   NotificationsRoute: typeof NotificationsRoute
   PortfolioRoute: typeof PortfolioRoute
+  PrivacyRoute: typeof PrivacyRoute
   ReportsRoute: typeof ReportsRoute
   SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
   SplashRoute: typeof SplashRoute
+  TermsRoute: typeof TermsRoute
   VerificationRoute: typeof VerificationRoute
   WelcomeRoute: typeof WelcomeRoute
   WithdrawRoute: typeof WithdrawRoute
@@ -1519,6 +1597,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auto-invest': {
       id: '/auto-invest'
       path: '/auto-invest'
@@ -1547,6 +1632,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/delete-account': {
+      id: '/delete-account'
+      path: '/delete-account'
+      fullPath: '/delete-account'
+      preLoaderRoute: typeof DeleteAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore': {
       id: '/explore'
       path: '/explore'
@@ -1573,6 +1672,13 @@ declare module '@tanstack/react-router' {
       path: '/gifts'
       fullPath: '/gifts'
       preLoaderRoute: typeof GiftsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/invest': {
@@ -1610,6 +1716,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reports': {
       id: '/reports'
       path: '/reports'
@@ -1636,6 +1749,13 @@ declare module '@tanstack/react-router' {
       path: '/splash'
       fullPath: '/splash'
       preLoaderRoute: typeof SplashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verification': {
@@ -2329,23 +2449,29 @@ const FixedPlansCreateRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   AutoInvestRoute: AutoInvestRoute,
   CalculatorRoute: CalculatorRoute,
   CallAccountRoute: CallAccountRoute,
   ChatRoute: ChatRoute,
+  ContactRoute: ContactRoute,
+  DeleteAccountRoute: DeleteAccountRoute,
   ExploreRoute: ExploreRoute,
   FixedPlansRoute: FixedPlansRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   GiftsRoute: GiftsRoute,
+  HomeRoute: HomeRoute,
   InvestRoute: InvestRoute,
   LearnRoute: LearnRoute,
   LoginRoute: LoginRoute,
   NotificationsRoute: NotificationsRoute,
   PortfolioRoute: PortfolioRoute,
+  PrivacyRoute: PrivacyRoute,
   ReportsRoute: ReportsRoute,
   SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
   SplashRoute: SplashRoute,
+  TermsRoute: TermsRoute,
   VerificationRoute: VerificationRoute,
   WelcomeRoute: WelcomeRoute,
   WithdrawRoute: WithdrawRoute,

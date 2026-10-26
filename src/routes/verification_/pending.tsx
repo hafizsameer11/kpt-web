@@ -132,7 +132,7 @@ function KycPending() {
 
           <div className="mt-5">
             <Link
-              to="/"
+              to="/home"
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10"
             >
               Back to home <ArrowRight className="size-4" strokeWidth={2.6} />
