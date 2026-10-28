@@ -298,7 +298,7 @@ function CalculatorScreen() {
             </Link>
             <p className="text-[11px] leading-relaxed text-muted-foreground">
               Estimates use simple interest and current indicative rates. Returns are not
-              guaranteed. Kipit works with SEC-licensed partners.
+              guaranteed. Managed by Kipit Asset Management Limited.
             </p>
           </aside>
         </div>
@@ -497,7 +497,7 @@ function CalculatorScreen() {
               </Link>
               <p className="pt-1 text-center text-[11px] leading-relaxed text-muted-foreground">
                 Estimates use simple interest and current indicative rates. Returns are not
-                guaranteed. Kipit works with SEC-licensed partners.
+                guaranteed. Managed by Kipit Asset Management Limited.
               </p>
             </div>
           </Rise>

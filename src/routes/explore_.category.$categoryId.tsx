@@ -226,7 +226,7 @@ function ExploreCategoryScreen() {
           </section>
 
           <p className="mt-6 text-center text-[11px] leading-relaxed text-muted-foreground">
-            Marketplace offers are arranged with SEC-licensed partners. Rates are indicative and
+            Managed by Kipit Asset Management Limited. Rates are indicative and
             capital is at risk.
           </p>
         </div>
@@ -390,7 +390,7 @@ function DesktopCategory({
 
       <p className="mt-5 flex items-center justify-center gap-1.5 text-center text-[11.5px] text-muted-foreground">
         <ShieldCheck className="size-3.5 text-gold" /> Marketplace offers are arranged with
-        SEC-licensed partners. Rates are indicative and capital is at risk.
+        Managed by Kipit Asset Management Limited. Rates are indicative and capital is at risk.
       </p>
     </div>
   );

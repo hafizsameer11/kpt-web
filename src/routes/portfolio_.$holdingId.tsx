@@ -139,7 +139,7 @@ function mapApiHolding(api: Awaited<ReturnType<typeof fetchPortfolioHolding>>): 
     id: api.id,
     kind: isFixed ? "Fixed plan" : "Explore product",
     name: api.name,
-    issuer: isFixed ? "Kipit · SEC-licensed partner" : "Marketplace",
+    issuer: isFixed ? "Kipit Asset Management Limited" : "Marketplace",
     rate: `${api.ratePct}% p.a.`,
     principal,
     startDate,

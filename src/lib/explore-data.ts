@@ -214,7 +214,7 @@ export function getProductDetail(p: ExploreProduct): ProductDetail {
       },
       {
         q: "Who holds my funds?",
-        a: "Funds are administered by Kipit's SEC-licensed partner. Kipit does not hold client assets directly.",
+        a: "Managed by Kipit Asset Management Limited. Kipit does not hold client assets directly.",
       },
     ],
   };
