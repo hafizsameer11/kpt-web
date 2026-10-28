@@ -223,7 +223,7 @@ function SettingsHome() {
           </button>
 
           <p className="mt-4 px-1 text-[11px] text-muted-foreground">
-            Kipit v1.0.0 · Investments carry risk. Returns are not guaranteed.
+            Kipit v1.0.0
           </p>
         </div>
       </div>
@@ -383,7 +383,7 @@ function SettingsHome() {
                   <LogOut className="size-4" strokeWidth={2.6} /> Log out
                 </button>
                 <p className="mt-3 text-[11px] leading-snug text-muted-foreground">
-                  Kipit v1.0.0 · Investments carry risk. Returns are not guaranteed.
+                  Kipit v1.0.0
                 </p>
               </div>
             </aside>
