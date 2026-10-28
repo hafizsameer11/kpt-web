@@ -150,7 +150,7 @@ export async function buildReceiptImageFile(txn: Transaction): Promise<File> {
   ctx.fillStyle = MUTED;
   ctx.font = "500 16px system-ui,Segoe UI,sans-serif";
   const footer =
-    "Issued by Kipit. Investments are administered by Kipit's SEC-licensed partner.";
+    "Managed by Kipit Asset Management Limited";
   const footerLines = wrapText(ctx, footer, width - pad * 2);
   let fy = height - footerH + 28;
   for (const line of footerLines) {

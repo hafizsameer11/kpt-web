@@ -35,7 +35,7 @@ function receiptPayload(txn: Transaction) {
       ...(txn.related ? [{ label: "Investment", value: txn.related.name }] : []),
       { label: "Reference", value: txn.reference },
     ],
-    body: "Issued by Kipit. Investments are administered by Kipit's SEC-licensed partner.",
+    body: "Managed by Kipit Asset Management Limited",
     filename: `kipit-receipt-${txn.reference}.png`,
   };
 }
@@ -146,7 +146,7 @@ export function ReceiptCard({ txn }: { txn: Transaction }) {
       </div>
 
       <p className="border-t border-border/60 px-5 py-3.5 text-[11px] leading-[1.55] text-muted-foreground">
-        Issued by Kipit. Investments are administered by Kipit's SEC-licensed partner.
+        Managed by Kipit Asset Management Limited
       </p>
     </section>
   );

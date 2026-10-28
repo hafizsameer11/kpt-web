@@ -263,7 +263,7 @@ const fixedHoldings: HoldingDetail[] = HOLDINGS.map((h, i) => ({
   id: `f${i + 1}`,
   kind: "Fixed plan" as const,
   name: h.name,
-  issuer: "Kipit · SEC-licensed partner",
+  issuer: "Kipit Asset Management Limited",
   rate: h.rate,
   principal: h.amount,
   startDate: startFrom(h.date, h.totalDays),
