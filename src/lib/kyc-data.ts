@@ -22,7 +22,7 @@ export const TIERS: TierInfo[] = [
     blurb: "Verify your BVN to fund your wallet and start investing.",
     requirements: ["Bank Verification Number (BVN)", "Phone number linked to your BVN"],
     limits: [
-      { label: "Single deposit", value: "₦1,000,000" },
+      { label: "Single deposit", value: "₦100,000,000" },
       { label: "Daily deposit", value: "₦2,000,000" },
       { label: "Withdrawals", value: "Locked" },
     ],
