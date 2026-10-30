@@ -23,6 +23,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/kipit/AppShell";
+import { nextMaturityPayout } from "@/lib/live-balances";
 import {
   ALL_PRODUCTS,
   CHAT_STATUSES,
@@ -733,7 +734,18 @@ function BlockView({
       const amount = block.amount ?? MATURITY.amount;
       const rate = block.rate || MATURITY.rate || "—";
       const daysLeft = block.daysLeft ?? MATURITY.daysLeft;
-      const payout = block.expectedPayout ?? MATURITY.expectedPayout ?? amount;
+      const ratePct =
+        block.ratePct ?? Number(String(rate).match(/[\d.]+/)?.[0] || 0) || 0;
+      const payout = nextMaturityPayout({
+        id: "",
+        name,
+        amount,
+        date: typeof date === "string" ? date : "",
+        daysLeft,
+        ratePct,
+        tenorDays: block.tenorDays,
+        expectedPayout: block.expectedPayout ?? MATURITY.expectedPayout,
+      });
       const progress = Math.max(6, Math.min(96, daysLeft ? 100 - (daysLeft / 90) * 100 : 6));
       return (
         <ResponseCard>
