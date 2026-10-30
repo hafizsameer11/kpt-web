@@ -46,7 +46,9 @@ export type ChatBlock =
       date?: string;
       amount?: number;
       rate?: string;
+      ratePct?: number;
       daysLeft?: number;
+      tenorDays?: number;
       expectedPayout?: number;
     }
   | { kind: "status" }
@@ -376,7 +378,9 @@ export function mapApiChatBlocks(raw: unknown): ChatBlock[] {
         date: typeof b.date === "string" ? b.date : undefined,
         amount: typeof b.amount === "number" ? b.amount : undefined,
         rate: typeof b.rate === "string" ? b.rate : undefined,
+        ratePct: typeof b.ratePct === "number" ? b.ratePct : undefined,
         daysLeft: typeof b.daysLeft === "number" ? b.daysLeft : undefined,
+        tenorDays: typeof b.tenorDays === "number" ? b.tenorDays : undefined,
         expectedPayout: typeof b.expectedPayout === "number" ? b.expectedPayout : undefined,
       });
       continue;
