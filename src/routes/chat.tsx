@@ -735,7 +735,7 @@ function BlockView({
       const rate = block.rate || MATURITY.rate || "—";
       const daysLeft = block.daysLeft ?? MATURITY.daysLeft;
       const ratePct =
-        block.ratePct ?? Number(String(rate).match(/[\d.]+/)?.[0] || 0) || 0;
+        block.ratePct ?? (Number(String(rate).match(/[\d.]+/)?.[0] || 0) || 0);
       const payout = nextMaturityPayout({
         id: "",
         name,
