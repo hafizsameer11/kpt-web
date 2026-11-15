@@ -730,7 +730,8 @@ function DesktopHome() {
     () => idleMonthlyEarn(WALLET, live.callRatePct),
     [WALLET, live.callRatePct],
   );
-  const TOTAL = WALLET + INVESTED || 1;
+  // Keep real ₦0 for empty accounts — do not coerce with `|| 1` (that showed ₦1).
+  const TOTAL = WALLET + INVESTED;
   const valueAtMaturity =
     live.valueAtMaturity > 0 ? live.valueAtMaturity : TOTAL;
   const { hidden, toggle, mask } = useBalanceVisibility();
