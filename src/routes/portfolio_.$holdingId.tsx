@@ -18,14 +18,20 @@ import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import {
   ApiError,
+  breakPlacement,
   fetchPortfolioHolding,
   patchHoldingMaturity,
+  topUpPlacement,
 } from "@/lib/api";
 import { downloadDocumentPdf } from "@/lib/document-pdf";
+import { FLEX_BREAK_MIN_DAYS, PLAN_MIN_NAIRA } from "@/lib/invest-data";
 import {
   holdingTxnId,
   type HoldingDetail,
 } from "@/lib/portfolio-data";
+import { naira } from "@/lib/home-data";
+import { hydrateLiveBalances } from "@/lib/live-balances";
+import { refreshWalletFromApi, useWalletBalance } from "@/lib/wallet-balance";
 
 function downloadHoldingDoc(
   holding: HoldingDetail,
@@ -135,18 +141,28 @@ function mapApiHolding(api: Awaited<ReturnType<typeof fetchPortfolioHolding>>): 
         { label: "Issuer information", kind: "PDF", size: "148 KB" },
       ];
 
+  const valueAtMaturity =
+    typeof api.valueAtMaturity === "number"
+      ? Math.round(api.valueAtMaturity)
+      : principal + Math.max(accrued, expectedInterest);
   return {
     id: api.id,
     kind: isFixed ? "Fixed plan" : "Explore product",
     name: api.name,
     issuer: isFixed ? "Kipit Asset Management Limited" : "Marketplace",
-    rate: `${api.ratePct}% p.a.`,
+    rate: api.rateLabel ? `${api.rateLabel} p.a.` : `${api.ratePct}% p.a.`,
     principal,
     startDate,
     maturityDate,
     totalDays,
     daysLeft,
-    expectedPayout: principal + Math.max(accrued, expectedInterest),
+    expectedPayout: valueAtMaturity,
+    accrued,
+    valueAtMaturity,
+    planType: api.planType ?? (isFixed ? "LOCK" : null),
+    interestPayout: api.interestPayout ?? null,
+    lastTopUpAt: api.lastTopUpAt ?? null,
+    breakRequestedAt: api.breakRequestedAt ?? null,
     canManageMaturity: isFixed,
     maturityInstruction: instructionLabel(api.maturityInstruction),
     documents: apiDocs.length > 0 ? apiDocs : fallbackDocs,
@@ -159,6 +175,23 @@ function mapApiHolding(api: Awaited<ReturnType<typeof fetchPortfolioHolding>>): 
       },
     ],
   };
+}
+
+function flexBreakAvailableAt(h: HoldingDetail): Date {
+  const anchor = h.lastTopUpAt || h.startDate;
+  const d = new Date(anchor);
+  if (Number.isNaN(d.getTime())) {
+    const fallback = new Date();
+    fallback.setDate(fallback.getDate() + FLEX_BREAK_MIN_DAYS);
+    return fallback;
+  }
+  d.setDate(d.getDate() + FLEX_BREAK_MIN_DAYS);
+  return d;
+}
+
+function flexBreakEnabled(h: HoldingDetail): boolean {
+  if (h.planType !== "FLEX" || h.breakRequestedAt) return false;
+  return Date.now() >= flexBreakAvailableAt(h).getTime();
 }
 
 function useHoldingDetail(holdingId: string) {
@@ -222,7 +255,7 @@ function useHoldingDetail(holdingId: string) {
     [holding, patching],
   );
 
-  return { holding, loading, notFound, setMaturity, patching };
+  return { holding, loading, notFound, setMaturity, setHolding, patching };
 }
 
 function HoldingNotFound() {
@@ -256,7 +289,8 @@ function HoldingLoading() {
 
 function HoldingDetailScreen() {
   const { holdingId } = Route.useParams();
-  const { holding, loading, notFound, setMaturity } = useHoldingDetail(holdingId);
+  const { holding, loading, notFound, setMaturity, setHolding } =
+    useHoldingDetail(holdingId);
 
   if (loading) return <HoldingLoading />;
   if (notFound || !holding) return <HoldingNotFound />;
@@ -264,10 +298,18 @@ function HoldingDetailScreen() {
   return (
     <AppShell title="Holding" navVariant="elevated">
       <div className="hidden md:block">
-        <DesktopHolding holding={holding} onSetMaturity={setMaturity} />
+        <DesktopHolding
+          holding={holding}
+          onSetMaturity={setMaturity}
+          onHoldingUpdate={setHolding}
+        />
       </div>
       <div className="md:hidden">
-        <MobileHolding holding={holding} onSetMaturity={setMaturity} />
+        <MobileHolding
+          holding={holding}
+          onSetMaturity={setMaturity}
+          onHoldingUpdate={setHolding}
+        />
       </div>
     </AppShell>
   );
@@ -276,14 +318,223 @@ function HoldingDetailScreen() {
 type HoldingViewProps = {
   holding: HoldingDetail;
   onSetMaturity: (instruction: "ROLLOVER" | "WALLET") => void;
+  onHoldingUpdate: (h: HoldingDetail | null) => void;
 };
 
-function DesktopHolding({ holding: h, onSetMaturity }: HoldingViewProps) {
+function PlanActions({
+  holding: h,
+  onHoldingUpdate,
+}: {
+  holding: HoldingDetail;
+  onHoldingUpdate: (h: HoldingDetail | null) => void;
+}) {
+  const WALLET = useWalletBalance();
+  const [topUpOpen, setTopUpOpen] = useState(false);
+  const [topUpRaw, setTopUpRaw] = useState("");
+  const [pin, setPin] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [breakOpen, setBreakOpen] = useState(false);
+  const topUpAmount = Number(topUpRaw.replace(/\D/g, "")) || 0;
+  const canTopUp =
+    h.kind === "Fixed plan" && h.daysLeft > 0 && !h.breakRequestedAt;
+  const isFlex = h.planType === "FLEX";
+  const breakReady = flexBreakEnabled(h);
+  const breakDate = flexBreakAvailableAt(h).toLocaleDateString("en-NG", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+  async function submitTopUp() {
+    if (topUpAmount < PLAN_MIN_NAIRA || pin.length !== 4 || busy) return;
+    setBusy(true);
+    try {
+      const key =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `topup-${h.id}-${Date.now()}`;
+      const res = await topUpPlacement(h.id, {
+        amount: topUpAmount,
+        pin,
+        idempotencyKey: key,
+      });
+      onHoldingUpdate({
+        ...h,
+        principal: Math.round(res.principal),
+        lastTopUpAt: res.lastTopUpAt,
+        breakRequestedAt: null,
+      });
+      await refreshWalletFromApi().catch(() => undefined);
+      await hydrateLiveBalances().catch(() => undefined);
+      toast.success("Top-up successful", {
+        description: `${naira(topUpAmount)} added to ${h.name}`,
+      });
+      setTopUpOpen(false);
+      setTopUpRaw("");
+      setPin("");
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Top-up failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function submitBreak() {
+    if (!breakReady || pin.length !== 4 || busy) return;
+    setBusy(true);
+    try {
+      const key =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `break-${h.id}-${Date.now()}`;
+      const res = await breakPlacement(h.id, { pin, idempotencyKey: key });
+      onHoldingUpdate({
+        ...h,
+        breakRequestedAt: new Date().toISOString(),
+      });
+      toast.success("Flex break requested", {
+        description: res.creditAt
+          ? `Expected credit by ${res.creditAt.slice(0, 10)}`
+          : "We'll credit your wallet within 3 business days.",
+      });
+      setBreakOpen(false);
+      setPin("");
+      await hydrateLiveBalances().catch(() => undefined);
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Could not request break");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!canTopUp && !isFlex) return null;
+
+  return (
+    <section className="card-surface p-4 md:p-5">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+        Manage plan
+      </p>
+      <div className="mt-3 grid gap-2.5">
+        {canTopUp ? (
+          <button
+            type="button"
+            onClick={() => {
+              setTopUpOpen((v) => !v);
+              setBreakOpen(false);
+            }}
+            className="inline-flex items-center justify-center gap-1.5 rounded-full bg-brand-gradient px-4 py-2.5 text-[12.5px] font-extrabold text-primary-foreground press"
+          >
+            <ArrowUpRight className="size-3.5" /> Top up
+          </button>
+        ) : null}
+        {isFlex ? (
+          <button
+            type="button"
+            disabled={!breakReady || Boolean(h.breakRequestedAt)}
+            onClick={() => {
+              setBreakOpen((v) => !v);
+              setTopUpOpen(false);
+            }}
+            className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border bg-card px-4 py-2.5 text-[12.5px] font-extrabold press disabled:opacity-40"
+          >
+            {h.breakRequestedAt
+              ? "Break pending"
+              : breakReady
+                ? "Break Flex plan"
+                : `Break available ${breakDate}`}
+          </button>
+        ) : null}
+      </div>
+
+      {topUpOpen ? (
+        <div className="mt-4 space-y-3 rounded-xl border border-border/70 bg-background p-3">
+          <p className="text-[12px] text-muted-foreground">
+            Wallet available {naira(WALLET)}. Min top-up {naira(PLAN_MIN_NAIRA)}.
+          </p>
+          <div className="flex items-baseline gap-1 rounded-xl border border-border/70 px-3 py-2.5">
+            <span className="text-[13px] font-bold text-muted-foreground">₦</span>
+            <input
+              inputMode="numeric"
+              value={topUpAmount ? topUpAmount.toLocaleString("en-NG") : ""}
+              onChange={(e) => setTopUpRaw(e.target.value.replace(/[^0-9]/g, ""))}
+              placeholder="50,000"
+              className="w-full bg-transparent text-[14px] font-medium text-num outline-none"
+            />
+          </div>
+          <input
+            inputMode="numeric"
+            maxLength={4}
+            value={pin}
+            onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+            placeholder="Transaction PIN"
+            className="w-full rounded-xl border border-border/70 px-3 py-2.5 text-[13px] outline-none"
+          />
+          <button
+            type="button"
+            disabled={
+              busy ||
+              topUpAmount < PLAN_MIN_NAIRA ||
+              topUpAmount > WALLET ||
+              pin.length !== 4
+            }
+            onClick={() => void submitTopUp()}
+            className="inline-flex w-full items-center justify-center rounded-full bg-brand px-4 py-2.5 text-[12.5px] font-extrabold text-brand-foreground press disabled:opacity-40"
+          >
+            {busy ? "Processing…" : "Confirm top-up"}
+          </button>
+        </div>
+      ) : null}
+
+      {breakOpen && isFlex ? (
+        <div className="mt-4 space-y-3 rounded-xl border border-destructive/30 bg-destructive/5 p-3">
+          <p className="text-[12px] leading-relaxed text-muted-foreground">
+            Breaking withdraws the full amount. You forfeit 50% of accrued interest.
+            Credit lands in your wallet within 3 business days.
+          </p>
+          <dl className="space-y-1.5 text-[12.5px]">
+            <div className="flex justify-between gap-3">
+              <dt className="text-muted-foreground">Principal</dt>
+              <dd className="font-bold text-num">{naira(h.principal)}</dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt className="text-muted-foreground">Accrued (est.)</dt>
+              <dd className="font-bold text-num">{naira(h.accrued ?? 0)}</dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt className="text-muted-foreground">50% forfeited</dt>
+              <dd className="font-bold text-num">
+                {naira(Math.round((h.accrued ?? 0) / 2))}
+              </dd>
+            </div>
+          </dl>
+          <input
+            inputMode="numeric"
+            maxLength={4}
+            value={pin}
+            onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+            placeholder="Transaction PIN"
+            className="w-full rounded-xl border border-border/70 px-3 py-2.5 text-[13px] outline-none"
+          />
+          <button
+            type="button"
+            disabled={busy || pin.length !== 4 || !breakReady}
+            onClick={() => void submitBreak()}
+            className="inline-flex w-full items-center justify-center rounded-full bg-destructive px-4 py-2.5 text-[12.5px] font-extrabold text-destructive-foreground press disabled:opacity-40"
+          >
+            {busy ? "Requesting…" : "Confirm Flex break"}
+          </button>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function DesktopHolding({ holding: h, onSetMaturity, onHoldingUpdate }: HoldingViewProps) {
   const { hidden, mask } = useBalanceVisibility();
 
   const elapsed = h.totalDays - h.daysLeft;
   const progress = Math.min(100, Math.max(4, Math.round((elapsed / h.totalDays) * 100)));
-  const accrued = Math.round(h.expectedPayout - h.principal);
+  const accrued = Math.round(h.accrued ?? h.expectedPayout - h.principal);
 
   return (
     <div className="mx-auto w-full max-w-[1180px] pb-10">
@@ -431,6 +682,7 @@ function DesktopHolding({ holding: h, onSetMaturity }: HoldingViewProps) {
 
         {/* Right rail */}
         <div className="space-y-5">
+          <PlanActions holding={h} onHoldingUpdate={onHoldingUpdate} />
           <section className="card-surface p-5">
             <div className="flex items-start gap-3">
               <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-brand/10 text-brand">
@@ -510,12 +762,12 @@ function DesktopHolding({ holding: h, onSetMaturity }: HoldingViewProps) {
   );
 }
 
-function MobileHolding({ holding: h, onSetMaturity }: HoldingViewProps) {
+function MobileHolding({ holding: h, onSetMaturity, onHoldingUpdate }: HoldingViewProps) {
   const { hidden, mask } = useBalanceVisibility();
 
   const elapsed = h.totalDays - h.daysLeft;
   const progress = Math.min(100, Math.max(4, Math.round((elapsed / h.totalDays) * 100)));
-  const accrued = Math.round(h.expectedPayout - h.principal);
+  const accrued = Math.round(h.accrued ?? h.expectedPayout - h.principal);
 
   return (
       <div className="pb-2">
@@ -621,6 +873,10 @@ function MobileHolding({ holding: h, onSetMaturity }: HoldingViewProps) {
               ))}
             </div>
           </section>
+
+          <div className="mt-5">
+            <PlanActions holding={h} onHoldingUpdate={onHoldingUpdate} />
+          </div>
 
           {/* Maturity instruction */}
           <section className="k-rise mt-5 card-surface p-4">

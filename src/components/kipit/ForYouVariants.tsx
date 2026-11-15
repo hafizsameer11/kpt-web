@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { useEffect, useSyncExternalStore } from "react";
 import { articleArt } from "@/components/kipit/art";
 import { FEED, hydrateHomeFeedFromApi, subscribeFeed } from "@/lib/home-data";
-import { LEARN_ARTICLES, resolveLearnArticleId } from "@/lib/learn-data";
+import { resolveLearnArticleId } from "@/lib/learn-data";
 
 function useHomeFeed() {
   const tick = useSyncExternalStore(
@@ -138,7 +138,7 @@ export function ForYouList() {
 /**
  * Variant C — "Feature + chips".
  * Mobile: one large navy feature card followed by slim text-only chips.
- * Desktop: four image cards, each with a cover image like the lead card.
+ * Desktop: same admin Home feed cards (Campaigns → Home feed), not static LEARN_ARTICLES.
  */
 export function ForYouFeature({ className = "" }: { className?: string }) {
   const feed = useHomeFeed();
@@ -148,7 +148,7 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
     <section className={className}>
       <SectionHead />
 
-      {/* Mobile: lead + text chips (unchanged) */}
+      {/* Mobile: lead + text chips */}
       <div className="mt-3 grid gap-2.5 md:hidden">
         {lead && (
           <Link
@@ -212,15 +212,15 @@ export function ForYouFeature({ className = "" }: { className?: string }) {
         </div>
       </div>
 
-      {/* Desktop: four article cards — first blue, rest white */}
+      {/* Desktop: same admin feed as mobile */}
       <div className="mt-4 hidden gap-4 md:grid md:grid-cols-4">
-        {LEARN_ARTICLES.slice(0, 4).map((item, i) => {
+        {feed.slice(0, 4).map((item, i) => {
           const isLead = i === 0;
           return (
             <Link
               key={item.id}
               to="/learn/$articleId"
-              params={{ articleId: item.id }}
+              params={{ articleId: resolveLearnArticleId(item) }}
               className={`group flex flex-col rounded-2xl p-4 press hover:-translate-y-0.5 hover:shadow-float ${
                 isLead
                   ? "bg-brand-gradient text-primary-foreground"

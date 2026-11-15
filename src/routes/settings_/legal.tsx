@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { CheckCircle2, ChevronRight, Download, FileText, Scale } from "lucide-react";
@@ -12,6 +12,12 @@ import {
   type TermsAcceptance,
 } from "@/lib/terms-acceptance";
 import { downloadBlob, zipTextFiles } from "@/lib/zip-store";
+import {
+  acceptLegalDocument,
+  ApiError,
+  fetchLegalDocuments,
+  type ApiLegalDoc,
+} from "@/lib/api";
 import {
   Dialog,
   DialogContent,
@@ -59,24 +65,103 @@ const DOC_BODY: Record<string, string[]> = {
     "Call Account balances accrue daily and are withdrawable on demand, subject to verification limits.",
     "Fixed plans pay at maturity or on the stated payout schedule to your Kipit wallet.",
   ],
+  "Product Terms — Kipit Lock": [
+    "Kipit Lock plans run to a fixed maturity. Early break is not available.",
+    "Interest may be paid at maturity or upfront, as selected when you invest.",
+    "Rates shown are net of 10% withholding tax unless otherwise stated.",
+  ],
+  "Product Terms — Kipit Flex": [
+    "Kipit Flex plans may be broken after 30 days from invest or most recent top-up.",
+    "Breaking a Flex plan forfeits 50% of accrued interest; the balance credits your wallet within 3 business days.",
+    "Rates shown are net of 10% withholding tax unless otherwise stated.",
+  ],
 };
 
+type UiDoc = {
+  id: string;
+  docKey: string;
+  title: string;
+  version: string;
+  /** Exact API version string for POST /legal/accept. */
+  apiVersion: string;
+  accepted: string;
+  desc: string;
+  fileUrl: string | null;
+  needsAccept: boolean;
+  fromApi: boolean;
+};
+
+function fallbackDocs(): UiDoc[] {
+  return LEGAL_DOCS.map((d, i) => ({
+    id: `local-${i}`,
+    docKey: d.title.toLowerCase().replace(/[^a-z0-9]+/g, "_"),
+    title: d.title,
+    version: d.version,
+    apiVersion: d.version,
+    accepted: d.accepted,
+    desc: d.desc,
+    fileUrl: null,
+    needsAccept: false,
+    fromApi: false,
+  }));
+}
+
+function describeDoc(title: string) {
+  const local = LEGAL_DOCS.find((d) => d.title === title || title.startsWith(d.title));
+  return local?.desc ?? "Kipit legal document.";
+}
+
+function mapApiDocs(rows: ApiLegalDoc[]): UiDoc[] {
+  return rows.map((d) => ({
+    id: d.id,
+    docKey: d.docKey,
+    title: d.title,
+    version: d.version.startsWith("v") ? d.version : `v${d.version}`,
+    apiVersion: d.version,
+    accepted: d.accepted
+      ? `Accepted · ${d.version}`
+      : "Acceptance required",
+    desc: describeDoc(d.title),
+    fileUrl: d.fileUrl,
+    needsAccept: !d.accepted,
+    fromApi: true,
+  }));
+}
+
 function LegalScreen() {
-  const [openDoc, setOpenDoc] = useState<(typeof LEGAL_DOCS)[number] | null>(null);
+  const [docs, setDocs] = useState<UiDoc[]>(fallbackDocs);
+  const [openDoc, setOpenDoc] = useState<UiDoc | null>(null);
   const [accepted, setAccepted] = useState<TermsAcceptance[]>([]);
   const [downloadingAll, setDownloadingAll] = useState(false);
+  const [acceptBusy, setAcceptBusy] = useState(false);
+  const [source, setSource] = useState<"api" | "local">("local");
 
   useEffect(() => {
     setAccepted(listTermsAcceptances());
+    void fetchLegalDocuments()
+      .then((rows) => {
+        if (Array.isArray(rows) && rows.length) {
+          setDocs(mapApiDocs(rows));
+          setSource("api");
+        }
+      })
+      .catch(() => {
+        setDocs(fallbackDocs());
+        setSource("local");
+      });
   }, []);
+
+  const bodyFor = useMemo(
+    () => (title: string, desc: string) => DOC_BODY[title] ?? [desc],
+    [],
+  );
 
   function downloadAll() {
     if (downloadingAll) return;
     setDownloadingAll(true);
     try {
-      // One ZIP with all four docs — browsers block multi-file download loops.
-      const files = LEGAL_DOCS.map((d) => {
-        const body = `${d.desc}\n\n${(DOC_BODY[d.title] ?? []).join("\n\n")}`;
+      const files = docs.map((d) => {
+        const body = `${d.desc}\n\n${bodyFor(d.title, d.desc).join("\n\n")}`;
         const slug = d.title.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase();
         return {
           name: `kipit-${slug}.html`,
@@ -88,7 +173,7 @@ function LegalScreen() {
         };
       });
       downloadBlob(zipTextFiles(files), "kipit-legal-documents.zip");
-      toast.success(`${LEGAL_DOCS.length} legal documents downloaded in one ZIP.`);
+      toast.success(`${docs.length} legal documents downloaded in one ZIP.`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not download documents.");
     } finally {
@@ -96,8 +181,32 @@ function LegalScreen() {
     }
   }
 
-  function openLegalDoc(d: (typeof LEGAL_DOCS)[number]) {
-    setOpenDoc(d);
+  async function acceptOpenDoc() {
+    if (!openDoc || !openDoc.fromApi || !openDoc.needsAccept || acceptBusy) return;
+    setAcceptBusy(true);
+    try {
+      await acceptLegalDocument({
+        docKey: openDoc.docKey,
+        version: openDoc.apiVersion,
+      });
+      setDocs((prev) =>
+        prev.map((d) =>
+          d.id === openDoc.id
+            ? { ...d, needsAccept: false, accepted: `Accepted · ${d.version}` }
+            : d,
+        ),
+      );
+      setOpenDoc((prev) =>
+        prev
+          ? { ...prev, needsAccept: false, accepted: `Accepted · ${prev.version}` }
+          : prev,
+      );
+      toast.success(`${openDoc.title} accepted`);
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Could not record acceptance.");
+    } finally {
+      setAcceptBusy(false);
+    }
   }
 
   return (
@@ -106,13 +215,19 @@ function LegalScreen() {
       eyebrow="MOB-154"
       subtitle="Every document is versioned, and we record the version you accepted."
     >
+      {source === "local" ? (
+        <p className="mb-3 text-[11.5px] text-muted-foreground md:mb-4">
+          Showing built-in copies. Live versions load when the legal API is available.
+        </p>
+      ) : null}
+
       {/* Mobile — unchanged list */}
       <ul className="card-surface divide-y divide-border/60 overflow-hidden md:hidden">
-        {LEGAL_DOCS.map((d, i) => (
-          <li key={d.title} style={{ ["--d" as string]: `${i * 50}ms` }} className="k-rise">
+        {docs.map((d, i) => (
+          <li key={d.id} style={{ ["--d" as string]: `${i * 50}ms` }} className="k-rise">
             <button
               type="button"
-              onClick={() => openLegalDoc(d)}
+              onClick={() => setOpenDoc(d)}
               className="group relative flex w-full items-center gap-3.5 px-4 py-4 text-left press transition-colors hover:bg-secondary/50"
             >
               <span
@@ -130,7 +245,13 @@ function LegalScreen() {
                   </span>
                 </p>
                 <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{d.desc}</p>
-                <p className="mt-0.5 text-[11px] font-semibold text-emerald-600">{d.accepted}</p>
+                <p
+                  className={`mt-0.5 text-[11px] font-semibold ${
+                    d.needsAccept ? "text-amber-700" : "text-emerald-600"
+                  }`}
+                >
+                  {d.accepted}
+                </p>
               </div>
               <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
             </button>
@@ -176,14 +297,13 @@ function LegalScreen() {
         asked to review any document that changes materially.
       </p>
 
-
       {/* Desktop */}
       <div className="hidden md:block">
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           <div className="grid gap-4 sm:grid-cols-2">
-            {LEGAL_DOCS.map((d, i) => (
+            {docs.map((d, i) => (
               <button
-                key={d.title}
+                key={d.id}
                 type="button"
                 style={{ ["--d" as string]: `${i * 50}ms` }}
                 onClick={() => setOpenDoc(d)}
@@ -202,7 +322,11 @@ function LegalScreen() {
                   <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                 </div>
                 <p className="mt-3 text-[12.5px] leading-relaxed text-muted-foreground">{d.desc}</p>
-                <p className="mt-auto flex items-center gap-1.5 pt-3 text-[11.5px] font-bold text-emerald-600">
+                <p
+                  className={`mt-auto flex items-center gap-1.5 pt-3 text-[11.5px] font-bold ${
+                    d.needsAccept ? "text-amber-700" : "text-emerald-600"
+                  }`}
+                >
                   <CheckCircle2 className="size-3.5" /> {d.accepted}
                 </p>
               </button>
@@ -277,10 +401,32 @@ function LegalScreen() {
             <DialogDescription>{openDoc?.accepted}</DialogDescription>
           </DialogHeader>
           <div className="max-h-[55vh] space-y-3 overflow-y-auto pr-1 text-[13px] leading-relaxed text-muted-foreground">
-            {(openDoc ? DOC_BODY[openDoc.title] ?? [openDoc.desc] : []).map((p) => (
+            {(openDoc ? bodyFor(openDoc.title, openDoc.desc) : []).map((p) => (
               <p key={p}>{p}</p>
             ))}
+            {openDoc?.fileUrl ? (
+              <p>
+                <a
+                  href={openDoc.fileUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-bold text-brand underline"
+                >
+                  Open full document
+                </a>
+              </p>
+            ) : null}
           </div>
+          {openDoc?.fromApi && openDoc.needsAccept ? (
+            <button
+              type="button"
+              disabled={acceptBusy}
+              onClick={() => void acceptOpenDoc()}
+              className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-brand-gradient px-5 py-3 text-[13px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40"
+            >
+              {acceptBusy ? "Recording…" : "I accept this version"}
+            </button>
+          ) : null}
         </DialogContent>
       </Dialog>
     </SettingsPage>

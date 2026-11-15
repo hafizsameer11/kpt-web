@@ -80,6 +80,10 @@ function GiftsScreen() {
                   <GiftIcon className="size-3.5 text-gold" />
                   {gifts.length} gifts sent
                 </p>
+                <p className="mt-4 max-w-md text-[12.5px] leading-relaxed text-primary-foreground/75">
+                  Gifts are sent by SMS, email and in-app. Recipients can claim without a Kipit
+                  account; once claimed, the investment belongs to them.
+                </p>
               </div>
               <div className="flex items-end gap-3">
                 <div className="flex gap-2">
@@ -179,9 +183,9 @@ function GiftsScreen() {
                 <h2 className="font-display text-[15px] font-extrabold">How gifting works</h2>
                 <ol className="mt-3 space-y-3">
                   {[
-                    "Pick a plan and amount, then add the recipient's phone number.",
-                    "They get an SMS with a claim link — no Kipit account needed to receive it.",
-                    "Once claimed, the plan starts earning in their name immediately.",
+                    "Pick a plan and amount, then add the recipient's phone (and email if you have it).",
+                    "They get an SMS, email and in-app notice with a claim link — no Kipit account needed to open the link.",
+                    "To claim, they sign up or sign in if needed; once claimed, the plan belongs to them and starts earning in their name.",
                   ].map((step, i) => (
                     <li key={step} className="flex items-start gap-3">
                       <span className="grid size-6 shrink-0 place-items-center rounded-full bg-brand/10 text-[11px] font-extrabold text-brand">
@@ -191,6 +195,10 @@ function GiftsScreen() {
                     </li>
                   ))}
                 </ol>
+                <p className="mt-3 text-[11.5px] leading-relaxed text-muted-foreground">
+                  After the gift is claimed, ownership sits with the recipient — you cannot reclaim
+                  or redirect the plan.
+                </p>
               </section>
 
               <section className="rounded-2xl border border-border bg-card p-5">
@@ -352,6 +360,11 @@ function GiftsScreen() {
           >
             <Plus className="size-4" /> Send a new gift
           </Link>
+
+          <p className="mt-4 text-center text-[11.5px] leading-relaxed text-muted-foreground">
+            Recipients get SMS, email and in-app notice. They can open the claim link without an
+            account; after claim the plan belongs to them.
+          </p>
 
           <DisclosureStrip variant="fixed" />
         </div>

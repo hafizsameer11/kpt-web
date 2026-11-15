@@ -28,9 +28,16 @@ import {
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ApiError, createAutoInvestRule, createFixedPlan, createGift } from "@/lib/api";
+import { InterestBreakdown } from "@/components/kipit/InterestBreakdown";
 import { parseGiftContact } from "@/lib/gift-data";
 import { naira } from "@/lib/home-data";
-import { TENOR_BANDS } from "@/lib/invest-data";
+import {
+  PRODUCT_CONSENT_VERSION,
+  TENOR_BANDS,
+  flexConsentText,
+  lockConsentText,
+} from "@/lib/invest-data";
+import { interestBreakdownFromNetRate } from "@/lib/wht";
 import { refreshWalletFromApi, useWalletBalance } from "@/lib/wallet-balance";
 import { hydrateLiveBalances } from "@/lib/live-balances";
 
@@ -45,6 +52,8 @@ export const Route = createFileRoute("/fixed-plans_/create/review")({
     gift: z.string().catch(""),
     giftPhone: z.string().catch(""),
     giftMessage: z.string().catch(""),
+    planType: z.enum(["LOCK", "FLEX"]).optional().catch("LOCK"),
+    interestPayout: z.enum(["AT_MATURITY", "UPFRONT"]).optional().catch("AT_MATURITY"),
   }),
   head: () => ({
     meta: [
@@ -89,21 +98,43 @@ interface PlanCalc {
   interest: number;
   payout: number;
   maturityDate: string;
+  maturityIso: string;
+  breakdown: ReturnType<typeof interestBreakdownFromNetRate>;
 }
 
-function usePlanCalc(amount: number, days: number): PlanCalc {
+function usePlanCalc(
+  amount: number,
+  days: number,
+  payoutMode: "AT_MATURITY" | "UPFRONT" = "AT_MATURITY",
+): PlanCalc {
   const band = TENOR_BANDS.find(
     (b) => Number(b.days.replace(/\D/g, "")) === days,
   );
   const ratePct = band ? Number(band.rate.replace(/[^0-9.]/g, "")) : 14;
   const rateLabel = band ? band.rate : `${ratePct}%`;
-  const interest = Math.round((amount * (ratePct / 100) * days) / 365);
-  const payout = amount + interest;
-  const maturityDate = new Date(Date.now() + days * DAY_MS).toLocaleDateString(
-    "en-NG",
-    { day: "2-digit", month: "short", year: "numeric" },
-  );
-  return { ratePct, rateLabel, interest, payout, maturityDate };
+  const breakdown = interestBreakdownFromNetRate({
+    principal: amount,
+    netRatePct: ratePct,
+    days,
+    payout: payoutMode,
+  });
+  const interest = Math.round(breakdown.netInterest);
+  const payout = Math.round(breakdown.valueAtMaturity);
+  const mat = new Date(Date.now() + days * DAY_MS);
+  const maturityDate = mat.toLocaleDateString("en-NG", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+  return {
+    ratePct,
+    rateLabel,
+    interest,
+    payout,
+    maturityDate,
+    maturityIso: mat.toISOString().slice(0, 10),
+    breakdown,
+  };
 }
 
 function PlanReviewScreen() {
@@ -116,14 +147,25 @@ function PlanReviewScreen() {
 /* ------------------------------------------------------------------ */
 
 function useAuthFlow() {
-  const { amount, days, name, maturity, gift, giftPhone, giftMessage, autoAmount } =
-    Route.useSearch();
+  const {
+    amount,
+    days,
+    name,
+    maturity,
+    gift,
+    giftPhone,
+    giftMessage,
+    autoAmount,
+    planType,
+    interestPayout,
+  } = Route.useSearch();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [pin, setPin] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [consent, setConsent] = useState(false);
   const [orderKey] = useState(() =>
     typeof crypto !== "undefined" && "randomUUID" in crypto
       ? crypto.randomUUID()
@@ -131,6 +173,7 @@ function useAuthFlow() {
   );
 
   const locked = attempts >= MAX_ATTEMPTS;
+  const canConfirm = consent && !locked;
 
   async function submitPin(next: string) {
     setBusy(true);
@@ -164,13 +207,21 @@ function useAuthFlow() {
         return;
       }
 
+      if (!consent) {
+        setError("Please accept the plan terms to continue.");
+        setBusy(false);
+        return;
+      }
       await createFixedPlan({
         amount,
         tenorDays: days,
-        name: name || "Fixed plan",
+        ...(name ? { name } : {}),
         pin: next,
+        planType: planType ?? "LOCK",
+        interestPayout: planType === "FLEX" ? "AT_MATURITY" : (interestPayout ?? "AT_MATURITY"),
         maturityInstruction: MATURITY_API[maturity],
         idempotencyKey: orderKey,
+        consentVersion: PRODUCT_CONSENT_VERSION,
       });
       if (autoAmount && autoAmount > 0) {
         await createAutoInvestRule({
@@ -227,6 +278,11 @@ function useAuthFlow() {
     error,
     locked,
     busy,
+    consent,
+    setConsent,
+    canConfirm,
+    planType: planType ?? "LOCK",
+    interestPayout: interestPayout ?? "AT_MATURITY",
     press,
     reset: () => {
       setPin("");
@@ -302,12 +358,19 @@ function AuthPad({ flow }: { flow: ReturnType<typeof useAuthFlow> }) {
 /* ------------------------------------------------------------------ */
 
 function PlanReviewMobile() {
-  const { amount, days, name, maturity, auto, gift } = Route.useSearch();
+  const { amount, days, name, maturity, auto, gift, planType, interestPayout } =
+    Route.useSearch();
   const flow = useAuthFlow();
-  const { rateLabel, interest, payout, maturityDate } = usePlanCalc(amount, days);
+  const payoutMode =
+    planType === "FLEX" ? "AT_MATURITY" : (interestPayout ?? "AT_MATURITY");
+  const { rateLabel, interest, payout, maturityDate, maturityIso, breakdown } =
+    usePlanCalc(amount, days, payoutMode);
   const WALLET = useWalletBalance();
+  const breakDate = new Date(Date.now() + 30 * DAY_MS).toISOString().slice(0, 10);
+  const consentCopy =
+    planType === "FLEX" ? flexConsentText(breakDate) : lockConsentText(maturityIso);
 
-  const valid = amount > 0 && days > 0 && amount <= WALLET;
+  const valid = amount > 0 && days > 0 && amount <= WALLET && flow.consent;
   const MaturityIcon = MATURITY_LABEL[maturity].icon;
 
   return (
@@ -365,10 +428,19 @@ function PlanReviewMobile() {
                   Plan summary
                 </p>
                 <dl className="mt-3 divide-y divide-border text-[13px]">
-                  <Row label="Plan name">{name || "Fixed plan"}</Row>
+                  <Row label="Plan">
+                    {planType === "FLEX" ? "Kipit Flex" : "Kipit Lock"}
+                    {name ? ` · ${name}` : ""}
+                  </Row>
+                  <Row label="Interest payout">
+                    {payoutMode === "UPFRONT" ? "Upfront" : "At maturity"}
+                  </Row>
                   <Row label="Investment amount">{naira(amount)}</Row>
                   <Row label="Rate">{rateLabel} p.a.</Row>
                   <Row label="Tenor">{days} days</Row>
+                  {planType === "FLEX" ? (
+                    <Row label="Earliest break">{breakDate}</Row>
+                  ) : null}
                   <Row label="Funding source">
                     <span className="inline-flex items-center gap-1.5">
                       <Wallet className="size-3.5 text-gold" /> Kipit Wallet
@@ -384,28 +456,15 @@ function PlanReviewMobile() {
             <Rise delay={60}>
               <section className="card-surface p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  What you get at maturity
+                  Earning potential
                 </p>
-                <div className="mt-3 flex divide-x divide-border">
-                  <div className="flex-1 pr-4">
-                    <p className="text-[11px] font-semibold text-muted-foreground">
-                      Expected interest
-                    </p>
-                    <p className="mt-0.5 font-display text-[20px] font-extrabold leading-none text-num text-emerald-600">
-                      +{naira(interest)}
-                    </p>
-                  </div>
-                  <div className="flex-1 pl-4">
-                    <p className="text-[11px] font-semibold text-muted-foreground">
-                      Expected payout
-                    </p>
-                    <p className="mt-0.5 font-display text-[20px] font-extrabold leading-none text-num">
-                      {naira(payout)}
-                    </p>
-                  </div>
+                <div className="mt-3">
+                  <InterestBreakdown data={breakdown} />
                 </div>
                 <p className="mt-3 text-[11px] text-muted-foreground">
-                  Payable on {maturityDate}. Indicative — early liquidation may reduce interest.
+                  Payable on {maturityDate}. Figures are shown after 10% withholding tax and assume
+                  you keep this plan until maturity. Your funds are held by Rand Merchant Bank, our
+                  custodian.
                 </p>
               </section>
             </Rise>
@@ -445,7 +504,21 @@ function PlanReviewMobile() {
             </Rise>
           </div>
 
-          <div className="mt-5">
+          <div className="mt-5 space-y-3">
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-3.5">
+              <input
+                type="checkbox"
+                checked={flow.consent}
+                onChange={(e) => flow.setConsent(e.target.checked)}
+                className="mt-1 size-4 shrink-0 accent-[var(--brand)]"
+              />
+              <span className="text-[12px] leading-relaxed text-muted-foreground">
+                {consentCopy}{" "}
+                <Link to="/terms" className="font-bold text-brand underline-offset-2 hover:underline">
+                  Terms and Conditions
+                </Link>
+              </span>
+            </label>
             <button
               type="button"
               disabled={!valid}
@@ -454,10 +527,10 @@ function PlanReviewMobile() {
                 valid ? "k-glow" : "opacity-40 shadow-none"
               }`}
             >
-              {valid ? "Confirm investment" : "Details incomplete"}
+              {valid ? "Confirm investment" : "Accept terms to continue"}
               <ArrowRight className="size-4" strokeWidth={2.6} />
             </button>
-            <p className="mt-2.5 flex items-center justify-center gap-1.5 text-[11.5px] text-muted-foreground">
+            <p className="flex items-center justify-center gap-1.5 text-[11.5px] text-muted-foreground">
               <Lock className="size-3.5" /> Authorize with your transaction PIN.
             </p>
           </div>
@@ -488,12 +561,19 @@ function PlanReviewMobile() {
 /* ------------------------------------------------------------------ */
 
 function PlanReviewDesktop() {
-  const { amount, days, name, maturity, auto, gift } = Route.useSearch();
+  const { amount, days, name, maturity, auto, gift, planType, interestPayout } =
+    Route.useSearch();
   const flow = useAuthFlow();
-  const { rateLabel, interest, payout, maturityDate } = usePlanCalc(amount, days);
+  const payoutMode =
+    planType === "FLEX" ? "AT_MATURITY" : (interestPayout ?? "AT_MATURITY");
+  const { rateLabel, interest, payout, maturityDate, maturityIso, breakdown } =
+    usePlanCalc(amount, days, payoutMode);
   const WALLET = useWalletBalance();
+  const breakDate = new Date(Date.now() + 30 * DAY_MS).toISOString().slice(0, 10);
+  const consentCopy =
+    planType === "FLEX" ? flexConsentText(breakDate) : lockConsentText(maturityIso);
 
-  const valid = amount > 0 && days > 0 && amount <= WALLET;
+  const valid = amount > 0 && days > 0 && amount <= WALLET && flow.consent;
   const MaturityIcon = MATURITY_LABEL[maturity].icon;
 
   return (
@@ -558,10 +638,19 @@ function PlanReviewDesktop() {
                   Plan summary
                 </p>
                 <dl className="mt-3 divide-y divide-border text-[13px]">
-                  <Row label="Plan name">{name || "Fixed plan"}</Row>
+                  <Row label="Plan">
+                    {planType === "FLEX" ? "Kipit Flex" : "Kipit Lock"}
+                    {name ? ` · ${name}` : ""}
+                  </Row>
+                  <Row label="Interest payout">
+                    {payoutMode === "UPFRONT" ? "Upfront" : "At maturity"}
+                  </Row>
                   <Row label="Investment amount">{naira(amount)}</Row>
                   <Row label="Rate">{rateLabel} p.a.</Row>
                   <Row label="Tenor">{days} days</Row>
+                  {planType === "FLEX" ? (
+                    <Row label="Earliest break">{breakDate}</Row>
+                  ) : null}
                   <Row label="Funding source">
                     <span className="inline-flex items-center gap-1.5">
                       <Wallet className="size-3.5 text-gold" /> Kipit Wallet
@@ -571,6 +660,9 @@ function PlanReviewDesktop() {
                     {naira(Math.max(WALLET - amount, 0))}
                   </Row>
                 </dl>
+                <div className="mt-4 border-t border-border pt-4">
+                  <InterestBreakdown data={breakdown} />
+                </div>
               </section>
             </Rise>
 
@@ -624,7 +716,24 @@ function PlanReviewDesktop() {
                     Principal + {naira(interest)} interest
                   </p>
                 </div>
-                <div className="p-5">
+                <div className="space-y-3 p-5">
+                  <label className="flex cursor-pointer items-start gap-2.5">
+                    <input
+                      type="checkbox"
+                      checked={flow.consent}
+                      onChange={(e) => flow.setConsent(e.target.checked)}
+                      className="mt-0.5 size-4 shrink-0"
+                    />
+                    <span className="text-[11.5px] leading-relaxed text-muted-foreground">
+                      {consentCopy}{" "}
+                      <Link
+                        to="/terms"
+                        className="font-bold text-brand underline-offset-2 hover:underline"
+                      >
+                        Terms and Conditions
+                      </Link>
+                    </span>
+                  </label>
                   <button
                     type="button"
                     disabled={!valid}
@@ -633,10 +742,10 @@ function PlanReviewDesktop() {
                       valid ? "k-glow" : "opacity-40 shadow-none"
                     }`}
                   >
-                    {valid ? "Confirm investment" : "Details incomplete"}
+                    {valid ? "Confirm investment" : "Accept terms to continue"}
                     <ArrowRight className="size-4" strokeWidth={2.6} />
                   </button>
-                  <p className="mt-3 flex items-center justify-center gap-1.5 text-[11.5px] text-muted-foreground">
+                  <p className="flex items-center justify-center gap-1.5 text-[11.5px] text-muted-foreground">
                     <Lock className="size-3.5" /> Authorize with your transaction PIN.
                   </p>
                 </div>
@@ -647,8 +756,7 @@ function PlanReviewDesktop() {
                   <ShieldCheck className="size-4" />
                 </span>
                 <p className="text-[11.5px] leading-relaxed text-muted-foreground">
-                  Indicative figures — early liquidation may reduce interest.
-                  Your funds are held with regulated partners.
+                  Figures after 10% WHT. Funds held by Rand Merchant Bank, our custodian.
                 </p>
               </section>
             </aside>

@@ -67,6 +67,118 @@
 
 /* Strip */
 .v3-strip { border-block: 1px solid var(--border); background: var(--card); }
+
+.kipit-website-v3 .v3-trust-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px 40px;
+  padding-block: 40px;
+}
+.kipit-website-v3 .v3-trust-bar-copy {
+  flex: 1 1 280px;
+  max-width: 560px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+.kipit-website-v3 .v3-trust-logos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px 28px;
+}
+.kipit-website-v3 .v3-trust-logo-img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+.kipit-website-v3 .v3-trust-rmb {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+}
+.kipit-website-v3 .v3-trust-rmb strong {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+.kipit-website-v3 .v3-trust-rmb span {
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+
+.kipit-website-v3 .v3-about-person {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--card);
+}
+@media (min-width: 640px) {
+  .kipit-website-v3 .v3-about-person {
+    grid-template-columns: 112px 1fr;
+    align-items: start;
+  }
+}
+.kipit-website-v3 .v3-about-person img {
+  width: 112px;
+  height: 112px;
+  object-fit: cover;
+  border-radius: 16px;
+  background: var(--muted);
+}
+.kipit-website-v3 .v3-about-person h3 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.kipit-website-v3 .v3-about-person .role {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.kipit-website-v3 .v3-about-person p {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+.kipit-website-v3 .v3-reg-table {
+  display: grid;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--card);
+}
+.kipit-website-v3 .v3-reg-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.4fr) 1fr;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.kipit-website-v3 .v3-reg-row:last-child { border-bottom: 0; }
+.kipit-website-v3 .v3-reg-row dt {
+  font-weight: 600;
+  color: var(--foreground);
+}
+.kipit-website-v3 .v3-reg-row dd {
+  color: var(--muted-foreground);
+  margin: 0;
+}
 .v3-marquee { overflow: hidden; mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent); }
 .v3-marquee-track { display: flex; width: max-content; gap: 56px; padding-block: 20px; }
 
@@ -89,7 +201,7 @@
   .kipit-website-v3 #fixed-plans .v3-product-rate { display: flex; align-items: baseline; gap: 6px; margin-top: 12px; font-size: 80px; letter-spacing: 0; }
   .kipit-website-v3 .v3-product-rate > span { display: flex; align-items: baseline; gap: 12px; font-size: 48px; }
   .kipit-website-v3 .v3-product-rate-unit { font-size: 20px; font-weight: 500; opacity: 0.75; }
-  .kipit-website-v3 .v3-product-tenors { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 28px; padding-block: 20px; border-block: 1px solid color-mix(in oklab, var(--brand-foreground) 20%, transparent); }
+  .kipit-website-v3 .v3-product-tenors { grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 28px; padding-block: 20px; border-block: 1px solid color-mix(in oklab, var(--brand-foreground) 20%, transparent); }
   .kipit-website-v3 .v3-product-tenors > div { display: flex; align-items: baseline; justify-content: center; gap: 6px; border-left: 1px solid color-mix(in oklab, var(--brand-foreground) 20%, transparent); }
   .kipit-website-v3 .v3-product-tenors > div:first-child { border-left: 0; justify-content: flex-start; }
   .kipit-website-v3 .v3-product-tenors strong { font-size: 24px; }

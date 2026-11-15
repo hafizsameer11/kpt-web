@@ -6,18 +6,21 @@ import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { useCountUp } from "@/components/kipit/motion";
 import { naira } from "@/lib/home-data";
-import { useTenorBands } from "@/lib/invest-data";
+import { PLAN_MIN_NAIRA, useTenorBands } from "@/lib/invest-data";
 import { useWalletBalance } from "@/lib/wallet-balance";
 
 export const Route = createFileRoute("/fixed-plans_/create/")({
-  validateSearch: z.object({ plan: z.string().optional().catch(undefined) }),
+  validateSearch: z.object({
+    plan: z.string().optional().catch(undefined),
+    planType: z.enum(["LOCK", "FLEX"]).optional().catch(undefined),
+  }),
   head: () => ({
     meta: [
       { title: "Create a Fixed Plan | Kipit" },
       {
         name: "description",
         content:
-          "Choose how much to lock into a Kipit fixed plan and earn up to 21.5% p.a. — minimum ₦10,000.",
+          "Choose how much to invest in Kipit Lock or Kipit Flex — minimum ₦1,000.",
       },
       { property: "og:title", content: "Create a Fixed Plan | Kipit" },
       {
@@ -43,19 +46,24 @@ const quickAmounts = (minimum: number, wallet: number) => {
 };
 
 function CreatePlanAmountScreen() {
-  const { bands: TENOR_BANDS, loading: ratesLoading } = useTenorBands();
+  const { bands: TENOR_BANDS, loading: ratesLoading, minimum: catalogMin } = useTenorBands();
   const WALLET = useWalletBalance();
-  const DEFAULT_MIN = 10_000;
+  const DEFAULT_MIN = catalogMin || PLAN_MIN_NAIRA;
   const LOWEST_MIN = TENOR_BANDS.length
     ? Math.min(...TENOR_BANDS.map((b) => (b.minimum > 0 ? b.minimum : DEFAULT_MIN)))
     : DEFAULT_MIN;
   const TOP_RATE = TENOR_BANDS.length
-    ? Math.max(...TENOR_BANDS.map((b) => Number(b.rate.replace("%", "")) || 0))
+    ? Math.max(...TENOR_BANDS.map((b) => Number(b.rate.replace(/[^0-9.]/g, "")) || 0))
     : 0;
-  const { plan } = Route.useSearch();
+  const { plan, planType: planTypeRaw } = Route.useSearch();
+  const planType = planTypeRaw === "FLEX" ? "FLEX" : "LOCK";
+  const productLabel = planType === "FLEX" ? "Kipit Flex" : "Kipit Lock";
   const band = TENOR_BANDS.find((b) => b.days === plan);
-  const MINIMUM = band && band.minimum > 0 ? band.minimum : LOWEST_MIN;
-  const BEST_RATE = band ? Number(band.rate.replace("%", "")) : TOP_RATE;
+  const MINIMUM = Math.max(
+    PLAN_MIN_NAIRA,
+    band && band.minimum > 0 ? band.minimum : LOWEST_MIN,
+  );
+  const BEST_RATE = band ? Number(band.rate.replace(/[^0-9.]/g, "")) : TOP_RATE;
 
   const [raw, setRaw] = useState("");
   const amount = Number(raw.replace(/[^0-9]/g, "")) || 0;
@@ -98,13 +106,12 @@ function CreatePlanAmountScreen() {
                 Step 1 of 4 · Amount
               </p>
               <h1 className="k-rise mt-2 font-display text-[34px] font-extrabold leading-[1.05] tracking-[-0.035em]">
-                How much do you want to lock in?
+                How much do you want to invest?
               </h1>
-              {band && (
-                <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground">
-                  {band.name} &middot; {band.days}
-                </p>
-              )}
+              <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground">
+                {productLabel}
+                {band ? ` · ${band.days}` : plan === "custom" ? " · Custom tenor" : ""}
+              </p>
 
               <div className="mt-6 flex items-baseline gap-2">
                 <span className="font-display text-[52px] font-extrabold leading-none text-primary-foreground/60">
@@ -225,7 +232,7 @@ function CreatePlanAmountScreen() {
             <div className="card-surface p-5">
               <Link
                 to="/fixed-plans/create/tenor"
-                search={{ amount, plan }}
+                search={{ amount, plan, planType }}
                 aria-disabled={!valid}
                 className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press ${
                   valid ? "" : "pointer-events-none opacity-40 shadow-none"
@@ -266,14 +273,13 @@ function CreatePlanAmountScreen() {
               </span>
             </div>
 
-            {band && (
-              <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground">
-                {band.name} &middot; {band.days}
-              </p>
-            )}
+            <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground">
+              {productLabel}
+              {band ? ` · ${band.days}` : plan === "custom" ? " · Custom tenor" : ""}
+            </p>
 
             <p className="mt-4 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
-              How much do you want to lock in?
+              How much do you want to invest?
             </p>
 
             <div className="mt-2 flex items-baseline gap-1.5">
@@ -407,7 +413,7 @@ function CreatePlanAmountScreen() {
           <div className="mt-5">
             <Link
               to="/fixed-plans/create/tenor"
-              search={{ amount, plan }}
+              search={{ amount, plan, planType }}
               aria-disabled={!valid}
               className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
                 valid ? "" : "pointer-events-none opacity-40 shadow-none"

@@ -22,6 +22,7 @@ export const Route = createFileRoute("/fixed-plans_/create/options")({
   validateSearch: z.object({
     amount: z.number().catch(0),
     days: z.number().catch(0),
+    planType: z.enum(["LOCK", "FLEX"]).optional().catch("LOCK"),
   }),
   head: () => ({
     meta: [
@@ -72,7 +73,8 @@ const MATURITY_OPTIONS = [
 const FREQUENCIES = ["Weekly", "Monthly"] as const;
 
 function PlanOptionsScreen() {
-  const { amount, days } = Route.useSearch();
+  const { amount, days, planType: planTypeRaw } = Route.useSearch();
+  const planType = planTypeRaw === "FLEX" ? "FLEX" : "LOCK";
   const WALLET = useWalletBalance();
   const band = TENOR_BANDS.find(
     (b) => Number(b.days.replace(/\D/g, "")) === days,
@@ -83,6 +85,11 @@ function PlanOptionsScreen() {
   const [planName, setPlanName] = useState("");
   const [goal, setGoal] = useState("");
   const [target, setTarget] = useState("");
+
+  /* Lock interest payout (B8/B10) */
+  const [interestPayout, setInterestPayout] = useState<"AT_MATURITY" | "UPFRONT">(
+    "AT_MATURITY",
+  );
 
   /* MOB-071 — auto-invest */
   const [autoInvest, setAutoInvest] = useState(false);
@@ -122,6 +129,8 @@ function PlanOptionsScreen() {
     gift: forWhom === "gift" ? recipient.trim() : "",
     giftPhone: forWhom === "gift" ? recipientContact.trim() : "",
     giftMessage: forWhom === "gift" ? giftMessage.trim() : "",
+    planType,
+    interestPayout: planType === "FLEX" ? ("AT_MATURITY" as const) : interestPayout,
   };
 
   return (
@@ -137,19 +146,21 @@ function PlanOptionsScreen() {
             <div>
               <Link
                 to="/fixed-plans/create/tenor"
-                search={{ amount }}
+                search={{ amount, planType }}
                 className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground press"
               >
                 <ArrowLeft className="size-3.5" /> Tenor
               </Link>
               <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.08em] text-primary-foreground/60">
-                Step 3 of 4 · Options
+                Step 3 of 4 · Options · {planType === "FLEX" ? "Kipit Flex" : "Kipit Lock"}
               </p>
               <h1 className="k-rise mt-2 font-display text-[34px] font-extrabold leading-[1.05] tracking-[-0.035em]">
                 Personalise your plan
               </h1>
               <p className="mt-2 text-[13px] text-primary-foreground/70">
-                All optional — you can skip straight to review.
+                {planType === "LOCK"
+                  ? "Choose when interest is paid, then optional extras."
+                  : "All optional — you can skip straight to review."}
               </p>
             </div>
             <div className="shrink-0 text-right">
@@ -167,6 +178,46 @@ function PlanOptionsScreen() {
         <div className="mt-6 grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_320px] items-start gap-6">
           {/* Col 1: personalise + auto-invest */}
           <div className="min-w-0 space-y-4">
+            {planType === "LOCK" ? (
+              <section className="card-surface p-5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Interest payout
+                </p>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {(
+                    [
+                      {
+                        id: "AT_MATURITY" as const,
+                        name: "At maturity",
+                        note: "Principal + interest at the end",
+                      },
+                      {
+                        id: "UPFRONT" as const,
+                        name: "Upfront",
+                        note: "Net interest to wallet on day one",
+                      },
+                    ] as const
+                  ).map((o) => (
+                    <button
+                      key={o.id}
+                      type="button"
+                      onClick={() => setInterestPayout(o.id)}
+                      aria-pressed={interestPayout === o.id}
+                      className={`rounded-xl border px-3 py-3 text-left transition-colors press ${
+                        interestPayout === o.id
+                          ? "border-gold/60 bg-gold/10"
+                          : "border-border/70 bg-background hover:bg-muted/40"
+                      }`}
+                    >
+                      <span className="block text-[12.5px] font-bold">{o.name}</span>
+                      <span className="mt-0.5 block text-[11px] text-muted-foreground">
+                        {o.note}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ) : null}
             <section className="card-surface p-5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Personalise <span className="normal-case tracking-normal">(optional)</span>
@@ -494,13 +545,13 @@ function PlanOptionsScreen() {
           <div className="relative md:max-w-3xl">
             <Link
               to="/fixed-plans/create/tenor"
-              search={{ amount }}
+              search={{ amount, planType }}
               className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-bold text-primary-foreground press"
             >
               <ArrowLeft className="size-3.5" /> Tenor
             </Link>
             <p className="k-rise mt-6 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary-foreground/60">
-              Almost there
+              Almost there · {planType === "FLEX" ? "Kipit Flex" : "Kipit Lock"}
             </p>
             <p
               className="k-rise mt-1 font-display text-[34px] font-extrabold leading-none tracking-[-0.03em] text-num md:text-[40px]"
@@ -526,6 +577,48 @@ function PlanOptionsScreen() {
           />
 
           <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
+            {planType === "LOCK" ? (
+              <Rise>
+                <section className="card-surface p-4 md:p-5">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                    Interest payout
+                  </p>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    {(
+                      [
+                        {
+                          id: "AT_MATURITY" as const,
+                          name: "At maturity",
+                          note: "Paid with principal",
+                        },
+                        {
+                          id: "UPFRONT" as const,
+                          name: "Upfront",
+                          note: "To wallet on day one",
+                        },
+                      ] as const
+                    ).map((o) => (
+                      <button
+                        key={o.id}
+                        type="button"
+                        onClick={() => setInterestPayout(o.id)}
+                        aria-pressed={interestPayout === o.id}
+                        className={`rounded-xl border px-3 py-3 text-left transition-colors press ${
+                          interestPayout === o.id
+                            ? "border-gold/60 bg-gold/10"
+                            : "border-border/70 bg-background"
+                        }`}
+                      >
+                        <span className="block text-[12.5px] font-bold">{o.name}</span>
+                        <span className="mt-0.5 block text-[11px] text-muted-foreground">
+                          {o.note}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              </Rise>
+            ) : null}
             {/* MOB-070 — optional plan details */}
             <Rise>
               <section className="card-surface p-4 md:p-5">
@@ -790,17 +883,7 @@ function PlanOptionsScreen() {
           <div className="mt-5">
             <Link
               to="/fixed-plans/create/review"
-              search={{
-                amount,
-                days,
-                name: planName.trim(),
-                maturity,
-                auto: autoInvest && autoAmount ? `${naira(Number(autoAmount))} ${frequency.toLowerCase()} from ${startDate}` : "",
-                autoAmount: autoInvest && autoAmount ? Number(String(autoAmount).replace(/\D/g, "")) || undefined : undefined,
-                gift: forWhom === "gift" ? recipient.trim() : "",
-                giftPhone: forWhom === "gift" ? recipientContact.trim() : "",
-                giftMessage: forWhom === "gift" ? giftMessage.trim() : "",
-              }}
+              search={reviewSearch}
               disabled={!giftValid}
               className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3.5 text-[13.5px] font-extrabold text-primary-foreground shadow-float press md:w-auto md:px-10 ${
                 giftValid ? "k-glow" : "pointer-events-none opacity-40 shadow-none"

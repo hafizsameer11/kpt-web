@@ -15,10 +15,13 @@ import {
   Sun,
   User,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { useTheme } from "@/lib/theme";
 import { signOut } from "@/lib/auth-session";
 import { useDisplayProfile } from "@/lib/profile-live";
+import { hydrateWalletFundingFromApi, SAVED_CARDS } from "@/lib/wallet-data";
+import { hydratePayoutFromApi, SAVED_ACCOUNTS } from "@/lib/withdraw-data";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -103,6 +106,25 @@ function SettingsHome() {
   const initials = profile.initials || "—";
   const tier = profile.tier ? `${profile.tier} verified` : "Unverified";
   const memberSince = profile.memberSince;
+  const [cardCount, setCardCount] = useState(0);
+  const [payoutCount, setPayoutCount] = useState(0);
+
+  useEffect(() => {
+    void (async () => {
+      await Promise.all([hydrateWalletFundingFromApi(), hydratePayoutFromApi()]);
+      setCardCount(SAVED_CARDS.length);
+      setPayoutCount(SAVED_ACCOUNTS.length);
+    })();
+  }, []);
+
+  const cardsLabel =
+    cardCount === 0 ? "No cards" : cardCount === 1 ? "1 card" : `${cardCount} cards`;
+  const payoutLabel =
+    payoutCount === 0
+      ? "None saved"
+      : payoutCount === 1
+        ? "1 saved"
+        : `${payoutCount} saved`;
 
   async function handleSignOut() {
     await signOut();
@@ -338,14 +360,14 @@ function SettingsHome() {
                       to: "/withdraw/accounts" as const,
                       icon: Landmark,
                       label: "Payout accounts",
-                      value: "2 saved",
+                      value: payoutLabel,
                       note: "Bank destinations for withdrawals",
                     },
                     {
                       to: "/settings/cards" as const,
                       icon: CreditCard,
                       label: "Linked cards",
-                      value: "2 cards",
+                      value: cardsLabel,
                       note: "Saved cards for quick funding",
                     },
                   ].map((s) => (

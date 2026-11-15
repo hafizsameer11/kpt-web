@@ -27,6 +27,24 @@ import { WebsiteV3Calculator } from "@/components/kipit/WebsiteV3Calculator";
 import { WebsiteAppPreview } from "@/components/kipit/WebsiteAppPreview";
 import "@/components/kipit/website-v3.css";
 import { ARTICLES } from "@/lib/articles";
+import {
+  CALL_ACCOUNT_MARKETING,
+  FIXED_PLANS_DESCRIPTION,
+  FIXED_PLANS_TAGS,
+  FOOTER_LEGAL,
+  FOOTER_LEGAL_MOBILE,
+  KAM_LOGO,
+  MARKETING_FAQS,
+  MARKETING_TENORS,
+  PROMISE_BODY,
+  PROMISE_ROWS,
+  SECURITY_INTRO,
+  SECURITY_POINTS,
+  TOP_FIXED_RATE,
+  TRUST_STATEMENT,
+  TRUST_STRIP,
+  WHATSAPP_URL,
+} from "@/lib/website-marketing";
 import imgLife1 from "@/assets/v3-lifestyle-1.jpg";
 import imgLife2 from "@/assets/v3-lifestyle-2.jpg";
 import imgLife3 from "@/assets/v3-lifestyle-3.jpg";
@@ -45,28 +63,6 @@ const GOALS = [
   { icon: Plane, value: "₦600k", label: "December trip" },
 ];
 
-function CountUp({ value }: { value: string }) {
-  const m = value.match(/^(\D*)([\d.]+)(.*)$/);
-  const [shown, setShown] = useState(m ? `${m[1]}0${m[3]}` : value);
-  useEffect(() => {
-    if (!m) return;
-    const target = parseFloat(m[2]!);
-    const decimals = (m[2]!.split(".")[1] ?? "").length;
-    let raf = 0;
-    const start = performance.now();
-    const tick = (t: number) => {
-      const p = Math.min(1, (t - start) / 1400);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setShown(`${m[1]}${(target * eased).toFixed(decimals)}${m[3]}`);
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
-  return <>{shown}</>;
-}
-
 export const Route = createFileRoute("/")({
   staticData: { sitemap: true },
   head: () => ({
@@ -75,12 +71,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Save, invest and plan with Kipit. A wallet, a daily-interest Call Account and fixed plans up to 19.2% p.a. — all in one bright, simple account.",
+          `Save, invest and plan with Kipit. A wallet, a daily-interest Call Account and fixed plans up to ${TOP_FIXED_RATE} p.a. — all in one bright, simple account.`,
       },
       { property: "og:title", content: "Kipit — Your money, working beautifully" },
       {
         property: "og:description",
-        content: "Wallet, Call Account and fixed plans up to 19.2% p.a. in one simple account.",
+        content: `Wallet, Call Account and fixed plans up to ${TOP_FIXED_RATE} p.a. in one simple account.`,
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -91,34 +87,10 @@ export const Route = createFileRoute("/")({
 
 const naira = (v: number) => `₦${Math.round(v).toLocaleString("en-NG")}`;
 
-
-const STRIP = [
-  "Held by Kipit Investment Ltd",
-  "Interest accrues daily",
-  "Same-day wallet settlement",
-  "Bank-grade encryption",
-  "BVN & NIN verified",
-  "WhatsApp support",
-  "Web & mobile",
-];
-
-const STATS = [
-  { value: "₦4.2bn+", label: "Funds under management" },
-  { value: "38k+", label: "Savers & investors" },
-  { value: "19.2%", label: "Top fixed rate p.a." },
-  { value: "T+0", label: "Wallet settlement" },
-];
-
 const STEPS = [
   { title: "Create your account", body: "Sign up with your email in under two minutes and verify with BVN or NIN.", img: imgStepSignup },
   { title: "Fund your wallet", body: "Bank transfer or card. Your wallet is the home base for every plan.", img: imgStepFund },
   { title: "Choose how to grow", body: "Earn daily in the Call Account or lock a fixed plan for a higher rate.", img: imgStepGrow },
-];
-
-const PRODUCTS = [
-  { rate: "14.5%", name: "Call Account", body: "Earn daily on everyday money. Move to your wallet any time." },
-  { rate: "19.2%", name: "Fixed Plans", body: "Lock 30–365 days, see a countdown to a guaranteed payout." },
-  { rate: "Curated", name: "Explore", body: "Treasury bills, bonds and partner funds, vetted for you." },
 ];
 
 const FEATURES = [
@@ -134,23 +106,12 @@ const TESTIMONIALS = [
   { quote: "Clean, calm and clear. It feels like a private bank in my pocket.", name: "Halima S.", role: "Founder, Kano" },
 ];
 
-const FAQS = [
-  { q: "Is my money safe with Kipit?", a: "Your investments are held by Kipit Investment Ltd, an asset manager licensed by the SEC, and your account is protected with encryption, PIN and verified identity." },
-  { q: "How quickly can I withdraw?", a: "Call Account funds move to your wallet instantly. Wallet withdrawals to your bank settle the same day." },
-  { q: "What's the minimum to start?", a: "You can start with as little as ₦1,000 in the Call Account." },
-  { q: "What happens when a fixed plan matures?", a: "Principal and interest settle to your wallet. You can roll over at the current rate or withdraw." },
-];
-
-const TENORS = [
-  { days: 30, rate: 15.5 },
-  { days: 90, rate: 17.0 },
-  { days: 180, rate: 18.2 },
-  { days: 365, rate: 19.2 },
-];
+const TENORS = MARKETING_TENORS;
+const SECURITY_ICONS = [Lock, Landmark, PiggyBank] as const;
 
 function WebsiteV3Page() {
   const [amount, setAmount] = useState(500_000);
-  const [tenor, setTenor] = useState<(typeof TENORS)[number]>(TENORS[1] ?? TENORS[0] ?? { days: 30, rate: 15.5 });
+  const [tenor, setTenor] = useState<(typeof TENORS)[number]>(TENORS[1] ?? TENORS[0]!);
   const [faq, setFaq] = useState<number | null>(0);
   const [chooser, setChooser] = useState<AccessMode>(null);
 
@@ -188,10 +149,10 @@ function WebsiteV3Page() {
           <div className="v3-fade">
             <span className="v3-badge"><b>New</b> Fixed plans now settle same-day</span>
             <h1 className="v3-title mt-7">
-              Earn up to 19.2%<br /> on your <span className="v3-serif v3-gold-text">naira.</span>
+              Earn up to {TOP_FIXED_RATE}<br /> on your <span className="v3-serif v3-gold-text">naira.</span>
             </h1>
             <p className="mt-6 max-w-[520px] text-lg text-muted-foreground">
-              A wallet, a daily-interest Call Account and fixed plans up to 19.2% p.a. — all in one account. Start with ₦1,000.
+              A wallet, a daily-interest Call Account and fixed plans up to {TOP_FIXED_RATE} p.a. — all in one account. Start with ₦1,000.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <button type="button" className="v3-btn v3-btn-primary" onClick={() => setChooser("access")}>Start with ₦1,000 <ArrowRight className="size-4" /></button>
@@ -239,7 +200,7 @@ function WebsiteV3Page() {
       <div className="v3-strip">
         <div className="v3-marquee">
           <div className="v3-marquee-track">
-            {[...STRIP, ...STRIP].map((s, i) => (
+            {[...TRUST_STRIP, ...TRUST_STRIP].map((s, i) => (
               <span key={i} className="flex items-center gap-3 whitespace-nowrap text-sm font-medium text-muted-foreground">
                 <ShieldCheck className="size-4 text-gold" /> {s}
               </span>
@@ -248,14 +209,16 @@ function WebsiteV3Page() {
         </div>
       </div>
 
-      {/* Stats */}
-      <section className="v3-container grid grid-cols-2 gap-8 py-16 lg:grid-cols-4">
-        {STATS.map((s) => (
-          <div key={s.label} className="v3-reveal border-l border-border pl-6">
-            <p className="text-4xl font-bold tracking-tight lg:text-5xl"><CountUp value={s.value} /></p>
-            <p className="mt-2 text-sm text-muted-foreground">{s.label}</p>
+      {/* Trust statement + logos (A3) */}
+      <section className="v3-container v3-trust-bar v3-reveal" aria-label="Custody and regulation">
+        <p className="v3-trust-bar-copy">{TRUST_STATEMENT}</p>
+        <div className="v3-trust-logos">
+          <img src={KAM_LOGO} alt="Kipit Asset Management" className="v3-trust-logo-img" width={180} height={40} />
+          <div className="v3-trust-rmb">
+            <strong>Rand Merchant Bank</strong>
+            <span>Custodian</span>
           </div>
-        ))}
+        </div>
       </section>
 
       {/* Products bento */}
@@ -277,15 +240,15 @@ function WebsiteV3Page() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Fixed Plans · up to</p>
-                <p className="v3-product-rate text-[88px] font-bold leading-none tracking-[-0.05em]">19.2<span className="text-4xl">% <span className="v3-product-rate-unit">p.a.</span></span></p>
-                <p className="mt-4 max-w-[460px] text-muted-foreground">Lock 30 to 365 days and get a fixed payout date — principal plus interest, settled straight to your wallet.</p>
+                <p className="v3-product-rate text-[88px] font-bold leading-none tracking-[-0.05em]">22<span className="text-4xl">% <span className="v3-product-rate-unit">p.a.</span></span></p>
+                <p className="mt-4 max-w-[460px] text-muted-foreground">{FIXED_PLANS_DESCRIPTION}</p>
                 <div className="mt-6 flex flex-wrap gap-2">
-                  {["30–365 day tenors", "Auto-rollover", "Same-day settlement"].map((c) => (
+                  {FIXED_PLANS_TAGS.map((c) => (
                     <span key={c} className="rounded-full border border-white/20 px-3 py-1 text-xs">{c}</span>
                   ))}
                 </div>
                 <div className="v3-product-tenors hidden lg:grid">
-                  {[30, 90, 180, 365].map((days) => <div key={days}><strong>{days}</strong><span>days</span></div>)}
+                  {[30, 60, 90, 180, 365].map((days) => <div key={days}><strong>{days}</strong><span>days</span></div>)}
                 </div>
                 <Button variant="ghost" className="v3-product-action hidden lg:flex" onClick={() => setChooser("access")}>Start a fixed plan <ArrowRight className="size-4" /></Button>
               </div>
@@ -293,7 +256,8 @@ function WebsiteV3Page() {
             <div id="call-account" className="v3-card v3-card-gold">
               <span className="v3-icon"><Wallet className="size-5" /></span>
               <p className="mt-6 text-sm text-muted-foreground">Call Account</p>
-              <p className="text-5xl font-bold tracking-tight">14.5%</p>
+              <p className="text-4xl font-bold tracking-tight sm:text-5xl">{CALL_ACCOUNT_MARKETING}</p>
+              <p className="mt-1 text-sm text-muted-foreground">p.a.</p>
               <p className="mt-3 text-sm text-muted-foreground">Daily interest on everyday money. Move to your wallet any time.</p>
               <Button variant="ghost" className="v3-product-action hidden lg:flex" onClick={() => setChooser("access")}>Open a Call Account <ArrowRight className="size-4" /></Button>
             </div>
@@ -301,7 +265,7 @@ function WebsiteV3Page() {
               <span className="v3-icon"><Layers3 className="size-5" /></span>
               <p className="mt-6 text-sm text-muted-foreground">Explore</p>
               <p className="text-5xl font-bold tracking-tight">Curated</p>
-              <p className="mt-3 text-sm text-muted-foreground">T-bills, bonds and partner funds, vetted and explained.</p>
+              <p className="mt-3 text-sm text-muted-foreground">Treasury Bills, Commercial Papers, Mutual Funds and Bonds, vetted and explained.</p>
               <Button variant="ghost" className="v3-product-action hidden lg:flex" onClick={() => setChooser("access")}>Explore investments <ArrowRight className="size-4" /></Button>
             </div>
           </div>
@@ -324,7 +288,7 @@ function WebsiteV3Page() {
           <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
               <span className="v3-eyebrow">How it works</span>
-              <h2 className="v3-heading mt-4 max-w-[560px]">Open an account in about <span className="v3-serif v3-gold-text">5 minutes.</span></h2>
+              <h2 className="v3-heading mt-4 max-w-[560px]">Open an account in about <span className="v3-serif v3-gold-text">2 minutes.</span></h2>
               <p className="mt-5 max-w-[480px] text-muted-foreground">You need your BVN, a selfie and a debit card. No branch visit.</p>
             </div>
             <div className="flex gap-3">
@@ -411,7 +375,7 @@ function WebsiteV3Page() {
           </div>
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {[
-              { img: imgLife1, alt: "Woman checking her Kipit savings at home", tag: <>Emergency fund · <b>14.5% p.a.</b></> },
+              { img: imgLife1, alt: "Woman checking her Kipit savings at home", tag: <>Emergency fund · <b>{CALL_ACCOUNT_MARKETING} p.a.</b></> },
               { img: imgLife2, alt: "Couple planning their finances together", tag: <>Wedding plan · <b>180 days</b></> },
               { img: imgLife3, alt: "Professional reviewing his fixed plan", tag: <>Rent goal · <b>365 days</b></> },
             ].map((p, i) => (
@@ -466,12 +430,26 @@ function WebsiteV3Page() {
               <div className="v3-security-header">
                 <span className="v3-eyebrow">Built on trust</span>
                 <h2 id="v3-security-title">How we keep<br /><span>your money safe.</span></h2>
-                <p>Your investments are held by Kipit Investment Ltd, an SEC-licensed asset manager. Your account is protected by PIN and verified ID.</p>
+                <p>{SECURITY_INTRO}</p>
               </div>
               <div className="v3-security-details">
-              <div className="v3-security-item"><span className="v3-security-icon"><Lock size={23} /></span><div><span className="v3-security-number">01 / ACCOUNT SECURITY</span><h3>Bank-grade encryption</h3><p>Data encrypted in transit and at rest, with PIN and biometric sign-in.</p><div className="v3-security-tags"><span>Encrypted data</span><span>PIN protection</span><span>Biometric sign-in</span></div></div></div>
-              <div className="v3-security-item"><span className="v3-security-icon"><Landmark size={23} /></span><div><span className="v3-security-number">02 / INVESTMENT CUSTODY</span><h3>SEC-licensed asset manager</h3><p>Your investments are held by Kipit Investment Ltd, licensed by the SEC as an asset manager, with funds kept in segregated custody.</p><div className="v3-security-tags"><span>Kipit Investment Ltd</span><span>SEC-licensed</span><span>Segregated custody</span></div></div></div>
-            </div>
+                {SECURITY_POINTS.map((point, i) => {
+                  const Icon = SECURITY_ICONS[i] ?? Lock;
+                  return (
+                    <div key={point.number} className="v3-security-item">
+                      <span className="v3-security-icon"><Icon size={23} /></span>
+                      <div>
+                        <span className="v3-security-number">{point.number}</span>
+                        <h3>{point.title}</h3>
+                        <p>{point.body}</p>
+                        <div className="v3-security-tags">
+                          {point.tags.map((tag) => <span key={tag}>{tag}</span>)}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
             <div className="v3-security-art">
               <div className="website-device" aria-label="Kipit app invest screen preview">
@@ -486,22 +464,22 @@ function WebsiteV3Page() {
         </div>
       </section>
       <section className="v3-section v3-glow v3-glow-navy-tr lg:hidden">
-        <div className="v3-container grid gap-5 lg:grid-cols-3">
-          <div className="v3-card v3-card-navy lg:col-span-1">
+        <div className="v3-container grid gap-5">
+          <div className="v3-card v3-card-navy">
             <span className="v3-icon"><ShieldCheck className="size-5" /></span>
             <h3 className="mt-6 text-3xl font-bold tracking-tight">How your money is kept safe.</h3>
-            <p className="mt-3 text-muted-foreground">Your investments are held by Kipit Investment Ltd, an SEC-licensed asset manager. Your account is protected by PIN and verified ID.</p>
+            <p className="mt-3 text-muted-foreground">{SECURITY_INTRO}</p>
           </div>
-          {[
-            { icon: Lock, t: "Bank-grade encryption", b: "Data encrypted in transit and at rest, with PIN and biometric sign-in." },
-            { icon: PiggyBank, t: "SEC-licensed asset manager", b: "Your investments are held by Kipit Investment Ltd, licensed by the SEC as an asset manager, with funds in segregated custody." },
-          ].map((x) => (
-            <div key={x.t} className="v3-card">
-              <span className="v3-icon"><x.icon className="size-5" /></span>
-              <h3 className="mt-6 text-xl font-semibold">{x.t}</h3>
-              <p className="mt-2 text-muted-foreground">{x.b}</p>
-            </div>
-          ))}
+          {SECURITY_POINTS.map((point, i) => {
+            const Icon = SECURITY_ICONS[i] ?? Lock;
+            return (
+              <div key={point.number} className="v3-card">
+                <span className="v3-icon"><Icon className="size-5" /></span>
+                <h3 className="mt-6 text-xl font-semibold">{point.title}</h3>
+                <p className="mt-2 text-muted-foreground">{point.body}</p>
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -540,7 +518,7 @@ function WebsiteV3Page() {
             <span className="v3-eyebrow">FAQs</span>
             <h2 className="v3-heading mt-4">Common <span className="v3-serif">questions</span></h2>
             <p className="mt-4 text-muted-foreground">Everything you need to know before you start.</p>
-            <a href="https://wa.me/" target="_blank" rel="noreferrer" className="v3-help-card mt-8">
+            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="v3-help-card mt-8">
               <span className="v3-help-icon"><Globe className="size-5" /></span>
               <span>
                 <span className="block font-semibold">Still curious?</span>
@@ -549,7 +527,7 @@ function WebsiteV3Page() {
             </a>
           </div>
           <div className="space-y-3">
-            {FAQS.map((f, i) => (
+            {MARKETING_FAQS.map((f, i) => (
               <div key={f.q} className={`v3-faq-card ${faq === i ? "is-open" : ""}`}>
                 <button className="flex w-full items-center gap-5 p-6 text-left text-lg font-semibold" onClick={() => setFaq(faq === i ? null : i)}>
                   <span className="v3-faq-num">{String(i + 1).padStart(2, "0")}</span>
@@ -569,12 +547,12 @@ function WebsiteV3Page() {
           <div className="v3-reveal">
             <span className="v3-eyebrow">Our promise</span>
             <h2 className="v3-heading mt-4">Why we started <span className="v3-serif v3-gold-text">Kipit.</span></h2>
-            <p className="mt-5 max-w-[460px] text-muted-foreground">Most savings accounts in Nigeria pay less than inflation. We wanted rates that are clear upfront, plans you can start with ₦1,000, and interest you can check every day.</p>
+            <p className="mt-5 max-w-[460px] text-muted-foreground">{PROMISE_BODY}</p>
             <ol className="mt-8 grid gap-3">
-              {[["Day one", "Interest starts the moment you invest"], ["Same day", "Matured plans land in your wallet"], ["₦1,000", "All it takes to get started"]].map(([v, l], i) => (
-                <li key={v} className="v3-promise-row">
+              {PROMISE_ROWS.map((row, i) => (
+                <li key={row.title} className="v3-promise-row">
                   <span className="v3-promise-num">0{i + 1}</span>
-                  <div className="min-w-0 flex-1"><p className="text-lg font-bold text-brand">{v}</p><p className="text-sm text-muted-foreground">{l}</p></div>
+                  <div className="min-w-0 flex-1"><p className="text-lg font-bold text-brand">{row.title}</p><p className="text-sm text-muted-foreground">{row.body}</p></div>
                 </li>
               ))}
             </ol>
@@ -667,7 +645,7 @@ function WebsiteV3Page() {
           </div>
 
           <div className="v3-footer-bottom hidden md:flex">
-            <p>© 2026 Kipit. Investments are held by Kipit Investment Ltd, an asset manager licensed by the SEC.</p>
+            <p>{FOOTER_LEGAL}</p>
             <div className="flex gap-6"><Link to="/privacy">Legal documents & risk disclosure</Link><Link to="/terms">Terms & conditions</Link><Link to="/delete-account">Delete account</Link></div>
           </div>
           <p className="hidden pb-6 text-xs text-muted-foreground md:block">Investments carry risk; rates shown are illustrative and subject to change.</p>
@@ -706,7 +684,7 @@ function WebsiteV3Page() {
                 </ul>
               </details>
             ))}
-            <p className="v3-mfoot-legal">© 2026 Kipit. Investments are held by Kipit Investment Ltd, an asset manager licensed by the SEC. Investments carry risk; rates shown are illustrative and subject to change.</p>
+            <p className="v3-mfoot-legal">{FOOTER_LEGAL_MOBILE}</p>
             <p className="v3-mfoot-mark" aria-hidden>Kipit.</p>
           </div>
         </div>

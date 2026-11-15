@@ -63,14 +63,18 @@ export type ChatMessage = {
   blocks?: ChatBlock[];
 };
 
-/** CHAT-001 suggested prompts. */
+/** CHAT-001 suggested prompts. B23 — never “Help me invest”. */
 export const SUGGESTED_PROMPTS = [
   "What's my balance?",
-  "Help me invest",
-  "What products are available?",
+  "How do fixed plans work?",
+  "What offerings are available?",
   "When does my investment mature?",
   "Track a transaction",
 ];
+
+/** Shown under composer / empty state — AI never recommends specific investments. */
+export const AI_DISCLAIMER =
+  "Kipit AI provides general information only. It does not give investment advice or recommend investments.";
 
 export const PORTFOLIO_SNAPSHOT = {
   wallet: WALLET,
@@ -187,32 +191,19 @@ export function assistantReply(raw: string, amountInFlight?: number): ChatMessag
     }
   }
 
-  // CHAT-003 → CHAT-004 — discovery answers
+  // Legacy match: chips — educate only; do not recommend a pick
   if (text.startsWith("match:")) {
-    const [, tenor, access] = text.split(":");
-    const invest = amount ?? DEFAULT_AMOUNT;
-    let picks: ChatProduct[];
-    if (access === "yes") {
-      picks = compact([callProduct, fixedProducts[0]]);
-    } else if (tenor === "short") {
-      picks = compact([fixedProducts[0], callProduct, marketProducts[0]]);
-    } else {
-      picks = compact([marketProducts[0], fixedProducts[1] ?? fixedProducts[0], fixedProducts[0]]).slice(0, 3);
-    }
     return {
       id: nextId(),
       role: "assistant",
-      screen: "CHAT-004",
+      screen: "CHAT-003",
       blocks: [
         {
-          kind: "products",
-          intro:
-            access === "yes"
-              ? `Because you may need access before maturity, these keep your money reachable. Estimates use ${naira(invest)}.`
-              : `Here's what fits ${naira(invest)} over a ${tenor === "short" ? "shorter" : "longer"} tenor.`,
-          amount: invest,
-          products: picks,
+          kind: "text",
+          text: "I don't recommend specific plans. Browse Invest for Lock, Flex and Call, or Explore for partner offerings — rate, tenor and minimum are shown on each screen.",
         },
+        { kind: "link", label: "Open Invest", to: "/invest" },
+        { kind: "link", label: "Browse offerings", to: "/explore" },
       ],
     };
   }
@@ -280,8 +271,28 @@ export function assistantReply(raw: string, amountInFlight?: number): ChatMessag
     };
   }
 
-  // CHAT-003 — investment discovery
-  if (has(text, ["invest", "plan", "grow", "put money", "save"]) && !has(text, ["product"])) {
+  // B23 — explain how plans work; never recommend a specific investment
+  if (
+    has(text, ["fixed plan", "how do fixed", "lock", "flex", "call account"]) ||
+    (has(text, ["how do", "how does", "explain"]) && has(text, ["plan", "invest"]))
+  ) {
+    return {
+      id: nextId(),
+      role: "assistant",
+      screen: "CHAT-003",
+      blocks: [
+        {
+          kind: "text",
+          text: "Kipit Lock locks your money for a chosen tenor at a fixed rate. Kipit Flex also has a fixed rate but you can break after 30 days (with a partial interest forfeit). Call Account earns daily interest with withdrawals anytime. I never recommend a specific investment — browse Invest or Explore and choose yourself.",
+        },
+        { kind: "link", label: "Go to Invest", to: "/invest" },
+        { kind: "link", label: "Browse offerings", to: "/explore" },
+      ],
+    };
+  }
+
+  // CHAT-003 — educational discovery (no product picks)
+  if (has(text, ["invest", "plan", "grow", "put money", "save", "help me invest"])) {
     return {
       id: nextId(),
       role: "assistant",
@@ -290,32 +301,36 @@ export function assistantReply(raw: string, amountInFlight?: number): ChatMessag
         {
           kind: "text",
           text: amount
-            ? `Great — ${naira(amount)} to invest. Two quick questions.`
-            : "Happy to help. Two quick questions so I can narrow it down.",
+            ? `${naira(amount)} is ready when you are. I can explain how Lock, Flex and Call work — I don't recommend which one to buy.`
+            : "I can explain how Kipit Lock, Kipit Flex and Call Account work. I don't recommend specific investments.",
         },
         {
           kind: "chips",
-          label: "How long do you want to invest?",
+          label: "What would you like to learn?",
           options: [
-            { label: "Under 6 months", send: "match:short:" },
-            { label: "6 months or more", send: "match:long:" },
-            { label: "I need access anytime", send: "match:short:yes" },
+            { label: "How do fixed plans work?", send: "How do fixed plans work?" },
+            { label: "What offerings are available?", send: "What offerings are available?" },
           ],
         },
+        { kind: "link", label: "Open Invest", to: "/invest" },
       ],
     };
   }
 
-  // CHAT-004 — product catalogue
-  if (has(text, ["product", "available", "rates", "options", "offer"])) {
+  // CHAT-004 — offerings catalogue (browse only; not a recommendation)
+  if (has(text, ["product", "offering", "available", "rates", "options", "offer"])) {
     return {
       id: nextId(),
       role: "assistant",
       screen: "CHAT-004",
       blocks: [
         {
+          kind: "text",
+          text: "Here are open offerings and plans you can browse. This is not a recommendation — rate, tenor and minimum are shown together so you can compare.",
+        },
+        {
           kind: "products",
-          intro: "These are open right now. Rate, tenor and minimum are shown together.",
+          intro: "Open right now for browsing. Choose yourself on Invest or Explore.",
           amount: amount ?? DEFAULT_AMOUNT,
           products: compact([callProduct, fixedProducts[0], marketProducts[0]]),
         },
@@ -331,7 +346,7 @@ export function assistantReply(raw: string, amountInFlight?: number): ChatMessag
     blocks: [
       {
         kind: "text",
-        text: "I can help you with your Kipit account, investments, transactions and available products.",
+        text: "I can help with your Kipit account, investments, transactions and available offerings. I never recommend specific investments.",
       },
       { kind: "unsupported" },
     ],

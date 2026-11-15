@@ -30,6 +30,7 @@ import {
   DEFAULT_AMOUNT,
   FUNDING_ACCOUNT,
   MATURITY,
+  AI_DISCLAIMER,
   SUGGESTED_PROMPTS,
   estimatedReturn,
   mapApiChatBlocks,
@@ -334,6 +335,10 @@ function ChatScreen() {
               );
             })}
           </div>
+          <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+            Kipit AI provides general information only. It does not give investment advice or
+            recommend investments.
+          </p>
         </div>
       )}
 
@@ -348,7 +353,7 @@ function ChatScreen() {
           ref={inputRef}
           value={input}
           onChange={(event) => setInput(event.target.value)}
-          placeholder="Ask about balances, products or a transaction…"
+          placeholder="Ask about balances, offerings or a transaction…"
           className="min-w-0 flex-1 bg-transparent px-1.5 py-2.5 text-[14px] outline-none placeholder:text-muted-foreground"
         />
         <button
@@ -360,9 +365,12 @@ function ChatScreen() {
           <Send className="size-4 text-gold" />
         </button>
       </div>
-      <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-[10.5px] text-muted-foreground">
-        <Lock className="size-3 text-gold" /> Kipit never moves money in chat — you confirm with your
-        PIN.
+      <p className="mt-2 text-center text-[10.5px] leading-snug text-muted-foreground">
+        <span className="inline-flex items-center justify-center gap-1.5">
+          <Lock className="size-3 text-gold" /> Kipit never moves money in chat — you confirm with
+          your PIN.
+        </span>
+        <span className="mt-1 block">{AI_DISCLAIMER}</span>
       </p>
     </>
   );
@@ -513,8 +521,8 @@ function ChatScreen() {
                   <ul className="mt-3 space-y-2.5 text-[12.5px] text-muted-foreground">
                     {[
                       "Read balances, maturities and transaction status",
-                      "Match you to products by tenor and access",
-                      "Explain rate, tenor and minimum before you commit",
+                      "Explain how Lock, Flex, Call and offerings work",
+                      "Never recommend a specific investment",
                       "Hand you to the secure screen to authorize",
                     ].map((item) => (
                       <li key={item} className="flex gap-2">
@@ -862,10 +870,10 @@ function BlockView({
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() => onSend("What products are available?")}
+            onClick={() => onSend("What offerings are available?")}
             className="inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-2 text-[12.5px] font-semibold press hover:bg-secondary"
           >
-            <BookOpen className="size-3.5 text-brand" /> Investments
+            <BookOpen className="size-3.5 text-brand" /> Offerings
           </button>
           <button
             type="button"

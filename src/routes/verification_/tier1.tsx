@@ -81,6 +81,14 @@ function Tier1Intro() {
         permitted under CBN guidelines.
       </p>
 
+      <p className="mt-3 rounded-xl border border-border bg-card px-3.5 py-3 text-[11.5px] leading-relaxed text-muted-foreground">
+        After BVN, complete personal details, residential address and next of kin in{" "}
+        <Link to="/settings/profile" className="font-bold text-foreground underline">
+          Profile
+        </Link>{" "}
+        — required to keep full Tier 1 access.
+      </p>
+
       <div className="mt-5 flex flex-col gap-2.5 md:flex-row">
         <Link to="/verification/bvn" className={kycCta}>
           Continue <ArrowRight className="size-4" strokeWidth={2.6} />

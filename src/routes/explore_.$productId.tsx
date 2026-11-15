@@ -461,14 +461,13 @@ function ProductDetailScreen() {
           {/* Sticky CTA */}
           <div className="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom)+0.75rem)] z-30 mt-5 md:static md:bottom-auto">
             {closed ? (
-              <Link
-                to="/explore/$productId/unavailable"
-                params={{ productId: p.id }}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-extrabold text-foreground press md:w-auto md:px-10"
+              <button
+                type="button"
+                disabled
+                className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-border bg-muted px-5 py-3.5 text-[13.5px] font-extrabold text-muted-foreground opacity-70 md:w-auto md:px-10"
               >
-                Fully subscribed — notify me
-                <ArrowRight className="size-4" strokeWidth={2.6} />
-              </Link>
+                Closed — invest unavailable
+              </button>
             ) : largeTicket ? (
               <Link
                 to="/explore/$productId/request"
@@ -496,7 +495,7 @@ function ProductDetailScreen() {
             )}
             {largeTicket && !closed && (
               <p className="mt-2 text-center text-[11px] text-muted-foreground md:text-left">
-                This product is arranged with a licensed adviser.
+                This offering is arranged with a licensed adviser.
               </p>
             )}
           </div>
@@ -762,14 +761,13 @@ function ProductDetailScreen() {
 
                 <div className="mt-4">
                   {closed ? (
-                    <Link
-                      to="/explore/$productId/unavailable"
-                      params={{ productId: p.id }}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3.5 text-[13.5px] font-extrabold text-foreground transition-colors hover:bg-secondary"
+                    <button
+                      type="button"
+                      disabled
+                      className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-border bg-muted px-5 py-3.5 text-[13.5px] font-extrabold text-muted-foreground opacity-70"
                     >
-                      Fully subscribed — notify me
-                      <ArrowRight className="size-4" strokeWidth={2.6} />
-                    </Link>
+                      Closed — invest unavailable
+                    </button>
                   ) : largeTicket ? (
                     <Link
                       to="/explore/$productId/request"
@@ -795,7 +793,7 @@ function ProductDetailScreen() {
                   )}
                   {largeTicket && !closed && (
                     <p className="mt-2 text-center text-[11px] text-muted-foreground">
-                      This product is arranged with a licensed adviser.
+                      This offering is arranged with a licensed adviser.
                     </p>
                   )}
                 </div>

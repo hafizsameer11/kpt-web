@@ -8,7 +8,8 @@ import { fetchSavedCards, fetchVirtualAccount, isAuthenticated } from "@/lib/api
 
 export const MIN_DEPOSIT = 1_000;
 export const MAX_CARD_DEPOSIT = 100_000_000;
-export const CARD_FEE_RATE = 0.015;
+/** B7 — no card funding fee until Rubipay (C1). Gateway stays Paystack/Monnify. */
+export const CARD_FEE_RATE = 0;
 
 export const QUICK_DEPOSITS = [50_000, 100_000, 250_000];
 

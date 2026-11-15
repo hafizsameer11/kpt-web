@@ -19,9 +19,14 @@ export type ExploreProduct = {
   categoryId: string;
   category: string;
   rate: string;
+  /** Net rate percent for calculators. */
+  ratePct: number;
+  grossRatePct: number;
+  whtRatePct: number;
+  rateLabel: string;
   tenor: string;
   minimum: number;
-  availability: "open" | "closing" | "closed";
+  availability: "open" | "closing" | "closed" | "coming_soon";
   closes: string;
   featured?: boolean;
   blurb: string;
@@ -30,33 +35,24 @@ export type ExploreProduct = {
 
 export let EXPLORE_PRODUCTS: ExploreProduct[] = [];
 
-/** Coming Soon rail (MOB-080). */
-export const EXPLORE_COMING_SOON: { name: string; note: string; status: string }[] = [
-  {
-    name: "Real Estate Notes",
-    note: "Fractional income-generating property",
-    status: "NEXT UP",
-  },
-  {
-    name: "Dollar Fixed Income",
-    note: "USD savings and Eurobond access",
-    status: "Q4",
-  },
-  {
-    name: "Green Energy Notes",
-    note: "Solar and mini-grid project funding",
-    status: "Q1 2027",
-  },
-];
-
+/** B18 — Active | Closed only on customer UI. */
 export const AVAILABILITY_LABEL: Record<
   ExploreProduct["availability"],
   string
 > = {
-  open: "Open",
-  closing: "Closing soon",
-  closed: "Fully subscribed",
+  open: "Active",
+  closing: "Active",
+  closed: "Closed",
+  coming_soon: "Coming soon",
 };
+
+/** Canonical B17 category order. */
+export const EXPLORE_CATEGORY_ORDER = [
+  "treasury-bills",
+  "commercial-papers",
+  "mutual-funds",
+  "bonds",
+] as const;
 
 /**
  * MOB-081 — Product detail content.
@@ -108,10 +104,16 @@ function emitExplore() {
 }
 
 function mapAvailability(raw: string): ExploreProduct["availability"] {
-  const v = raw.toLowerCase();
+  const v = raw.toLowerCase().replace(/-/g, "_");
   if (v === "closing") return "closing";
   if (v === "closed") return "closed";
+  if (v === "coming_soon") return "coming_soon";
   return "open";
+}
+
+function displayOfferingName(name: string) {
+  // B20 — spell out Treasury Bill in full (not T-Bill).
+  return name.replace(/\bT-?Bills?\b/gi, "Treasury Bill").replace(/\bTB\b/g, "Treasury Bill");
 }
 
 let exploreHydratePromise: Promise<boolean> | null = null;
@@ -126,27 +128,57 @@ export async function hydrateExploreFromApi() {
     ]);
     const list = Array.isArray(products) ? products : [];
     const catList = Array.isArray(cats) ? cats : [];
-    EXPLORE_CATEGORIES = catList.map((c) => ({
-      id: c.slug || c.id,
-      name: c.name || "Category",
-      short: (c.name || "Category").split(" ")[0] || c.name || "Category",
-      count: c.productCount ?? 0,
-    }));
-    EXPLORE_PRODUCTS = list.map((p, i) => ({
-      id: p.id || p.slug,
-      name: p.name || "Product",
-      issuer: p.issuer || "",
-      categoryId: p.category?.slug || "",
-      category: p.category?.name || "",
-      rate: `${p.ratePct ?? 0}% p.a.`,
-      tenor: `${p.tenorDays ?? 0} days`,
-      minimum: Math.max(0, Math.round(p.minimum ?? 0)),
-      availability: mapAvailability(String(p.availability ?? "open")),
-      closes: String(p.availability ?? "").toLowerCase() === "open" ? "Open" : "See details",
-      featured: i < 4,
-      blurb: p.blurb || "",
-      largeTicket: Boolean(p.largeTicket) || (p.minimum ?? 0) >= 5_000_000,
-    }));
+    const ordered = [...catList].sort((a, b) => {
+      const ai = EXPLORE_CATEGORY_ORDER.indexOf(
+        (a.slug || "") as (typeof EXPLORE_CATEGORY_ORDER)[number],
+      );
+      const bi = EXPLORE_CATEGORY_ORDER.indexOf(
+        (b.slug || "") as (typeof EXPLORE_CATEGORY_ORDER)[number],
+      );
+      const ax = ai === -1 ? 99 : ai;
+      const bx = bi === -1 ? 99 : bi;
+      return ax - bx;
+    });
+    EXPLORE_CATEGORIES = ordered
+      .filter((c) =>
+        EXPLORE_CATEGORY_ORDER.includes(
+          (c.slug || "") as (typeof EXPLORE_CATEGORY_ORDER)[number],
+        ),
+      )
+      .map((c) => ({
+        id: c.slug || c.id,
+        name: c.name || "Category",
+        short: (c.name || "Category").split(" ")[0] || c.name || "Category",
+        count: c.productCount ?? 0,
+      }));
+    EXPLORE_PRODUCTS = list.map((p) => {
+      const availability = mapAvailability(String(p.availability ?? "open"));
+      const net = p.ratePct ?? 0;
+      const gross = p.grossRatePct ?? net / 0.9;
+      const wht = p.whtRatePct ?? 10;
+      const rateLabel =
+        p.rateLabel ?? `${net.toFixed(2)}% net (${gross.toFixed(2)}% gross)`;
+      return {
+        id: p.id || p.slug,
+        name: displayOfferingName(p.name || "Offering"),
+        issuer: p.issuer || "",
+        categoryId: p.category?.slug || "",
+        category: p.category?.name || "",
+        rate: `${rateLabel} p.a.`,
+        ratePct: net,
+        grossRatePct: gross,
+        whtRatePct: wht,
+        rateLabel,
+        tenor: `${p.tenorDays ?? 0} days`,
+        minimum: Math.max(0, Math.round(p.minimum ?? 0)),
+        availability,
+        closes: availability === "open" || availability === "closing" ? "Active" : "Closed",
+        // B20 — Featured this week = Active offerings only.
+        featured: availability === "open" || availability === "closing",
+        blurb: p.blurb || "",
+        largeTicket: Boolean(p.largeTicket) || (p.minimum ?? 0) >= 5_000_000,
+      };
+    });
     emitExplore();
     return true;
   } catch {

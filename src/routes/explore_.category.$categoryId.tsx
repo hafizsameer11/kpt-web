@@ -3,14 +3,13 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpDown,
-  Check,
   ChevronRight,
   Layers,
   ShieldCheck,
   TrendingUp,
   Wallet,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { Rise } from "@/components/kipit/motion";
 import { naira } from "@/lib/home-data";
@@ -18,6 +17,8 @@ import {
   AVAILABILITY_LABEL,
   EXPLORE_CATEGORIES,
   EXPLORE_PRODUCTS,
+  hydrateExploreFromApi,
+  subscribeExplore,
   type ExploreProduct,
 } from "@/lib/explore-data";
 
@@ -51,6 +52,7 @@ export const Route = createFileRoute("/explore_/category/$categoryId")({
 });
 
 type SortKey = "rate" | "tenor" | "minimum";
+type OfferTab = "Active" | "Past";
 
 const SORTS: { key: SortKey; label: string }[] = [
   { key: "rate", label: "Highest rate" },
@@ -60,33 +62,53 @@ const SORTS: { key: SortKey; label: string }[] = [
 
 const num = (value: string) => Number(value.replace(/[^0-9.]/g, "")) || 0;
 
+const isActiveOffering = (p: ExploreProduct) =>
+  p.availability === "open" || p.availability === "closing";
+
 const AVAILABILITY_STYLE: Record<ExploreProduct["availability"], string> = {
   open: "bg-emerald-500/10 text-emerald-600",
   closing: "bg-gold/15 text-gold",
   closed: "bg-muted text-muted-foreground",
+  coming_soon: "bg-muted text-muted-foreground",
 };
 
 function ExploreCategoryScreen() {
   const { category } = Route.useLoaderData();
   const [sort, setSort] = useState<SortKey>("rate");
-  const [openOnly, setOpenOnly] = useState(false);
+  const [tab, setTab] = useState<OfferTab>("Active");
+  useSyncExternalStore(
+    subscribeExplore,
+    () => `${EXPLORE_PRODUCTS.length}:${EXPLORE_CATEGORIES.length}`,
+    () => "0",
+  );
+  useEffect(() => {
+    void hydrateExploreFromApi();
+  }, []);
 
   const products = useMemo(() => {
-    const list = EXPLORE_PRODUCTS.filter(
-      (p) => p.categoryId === category.id && (!openOnly || p.availability !== "closed"),
-    );
+    const list = EXPLORE_PRODUCTS.filter((p) => {
+      if (p.categoryId !== category.id) return false;
+      return tab === "Active" ? isActiveOffering(p) : p.availability === "closed";
+    });
     return [...list].sort((a, b) => {
       if (sort === "rate") return num(b.rate) - num(a.rate);
       if (sort === "minimum") return a.minimum - b.minimum;
       return (num(a.tenor) || 9_999) - (num(b.tenor) || 9_999);
     });
-  }, [category.id, sort, openOnly]);
+  }, [category.id, sort, tab]);
 
   return (
     <AppShell title={category.short} navVariant="elevated">
       {/* ── Desktop layout ─────────────────────────────────────── */}
       <div className="hidden md:block">
-        <DesktopCategory category={category} products={products} sort={sort} setSort={setSort} openOnly={openOnly} setOpenOnly={setOpenOnly} />
+        <DesktopCategory
+          category={category}
+          products={products}
+          sort={sort}
+          setSort={setSort}
+          tab={tab}
+          setTab={setTab}
+        />
       </div>
       {/* ── Mobile layout (unchanged) ──────────────────────────── */}
       <div className="pb-2 md:hidden">
@@ -107,8 +129,7 @@ function ExploreCategoryScreen() {
               {category.name}
             </h1>
             <p className="mt-2 text-[12.5px] font-medium text-primary-foreground/65">
-              {products.length} of {category.count} offers shown · rates shown with tenor and
-              minimum.
+              {products.length} {tab.toLowerCase()} offerings · rates shown with tenor and minimum.
             </p>
           </div>
         </section>
@@ -120,9 +141,28 @@ function ExploreCategoryScreen() {
             className="mx-auto mb-4 block h-1 w-10 rounded-full bg-border md:hidden"
           />
 
-          {/* Sort + filter */}
+          {/* Active / Past (B18) */}
+          <div className="flex gap-2">
+            {(["Active", "Past"] as const).map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setTab(t)}
+                aria-pressed={tab === t}
+                className={`flex-1 rounded-full border py-2 text-[12px] font-bold press ${
+                  tab === t
+                    ? "border-brand bg-brand text-brand-foreground"
+                    : "border-border bg-card text-muted-foreground"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+
+          {/* Sort */}
           <Rise>
-            <section className="rounded-xl border border-border/60 bg-card p-3 shadow-card">
+            <section className="mt-3 rounded-xl border border-border/60 bg-card p-3 shadow-card">
               <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 <ArrowUpDown className="size-3.5" /> Sort
               </div>
@@ -143,32 +183,21 @@ function ExploreCategoryScreen() {
                   </button>
                 ))}
               </div>
-              <button
-                type="button"
-                onClick={() => setOpenOnly((v) => !v)}
-                aria-pressed={openOnly}
-                className="mt-3 flex w-full items-center gap-2.5 rounded-xl bg-muted/50 px-3 py-2.5 text-left press"
-              >
-                <span
-                  className={`grid size-5 place-items-center rounded-md border-2 ${
-                    openOnly ? "border-gold bg-gold" : "border-muted-foreground/30"
-                  }`}
-                >
-                  {openOnly && <Check className="size-3 text-gold-foreground" strokeWidth={4} />}
-                </span>
-                <span className="text-[12.5px] font-semibold">Hide fully subscribed offers</span>
-              </button>
             </section>
           </Rise>
 
-          {/* Products */}
+          {/* Offerings */}
           <section className="mt-4 space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
-            {products.map((p, i) => (
+            {products.map((p, i) => {
+              const closed = !isActiveOffering(p);
+              return (
               <Rise key={p.id} delay={i * 60}>
                 <Link
                   to="/explore/$productId"
                   params={{ productId: p.id }}
-                  className="block h-full rounded-xl border border-border bg-card p-4 shadow-card press"
+                  className={`block h-full rounded-xl border border-border bg-card p-4 shadow-card press ${
+                    closed ? "opacity-55 grayscale-[0.35]" : ""
+                  }`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -210,16 +239,22 @@ function ExploreCategoryScreen() {
                     </div>
                   </div>
                   <p className="mt-3 flex items-center gap-1.5 text-[11.5px] font-bold text-foreground">
-                    View details <ArrowRight className="size-3.5" />
+                    {closed ? "Closed — view details" : "View details"}{" "}
+                    <ArrowRight className="size-3.5" />
                   </p>
                 </Link>
               </Rise>
-            ))}
+            );
+            })}
             {products.length === 0 && (
               <div className="rounded-xl border border-dashed border-border p-6 text-center">
-                <p className="text-[13px] font-bold">Nothing open right now</p>
+                <p className="text-[13px] font-bold">
+                  {tab === "Active" ? "No Active offerings right now" : "No Past offerings yet"}
+                </p>
                 <p className="mt-1 text-[12px] text-muted-foreground">
-                  Turn off the filter to see closed offers in this category.
+                  {tab === "Active"
+                    ? "Check the Past tab for closed offerings in this category."
+                    : "Closed offerings will appear here."}
                 </p>
               </div>
             )}
@@ -240,19 +275,19 @@ function DesktopCategory({
   products,
   sort,
   setSort,
-  openOnly,
-  setOpenOnly,
+  tab,
+  setTab,
 }: {
   category: (typeof EXPLORE_CATEGORIES)[number];
   products: ExploreProduct[];
   sort: SortKey;
   setSort: (s: SortKey) => void;
-  openOnly: boolean;
-  setOpenOnly: (fn: (v: boolean) => boolean) => void;
+  tab: OfferTab;
+  setTab: (t: OfferTab) => void;
 }) {
   const bestRate = products.reduce((m, p) => Math.max(m, num(p.rate)), 0);
   const lowestMin = products.reduce((m, p) => Math.min(m, p.minimum), Infinity);
-  const openCount = products.filter((p) => p.availability !== "closed").length;
+  const openCount = products.filter((p) => isActiveOffering(p)).length;
 
   return (
     <div className="mx-auto w-full max-w-6xl pb-10">
@@ -274,15 +309,17 @@ function DesktopCategory({
               {category.name}
             </h1>
             <p className="mt-2 max-w-xl text-[13px] font-medium text-primary-foreground/70">
-              Compare every offer in this category — rate, tenor and minimum side by side.
+              Compare every offering in this category — rate, tenor and minimum side by side.
             </p>
           </div>
           <div className="grid shrink-0 grid-cols-3 gap-3">
             <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
               <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/60">
-                <Layers className="size-3.5" /> Open offers
+                <Layers className="size-3.5" /> {tab} offerings
               </p>
-              <p className="mt-1 font-display text-[22px] font-extrabold text-num">{openCount}</p>
+              <p className="mt-1 font-display text-[22px] font-extrabold text-num">
+                {tab === "Active" ? openCount : products.length}
+              </p>
             </div>
             <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur">
               <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/60">
@@ -304,8 +341,25 @@ function DesktopCategory({
         </div>
       </section>
 
-      {/* Sort / filter bar */}
+      {/* Active / Past + sort */}
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card px-5 py-3.5 shadow-card">
+        <div className="flex items-center gap-2">
+          {(["Active", "Past"] as const).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setTab(t)}
+              aria-pressed={tab === t}
+              className={`rounded-full border px-3.5 py-1.5 text-[12px] font-bold press ${
+                tab === t
+                  ? "border-transparent bg-brand text-brand-foreground"
+                  : "border-border bg-card text-foreground"
+              }`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
         <div className="flex items-center gap-2">
           <span className="mr-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             <ArrowUpDown className="size-3.5" /> Sort
@@ -326,27 +380,12 @@ function DesktopCategory({
             </button>
           ))}
         </div>
-        <button
-          type="button"
-          onClick={() => setOpenOnly((v) => !v)}
-          aria-pressed={openOnly}
-          className="flex items-center gap-2.5 rounded-xl bg-muted/50 px-3.5 py-2 press"
-        >
-          <span
-            className={`grid size-5 place-items-center rounded-md border-2 ${
-              openOnly ? "border-gold bg-gold" : "border-muted-foreground/30"
-            }`}
-          >
-            {openOnly && <Check className="size-3 text-gold-foreground" strokeWidth={4} />}
-          </span>
-          <span className="text-[12.5px] font-semibold">Hide fully subscribed offers</span>
-        </button>
       </div>
 
-      {/* Product rows */}
+      {/* Offering rows */}
       <section className="mt-5 overflow-hidden rounded-2xl border border-border/60 bg-card shadow-card">
-        <div className="grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.7fr))_auto] items-center gap-4 border-b border-border/60 bg-muted/40 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-          <span>Offer</span>
+        <div className="grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.7fr))_auto] items-center gap-4 border-b border-border/60 bg-muted/40 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <span>Offering</span>
           <span>Rate p.a.</span>
           <span>Tenor</span>
           <span>Minimum</span>
@@ -357,7 +396,9 @@ function DesktopCategory({
             key={p.id}
             to="/explore/$productId"
             params={{ productId: p.id }}
-            className="group grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.7fr))_auto] items-center gap-4 border-b border-border/50 px-6 py-4 transition-colors last:border-0 hover:bg-muted/40"
+            className={`group grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.7fr))_auto] items-center gap-4 border-b border-border/50 px-6 py-4 transition-colors last:border-0 hover:bg-muted/40 ${
+              !isActiveOffering(p) ? "opacity-55 grayscale-[0.35]" : ""
+            }`}
           >
             <div className="min-w-0">
               <p className="truncate font-display text-[14.5px] font-extrabold tracking-[-0.01em]">
@@ -380,9 +421,13 @@ function DesktopCategory({
         ))}
         {products.length === 0 && (
           <div className="p-10 text-center">
-            <p className="text-[14px] font-bold">Nothing open right now</p>
+            <p className="text-[14px] font-bold">
+              {tab === "Active" ? "No Active offerings right now" : "No Past offerings yet"}
+            </p>
             <p className="mt-1 text-[12.5px] text-muted-foreground">
-              Turn off the filter to see closed offers in this category.
+              {tab === "Active"
+                ? "Switch to Past to see closed offerings in this category."
+                : "Closed offerings will appear here."}
             </p>
           </div>
         )}

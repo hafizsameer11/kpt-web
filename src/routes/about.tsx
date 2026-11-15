@@ -9,39 +9,55 @@ import {
 } from "@/components/kipit/WebsiteV3Access";
 import {
   ArrowRight,
-  ArrowUpRight,
-  Check,
   ChevronDown,
   Globe,
-  Landmark,
-  Layers3,
-  ShieldCheck,
+  Mail,
+  MapPin,
+  Phone,
   Star,
-  TrendingUp,
 } from "lucide-react";
 import { Logo } from "@/components/kipit/Logo";
 import { WebsiteV3Nav } from "@/components/kipit/WebsiteV3Nav";
 import { AppleLogo, GooglePlayLogo } from "@/components/kipit/brand-icons";
 import "@/components/kipit/website-v3.css";
 import imgLagos from "@/assets/v3-lagos.jpg";
-import imgLife2 from "@/assets/v3-lifestyle-2.jpg";
 import imgLife3 from "@/assets/v3-lifestyle-3.jpg";
+import {
+  ABOUT_AUDIENCES,
+  ABOUT_INTRO,
+  ABOUT_MISSION,
+  ABOUT_OFFERINGS,
+  ABOUT_PHILOSOPHY,
+  ABOUT_REGULATION,
+  ABOUT_VALUES,
+  ABOUT_VISION,
+  BOARD,
+  COMPANY_ADDRESS,
+  COMPANY_WEBSITE,
+  FOOTER_LEGAL,
+  FOOTER_LEGAL_MOBILE,
+  MANAGEMENT,
+  SUPPORT_EMAIL,
+  SUPPORT_PHONE,
+  WHATSAPP_URL,
+  type AboutPerson,
+} from "@/lib/website-marketing";
 
 export const Route = createFileRoute("/about")({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: "About Kipit — our mission and approach" },
+      { title: "About Kipit Asset Management" },
       {
         name: "description",
         content:
-          "Kipit helps Nigerians access regulated investment products with transparent, defined returns. Learn what we do, how we invest, and why we started.",
+          "Kipit Asset Management Limited (formerly Fortuna Capital Limited) is an SEC-licensed Fund/Portfolio Manager. Client funds are held with Rand Merchant Bank.",
       },
-      { property: "og:title", content: "About Kipit — our mission and approach" },
+      { property: "og:title", content: "About Kipit Asset Management" },
       {
         property: "og:description",
         content:
-          "Structured investment plans with defined tenors and transparent rates — built for every Nigerian.",
+          "SEC-licensed fund manager. Client funds held with Rand Merchant Bank. Board and management leadership.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://kipit.online/about" },
@@ -52,50 +68,25 @@ export const Route = createFileRoute("/about")({
   component: WebsiteV3AboutPage,
 });
 
-
-const STATS = [
-  { value: "₦4.2bn+", label: "Funds under management" },
-  { value: "38k+", label: "Savers & investors" },
-  { value: "19.2%", label: "Top fixed rate p.a." },
-  { value: "T+0", label: "Wallet settlement" },
-];
-
-const PILLARS = [
-  {
-    icon: TrendingUp,
-    num: "01 / THE GAP",
-    title: "Bridging the investment gap",
-    body: "Most savings accounts in Nigeria pay less than inflation. Kipit packages institutional-style opportunities — defined tenors, competitive rates up to 19.2% p.a. and clear payout timing — into a format everyday investors can understand and access.",
-  },
-  {
-    icon: Landmark,
-    num: "02 / THE PRODUCTS",
-    title: "Regulated, structured products only",
-    body: "A daily-interest Call Account, fixed plans from 30 to 365 days, and a curated Explore shelf of treasury bills, bonds and partner funds. No speculative assets, no complex derivatives. Investments are held by Kipit Investment Ltd, an asset manager licensed by the SEC.",
-  },
-  {
-    icon: Layers3,
-    num: "03 / THE APPROACH",
-    title: "Discipline over speculation",
-    body: "Fixed-income instruments with transparent pricing, rates shown before you pay, and capital preservation as the goal — not trading. Every plan shows its tenor, rate and payout date upfront.",
-  },
-];
-
-const WHY = [
-  "Rates shown upfront — no hidden variables",
-  "Start with as little as ₦1,000",
-  "Interest accrues daily, visible in the app",
-  "Same-day settlement to your wallet at maturity",
-  "Support on WhatsApp when you need a human",
-];
+function PersonCard({ person }: { person: AboutPerson }) {
+  return (
+    <article className="v3-about-person v3-reveal">
+      <img src={person.image} alt={person.name} width={112} height={112} loading="lazy" />
+      <div>
+        <h3>{person.name}</h3>
+        <p className="role">{person.role}</p>
+        <p>{person.bio}</p>
+      </div>
+    </article>
+  );
+}
 
 function WebsiteV3AboutPage() {
   const [chooser, setChooser] = useState<AccessMode>(null);
 
-
   useEffect(() => {
     const els = document.querySelectorAll<HTMLElement>(
-      ".kipit-website-v3 .v3-card, .kipit-website-v3 .v3-heading, .kipit-website-v3 .v3-reveal",
+      ".kipit-website-v3 .v3-card, .kipit-website-v3 .v3-heading, .kipit-website-v3 .v3-reveal, .kipit-website-v3 .v3-about-person",
     );
     els.forEach((el) => el.classList.add("v3-anim"));
     const io = new IntersectionObserver(
@@ -114,135 +105,173 @@ function WebsiteV3AboutPage() {
 
   return (
     <div className="kipit-website-v3 min-h-screen">
-      {/* Nav */}
       <WebsiteV3Nav current="about" onOpenAccess={() => setChooser("access")} />
 
-      {/* Hero */}
       <header className="v3-section v3-glow v3-glow-gold-tr !pt-[130px]">
         <div className="v3-container grid items-center gap-12 lg:grid-cols-[1.05fr_1fr]">
           <div className="v3-reveal">
             <span className="v3-eyebrow">About Kipit</span>
             <h1 className="v3-title mt-6">
-              Investing in Nigeria, <span className="v3-serif v3-gold-text">made clear.</span>
+              Kipit Asset Management <span className="v3-serif v3-gold-text">Limited.</span>
             </h1>
-            <p className="mt-6 max-w-[520px] text-lg text-muted-foreground">
-              Kipit helps Nigerians grow wealth intentionally — structured investment plans with
-              defined tenors, transparent rates and interest you can watch accrue every day.
-            </p>
+            <p className="mt-6 max-w-[560px] text-lg text-muted-foreground">{ABOUT_INTRO}</p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <button type="button" className="v3-btn v3-btn-primary" onClick={() => setChooser("access")}>Open account <ArrowRight className="size-4" /></button>
+              <button type="button" className="v3-btn v3-btn-primary" onClick={() => setChooser("access")}>
+                Open account <ArrowRight className="size-4" />
+              </button>
               <a href="/#how" className="v3-btn v3-btn-outline">See how it works</a>
             </div>
           </div>
           <div className="v3-reveal v3-promise-art">
             <img src={imgLagos} alt="Lagos skyline at golden hour" width={1600} height={912} className="v3-promise-img" />
             <div className="v3-promise-badge">
-              <span className="v3-eyebrow !text-gold">Made for Nigeria</span>
-              <p className="mt-2 text-lg font-bold leading-snug">Every plan is in naira, with rates shown before you pay.</p>
+              <span className="v3-eyebrow !text-gold">Formerly Fortuna Capital Limited</span>
+              <p className="mt-2 text-lg font-bold leading-snug">SEC-licensed Fund/Portfolio Manager. Funds held with Rand Merchant Bank.</p>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Stats */}
-      <section className="v3-container grid grid-cols-2 gap-8 py-16 lg:grid-cols-4">
-        {STATS.map((s) => (
-          <div key={s.label} className="v3-reveal border-l border-border pl-6">
-            <p className="text-4xl font-bold tracking-tight lg:text-5xl">{s.value}</p>
-            <p className="mt-2 text-sm text-muted-foreground">{s.label}</p>
-          </div>
-        ))}
+      <section className="v3-section !pt-0">
+        <div className="v3-container grid gap-5 md:grid-cols-3">
+          {[
+            { label: "Our vision", body: ABOUT_VISION },
+            { label: "Our mission", body: ABOUT_MISSION },
+            { label: "Our philosophy", body: ABOUT_PHILOSOPHY },
+          ].map((item) => (
+            <div key={item.label} className="v3-card v3-reveal">
+              <span className="v3-eyebrow">{item.label}</span>
+              <p className="mt-4 text-lg font-semibold leading-snug">{item.body}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* What Kipit does */}
-      <section className="v3-section v3-glow v3-glow-mint-tr !pt-6">
+      <section className="v3-section v3-glow v3-glow-mint-tr !pt-0">
         <div className="v3-container">
-          <div className="max-w-[640px]">
-            <span className="v3-eyebrow">What Kipit does</span>
-            <h2 className="v3-heading mt-4">Investment access designed to make growth <span className="v3-serif">visible.</span></h2>
-            <p className="mt-5 text-muted-foreground">
-              Instead of letting money sit in products that offer no meaningful return, Kipit gives
-              you access to structured investment options with defined timelines and competitive returns.
-            </p>
-          </div>
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
-            {PILLARS.map((p) => (
-              <div key={p.num} className="v3-card v3-reveal flex flex-col">
-                <div className="flex items-center justify-between">
-                  <span className="v3-icon"><p.icon className="size-5" /></span>
-                  <span className="text-[10px] font-semibold tracking-[0.14em] text-muted-foreground">{p.num}</span>
-                </div>
-                <h3 className="mt-6 text-xl font-semibold leading-snug">{p.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{p.body}</p>
+          <span className="v3-eyebrow">Our core values</span>
+          <h2 className="v3-heading mt-4">What <span className="v3-serif">KIPIT</span> stands for.</h2>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {ABOUT_VALUES.map((v) => (
+              <div key={v.title} className="v3-card v3-reveal !p-6">
+                <p className="font-display text-3xl font-extrabold text-gold">{v.letter}</p>
+                <p className="mt-3 font-semibold">{v.title}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{v.body}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Mission */}
       <section className="v3-section !pt-0">
-        <div className="v3-container">
-          <div className="v3-reveal relative overflow-hidden rounded-[28px] bg-brand-gradient px-8 py-14 text-primary-foreground shadow-float lg:px-16 lg:py-20">
-            <span aria-hidden className="pointer-events-none absolute -right-24 -top-32 size-80 rounded-full bg-gold/15 blur-[70px]" />
-            <div className="relative max-w-[720px]">
-              <span className="v3-eyebrow !text-gold">Our mission</span>
-              <h2 className="v3-heading mt-4 !text-primary-foreground">
-                To democratize investment access for <span className="v3-serif text-gold">every Nigerian.</span>
-              </h2>
-              <p className="mt-5 max-w-[560px] text-primary-foreground/75">
-                Wealth-building should be easier, fairer and more accessible. We combine disciplined
-                product design, transparent information and a simpler digital experience to get there.
-              </p>
-              <div className="mt-10 grid grid-cols-3 gap-6 border-t border-white/15 pt-8">
-                {[["₦1,000", "Minimum to start"], ["19.2%", "Top fixed rate p.a."], ["T+0", "Wallet settlement"]].map(([v, l]) => (
-                  <div key={l}>
-                    <p className="font-display text-2xl font-extrabold text-gold lg:text-3xl">{v}</p>
-                    <p className="mt-1 text-xs text-primary-foreground/60">{l}</p>
-                  </div>
-                ))}
-              </div>
+        <div className="v3-container grid gap-12 lg:grid-cols-2">
+          <div>
+            <span className="v3-eyebrow">What we offer</span>
+            <h2 className="v3-heading mt-4">Professionally managed <span className="v3-serif">solutions.</span></h2>
+            <div className="mt-8 grid gap-4">
+              {ABOUT_OFFERINGS.map((o) => (
+                <div key={o.title} className="v3-reveal border-l border-border pl-5">
+                  <p className="font-semibold">{o.title}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{o.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <span className="v3-eyebrow">Who we serve</span>
+            <h2 className="v3-heading mt-4">Partners across <span className="v3-serif">Nigeria.</span></h2>
+            <div className="mt-8 grid gap-4">
+              {ABOUT_AUDIENCES.map((a) => (
+                <div key={a.title} className="v3-reveal border-l border-border pl-5">
+                  <p className="font-semibold">{a.title}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{a.body}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Why people choose Kipit */}
       <section className="v3-section v3-glow v3-glow-navy-tr !pt-0">
-        <div className="v3-container grid items-center gap-12 lg:grid-cols-[1.05fr_1fr]">
-          <div className="v3-reveal v3-promise-art order-last lg:order-first">
-            <img src={imgLife2} alt="A Kipit saver reviewing her plans" loading="lazy" className="v3-promise-img" />
-            <div className="v3-promise-badge">
-              <span className="v3-eyebrow !text-gold">Protection at every step</span>
-              <p className="mt-2 text-lg font-bold leading-snug">Encryption, PIN and verified identity on every account.</p>
-            </div>
+        <div className="v3-container max-w-[760px]">
+          <span className="v3-eyebrow">Regulation and custody</span>
+          <h2 className="v3-heading mt-4">Licensed. Segregated. <span className="v3-serif">Held safely.</span></h2>
+          <dl className="v3-reg-table mt-8 v3-reveal">
+            {ABOUT_REGULATION.map((row) => (
+              <div key={row.label} className="v3-reg-row">
+                <dt>{row.label}</dt>
+                <dd>{row.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      <section className="v3-section !pt-0">
+        <div className="v3-container">
+          <span className="v3-eyebrow">Board of Directors</span>
+          <h2 className="v3-heading mt-4">Governance and <span className="v3-serif">oversight.</span></h2>
+          <div className="mt-10 grid gap-5 lg:grid-cols-2">
+            {BOARD.map((person) => (
+              <PersonCard key={`${person.name}-${person.role}`} person={person} />
+            ))}
           </div>
-          <div className="v3-reveal">
-            <span className="v3-eyebrow">Why Kipit</span>
-            <h2 className="v3-heading mt-4">Why people choose <span className="v3-serif v3-gold-text">Kipit.</span></h2>
-            <p className="mt-5 max-w-[460px] text-muted-foreground">
-              Everything is designed around clarity, consistency and easier access to wealth-building products.
-            </p>
-            <ul className="mt-8 grid auto-rows-fr gap-3 sm:grid-cols-2">
-              {WHY.map((w, i) => (
-                <li
-                  key={w}
-                  className={`flex h-full items-start gap-3 rounded-xl border border-border bg-card p-4 ${
-                    i === WHY.length - 1 ? "sm:col-span-2 sm:items-center" : ""
-                  }`}
-                >
-                  <span className="grid size-6 shrink-0 place-items-center rounded-full bg-gold/15 text-brand">
-                    <Check className="size-3.5" strokeWidth={3} />
-                  </span>
-                  <span className="text-sm font-medium leading-snug">{w}</span>
-                </li>
-              ))}
+        </div>
+      </section>
+
+      <section className="v3-section v3-glow v3-glow-gold-tr !pt-0">
+        <div className="v3-container">
+          <span className="v3-eyebrow">Management Team</span>
+          <h2 className="v3-heading mt-4">The people who run <span className="v3-serif">Kipit.</span></h2>
+          <div className="mt-10 grid gap-5 lg:grid-cols-2">
+            {MANAGEMENT.map((person) => (
+              <PersonCard key={`${person.name}-${person.role}`} person={person} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="v3-section !pt-0">
+        <div className="v3-container">
+          <div className="v3-card v3-reveal !p-8 lg:!p-12">
+            <span className="v3-eyebrow">Contact us</span>
+            <h2 className="v3-heading mt-4">Talk to the <span className="v3-serif">Kipit</span> team.</h2>
+            <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+              <li className="flex items-start gap-3 text-sm">
+                <Phone className="mt-0.5 size-4 shrink-0 text-gold" />
+                <span>
+                  <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="font-semibold hover:underline">
+                    {SUPPORT_PHONE}
+                  </a>
+                  <span className="mt-1 block text-muted-foreground">Phone and WhatsApp</span>
+                </span>
+              </li>
+              <li className="flex items-start gap-3 text-sm">
+                <Mail className="mt-0.5 size-4 shrink-0 text-gold" />
+                <span>
+                  <a href={`mailto:${SUPPORT_EMAIL}`} className="font-semibold hover:underline">{SUPPORT_EMAIL}</a>
+                  <span className="mt-1 block text-muted-foreground">Email</span>
+                </span>
+              </li>
+              <li className="flex items-start gap-3 text-sm">
+                <Globe className="mt-0.5 size-4 shrink-0 text-gold" />
+                <span>
+                  <span className="font-semibold">{COMPANY_WEBSITE}</span>
+                  <span className="mt-1 block text-muted-foreground">Website</span>
+                </span>
+              </li>
+              <li className="flex items-start gap-3 text-sm">
+                <MapPin className="mt-0.5 size-4 shrink-0 text-gold" />
+                <span>
+                  <span className="font-semibold">{COMPANY_ADDRESS}</span>
+                  <span className="mt-1 block text-muted-foreground">Address</span>
+                </span>
+              </li>
             </ul>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
       <section className="v3-section">
         <div className="v3-container">
           <div className="v3-cta v3-reveal grid gap-10 p-10 lg:grid-cols-[1.2fr_1fr] lg:items-center lg:p-16">
@@ -280,10 +309,8 @@ function WebsiteV3AboutPage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="v3-footer">
         <div className="v3-container">
-          {/* Desktop footer */}
           <div className="hidden gap-12 py-14 md:grid md:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
             <div>
               <Logo className="font-display text-2xl" />
@@ -320,12 +347,11 @@ function WebsiteV3AboutPage() {
           </div>
 
           <div className="v3-footer-bottom hidden md:flex">
-            <p>© 2026 Kipit. Investments are held by Kipit Investment Ltd, an asset manager licensed by the SEC.</p>
+            <p>{FOOTER_LEGAL}</p>
             <div className="flex gap-6"><Link to="/privacy">Legal documents & risk disclosure</Link><Link to="/terms">Terms & conditions</Link><Link to="/delete-account">Delete account</Link></div>
           </div>
           <p className="hidden pb-6 text-xs text-muted-foreground md:block">Investments carry risk; rates shown are illustrative and subject to change.</p>
 
-          {/* Mobile footer */}
           <div className="v3-mfoot md:hidden">
             <div className="v3-mfoot-card">
               <Logo className="font-display text-2xl" />
@@ -359,7 +385,7 @@ function WebsiteV3AboutPage() {
                 </ul>
               </details>
             ))}
-            <p className="v3-mfoot-legal">© 2026 Kipit. Investments are held by Kipit Investment Ltd, an asset manager licensed by the SEC. Investments carry risk; rates shown are illustrative and subject to change.</p>
+            <p className="v3-mfoot-legal">{FOOTER_LEGAL_MOBILE}</p>
             <p className="v3-mfoot-mark" aria-hidden>Kipit.</p>
           </div>
         </div>

@@ -26,14 +26,51 @@ import {
 } from "@/lib/home-data";
 import { displayInitials, displayName } from "@/lib/auth-session";
 import {
+  holdingFinalValue,
   hydrateLiveBalances,
   nextMaturityPayout,
   useLiveBalances,
   type LiveHolding,
   type LiveNextMaturity,
 } from "@/lib/live-balances";
+import { bestLockRatePct, hydrateInvestRatesFromApi } from "@/lib/invest-data";
 
 const DAY_MS = 86_400_000;
+
+function tenorProgress(h: {
+  daysLeft: number;
+  totalDays: number;
+  startDate?: string | null;
+  tenorDays?: number | null;
+}) {
+  const tenor = Math.max(h.tenorDays || h.totalDays || 0, 1);
+  if (h.startDate) {
+    const start = new Date(h.startDate).getTime();
+    if (!Number.isNaN(start)) {
+      const elapsed = Math.max(0, Math.floor((Date.now() - start) / DAY_MS));
+      return {
+        totalDays: tenor,
+        progress: Math.min(100, Math.max(0, Math.round((elapsed / tenor) * 100))),
+      };
+    }
+  }
+  const elapsed = Math.max(0, tenor - h.daysLeft);
+  return {
+    totalDays: tenor,
+    progress: Math.min(100, Math.max(0, Math.round((elapsed / tenor) * 100))),
+  };
+}
+
+/** B11 — idle cash estimate uses live Lock rate (not Vault 21.5%). */
+function idleMonthlyEarn(wallet: number, fallbackRatePct: number) {
+  const ratePct = bestLockRatePct() || fallbackRatePct;
+  if (!wallet || !ratePct) return { earn: 0, ratePct: 0, rateLabel: "—" };
+  return {
+    earn: Math.round((wallet * ratePct) / 100 / 12),
+    ratePct,
+    rateLabel: `${ratePct}% p.a.`,
+  };
+}
 
 function comingUpFromHoldings(holdings: LiveHolding[]) {
   return holdings
@@ -52,7 +89,7 @@ function comingUpFromHoldings(holdings: LiveHolding[]) {
               month: "short",
               year: "numeric",
             }),
-        amount: h.amount,
+        amount: holdingFinalValue(h),
         daysLeft,
       };
     })
@@ -115,15 +152,25 @@ function mapHolding(h: LiveHolding) {
         year: "numeric",
       })
     : "—";
+  const totalDays = Math.max(h.tenorDays || 0, daysLeft, 1);
+  const { progress } = tenorProgress({
+    daysLeft,
+    totalDays,
+    ...(h.startDate != null ? { startDate: h.startDate } : {}),
+    ...(h.tenorDays != null ? { tenorDays: h.tenorDays } : {}),
+  });
   return {
     id: h.id,
     name: h.name,
     rate: `${h.ratePct}% p.a.`,
-    amount: h.amount,
+    amount: h.amount + (h.accrued || 0),
     date,
     daysLeft,
-    totalDays: Math.max(daysLeft, 1),
-    expectedPayout: h.amount,
+    totalDays,
+    startDate: h.startDate,
+    tenorDays: h.tenorDays,
+    progress,
+    expectedPayout: holdingFinalValue(h),
   };
 }
 
@@ -139,6 +186,7 @@ function mapNextMaturity(nm: LiveNextMaturity, holdings: LiveHolding[]) {
       totalDays: 1,
       amount: 0,
       expectedPayout: 0,
+      progress: 0,
     };
   }
   const match = holdings.find((h) => h.id === nm.id);
@@ -151,8 +199,15 @@ function mapNextMaturity(nm: LiveNextMaturity, holdings: LiveHolding[]) {
     (nm.ratePct && nm.ratePct > 0 ? nm.ratePct : null) ??
     (match && match.ratePct > 0 ? match.ratePct : 0);
   const rate = ratePct > 0 ? `${ratePct}% p.a.` : "—";
-  const tenor =
-    nm.daysLeft >= 0 ? `${Math.max(nm.daysLeft, 1)} days left` : "";
+  const totalDays = Math.max(nm.tenorDays || 0, match?.tenorDays || 0, 1);
+  const tenor = `${totalDays} days`;
+  const startDate = nm.startDate ?? match?.startDate;
+  const { progress } = tenorProgress({
+    daysLeft: nm.daysLeft,
+    totalDays,
+    ...(startDate != null ? { startDate } : {}),
+    tenorDays: totalDays,
+  });
   return {
     id: nm.id,
     name: nm.name,
@@ -160,9 +215,10 @@ function mapNextMaturity(nm: LiveNextMaturity, holdings: LiveHolding[]) {
     rate,
     date,
     daysLeft: nm.daysLeft,
-    totalDays: Math.max(nm.daysLeft, nm.tenorDays || 0, 1),
+    totalDays,
     amount: nm.amount,
     expectedPayout: nextMaturityPayout(nm),
+    progress,
   };
 }
 
@@ -203,6 +259,7 @@ function HomeV2Screen() {
   const isNewUser = useIsNewUser();
   useEffect(() => {
     void hydrateLiveBalances();
+    void hydrateInvestRatesFromApi();
   }, []);
 
   return (
@@ -231,6 +288,10 @@ function MobileHome() {
     [live.nextMaturity, live.holdings],
   );
   const COMING_UP = useMemo(() => comingUpFromHoldings(live.holdings), [live.holdings]);
+  const idle = useMemo(
+    () => idleMonthlyEarn(WALLET, live.callRatePct),
+    [WALLET, live.callRatePct],
+  );
   const firstName = live.greetingName || displayName().split(" ")[0] || "";
   const initials = displayInitials();
   const LENSES = lenses(WALLET, INVESTED);
@@ -279,6 +340,22 @@ function MobileHome() {
               </div>
             </header>
 
+            {!live.profileComplete && (
+              <div className="relative mt-4 rounded-xl border border-gold/40 bg-white/10 p-4 backdrop-blur-sm">
+                <p className="text-[13px] font-extrabold text-primary-foreground">Complete your profile</p>
+                <p className="mt-1 text-[12px] leading-relaxed text-primary-foreground/75">
+                  Your profile is not yet complete. Please update your personal details, next of kin and
+                  residential address to keep full access to your Kipit account.
+                </p>
+                <Link
+                  to="/settings/profile"
+                  className="mt-3 inline-flex items-center justify-center rounded-full bg-gold-gradient px-4 py-2 text-[12px] font-bold text-brand press"
+                >
+                  Update profile
+                </Link>
+              </div>
+            )}
+
             <div className="relative md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] md:items-end md:gap-10">
               <div className="min-w-0">
                 {/* Lens switcher — one balance surface, three views */}
@@ -316,6 +393,14 @@ function MobileHome() {
                   </button>
                 </div>
                 <p className="mt-2 text-[11px] text-primary-foreground/70">{active.note}</p>
+                {lens === "total" && live.valueAtMaturity > 0 ? (
+                  <p className="mt-1.5 text-[11px] text-primary-foreground/65">
+                    Value at maturity{" "}
+                    <span className="font-bold text-gold text-num">
+                      {mask(live.valueAtMaturity)}
+                    </span>
+                  </p>
+                ) : null}
                 <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-[11px] font-bold text-gold">
                   <ArrowUpRight className="size-3.5" /> +{naira(live.interestThisWeek)} interest this week
                 </p>
@@ -396,19 +481,13 @@ function MobileHome() {
                 <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary">
                   <div
                     className="k-fill h-full rounded-full bg-gold-gradient"
-                    style={{
-                      width: `${Math.round(
-                        ((NEXT_MATURITY.totalDays - NEXT_MATURITY.daysLeft) /
-                          NEXT_MATURITY.totalDays) *
-                          100,
-                      )}%`,
-                    }}
+                    style={{ width: `${NEXT_MATURITY.progress}%` }}
                   />
                 </div>
                 <div className="mt-3 flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Principal {mask(NEXT_MATURITY.amount)}</span>
                   <span className="font-bold">
-                    Payout {mask(NEXT_MATURITY.expectedPayout)}
+                    Final value {mask(NEXT_MATURITY.expectedPayout)}
                   </span>
                 </div>
               </Link>
@@ -440,9 +519,7 @@ function MobileHome() {
               </div>
               <div className="grid gap-2.5 md:grid-cols-3 md:gap-4">
                 {HOLDINGS.map((h, i) => {
-                  const progress = Math.round(
-                    ((h.totalDays - h.daysLeft) / h.totalDays) * 100,
-                  );
+                  const progress = h.progress;
                   const rail = i === 0 ? "bg-gold" : i === 1 ? "bg-brand" : "bg-teal";
                   return (
                     <Link
@@ -458,14 +535,14 @@ function MobileHome() {
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-bold md:text-base">{h.name}</p>
                         <p className="mt-0.5 text-[11px] text-muted-foreground md:hidden">
-                          {h.rate} · {h.daysLeft} days left · {h.date}
+                          {h.rate} · {h.totalDays} days · {h.daysLeft} left
                         </p>
                         <div className="mt-1 hidden items-center gap-2 md:flex">
                           <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-foreground">
                             {h.rate}
                           </span>
                           <span className="text-[11px] text-muted-foreground">
-                            {h.daysLeft} days left
+                            {h.totalDays} days · {h.daysLeft} left
                           </span>
                         </div>
                         <p className="mt-3 hidden font-display text-xl font-extrabold text-num md:block">
@@ -520,7 +597,9 @@ function MobileHome() {
                   </div>
                   <p className="text-right text-xs text-brand-foreground/70">
                     Could earn{" "}
-                    <span className="block text-lg font-extrabold text-gold text-num">₦8,958</span>
+                    <span className="block text-lg font-extrabold text-gold text-num">
+                      {idle.earn > 0 ? naira(idle.earn) : "—"}
+                    </span>
                     per month
                   </p>
                 </div>
@@ -529,7 +608,7 @@ function MobileHome() {
 
                 <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-[11px] text-brand-foreground/65">
-                    Kipit Vault · 21.5% p.a. · 365-day tenor
+                    Kipit Lock · {idle.rateLabel}
                   </p>
                   <Link
                     to="/invest"
@@ -647,12 +726,33 @@ function DesktopHome() {
     [live.nextMaturity, live.holdings],
   );
   const COMING_UP = useMemo(() => comingUpFromHoldings(live.holdings), [live.holdings]);
+  const idle = useMemo(
+    () => idleMonthlyEarn(WALLET, live.callRatePct),
+    [WALLET, live.callRatePct],
+  );
   const TOTAL = WALLET + INVESTED || 1;
+  const valueAtMaturity =
+    live.valueAtMaturity > 0 ? live.valueAtMaturity : TOTAL;
   const { hidden, toggle, mask } = useBalanceVisibility();
   const investedPct = TOTAL > 0 ? Math.round((INVESTED / TOTAL) * 100) : 0;
 
   return (
     <div className="hidden pb-4 md:block">
+      {!live.profileComplete && (
+        <div className="mb-4 rounded-2xl border border-border bg-card p-5 shadow-card">
+          <p className="font-display text-base font-extrabold">Complete your profile</p>
+          <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
+            Your profile is not yet complete. Please update your personal details, next of kin and
+            residential address to keep full access to your Kipit account.
+          </p>
+          <Link
+            to="/settings/profile"
+            className="mt-3 inline-flex items-center justify-center rounded-full bg-brand-gradient px-5 py-2.5 text-[12.5px] font-bold text-primary-foreground press"
+          >
+            Update profile
+          </Link>
+        </div>
+      )}
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(18rem,1fr)]">
         <div className="grid min-w-0 gap-2">
         <section className="relative overflow-hidden rounded-2xl bg-brand-gradient px-8 pt-6 pb-4 text-primary-foreground shadow-float">
@@ -686,6 +786,12 @@ function DesktopHome() {
                     {hidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
                 </div>
+                <p className="mt-2 text-[12px] text-primary-foreground/70">
+                  Value at maturity{" "}
+                  <span className="font-bold text-gold text-num">
+                    {mask(valueAtMaturity)}
+                  </span>
+                </p>
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1.5 text-[11px] font-bold text-gold">
                     <ArrowUpRight className="size-3.5" /> +{naira(live.interestThisWeek)} this week
@@ -804,8 +910,11 @@ function DesktopHome() {
                 <AmountCounter value={WALLET} hidden={hidden} mask={mask} />
               </p>
               <p className="mt-1 text-[11px] text-brand-foreground/70">
-                Could earn <span className="font-bold text-gold">₦8,958</span> a month in Kipit
-                Vault · 21.5% p.a.
+                Could earn{" "}
+                <span className="font-bold text-gold">
+                  {idle.earn > 0 ? naira(idle.earn) : "—"}
+                </span>{" "}
+                a month in Kipit Lock · {idle.rateLabel}
               </p>
               <Link
                 to="/invest"
@@ -842,13 +951,7 @@ function DesktopHome() {
           <div className="mt-5 h-2 overflow-hidden rounded-full bg-secondary">
             <div
               className="k-fill h-full rounded-full bg-gold-gradient"
-              style={{
-                width: `${Math.round(
-                  ((NEXT_MATURITY.totalDays - NEXT_MATURITY.daysLeft) /
-                    NEXT_MATURITY.totalDays) *
-                    100,
-                )}%`,
-              }}
+              style={{ width: `${NEXT_MATURITY.progress}%` }}
             />
           </div>
           <div className="mt-3 flex items-center justify-between text-xs">
@@ -881,10 +984,10 @@ function DesktopHome() {
           </div>
           <ul>
             {HOLDINGS.map((h, i) => {
-              const progress = Math.round(((h.totalDays - h.daysLeft) / h.totalDays) * 100);
+              const progress = h.progress;
               const rail = i === 0 ? "bg-gold" : i === 1 ? "bg-brand" : "bg-teal";
               return (
-                <li key={h.name} className="border-b border-border last:border-0">
+                <li key={h.id || h.name} className="border-b border-border last:border-0">
                   <Link
                     to="/portfolio/$holdingId"
                     params={{ holdingId: h.id || `plan-${i}` }}
@@ -895,7 +998,7 @@ function DesktopHome() {
                       <div className="min-w-0">
                         <p className="truncate text-sm font-bold">{h.name}</p>
                         <p className="text-[11px] text-muted-foreground">
-                          Matures {h.date} · {h.daysLeft} days left
+                          {h.totalDays} days · matures {h.date}
                         </p>
                       </div>
                     </div>

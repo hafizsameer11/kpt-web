@@ -4,10 +4,12 @@ import { ArrowLeft, ArrowUpRight, Download, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/kipit/AppShell";
 import { DisclosureStrip } from "@/components/kipit/DisclosureStrip";
+import { InterestBreakdown } from "@/components/kipit/InterestBreakdown";
 import { AmountCounter } from "@/components/kipit/motion";
 import { useBalanceVisibility } from "@/hooks/useBalanceVisibility";
 import { downloadDocumentPdf } from "@/lib/document-pdf";
 import { naira } from "@/lib/home-data";
+import { formatMoneyNaira } from "@/lib/wht";
 import {
   hydrateReportsFromApi,
   REPORTS,
@@ -89,12 +91,22 @@ function ReportsScreen() {
           { label: "Period", value: r.label },
           { label: "Opening value", value: naira(r.openingValue) },
           { label: "Closing value", value: naira(r.closingValue) },
-          { label: "Growth", value: `${r.growthPct}%` },
-          { label: "Interest earned", value: naira(r.interestEarned) },
+          { label: "Growth (return only)", value: `${naira(r.growthAmount)} · ${r.growthPct}%` },
+          { label: "Interest earned (net)", value: naira(r.interestNet) },
+          { label: "Gross interest", value: naira(r.interestGross) },
+          { label: "Less WHT (10%)", value: naira(r.interestWht) },
           { label: "Contributions", value: naira(r.contributions) },
           { label: "Withdrawals", value: naira(r.withdrawals) },
           { label: "Average rate", value: r.averageRate },
           { label: "Best performer", value: r.bestPerformer },
+        ],
+        whtSection: [
+          {
+            label: "Plans + Call Account (period)",
+            gross: formatMoneyNaira(r.interestGross),
+            wht: formatMoneyNaira(r.interestWht),
+            net: formatMoneyNaira(r.interestNet),
+          },
         ],
         body: r.summary,
         filename: `kipit-${period.toLowerCase()}-report.html`,
@@ -131,7 +143,7 @@ function ReportsScreen() {
                 </p>
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1.5 text-[11.5px] font-extrabold text-gold">
-                    <ArrowUpRight className="size-3.5" /> +{r.growthPct}% growth
+                    <ArrowUpRight className="size-3.5" /> +{r.growthPct}% return
                   </span>
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11.5px] font-bold">
                     {r.range}
@@ -175,7 +187,7 @@ function ReportsScreen() {
           {/* Metrics row */}
           <div className="grid grid-cols-4 gap-4">
             {[
-              { label: "Interest earned", value: mask(r.interestEarned), gold: true },
+              { label: "Interest earned (net)", value: mask(r.interestNet), gold: true },
               { label: "Average rate", value: r.averageRate, gold: false },
               { label: "Contributions", value: mask(r.contributions), gold: false },
               { label: "Withdrawals", value: mask(r.withdrawals), gold: false },
@@ -200,10 +212,13 @@ function ReportsScreen() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h2 className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-muted-foreground">
-                    Portfolio growth
+                    Growth (return only)
                   </h2>
                   <p className="mt-1.5 font-display text-[28px] font-extrabold text-num">
-                    {mask(r.closingValue - r.openingValue)}
+                    {mask(r.growthAmount)}
+                  </p>
+                  <p className="mt-1 text-[12px] text-muted-foreground">
+                    Net interest across plans + Call · contributions separate
                   </p>
                 </div>
                 <span className="inline-flex items-center gap-1 rounded-full bg-gold/15 px-3 py-1.5 text-[12px] font-extrabold text-gold">
@@ -217,6 +232,14 @@ function ReportsScreen() {
                 <span className="text-muted-foreground">Opening {mask(r.openingValue)}</span>
                 <span className="font-bold">Closing {mask(r.closingValue)}</span>
               </div>
+              {r.interestBreakdown ? (
+                <div className="mt-5 rounded-xl border border-border/60 bg-secondary/40 p-4">
+                  <p className="mb-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
+                    Interest &amp; WHT
+                  </p>
+                  <InterestBreakdown data={r.interestBreakdown} />
+                </div>
+              ) : null}
             </section>
 
             <section className="relative overflow-hidden rounded-2xl border border-border bg-card p-6">
@@ -256,7 +279,7 @@ function ReportsScreen() {
             </h1>
             <div className="k-rise mt-3 flex flex-wrap items-center gap-2" style={{ ["--d" as string]: "80ms" }}>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1.5 text-[11px] font-extrabold text-gold">
-                <ArrowUpRight className="size-3.5" /> +{r.growthPct}% growth
+                <ArrowUpRight className="size-3.5" /> +{r.growthPct}% return
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-bold">
                 {r.range}
@@ -297,10 +320,13 @@ function ReportsScreen() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                  Portfolio growth
+                  Growth (return only)
                 </p>
                 <p className="mt-1.5 font-display text-2xl font-extrabold text-num">
-                  {mask(r.closingValue - r.openingValue)}
+                  {mask(r.growthAmount)}
+                </p>
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  Net interest · plans + Call
                 </p>
               </div>
               <span className="inline-flex items-center gap-1 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold text-gold">
@@ -314,12 +340,20 @@ function ReportsScreen() {
               <span className="text-muted-foreground">Opening {mask(r.openingValue)}</span>
               <span className="font-bold">Closing {mask(r.closingValue)}</span>
             </div>
+            {r.interestBreakdown ? (
+              <div className="mt-4 rounded-xl border border-border/60 bg-secondary/40 p-3.5">
+                <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
+                  Interest &amp; WHT
+                </p>
+                <InterestBreakdown data={r.interestBreakdown} />
+              </div>
+            ) : null}
           </article>
 
           {/* Metrics */}
           <div className="mt-3 grid grid-cols-2 gap-3 md:mt-4 md:grid-cols-4 md:gap-4">
             {[
-              { label: "Interest earned", value: mask(r.interestEarned), gold: true },
+              { label: "Interest earned (net)", value: mask(r.interestNet), gold: true },
               { label: "Average rate", value: r.averageRate, gold: false },
               { label: "Contributions", value: mask(r.contributions), gold: false },
               { label: "Withdrawals", value: mask(r.withdrawals), gold: false },

@@ -492,11 +492,14 @@ export async function fetchHome() {
     wallet: { balance: number };
     invested: { balance: number };
     total: { balance: number };
+    valueAtMaturity?: number;
+    profileComplete?: boolean;
     kycTier: ApiUser["kycTier"];
     nextMaturity: {
       id: string;
       name: string;
       amount: number;
+      finalValue?: number;
       date: string;
       daysLeft: number;
       tenorDays?: number | null;
@@ -518,33 +521,84 @@ export async function fetchHome() {
   }>("/v1/me/home");
 }
 
+export type ApiNextOfKin = {
+  name: string | null;
+  relationship: string | null;
+  phone: string | null;
+  address: string | null;
+};
+
+export type ApiProfile = {
+  id: string;
+  email: string;
+  phone: string | null;
+  firstName: string;
+  middleName: string | null;
+  surname: string;
+  kycTier: ApiUser["kycTier"];
+  dateOfBirth: string | null;
+  gender: string | null;
+  occupation: string | null;
+  employmentStatus: string | null;
+  sourceOfFunds: string | null;
+  maritalStatus: string | null;
+  spouseFullName: string | null;
+  mothersMaidenName: string | null;
+  maidenName: string | null;
+  maidenNameNa: boolean;
+  nationality: string | null;
+  stateOfOrigin: string | null;
+  lgaOfOrigin: string | null;
+  hometown: string | null;
+  hometownLga: string | null;
+  nextOfKin: ApiNextOfKin;
+  address: {
+    street: string | null;
+    city: string | null;
+    state: string | null;
+    lga: string | null;
+    pending: boolean;
+  };
+  profileComplete?: boolean;
+  lockedFields: string[];
+  consents?: { docKey: string; version: string; acceptedAt: string }[];
+};
+
 export async function fetchProfile() {
-  return api<{
-    id: string;
-    email: string;
-    phone: string | null;
-    firstName: string;
-    middleName: string | null;
-    surname: string;
-    kycTier: ApiUser["kycTier"];
-    dateOfBirth: string | null;
-    gender: string | null;
-    occupation: string | null;
-    employmentStatus: string | null;
-    sourceOfFunds: string | null;
-    address: {
-      street: string | null;
-      city: string | null;
-      state: string | null;
-      lga: string | null;
-      pending: boolean;
-    };
-    lockedFields: string[];
-  }>("/v1/settings/profile");
+  return api<ApiProfile>("/v1/settings/profile");
+}
+
+export type ApiLegalDoc = {
+  id: string;
+  docKey: string;
+  title: string;
+  version: string;
+  fileUrl: string | null;
+  publishedAt: string | null;
+  accepted: boolean;
+};
+
+export async function fetchLegalDocuments() {
+  return api<ApiLegalDoc[]>("/v1/settings/legal");
+}
+
+export async function acceptLegalDocument(input: { docKey: string; version: string }) {
+  return api<{ ok: boolean; docKey: string; version: string }>("/v1/settings/legal/accept", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
 }
 
 export async function fetchCallAccount() {
-  return api<{ balance: number; ratePct: number }>("/v1/invest/call");
+  return api<{
+    balance: number;
+    ratePct: number;
+    grossRatePct?: number;
+    rateLabel?: string;
+    minimum?: number;
+    liquidity?: string;
+    custodianNote?: string;
+  }>("/v1/invest/call");
 }
 
 export async function fetchReferrals() {
@@ -789,6 +843,9 @@ export type ApiExploreProduct = {
   blurb: string;
   description?: string;
   ratePct: number;
+  grossRatePct?: number;
+  whtRatePct?: number;
+  rateLabel?: string;
   tenorDays: number;
   minimum: number;
   availability: string;
@@ -796,6 +853,7 @@ export type ApiExploreProduct = {
   largeTicket?: boolean;
   category: { slug: string; name: string };
   termsVersion?: string;
+  sampleInterest?: { gross: number; wht: number; net: number };
 };
 
 export type ApiExploreCategory = {
@@ -821,12 +879,73 @@ export type ApiRateBand = {
   maxDays: number | null;
   rateBps: number;
   ratePct: number;
+  grossRatePct?: number;
+  rateLabel?: string;
+  family?: "CALL" | "LOCK" | "FLEX" | string;
+  payout?: "AT_MATURITY" | "UPFRONT" | null;
   /** Investment minimum in naira (from /v1/invest/rates). */
   minimum?: number;
 };
 
+export type ApiInvestRates = {
+  minimum: number;
+  call: {
+    code: string;
+    label: string;
+    rateBps: number;
+    ratePct: number;
+    grossRatePct: number;
+    rateLabel: string;
+    minimum: number;
+  } | null;
+  lock: {
+    title: string;
+    subtitle: string;
+    tenors: {
+      days: number | null;
+      atMaturity: ApiRateBand;
+      upfront?: ApiRateBand;
+    }[];
+    customMinDays: number;
+    customMaxDays: number;
+  };
+  flex: {
+    title: string;
+    subtitle: string;
+    tenors: { days: number | null; atMaturity: ApiRateBand }[];
+    customMinDays: number;
+    customMaxDays: number;
+    breakAfterDays: number;
+  };
+  bands: ApiRateBand[];
+};
+
 export async function fetchInvestRates() {
-  return api<ApiRateBand[]>("/v1/invest/rates", { auth: false });
+  const data = await api<ApiInvestRates | ApiRateBand[]>("/v1/invest/rates", { auth: false });
+  // New shape returns { bands, lock, flex, call }; legacy was a bare array.
+  if (Array.isArray(data)) return data;
+  return data.bands ?? [];
+}
+
+export async function fetchInvestRatesCatalog() {
+  const data = await api<ApiInvestRates | ApiRateBand[]>("/v1/invest/rates", { auth: false });
+  if (Array.isArray(data)) {
+    return {
+      minimum: 1_000,
+      call: null,
+      lock: { title: "Kipit Lock", subtitle: "", tenors: [], customMinDays: 31, customMaxDays: 365 },
+      flex: {
+        title: "Kipit Flex",
+        subtitle: "",
+        tenors: [],
+        customMinDays: 31,
+        customMaxDays: 365,
+        breakAfterDays: 30,
+      },
+      bands: data,
+    } satisfies ApiInvestRates;
+  }
+  return data;
 }
 
 export async function fetchHomeFeed() {
@@ -1082,22 +1201,103 @@ export async function fetchSupportTicket(id: string) {
   return api<ApiSupportTicket>(`/v1/settings/help/tickets/${id}`);
 }
 
+export type ApiPlacement = {
+  id: string;
+  kind: string;
+  name: string;
+  status: string;
+  principal: number;
+  ratePct: number;
+  grossRatePct?: number;
+  rateLabel?: string;
+  tenorDays: number;
+  startDate?: string;
+  maturityDate: string | null;
+  accrued: number;
+  accruedGross?: number;
+  accruedWht?: number;
+  accruedNet?: number;
+  expectedInterest?: number | null;
+  expectedGross?: number | null;
+  expectedWht?: number | null;
+  expectedNet?: number | null;
+  valueAtMaturity?: number;
+  planType?: "LOCK" | "FLEX" | null;
+  interestPayout?: "AT_MATURITY" | "UPFRONT" | null;
+  maturityInstruction?: string | null;
+  lastTopUpAt?: string | null;
+  breakRequestedAt?: string | null;
+};
+
 export async function fetchPlacements() {
-  return api<
-    {
-      id: string;
-      kind: string;
-      name: string;
-      status: string;
-      principal: number;
-      ratePct: number;
-      tenorDays: number;
-      startDate?: string;
-      maturityDate: string | null;
-      accrued: number;
-      expectedInterest?: number | null;
-    }[]
-  >("/v1/invest/placements");
+  return api<ApiPlacement[]>("/v1/invest/placements");
+}
+
+export async function postInvestCalculator(input: {
+  amount: number;
+  tenorDays: number;
+  planType?: "LOCK" | "FLEX";
+  interestPayout?: "AT_MATURITY" | "UPFRONT";
+}) {
+  return api<{
+    amount: number;
+    tenorDays: number;
+    planType: string;
+    interestPayout: string;
+    ratePct: number;
+    grossRatePct: number;
+    rateLabel: string;
+    grossInterest: number;
+    withholdingTax: number;
+    netInterest: number;
+    expectedInterest: number;
+    expectedPayout: number;
+    valueAtMaturity: number;
+    maturityDate: string;
+    minimum: number;
+  }>("/v1/invest/calculator", {
+    method: "POST",
+    body: JSON.stringify(input),
+    auth: false,
+  });
+}
+
+export async function topUpPlacement(
+  id: string,
+  input: { amount: number; pin: string; idempotencyKey: string },
+) {
+  return api<{
+    id: string;
+    principal: number;
+    topUpAmount: number;
+    daysLeft: number;
+    ratePct: number;
+    grossRatePct?: number;
+    upfrontInterest: number;
+    lastTopUpAt: string | null;
+  }>(`/v1/invest/placements/${id}/top-up`, {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export async function breakPlacement(
+  id: string,
+  input: { pin: string; idempotencyKey: string },
+) {
+  return api<{
+    id: string;
+    principal: number;
+    accruedGross: number;
+    accruedWht: number;
+    accruedNet: number;
+    forfeitedNet: number;
+    creditedNet?: number;
+    creditAt?: string;
+  }>(`/v1/invest/placements/${id}/break`, {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
 }
 
 export async function fetchNotifications() {
@@ -1154,17 +1354,23 @@ export async function deleteSavedCard(id: string) {
 export async function createFixedPlan(input: {
   amount: number;
   tenorDays: number;
-  name: string;
+  name?: string;
   pin: string;
+  planType?: "LOCK" | "FLEX";
+  interestPayout?: "AT_MATURITY" | "UPFRONT";
   maturityInstruction?: "WALLET" | "ROLLOVER" | "PAYOUT";
   idempotencyKey: string;
   isGift?: boolean;
+  consentVersion?: string;
 }) {
   return api<{
     id: string;
     name: string;
     amount: number;
     ratePct: number;
+    grossRatePct?: number;
+    planType?: string;
+    interestPayout?: string;
     tenorDays: number;
     maturityDate: string;
     expectedInterest: number;
@@ -1418,8 +1624,22 @@ export async function patchProfile(input: {
   firstName?: string;
   middleName?: string | null;
   surname?: string;
+  maritalStatus?: "Single" | "Married" | "Others";
+  spouseFullName?: string | null;
+  mothersMaidenName?: string;
+  maidenName?: string | null;
+  maidenNameNa?: boolean;
+  nationality?: string;
+  stateOfOrigin?: string | null;
+  lgaOfOrigin?: string | null;
+  hometown?: string | null;
+  hometownLga?: string | null;
+  nextOfKinName?: string;
+  nextOfKinRelationship?: "Spouse" | "Parent" | "Brother" | "Sister" | "Child" | "Other";
+  nextOfKinPhone?: string;
+  nextOfKinAddress?: string;
 }) {
-  return api<ApiUser>("/v1/settings/profile", {
+  return api<ApiUser & { profileComplete?: boolean }>("/v1/settings/profile", {
     method: "PATCH",
     body: JSON.stringify(input),
   });
@@ -1451,12 +1671,25 @@ export async function fetchPortfolioHolding(id: string) {
     status: string;
     principal: number;
     ratePct: number;
+    grossRatePct?: number;
+    rateLabel?: string;
     tenorDays: number;
     startDate?: string;
     maturityDate: string | null;
     accrued: number;
+    accruedGross?: number;
+    accruedWht?: number;
+    accruedNet?: number;
     expectedInterest?: number | null;
+    expectedGross?: number | null;
+    expectedWht?: number | null;
+    expectedNet?: number | null;
+    valueAtMaturity?: number;
+    planType?: "LOCK" | "FLEX" | null;
+    interestPayout?: "AT_MATURITY" | "UPFRONT" | null;
     maturityInstruction?: string | null;
+    lastTopUpAt?: string | null;
+    breakRequestedAt?: string | null;
     documents?: { name: string; meta?: string; url?: string }[];
   }>(`/v1/portfolio/holdings/${id}`);
 }

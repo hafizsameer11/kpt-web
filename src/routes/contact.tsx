@@ -8,6 +8,7 @@ import { WebsiteV3Access, WEB_APP_LOGIN_URL, type AccessMode } from "@/component
 import "@/components/kipit/website-v3.css";
 import "@/components/kipit/website-v3-contact.css";
 import lagos from "@/assets/v3-lagos.jpg";
+import { FOOTER_LEGAL } from "@/lib/website-marketing";
 
 export const Route = createFileRoute("/contact")({
   staticData: { sitemap: true },
@@ -89,7 +90,7 @@ function ContactPage() {
       <footer className="v3-footer">
         <div className="v3-container">
           <div className="v3-contact-footer"><div><Logo className="text-2xl" /><p className="mt-3 text-sm text-muted-foreground">Your wallet, Call Account and fixed plans in one place.</p></div><nav aria-label="Footer navigation"><Link to="/">Home</Link><Link to="/about">About</Link><Link to="/contact" aria-current="page">Contact</Link><Link to="/privacy">Privacy</Link><Link to="/terms">Terms</Link><Link to="/delete-account">Delete account</Link><a href={WEB_APP_LOGIN_URL}>Log in</a><Button variant="link" className="v3-footer-link-btn" onClick={() => setAccess("access")}>Open account <ArrowRight className="size-4" /></Button></nav></div>
-          <div className="border-t border-border py-6 text-xs leading-relaxed text-muted-foreground"><p>© 2026 Kipit. Investments are held by Kipit Investment Ltd, an asset manager licensed by the SEC.</p><p className="mt-2">Investments carry risk; rates are subject to change.</p></div>
+          <div className="border-t border-border py-6 text-xs leading-relaxed text-muted-foreground"><p>{FOOTER_LEGAL}</p><p className="mt-2">Investments carry risk; rates are subject to change.</p></div>
         </div>
       </footer>
       <WebsiteV3Access mode={access} onChange={setAccess} />

@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  Bell,
   Building2,
   Check,
   ChevronRight,
   Clock3,
   Landmark,
   Layers,
-  LineChart,
+  PieChart,
+  ScrollText,
   Search,
   X,
 } from "lucide-react";
@@ -19,7 +19,6 @@ import { naira } from "@/lib/home-data";
 import {
   AVAILABILITY_LABEL,
   EXPLORE_CATEGORIES,
-  EXPLORE_COMING_SOON,
   EXPLORE_PRODUCTS,
   hydrateExploreFromApi,
   subscribeExplore,
@@ -29,17 +28,17 @@ import {
 export const Route = createFileRoute("/explore")({
   head: () => ({
     meta: [
-      { title: "Explore — Kipit Investment Marketplace" },
+      { title: "Explore — Kipit Offerings Marketplace" },
       {
         name: "description",
         content:
-          "Browse treasury bills, commercial papers, structured notes and managed portfolios, each with its rate, tenor and minimum investment shown together.",
+          "Invest in Treasury Bills, Commercial Papers, Mutual Funds and Bonds selected by our investment team. See the rate, tenor and minimum for every offering before you invest.",
       },
-      { property: "og:title", content: "Explore — Kipit Investment Marketplace" },
+      { property: "og:title", content: "Explore — Kipit Offerings Marketplace" },
       {
         property: "og:description",
         content:
-          "Discover partner investment opportunities on Kipit with transparent rate, tenor, minimum and availability.",
+          "Browse Active offerings on Kipit with transparent rate, tenor, minimum and availability.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -53,12 +52,15 @@ const CATEGORY_ICON: Record<string, typeof Landmark> = {
   tbills: Landmark,
   "commercial-papers": Building2,
   cp: Building2,
-  "structured-notes": Layers,
-  notes: Layers,
-  "managed-portfolio": LineChart,
-  portfolios: LineChart,
-  commodities: Layers,
+  "mutual-funds": PieChart,
+  bonds: ScrollText,
 };
+
+const isActiveOffering = (p: ExploreProduct) =>
+  p.availability === "open" || p.availability === "closing";
+
+const EXPLORE_SUBTITLE =
+  "Invest in Treasury Bills, Commercial Papers, Mutual Funds and Bonds selected by our investment team. See the rate, tenor and minimum for every offering before you invest.";
 
 function ExploreScreen() {
   useSyncExternalStore(
@@ -80,14 +82,8 @@ function ExploreScreen() {
 function MobileExplore() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
-  const [notified, setNotified] = useState<string[]>([]);
-  const toggleNotify = (name: string) =>
-    setNotified((prev) =>
-      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
-    );
 
-
-  const featured = EXPLORE_PRODUCTS.filter((p) => p.featured);
+  const featured = EXPLORE_PRODUCTS.filter((p) => p.featured && isActiveOffering(p));
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -124,7 +120,7 @@ function MobileExplore() {
               Explore
             </h1>
             <p className="mt-2 text-[13px] leading-relaxed text-primary-foreground/70 md:text-sm">
-              Partner opportunities beyond Kipit&rsquo;s own plans
+              {EXPLORE_SUBTITLE}
             </p>
 
             {/* Search */}
@@ -133,8 +129,8 @@ function MobileExplore() {
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search products or issuers"
-                aria-label="Search marketplace products"
+                placeholder="Search offerings or issuers"
+                aria-label="Search marketplace offerings"
                 className="min-w-0 flex-1 bg-transparent text-[13.5px] font-semibold text-primary-foreground outline-none placeholder:font-medium placeholder:text-primary-foreground/50"
               />
               {query && (
@@ -212,7 +208,7 @@ function MobileExplore() {
                             active ? "text-gold" : "text-muted-foreground"
                           }`}
                         >
-                          {c.count} products
+                          {c.count} offerings
                         </p>
                       </div>
                     </button>
@@ -235,27 +231,24 @@ function MobileExplore() {
             </section>
           </Rise>
 
-          {/* Featured */}
-          {!category && !query && (
+          {/* Featured — Active offerings only (B20) */}
+          {!category && !query && featured.length > 0 && (
             <Rise delay={60}>
               <section className="mt-6">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   Featured this week
                 </p>
                 <FeaturedCarousel items={featured} />
-
-
-
               </section>
             </Rise>
           )}
 
-          {/* Product list */}
+          {/* Offerings list */}
           <Rise delay={120}>
             <section className="mt-6">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  {activeCategory ? activeCategory.name : "All products"}
+                  {activeCategory ? activeCategory.name : "All offerings"}
                 </p>
                 {(category || query) && (
                   <button
@@ -273,7 +266,7 @@ function MobileExplore() {
 
               {results.length === 0 ? (
                 <div className="mt-3 rounded-xl border border-dashed border-border p-6 text-center">
-                  <p className="text-[13px] font-bold">No matching products</p>
+                  <p className="text-[13px] font-bold">No matching offerings</p>
                   <p className="mt-1 text-[12px] text-muted-foreground">
                     Try a different search or category.
                   </p>
@@ -287,116 +280,6 @@ function MobileExplore() {
               )}
             </section>
           </Rise>
-
-          {/* Coming soon — elegant gold timeline */}
-          <Rise delay={180}>
-            <section className="mt-8">
-              <div className="mb-6">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  On the roadmap
-                </p>
-                <div className="mt-1 flex items-center gap-3">
-                  <h2 className="font-display text-lg font-extrabold text-foreground">
-                    Coming soon
-                  </h2>
-                  <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
-                  <span className="rounded-full border border-border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                    {EXPLORE_COMING_SOON.length} in build
-                  </span>
-                </div>
-              </div>
-
-              <div className="relative pl-8">
-                {/* Vertical dotted gold line */}
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute left-[13px] top-2 bottom-24 w-px border-l border-dashed border-gold/50"
-                />
-
-                <div className="space-y-5">
-                  {EXPLORE_COMING_SOON.map((c, i) => {
-                    const timing = c.status ?? "Soon";
-                    return (
-                      <div
-                        key={c.name}
-                        style={{ ["--d" as string]: `${i * 90}ms` }}
-                        className="k-rise relative group"
-                      >
-                        {/* Timeline node */}
-                        <span
-                          aria-hidden
-                          className="absolute -left-8 top-[1.15rem] flex size-[22px] items-center justify-center rounded-full bg-background"
-                        >
-                          <span
-                            className={`size-2 rounded-full bg-gold ${
-                              i === 0 ? "k-glow" : ""
-                            }`}
-                          />
-                        </span>
-
-                        {/* Card */}
-                        <button
-                          type="button"
-                          onClick={() => toggleNotify(c.name)}
-                          aria-pressed={notified.includes(c.name)}
-                          className="card-surface w-full p-4 text-left transition-all duration-300 press group-hover:border-gold/40 group-hover:shadow-float"
-                        >
-                          <div className="flex items-baseline justify-between gap-3">
-                            <h3 className="font-display text-[15px] font-extrabold leading-tight text-foreground md:text-base">
-                              {c.name}
-                            </h3>
-                            <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.12em] text-gold">
-                              {timing}
-                            </span>
-                          </div>
-                          <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
-                            {c.note}
-                          </p>
-                          <span
-                            className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10.5px] font-bold ${
-                              notified.includes(c.name)
-                                ? "bg-brand text-primary-foreground"
-                                : "border border-border text-foreground"
-                            }`}
-                          >
-                            {notified.includes(c.name) ? (
-                              <>
-                                <Check className="size-3" /> We'll notify you
-                              </>
-                            ) : (
-                              <>
-                                <Bell className="size-3" /> Notify me
-                              </>
-                            )}
-                          </span>
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="mt-6 text-center">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setNotified(
-                      notified.length === EXPLORE_COMING_SOON.length
-                        ? []
-                        : EXPLORE_COMING_SOON.map((c) => c.name),
-                    )
-                  }
-                  className="text-[11px] font-bold uppercase tracking-[0.12em] text-gold transition-colors hover:text-gold/80 press"
-                >
-                  {notified.length === EXPLORE_COMING_SOON.length
-                    ? "Turn off all updates"
-                    : "Notify me of all updates"}
-                </button>
-              </div>
-
-            </section>
-          </Rise>
-
 
           <DisclosureStrip variant="marketplace" />
         </div>
@@ -521,7 +404,7 @@ function FeaturedCarousel({ items }: { items: ExploreProduct[] }) {
           <button
             key={p.id}
             type="button"
-            aria-label={`Go to featured product ${i + 1}`}
+            aria-label={`Go to featured offering ${i + 1}`}
             onClick={() => {
               setIndex(i);
               scrollTo(i);
@@ -537,7 +420,7 @@ function FeaturedCarousel({ items }: { items: ExploreProduct[] }) {
 }
 
 function ProductCard({ product: p }: { product: ExploreProduct }) {
-
+  const closed = p.availability === "closed" || p.availability === "coming_soon";
   const tone =
     p.availability === "open"
       ? "bg-emerald-500/10 text-emerald-600"
@@ -549,7 +432,7 @@ function ProductCard({ product: p }: { product: ExploreProduct }) {
     <Link
       to="/explore/$productId"
       params={{ productId: p.id }}
-      className="block card-surface p-4 press"
+      className={`block card-surface p-4 press ${closed ? "opacity-55 grayscale-[0.35]" : ""}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -617,14 +500,8 @@ function DesktopExplore() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
   const [visible, setVisible] = useState(6);
-  const [notified, setNotified] = useState<string[]>([]);
 
-  const toggleNotify = (name: string) =>
-    setNotified((prev) =>
-      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
-    );
-
-  const featured = EXPLORE_PRODUCTS.filter((p) => p.featured);
+  const featured = EXPLORE_PRODUCTS.filter((p) => p.featured && isActiveOffering(p));
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -661,9 +538,8 @@ function DesktopExplore() {
             <h1 className="mt-3 font-display text-[38px] font-extrabold leading-none tracking-[-0.04em]">
               Explore
             </h1>
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-primary-foreground/70">
-              Partner opportunities beyond Kipit&rsquo;s own plans — rate, tenor
-              and minimum shown up front.
+            <p className="mt-3 max-w-lg text-sm leading-relaxed text-primary-foreground/70">
+              {EXPLORE_SUBTITLE}
             </p>
           </div>
 
@@ -675,8 +551,8 @@ function DesktopExplore() {
                 setQuery(e.target.value);
                 setVisible(6);
               }}
-              placeholder="Search products or issuers"
-              aria-label="Search marketplace products"
+              placeholder="Search offerings or issuers"
+              aria-label="Search marketplace offerings"
               className="min-w-0 flex-1 bg-transparent text-[13.5px] font-semibold text-primary-foreground outline-none placeholder:font-medium placeholder:text-primary-foreground/50"
             />
             {query && (
@@ -729,7 +605,7 @@ function DesktopExplore() {
                     active ? "text-gold" : "text-muted-foreground"
                   }`}
                 >
-                  {c.count} products
+                  {c.count} offerings
                 </span>
               </span>
               {active && (
@@ -761,7 +637,7 @@ function DesktopExplore() {
           <section className="card-surface p-6">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-display text-base font-extrabold">
-                {activeCategory ? activeCategory.name : "All products"}
+                {activeCategory ? activeCategory.name : "All offerings"}
               </h2>
               <div className="flex items-center gap-3">
                 <span className="text-[11px] font-semibold text-muted-foreground">
@@ -785,7 +661,7 @@ function DesktopExplore() {
 
             {results.length === 0 ? (
               <div className="mt-4 rounded-xl border border-dashed border-border p-10 text-center">
-                <p className="text-[13px] font-bold">No matching products</p>
+                <p className="text-[13px] font-bold">No matching offerings</p>
                 <p className="mt-1 text-[12px] text-muted-foreground">
                   Try a different search or category.
                 </p>
@@ -870,90 +746,6 @@ function DesktopExplore() {
             </section>
           )}
 
-          <section className="card-surface p-6">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="font-display text-base font-extrabold">Coming soon</h2>
-              <span className="rounded-full border border-border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                {EXPLORE_COMING_SOON.length} in build
-              </span>
-            </div>
-
-            <div className="relative mt-4 pl-7">
-              <span
-                aria-hidden
-                className="pointer-events-none absolute left-[9px] bottom-6 top-3 w-px border-l border-dashed border-gold/50"
-              />
-              <div className="space-y-3">
-                {EXPLORE_COMING_SOON.map((c, i) => {
-                  const timing = c.status ?? "Soon";
-                  const on = notified.includes(c.name);
-                  return (
-                    <div key={c.name} className="relative">
-                      <span
-                        aria-hidden
-                        className="absolute -left-7 top-4 grid size-[18px] place-items-center rounded-full bg-card"
-                      >
-                        <span
-                          className={`size-2 rounded-full bg-gold ${i === 0 ? "k-glow" : ""}`}
-                        />
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => toggleNotify(c.name)}
-                        aria-pressed={on}
-                        className="w-full rounded-xl border border-border bg-card p-4 text-left transition-all press hover:border-gold/40"
-                      >
-                        <div className="flex items-baseline justify-between gap-3">
-                          <h3 className="font-display text-[13.5px] font-extrabold leading-tight">
-                            {c.name}
-                          </h3>
-                          <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.12em] text-gold">
-                            {timing}
-                          </span>
-                        </div>
-                        <p className="mt-1.5 text-[11.5px] leading-relaxed text-muted-foreground">
-                          {c.note}
-                        </p>
-                        <span
-                          className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10.5px] font-bold ${
-                            on
-                              ? "bg-brand text-primary-foreground"
-                              : "border border-border text-foreground"
-                          }`}
-                        >
-                          {on ? (
-                            <>
-                              <Check className="size-3" /> We&rsquo;ll notify you
-                            </>
-                          ) : (
-                            <>
-                              <Bell className="size-3" /> Notify me
-                            </>
-                          )}
-                        </span>
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() =>
-                setNotified(
-                  notified.length === EXPLORE_COMING_SOON.length
-                    ? []
-                    : EXPLORE_COMING_SOON.map((c) => c.name),
-                )
-              }
-              className="mt-5 w-full text-center text-[11px] font-bold uppercase tracking-[0.12em] text-gold transition-colors hover:text-gold/80 press"
-            >
-              {notified.length === EXPLORE_COMING_SOON.length
-                ? "Turn off all updates"
-                : "Notify me of all updates"}
-            </button>
-          </section>
         </div>
       </div>
     </div>
@@ -961,6 +753,7 @@ function DesktopExplore() {
 }
 
 function DesktopProductRow({ product: p }: { product: ExploreProduct }) {
+  const closed = p.availability === "closed" || p.availability === "coming_soon";
   const tone =
     p.availability === "open"
       ? "bg-emerald-500/10 text-emerald-600"
@@ -972,7 +765,9 @@ function DesktopProductRow({ product: p }: { product: ExploreProduct }) {
     <Link
       to="/explore/$productId"
       params={{ productId: p.id }}
-      className="group flex items-center gap-4 bg-card px-5 py-4 transition-colors hover:bg-accent/40"
+      className={`group flex items-center gap-4 bg-card px-5 py-4 transition-colors hover:bg-accent/40 ${
+        closed ? "opacity-55 grayscale-[0.35]" : ""
+      }`}
     >
       <div className="min-w-0 flex-1">
         <h3 className="text-[14px] font-extrabold leading-tight">{p.name}</h3>

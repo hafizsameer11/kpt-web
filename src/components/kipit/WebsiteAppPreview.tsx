@@ -20,28 +20,28 @@ const TOTAL = WALLET + INVESTED;
 const WEEK_EARNINGS = 12_480;
 
 const NEXT_MATURITY = {
-  name: "Kipit Fixed Income",
+  name: "Kipit Lock",
   tenor: "90 days",
   amount: 750_000,
-  rate: "19.2% p.a.",
+  rate: "16.0% p.a.",
   date: "24 Sep 2026",
   daysLeft: 22,
   totalDays: 90,
-  expectedPayout: 785_500,
+  expectedPayout: 779_589,
 };
 
 const HOLDINGS = [
   {
-    name: "Kipit Fixed Income",
-    rate: "19.2% p.a.",
+    name: "Kipit Lock",
+    rate: "16.0% p.a.",
     amount: 750_000,
     date: "24 Sep 2026",
     daysLeft: 22,
     totalDays: 90,
   },
   {
-    name: "Kipit Target Savings",
-    rate: "16.0% p.a.",
+    name: "Kipit Flex",
+    rate: "15.0% p.a.",
     amount: 900_000,
     date: "12 Dec 2026",
     daysLeft: 101,

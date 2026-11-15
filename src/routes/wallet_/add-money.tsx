@@ -126,7 +126,7 @@ function WalletAddMoney() {
                 </div>
                 <p className="mt-3 flex items-center gap-1.5 text-[12.5px] font-medium text-primary-foreground/60">
                   <ShieldCheck className="size-4 text-primary-foreground/70" />
-                  Minimum {naira(MIN_DEPOSIT)} · funds land in your wallet
+                  Minimum {naira(MIN_DEPOSIT)} · funds held by Rand Merchant Bank (custodian)
                 </p>
               </div>
               <div className="w-[300px]">
@@ -167,7 +167,7 @@ function WalletAddMoney() {
                   onClick={() => setMethod("transfer")}
                   icon={<Building2 className="size-5" strokeWidth={2.2} />}
                   title="Bank transfer"
-                  desc="Send to your dedicated Kipit account · ₦0 fee"
+                  desc="Send to your dedicated Kipit account · ₦0 fee. Held by Rand Merchant Bank."
                   badge="Free"
                 />
                 <MethodOption
@@ -175,7 +175,7 @@ function WalletAddMoney() {
                   onClick={() => setMethod("card")}
                   icon={<CreditCard className="size-5" strokeWidth={2.2} />}
                   title="Debit card"
-                  desc={`1.5% processing fee · up to ${naira(MAX_CARD_DEPOSIT)} per payment`}
+                  desc={`₦0 fee · up to ${naira(MAX_CARD_DEPOSIT)} per payment`}
                 />
               </ul>
               <div className="mt-4 flex items-start gap-3 rounded-2xl border border-border bg-card p-5">
@@ -210,8 +210,7 @@ function WalletAddMoney() {
               </section>
               <div className="flex items-start gap-2.5 rounded-xl border border-border bg-card px-4 py-3 text-[11.5px] leading-relaxed text-muted-foreground">
                 <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
-                Deposits are held by a regulated partner bank. Prototype flow — no real
-                money moves.
+                All deposits are held and administered by Rand Merchant Bank, our custodian.
               </div>
             </div>
           </div>
@@ -256,7 +255,7 @@ function WalletAddMoney() {
             </div>
             <p className="mt-3 flex items-center gap-1.5 text-[12px] font-medium text-primary-foreground/60">
               <ShieldCheck className="size-3.5 text-primary-foreground/70" />
-              Minimum {naira(MIN_DEPOSIT)} &middot; funds land in your wallet
+              Minimum {naira(MIN_DEPOSIT)} &middot; funds held by Rand Merchant Bank (custodian)
             </p>
 
             <div className="mt-5 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
@@ -302,7 +301,7 @@ function WalletAddMoney() {
               onClick={() => setMethod("card")}
               icon={<CreditCard className="size-5" strokeWidth={2.2} />}
               title="Debit card"
-              desc={`1.5% processing fee · up to ${naira(MAX_CARD_DEPOSIT)} per payment`}
+              desc={`₦0 fee · up to ${naira(MAX_CARD_DEPOSIT)} per payment`}
             />
           </ul>
 

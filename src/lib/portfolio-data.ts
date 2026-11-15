@@ -129,21 +129,26 @@ export function usePortfolioSnapshot() {
             ),
           )
         : 0;
+      const tenor = Math.max(h.tenorDays || 0, daysLeft, 1);
       return {
         id: h.id,
         name: h.name,
         rate: `${h.ratePct}% p.a.`,
-        amount: h.amount,
+        amount: h.amount + (h.accrued || 0),
         date: h.maturityDate ?? "",
         daysLeft,
-        totalDays: Math.max(daysLeft, 1),
-        expectedPayout: h.amount,
+        totalDays: tenor,
+        expectedPayout:
+          typeof h.valueAtMaturity === "number"
+            ? h.valueAtMaturity
+            : h.amount + (h.expectedInterest || 0),
         autoRenew: false,
       };
     });
     const fixedTotal = holdings.reduce((s, h) => s + h.amount, 0);
     const exploreTotal = EXPLORE_HOLDINGS.reduce((s, h) => s + h.amount, 0);
     const callTotal = live.callBalance;
+    // B3: principal + accrued + Call + wallet
     const total = wallet + callTotal + fixedTotal + exploreTotal;
     const allocation: Slice[] = [
       {
@@ -236,6 +241,12 @@ export type HoldingDetail = {
   totalDays: number;
   daysLeft: number;
   expectedPayout: number;
+  accrued?: number;
+  valueAtMaturity?: number;
+  planType?: "LOCK" | "FLEX" | null;
+  interestPayout?: "AT_MATURITY" | "UPFRONT" | null;
+  lastTopUpAt?: string | null;
+  breakRequestedAt?: string | null;
   /** Whether the user may change what happens at maturity. */
   canManageMaturity: boolean;
   maturityInstruction: string;

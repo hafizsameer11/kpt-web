@@ -4,19 +4,49 @@
  * Tenor bands hydrate from /v1/invest/rates — empty with loading until then.
  */
 import { useEffect, useSyncExternalStore } from "react";
-import { fetchInvestRates, type ApiRateBand } from "@/lib/api";
+import {
+  fetchInvestRates,
+  fetchInvestRatesCatalog,
+  type ApiInvestRates,
+  type ApiRateBand,
+} from "@/lib/api";
+
+export const PLAN_MIN_NAIRA = 1_000;
+export const LOCK_STANDARD_TENORS = [30, 60, 90, 180, 365] as const;
+export const FLEX_STANDARD_TENORS = [60, 90, 180, 365] as const;
+export const CUSTOM_MIN_DAYS = 31;
+export const CUSTOM_MAX_DAYS = 365;
+export const FLEX_BREAK_MIN_DAYS = 30;
+/** Consent wording version recorded with createFixedPlan (B13). */
+export const PRODUCT_CONSENT_VERSION = "2026-11-lock-flex-v1";
 
 export const CALL_ACCOUNT = {
   name: "Kipit Call Account",
   rate: "—",
   liquidity: "Withdraw anytime",
-  minimum: 5_000,
+  minimum: 1_000,
   balance: 0,
   accruedToday: 0,
   accruedThisMonth: 0,
+  custodianNote:
+    "Your Call Account and wallet balances are held and administered by Rand Merchant Bank, our custodian.",
   blurb:
     "Interest accrues daily on your idle cash and is credited monthly. No lock-in, no penalty.",
 };
+
+export const LOCK_HOW_IT_WORKS =
+  "Highest rates, fixed for the full period. Choose interest Upfront (paid to your wallet on day one) or At maturity. Cannot be broken before maturity. Min ₦1,000.";
+
+export const FLEX_HOW_IT_WORKS =
+  "A fixed rate with a way out after 30 days from invest or your most recent top-up. Interest at maturity. Breaking withdraws the full amount, forfeits 50% of accrued interest, and credits your wallet within 3 business days. Min ₦1,000.";
+
+export function lockConsentText(maturityDate: string) {
+  return `I understand that this Kipit Lock plan cannot be broken, liquidated or withdrawn before its maturity date of ${maturityDate}. I have read and accept the Terms and Conditions.`;
+}
+
+export function flexConsentText(breakAvailableDate: string) {
+  return `I understand that this Kipit Flex plan can only be broken from ${breakAvailableDate}; that breaking it withdraws the full amount; that I will lose 50% of the interest accrued up to the date I break it; and that the money will be credited to my wallet within 3 business days. I have read and accept the Terms and Conditions.`;
+}
 
 /** Sync call balance/rate labels after hydrateLiveBalances. */
 export function syncCallAccountFromLive(balance: number, ratePct: number) {
@@ -45,6 +75,7 @@ export type TenorBand = {
 export let FIXED_PLANS: FixedPlan[] = [];
 export let TENOR_BANDS: TenorBand[] = [];
 export let ratesLoading = true;
+export let INVEST_CATALOG: ApiInvestRates | null = null;
 
 const rateListeners = new Set<() => void>();
 function emitRates() {
@@ -57,31 +88,42 @@ export function subscribeRates(listener: () => void) {
   };
 }
 
-const PRODUCT_NAMES: Record<string, string> = {
-  CALL: "Kipit Call Account",
-  "1-90": "Kipit Starter",
-  "91-120": "Kipit Fixed Income",
-  "121-180": "Kipit Target Savings",
-  "181-364": "Kipit Growth",
-  "365+": "Kipit Vault",
+export type PlanFamily = "LOCK" | "FLEX";
+
+export type CatalogTenor = {
+  days: number;
+  rate: string;
+  ratePct: number;
+  grossRatePct?: number | undefined;
+  minimum: number;
+  upfrontRate?: string | undefined;
+  upfrontRatePct?: number | undefined;
 };
 
-/** Fallback minima when API omits `minimum` (mirrors kipit-api minimumForBand). */
-function fallbackMinimum(code: string, minDays: number) {
-  if (code === "CALL" || minDays <= 0) return 5_000;
-  if (minDays <= 90) return 10_000;
-  if (minDays <= 180) return 50_000;
-  if (minDays <= 364) return 100_000;
-  return 250_000;
+function bandToCatalogTenor(band: ApiRateBand, minimum: number): CatalogTenor {
+  const days =
+    band.maxDays && band.maxDays > 0 ? band.maxDays : Math.max(band.minDays, 1);
+  return {
+    days,
+    rate: band.rateLabel ?? `${band.ratePct}% net`,
+    ratePct: band.ratePct,
+    grossRatePct: band.grossRatePct,
+    minimum: band.minimum && band.minimum > 0 ? band.minimum : minimum,
+  };
 }
 
-function productName(code: string, minDays: number, fallback: string) {
-  if (PRODUCT_NAMES[code]) return PRODUCT_NAMES[code];
-  if (minDays <= 90) return "Kipit Starter";
-  if (minDays <= 120) return "Kipit Fixed Income";
-  if (minDays <= 180) return "Kipit Target Savings";
-  if (minDays <= 364) return "Kipit Growth";
-  return fallback || "Kipit Vault";
+/** Fallback minima when API omits `minimum` (B8/B9: ₦1,000 for Lock/Flex). */
+function fallbackMinimum(code: string, minDays: number) {
+  if (code === "CALL" || minDays <= 0) return 1_000;
+  return 1_000;
+}
+
+function planDisplayName(b: ApiRateBand) {
+  const days = b.maxDays && b.maxDays > 0 ? b.maxDays : Math.max(b.minDays, 1);
+  if (b.family === "FLEX" || b.code.startsWith("FLEX_")) return `Kipit Flex, ${days} days`;
+  if (b.family === "LOCK" || b.code.startsWith("LOCK_")) return `Kipit Lock, ${days} days`;
+  // Legacy bands display as Kipit Lock (B4/B8).
+  return `Kipit Lock, ${days} days`;
 }
 
 /** Prefer maxDays (band upper bound) as the displayed tenor when present. */
@@ -91,35 +133,49 @@ function tenorDays(b: ApiRateBand) {
 }
 
 function mapBands(bands: ApiRateBand[]) {
-  const fixed = bands.filter((b) => b.code !== "CALL" && b.minDays > 0);
+  // Prefer Lock at-maturity + Flex catalogue; fall back to any non-CALL bands.
+  const lockFlex = bands.filter(
+    (b) =>
+      b.code !== "CALL" &&
+      b.minDays > 0 &&
+      (b.family === "LOCK" || b.family === "FLEX") &&
+      (b.payout == null || b.payout === "AT_MATURITY"),
+  );
+  const legacy = bands.filter((b) => b.code !== "CALL" && b.minDays > 0 && !b.family);
+  const fixed = lockFlex.length ? lockFlex : legacy;
   TENOR_BANDS = fixed.map((b) => {
-    const name = productName(b.code, b.minDays, b.label);
+    const name = planDisplayName(b);
     const days = tenorDays(b);
     const minimum = b.minimum && b.minimum > 0 ? b.minimum : fallbackMinimum(b.code, b.minDays);
+    const rateLabel = b.rateLabel ?? `${b.ratePct}% net`;
     return {
       name,
       days: `${days} days`,
-      rate: `${b.ratePct}%`,
+      rate: rateLabel,
       minimum,
-      featured: b.code === "91-120" || name === "Kipit Fixed Income",
+      featured: days === 90,
     };
   });
   FIXED_PLANS = fixed.map((b) => {
-    const name = productName(b.code, b.minDays, b.label);
+    const name = planDisplayName(b);
     const days = tenorDays(b);
     const minimum = b.minimum && b.minimum > 0 ? b.minimum : fallbackMinimum(b.code, b.minDays);
+    const rateLabel = b.rateLabel ?? `${b.ratePct}% net`;
     return {
       name,
-      rate: `${b.ratePct}% p.a.`,
+      rate: `${rateLabel} p.a.`,
       tenor: `${days} days`,
       minimum,
-      blurb: `${name} at ${b.ratePct}% p.a.`,
+      blurb: `${name} at ${rateLabel} p.a.`,
     };
   });
-  const call = bands.find((b) => b.code === "CALL");
+  const call = bands.find((b) => b.code === "CALL" || b.family === "CALL");
   if (call) {
-    CALL_ACCOUNT.rate = `${call.ratePct}% p.a.`;
+    CALL_ACCOUNT.rate = call.rateLabel
+      ? `${call.rateLabel} p.a.`
+      : `${call.ratePct}% net p.a.`;
     if (call.minimum && call.minimum > 0) CALL_ACCOUNT.minimum = call.minimum;
+    else CALL_ACCOUNT.minimum = 1_000;
   }
   AUTO_INVEST_DESTINATIONS = [
     {
@@ -139,14 +195,36 @@ export async function hydrateInvestRatesFromApi() {
   ratesLoading = true;
   emitRates();
   try {
-    const bands = await fetchInvestRates();
-    mapBands(Array.isArray(bands) ? bands : []);
+    const catalog = await fetchInvestRatesCatalog();
+    INVEST_CATALOG = catalog;
+    const bands = Array.isArray(catalog.bands) ? catalog.bands : [];
+    mapBands(bands);
+    if (catalog.minimum > 0) {
+      CALL_ACCOUNT.minimum = Math.min(CALL_ACCOUNT.minimum || catalog.minimum, catalog.minimum);
+    }
+    if (catalog.call) {
+      CALL_ACCOUNT.rate = catalog.call.rateLabel
+        ? `${catalog.call.rateLabel} p.a.`
+        : `${catalog.call.ratePct}% net p.a.`;
+      if (catalog.call.minimum > 0) CALL_ACCOUNT.minimum = catalog.call.minimum;
+    }
   } catch {
-    TENOR_BANDS = [];
-    FIXED_PLANS = [];
-    AUTO_INVEST_DESTINATIONS = [
-      { name: CALL_ACCOUNT.name, rate: CALL_ACCOUNT.rate.replace(/\s*p\.a\./i, "").trim() || "—", minimum: CALL_ACCOUNT.minimum },
-    ];
+    try {
+      const bands = await fetchInvestRates();
+      mapBands(Array.isArray(bands) ? bands : []);
+      INVEST_CATALOG = null;
+    } catch {
+      TENOR_BANDS = [];
+      FIXED_PLANS = [];
+      INVEST_CATALOG = null;
+      AUTO_INVEST_DESTINATIONS = [
+        {
+          name: CALL_ACCOUNT.name,
+          rate: CALL_ACCOUNT.rate.replace(/\s*p\.a\./i, "").trim() || "—",
+          minimum: CALL_ACCOUNT.minimum,
+        },
+      ];
+    }
   } finally {
     ratesLoading = false;
     emitRates();
@@ -154,17 +232,98 @@ export async function hydrateInvestRatesFromApi() {
   return TENOR_BANDS;
 }
 
+/** Standard Lock/Flex tenors from the rates catalog (B8/B9). */
+export function catalogTenorsFor(family: PlanFamily): CatalogTenor[] {
+  const catalog = INVEST_CATALOG;
+  const minimum = catalog?.minimum ?? PLAN_MIN_NAIRA;
+  if (family === "LOCK" && catalog?.lock?.tenors?.length) {
+    return catalog.lock.tenors
+      .filter((t) => t.days != null && t.days > 0)
+      .map((t) => {
+        const base = bandToCatalogTenor(t.atMaturity, minimum);
+        const upfront = t.upfront
+          ? bandToCatalogTenor(t.upfront, minimum)
+          : undefined;
+        return {
+          ...base,
+          days: t.days!,
+          upfrontRate: upfront?.rate,
+          upfrontRatePct: upfront?.ratePct,
+        };
+      });
+  }
+  if (family === "FLEX" && catalog?.flex?.tenors?.length) {
+    return catalog.flex.tenors
+      .filter((t) => t.days != null && t.days > 0)
+      .map((t) => ({
+        ...bandToCatalogTenor(t.atMaturity, minimum),
+        days: t.days!,
+      }));
+  }
+  // Fallback from flat bands / defaults
+  const standards = family === "LOCK" ? LOCK_STANDARD_TENORS : FLEX_STANDARD_TENORS;
+  return standards.map((days) => {
+    const match = TENOR_BANDS.find(
+      (b) =>
+        Number(b.days.replace(/\D/g, "")) === days &&
+        (family === "FLEX"
+          ? b.name.includes("Flex")
+          : !b.name.includes("Flex")),
+    );
+    return {
+      days,
+      rate: match?.rate ?? "—",
+      ratePct: match ? Number(match.rate.replace(/[^0-9.]/g, "")) || 0 : 0,
+      minimum: match?.minimum ?? PLAN_MIN_NAIRA,
+    };
+  });
+}
+
+export function rateForCustomDays(
+  family: PlanFamily,
+  days: number,
+  payout: "AT_MATURITY" | "UPFRONT" = "AT_MATURITY",
+): CatalogTenor | null {
+  const standards = catalogTenorsFor(family);
+  if (!standards.length || days <= 0) return null;
+  const sorted = [...standards].sort((a, b) => b.days - a.days);
+  const match = sorted.find((t) => days >= t.days) ?? sorted[sorted.length - 1]!;
+  if (family === "LOCK" && payout === "UPFRONT" && match.upfrontRatePct != null) {
+    return {
+      ...match,
+      rate: match.upfrontRate ?? match.rate,
+      ratePct: match.upfrontRatePct,
+    };
+  }
+  return match;
+}
+
+/** Best advertised Lock at-maturity rate (for idle-cash estimate, B11). */
+export function bestLockRatePct(): number {
+  const lock = catalogTenorsFor("LOCK");
+  return lock.reduce((max, t) => Math.max(max, t.ratePct || 0), 0);
+}
+
 export function useTenorBands() {
   const tick = useSyncExternalStore(
     subscribeRates,
-    () => `${ratesLoading}:${TENOR_BANDS.length}:${TENOR_BANDS.map((b) => b.rate).join(",")}`,
+    () =>
+      `${ratesLoading}:${TENOR_BANDS.length}:${TENOR_BANDS.map((b) => b.rate).join(",")}:${INVEST_CATALOG?.lock?.tenors?.length ?? 0}`,
     () => "0",
   );
   useEffect(() => {
     void hydrateInvestRatesFromApi();
   }, []);
   void tick;
-  return { bands: TENOR_BANDS, loading: ratesLoading, plans: FIXED_PLANS };
+  return {
+    bands: TENOR_BANDS,
+    loading: ratesLoading,
+    plans: FIXED_PLANS,
+    catalog: INVEST_CATALOG,
+    lockTenors: catalogTenorsFor("LOCK"),
+    flexTenors: catalogTenorsFor("FLEX"),
+    minimum: INVEST_CATALOG?.minimum ?? PLAN_MIN_NAIRA,
+  };
 }
 
 /** MOB-061 — Call Account detail: how interest is earned. */
@@ -321,7 +480,7 @@ export const AUTO_INVEST_FREQUENCIES: AutoInvestFrequency[] = [
 ];
 
 export let AUTO_INVEST_DESTINATIONS: { name: string; rate: string; minimum: number }[] = [
-  { name: "Kipit Call Account", rate: "—", minimum: 5_000 },
+  { name: "Kipit Call Account", rate: "—", minimum: 1_000 },
 ];
 
 export const AUTO_INVEST_RULES: AutoInvestRule[] = [];

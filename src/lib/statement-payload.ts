@@ -11,6 +11,7 @@ import {
 import { mapApiPortfolioTransaction, naira, type Transaction } from "@/lib/portfolio-data";
 import { getWalletBalance } from "@/lib/wallet-balance";
 import type { StatementKind } from "@/lib/settings-data";
+import { formatMoneyNaira, NET_FROM_GROSS } from "@/lib/wht";
 
 export type StatementDoc = {
   title: string;
@@ -18,6 +19,8 @@ export type StatementDoc = {
   rows: { label: string; value: string }[];
   body: string;
   reference: string;
+  portfolioSummary?: { label: string; value: string }[];
+  whtSection?: { label: string; gross: string; wht: string; net: string }[];
 };
 
 function fmt(d: string) {
@@ -104,31 +107,89 @@ export async function buildStatementPayload(input: {
   if (kind === "Portfolio statement") {
     const holdings = (placements ?? []).filter((p) => String(p.status).toUpperCase() === "ACTIVE");
     const invested = holdings.reduce((s, p) => s + (p.principal || 0), 0);
-    const expectedInterest = holdings.reduce((s, p) => {
-      const days = p.tenorDays || 0;
-      return s + Math.round((p.principal || 0) * ((p.ratePct || 0) / 100) * (days / 365));
-    }, 0);
+    const accruedNet = holdings.reduce((s, p) => s + (p.accruedNet ?? p.accrued ?? 0), 0);
+    const accruedGross = holdings.reduce(
+      (s, p) => s + (p.accruedGross ?? (p.accruedNet ?? p.accrued ?? 0) / NET_FROM_GROSS),
+      0,
+    );
+    const accruedWht = holdings.reduce(
+      (s, p) =>
+        s +
+        (p.accruedWht ??
+          (p.accruedGross ?? (p.accruedNet ?? p.accrued ?? 0) / NET_FROM_GROSS) -
+            (p.accruedNet ?? p.accrued ?? 0)),
+      0,
+    );
+    const expectedNet = holdings.reduce(
+      (s, p) =>
+        s +
+        (p.expectedNet ??
+          p.expectedInterest ??
+          Math.round((p.principal || 0) * ((p.ratePct || 0) / 100) * ((p.tenorDays || 0) / 365))),
+      0,
+    );
+    const expectedGross = holdings.reduce(
+      (s, p) => s + (p.expectedGross ?? (p.expectedNet ?? p.expectedInterest ?? 0) / NET_FROM_GROSS),
+      0,
+    );
+    const expectedWht = holdings.reduce(
+      (s, p) =>
+        s +
+        (p.expectedWht ??
+          (p.expectedGross ?? (p.expectedNet ?? p.expectedInterest ?? 0) / NET_FROM_GROSS) -
+            (p.expectedNet ?? p.expectedInterest ?? 0)),
+      0,
+    );
+    const maturityValue = holdings.reduce(
+      (s, p) => s + (p.valueAtMaturity ?? p.principal + (p.expectedNet ?? p.expectedInterest ?? 0)),
+      0,
+    );
     const interestPaid = all
       .filter((t) => t.type === "Interest" && t.direction === "in")
       .reduce((s, t) => s + t.amount, 0);
+    const wallet = home?.wallet?.balance ?? getWalletBalance();
+    const callBal = call.balance ?? 0;
     return {
       title: kind,
       subtitle: `${fmt(start)} — ${fmt(end)}`,
       reference,
+      portfolioSummary: [
+        { label: "Wallet balance", value: naira(wallet) },
+        { label: "Call Account balance", value: naira(callBal) },
+        { label: "Fixed plans (principal)", value: naira(invested) },
+        { label: "Net interest accrued to date", value: naira(Math.round(accruedNet)) },
+        {
+          label: "Total portfolio value today",
+          value: naira(Math.round(wallet + callBal + invested + accruedNet)),
+        },
+        { label: "Fixed plans value at maturity", value: naira(Math.round(maturityValue)) },
+      ],
+      whtSection: [
+        {
+          label: "Fixed plans: interest accrued to date",
+          gross: formatMoneyNaira(accruedGross),
+          wht: formatMoneyNaira(accruedWht),
+          net: formatMoneyNaira(accruedNet),
+        },
+        {
+          label: "Fixed plans: interest expected at maturity",
+          gross: formatMoneyNaira(expectedGross),
+          wht: formatMoneyNaira(expectedWht),
+          net: formatMoneyNaira(expectedNet),
+        },
+      ],
       rows: [
         ...header,
         { label: "Active holdings", value: String(holdings.length) },
-        { label: "Principal invested", value: naira(invested) },
-        { label: "Expected interest (open plans)", value: naira(expectedInterest) },
         { label: "Interest credited in period", value: naira(interestPaid) },
         ...holdings.flatMap((h) => [
           {
             label: h.name,
-            value: `${naira(h.principal)} · ${h.ratePct}% p.a.`,
+            value: `${naira(h.principal)} · ${h.ratePct}% net p.a.${h.grossRatePct != null ? ` (${h.grossRatePct}% gross)` : ""}`,
           },
           {
-            label: "  Maturity",
-            value: h.maturityDate ? fmt(h.maturityDate) : "—",
+            label: "  Maturity / accrued net",
+            value: `${h.maturityDate ? fmt(h.maturityDate) : "—"} · ${naira(h.accruedNet ?? h.accrued ?? 0)}`,
           },
         ]),
         ...(all.length
@@ -168,14 +229,43 @@ export async function buildStatementPayload(input: {
   const net = inflows - outflows;
   const listed = all.length ? all : walletTxns;
 
+  const activePlans = (placements ?? []).filter((p) => String(p.status).toUpperCase() === "ACTIVE");
+  const fixedPrincipal = activePlans.reduce((s, p) => s + (p.principal || 0), 0);
+  const accruedNet = activePlans.reduce((s, p) => s + (p.accruedNet ?? p.accrued ?? 0), 0);
+  const accruedGross = activePlans.reduce(
+    (s, p) => s + (p.accruedGross ?? (p.accruedNet ?? p.accrued ?? 0) / NET_FROM_GROSS),
+    0,
+  );
+  const accruedWht = Math.max(0, accruedGross - accruedNet);
+
   return {
     title: kind,
     subtitle: `${fmt(start)} — ${fmt(end)}`,
     reference,
+    portfolioSummary: [
+      { label: "Wallet balance", value: naira(wallet) },
+      { label: "Call Account balance", value: naira(callBal) },
+      { label: "Fixed plans (principal)", value: naira(fixedPrincipal) },
+      { label: "Net interest accrued to date", value: naira(Math.round(accruedNet)) },
+      {
+        label: "Total portfolio value today",
+        value: naira(Math.round(wallet + callBal + fixedPrincipal + accruedNet)),
+      },
+    ],
+    ...(accruedNet > 0
+      ? {
+          whtSection: [
+            {
+              label: "Fixed plans: interest accrued to date",
+              gross: formatMoneyNaira(accruedGross),
+              wht: formatMoneyNaira(accruedWht),
+              net: formatMoneyNaira(accruedNet),
+            },
+          ],
+        }
+      : {}),
     rows: [
       ...header,
-      { label: "Wallet balance (current)", value: naira(wallet) },
-      { label: "Call Account balance (current)", value: naira(callBal) },
       { label: "Period inflows", value: `+${naira(inflows)}` },
       { label: "Period outflows", value: `−${naira(outflows)}` },
       {

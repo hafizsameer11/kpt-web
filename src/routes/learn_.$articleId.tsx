@@ -455,8 +455,9 @@ function MarketingArticlePage({ article }: { article: MarketingArticle }) {
           </div>
           <div className="border-t border-border py-6 text-xs leading-relaxed text-muted-foreground">
             <p>
-              © 2026 Kipit. Investments are held by Kipit Investment Ltd, an asset manager licensed by
-              the SEC.
+              © 2026 Kipit Asset Management. Client funds are held by Rand Merchant Bank as custodian
+              and managed by Kipit Asset Management. Both are licensed by the Securities and Exchange
+              Commission (SEC).
             </p>
             <p className="mt-2">Investments carry risk; rates are subject to change.</p>
           </div>

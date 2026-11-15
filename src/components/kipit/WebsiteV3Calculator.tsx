@@ -43,7 +43,7 @@ export function WebsiteV3Calculator({ onAccess }: Props) {
           <label htmlFor="v3-calculator-rate" className="text-sm text-muted-foreground">Illustrative annual rate</label>
           <output htmlFor="v3-calculator-rate" className="text-xl font-bold text-brand">{rate.toFixed(1)}%</output>
         </div>
-        <input id="v3-calculator-rate" type="range" min="0" max="19.2" step="0.1" value={rate} onChange={(event) => setRate(Number(event.target.value))} className="v3-range mt-5" />
+        <input id="v3-calculator-rate" type="range" min="0" max="22" step="0.1" value={rate} onChange={(event) => setRate(Number(event.target.value))} className="v3-range mt-5" />
         <Button className="v3-btn v3-btn-primary mt-10 w-full justify-center" onClick={onAccess}>Make your next move <ArrowRight className="size-4" /></Button>
       </div>
     </div>
