@@ -164,6 +164,45 @@ async function doHydrateLiveBalances() {
       const k = String(p.kind).toUpperCase();
       return k === "FIXED" || k === "EXPLORE";
     });
+    // B14 — past / matured fixed plans for the Matured tab.
+    try {
+      const { setMaturedPlans } = await import("@/lib/invest-data");
+      const maturedRows = (placements ?? [])
+        .filter((p) => {
+          const status = String(p.status).toUpperCase();
+          const kind = String(p.kind).toUpperCase();
+          return (
+            (kind === "FIXED" || kind === "EXPLORE") &&
+            (status === "MATURED" || status === "COMPLETED" || status === "CLOSED")
+          );
+        })
+        .map((p) => {
+          const maturedOn = p.maturityDate
+            ? new Date(p.maturityDate).toLocaleDateString("en-NG", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })
+            : "—";
+          const payout =
+            typeof p.valueAtMaturity === "number"
+              ? Math.round(p.valueAtMaturity)
+              : Math.round(p.principal + (p.expectedInterest || p.expectedNet || p.accrued || 0));
+          return {
+            id: p.id,
+            name: p.name,
+            rate: p.rateLabel ? `${p.rateLabel} p.a.` : `${p.ratePct}% p.a.`,
+            principal: Math.round(p.principal),
+            payout,
+            tenor: `${p.tenorDays || 0} days`,
+            maturedOn,
+            status: "Matured",
+          };
+        });
+      setMaturedPlans(maturedRows);
+    } catch {
+      /* matured hydrate optional */
+    }
     const enriched: LiveHolding[] = planRows.map((p) => ({
       id: p.id,
       name: p.name,

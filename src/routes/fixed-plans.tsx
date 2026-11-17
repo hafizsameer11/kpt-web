@@ -461,7 +461,7 @@ function FixedPlansScreen() {
               <ul className="space-y-3">
                 {MATURED_PLANS.map((p, i) => (
                   <li
-                    key={`${p.name}-${p.maturedOn}`}
+                    key={p.id || `${p.name}-${p.maturedOn}`}
                     style={{ ["--d" as string]: `${i * 90}ms` }}
                     className="k-rise card-surface relative overflow-hidden"
                   >
@@ -810,7 +810,7 @@ function DesktopFixedPlans({
               <ul className="divide-y divide-border/60">
                 {MATURED_PLANS.map((p, i) => (
                   <li
-                    key={`${p.name}-${p.maturedOn}`}
+                    key={p.id || `${p.name}-${p.maturedOn}`}
                     style={{ ["--d" as string]: `${i * 90}ms` }}
                     className="k-rise"
                   >

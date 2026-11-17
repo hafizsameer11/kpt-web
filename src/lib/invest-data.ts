@@ -461,7 +461,8 @@ export function setCallActivityFromApi(rows: CallActivity[]) {
 }
 
 /** Matured fixed plans — empty until API hydrate. */
-export const MATURED_PLANS: {
+export type MaturedPlan = {
+  id: string;
   name: string;
   rate: string;
   principal: number;
@@ -469,7 +470,13 @@ export const MATURED_PLANS: {
   tenor: string;
   maturedOn: string;
   status: string;
-}[] = [];
+};
+
+export const MATURED_PLANS: MaturedPlan[] = [];
+
+export function setMaturedPlans(rows: MaturedPlan[]) {
+  MATURED_PLANS.splice(0, MATURED_PLANS.length, ...rows);
+}
 
 /** Auto-invest rules — recurring funding schedules for Kipit plans. */
 export type AutoInvestFrequency =

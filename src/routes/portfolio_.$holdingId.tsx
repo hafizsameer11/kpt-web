@@ -335,6 +335,8 @@ function PlanActions({
   const [busy, setBusy] = useState(false);
   const [breakOpen, setBreakOpen] = useState(false);
   const topUpAmount = Number(topUpRaw.replace(/\D/g, "")) || 0;
+  const topUpBelowMin = topUpAmount > 0 && topUpAmount < PLAN_MIN_NAIRA;
+  const topUpOverWallet = topUpAmount > WALLET;
   const canTopUp =
     h.kind === "Fixed plan" && h.daysLeft > 0 && !h.breakRequestedAt;
   const isFlex = h.planType === "FLEX";
@@ -461,6 +463,13 @@ function PlanActions({
               className="w-full bg-transparent text-[14px] font-medium text-num outline-none"
             />
           </div>
+          {(topUpBelowMin || topUpOverWallet) && (
+            <p className="text-[12px] font-semibold text-destructive">
+              {topUpOverWallet
+                ? `Wallet is short — available ${naira(WALLET)}.`
+                : `Minimum top-up is ${naira(PLAN_MIN_NAIRA)}.`}
+            </p>
+          )}
           <input
             inputMode="numeric"
             maxLength={4}

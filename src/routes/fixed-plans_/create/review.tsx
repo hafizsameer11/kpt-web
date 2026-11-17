@@ -438,6 +438,14 @@ function PlanReviewMobile() {
                   <Row label="Investment amount">{naira(amount)}</Row>
                   <Row label="Rate">{rateLabel} p.a.</Row>
                   <Row label="Tenor">{days} days</Row>
+                  <Row label="Start date">
+                    {new Date().toLocaleDateString("en-NG", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </Row>
+                  <Row label="Maturity date">{maturityDate}</Row>
                   {planType === "FLEX" ? (
                     <Row label="Earliest break">{breakDate}</Row>
                   ) : null}
@@ -462,9 +470,8 @@ function PlanReviewMobile() {
                   <InterestBreakdown data={breakdown} />
                 </div>
                 <p className="mt-3 text-[11px] text-muted-foreground">
-                  Payable on {maturityDate}. Figures are shown after 10% withholding tax and assume
-                  you keep this plan until maturity. Your funds are held by Rand Merchant Bank, our
-                  custodian.
+                  Figures are shown after 10% withholding tax and assume you keep this plan until
+                  maturity. Your funds are held by Rand Merchant Bank, our custodian.
                 </p>
               </section>
             </Rise>
@@ -648,6 +655,14 @@ function PlanReviewDesktop() {
                   <Row label="Investment amount">{naira(amount)}</Row>
                   <Row label="Rate">{rateLabel} p.a.</Row>
                   <Row label="Tenor">{days} days</Row>
+                  <Row label="Start date">
+                    {new Date().toLocaleDateString("en-NG", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </Row>
+                  <Row label="Maturity date">{maturityDate}</Row>
                   {planType === "FLEX" ? (
                     <Row label="Earliest break">{breakDate}</Row>
                   ) : null}
@@ -756,7 +771,8 @@ function PlanReviewDesktop() {
                   <ShieldCheck className="size-4" />
                 </span>
                 <p className="text-[11.5px] leading-relaxed text-muted-foreground">
-                  Figures after 10% WHT. Funds held by Rand Merchant Bank, our custodian.
+                  Figures are shown after 10% withholding tax and assume you keep this plan until
+                  maturity. Your funds are held by Rand Merchant Bank, our custodian.
                 </p>
               </section>
             </aside>
