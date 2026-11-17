@@ -354,7 +354,7 @@ function MobilePortfolio() {
                         </p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <p className="text-sm font-extrabold text-num">{mask(h.amount)}</p>
+                        <p className="text-sm font-extrabold text-num">{mask(h.expectedPayout)}</p>
                         <span className="mt-1 inline-flex rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-brand">
                           {h.rate}
                         </span>
@@ -368,8 +368,8 @@ function MobilePortfolio() {
                         />
                       </div>
                       <p className="mt-2 text-[11px] text-muted-foreground">
-                        {h.daysLeft} days left · payout{" "}
-                        <span className="font-bold text-foreground">{mask(h.expectedPayout)}</span>
+                        {h.daysLeft} days left · now{" "}
+                        <span className="font-bold text-foreground">{mask(h.amount)}</span>
                       </p>
                     </div>
                     </Link>
@@ -406,7 +406,7 @@ function MobilePortfolio() {
                           </p>
                         </div>
                         <div className="shrink-0 text-right">
-                          <p className="text-sm font-extrabold text-num">{mask(h.amount)}</p>
+                          <p className="text-sm font-extrabold text-num">{mask(h.expectedPayout)}</p>
                           <span className="mt-1 inline-flex rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-brand">
                             {h.rate}
                           </span>
@@ -420,9 +420,9 @@ function MobilePortfolio() {
                           />
                         </div>
                         <p className="mt-2 text-[11px] text-muted-foreground">
-                          Matures {h.date} · payout{" "}
+                          Matures {h.date} · now{" "}
                           <span className="font-bold text-foreground">
-                            {mask(h.expectedPayout)}
+                            {mask(h.amount)}
                           </span>
                         </p>
                       </div>
@@ -741,7 +741,7 @@ function DesktopPortfolio() {
                     <th className="w-[13%] px-3 py-2.5">Rate</th>
                     <th className="w-[22%] px-3 py-2.5">Progress</th>
                     <th className="w-[15%] px-3 py-2.5">Matures</th>
-                    <th className="w-[20%] px-3 py-2.5 text-right">Value</th>
+                    <th className="w-[20%] px-3 py-2.5 text-right">Final value</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/60">
@@ -783,9 +783,9 @@ function DesktopPortfolio() {
                         </td>
                         <td className="px-3 py-3 text-[12px] text-muted-foreground">{h.date}</td>
                         <td className="px-3 py-3 text-right">
-                          <p className="whitespace-nowrap text-[13px] font-extrabold text-num">{mask(h.amount)}</p>
+                          <p className="whitespace-nowrap text-[13px] font-extrabold text-num">{mask(h.payout)}</p>
                           <p className="whitespace-nowrap text-[10.5px] text-muted-foreground">
-                            payout {mask(h.payout)}
+                            now {mask(h.amount)}
                           </p>
                         </td>
                       </tr>

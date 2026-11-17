@@ -544,7 +544,10 @@ function MobileHome() {
                           </span>
                         </div>
                         <p className="mt-3 hidden font-display text-xl font-extrabold text-num md:block">
-                          {mask(h.amount)}
+                          {mask(h.expectedPayout)}
+                        </p>
+                        <p className="mt-0.5 hidden text-[11px] text-muted-foreground md:block">
+                          Final value · principal {mask(h.amount)}
                         </p>
                         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary md:mt-3">
                           <div
@@ -557,9 +560,10 @@ function MobileHome() {
                           <span className="font-semibold">Matures {h.date}</span>
                         </div>
                       </div>
-                      <p className="shrink-0 text-sm font-extrabold text-num md:hidden">
-                        {mask(h.amount)}
-                      </p>
+                      <div className="shrink-0 text-right md:hidden">
+                        <p className="text-sm font-extrabold text-num">{mask(h.expectedPayout)}</p>
+                        <p className="text-[10px] text-muted-foreground">Final value</p>
+                      </div>
                     </Link>
                   );
                 })}
@@ -982,7 +986,7 @@ function DesktopHome() {
             <span>Plan</span>
             <span>Rate</span>
             <span>Progress</span>
-            <span className="text-right">Principal</span>
+            <span className="text-right">Final value</span>
           </div>
           <ul>
             {HOLDINGS.map((h, i) => {
@@ -1016,7 +1020,12 @@ function DesktopHome() {
                       </div>
                       <p className="mt-1.5 text-[10px] text-muted-foreground">{progress}% complete</p>
                     </div>
-                    <p className="text-right text-sm font-extrabold text-num">{mask(h.amount)}</p>
+                    <div className="text-right">
+                      <p className="text-sm font-extrabold text-num">{mask(h.expectedPayout)}</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        Principal {mask(h.amount)}
+                      </p>
+                    </div>
                   </Link>
                 </li>
               );
