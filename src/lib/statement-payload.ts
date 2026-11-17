@@ -226,7 +226,6 @@ export async function buildStatementPayload(input: {
     [profile?.firstName, profile?.surname].filter(Boolean).join(" ") ||
     home?.greetingName ||
     "—";
-  const email = profile?.email || home?.user?.email || "—";
   const clientId = clientIdFrom(profile?.id || home?.user?.id);
 
   const all = (txnsRaw ?? [])
@@ -238,7 +237,6 @@ export async function buildStatementPayload(input: {
   const clientMeta = [
     { label: "Client name", value: holder },
     { label: "Client ID", value: clientId },
-    { label: "Email", value: email },
     { label: "Statement date", value: generatedDate },
     { label: "Time generated", value: generatedTime },
   ];
