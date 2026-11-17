@@ -11,7 +11,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ApiError, emailStatement } from "@/lib/api";
-import { documentHtml, downloadDocumentPdf, openDocumentHtml } from "@/lib/document-pdf";
+import {
+  documentHtml,
+  documentPdfBase64,
+  downloadDocumentPdf,
+  openDocumentHtml,
+} from "@/lib/document-pdf";
 import { useDisplayProfile } from "@/lib/profile-live";
 import { buildStatementPayload, type StatementDoc } from "@/lib/statement-payload";
 
@@ -103,14 +108,12 @@ function GeneratedStatement() {
     }
   }
 
-  function downloadDoc() {
+  async function downloadDoc() {
     if (!doc) return;
+    const filename = `${kind.replace(/\s+/g, "-").toLowerCase()}-${start}-${end}.pdf`;
     try {
-      downloadDocumentPdf({
-        ...doc,
-        filename: `${kind.replace(/\s+/g, "-").toLowerCase()}-${start}-${end}.html`,
-      });
-      toast.success("Statement downloaded");
+      await downloadDocumentPdf({ ...doc, filename });
+      toast.success("Statement PDF downloaded");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not download statement.");
     }
@@ -129,18 +132,30 @@ function GeneratedStatement() {
       `Reference: ${reference}`,
       `Account holder: ${holder}`,
     ].join("\n");
-    const filename = `${kind.replace(/\s+/g, "-").toLowerCase()}-${start}-${end}.html`;
-    const html = documentHtml(doc);
-    const contentBase64 = btoa(unescape(encodeURIComponent(html)));
+    const filenameBase = `${kind.replace(/\s+/g, "-").toLowerCase()}-${start}-${end}`;
     setEmailBusy(true);
     try {
+      let filename = `${filenameBase}.pdf`;
+      let contentBase64: string;
+      let contentType: "application/pdf" | "text/html" = "application/pdf";
+      try {
+        const pdf = await documentPdfBase64({ ...doc, filename });
+        filename = pdf.filename;
+        contentBase64 = pdf.contentBase64;
+        contentType = pdf.contentType;
+      } catch {
+        const html = documentHtml(doc);
+        filename = `${filenameBase}.html`;
+        contentBase64 = btoa(unescape(encodeURIComponent(html)));
+        contentType = "text/html";
+      }
       await emailStatement({
         kind: statementKind,
         from: start,
         to: end,
         filename,
         contentBase64,
-        contentType: "text/html",
+        contentType,
         summary,
       });
       toast.success(
@@ -176,7 +191,7 @@ function GeneratedStatement() {
             <div className="min-w-0">
               <p className="truncate text-[14px] font-extrabold">{kind}</p>
               <p className="mt-0.5 text-[11.5px] text-muted-foreground">
-                {fmt(start)} — {fmt(end)} · HTML / print to PDF
+                {fmt(start)} — {fmt(end)} · PDF
               </p>
             </div>
           </div>
@@ -184,7 +199,18 @@ function GeneratedStatement() {
             <Row label="Account holder">{holder}</Row>
             <Row label="Reference">{reference}</Row>
             <Row label="Generated">{generated}</Row>
-            <Row label="Rows">{loading ? "…" : String(doc?.rows.length ?? 0)}</Row>
+                <Row label="Sections">
+                  {loading
+                    ? "…"
+                    : [
+                        doc?.portfolioSummary?.length ? "summary" : null,
+                        doc?.whtSection?.length ? "WHT" : null,
+                        doc?.investments?.length ? "investments" : null,
+                        doc?.transactions?.length ? "txns" : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ") || "ready"}
+                </Row>
           </dl>
         </section>
 
@@ -200,7 +226,7 @@ function GeneratedStatement() {
           <button
             type="button"
             disabled={!doc || loading}
-            onClick={downloadDoc}
+            onClick={() => void downloadDoc()}
             className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-[13px] font-bold press disabled:opacity-40"
           >
             <Download className="size-4" strokeWidth={2.4} /> Download
@@ -255,17 +281,21 @@ function GeneratedStatement() {
                   <p className="mt-5 text-[12.5px] text-muted-foreground">Loading statement data…</p>
                 ) : (
                   <dl className="mt-5 space-y-2 text-[12px]">
-                    {(doc?.rows ?? []).slice(0, 24).map((row, i) => (
+                    {(doc?.portfolioSummary ?? doc?.rows ?? []).slice(0, 8).map((row, i) => (
                       <div key={`${i}-${row.label}`} className="flex justify-between gap-3">
                         <dt className="text-muted-foreground">{row.label}</dt>
                         <dd className="text-right font-semibold text-foreground">{row.value}</dd>
                       </div>
                     ))}
-                    {(doc?.rows.length ?? 0) > 24 ? (
+                    {(doc?.transactions?.length ?? 0) > 0 ? (
                       <p className="pt-1 text-[11px] text-muted-foreground">
-                        …and {(doc?.rows.length ?? 0) - 24} more lines in View / Download
+                        {doc?.transactions?.length} transactions · full layout in View / PDF
                       </p>
-                    ) : null}
+                    ) : (
+                      <p className="pt-1 text-[11px] text-muted-foreground">
+                        Full Appendix C layout in View / Download PDF
+                      </p>
+                    )}
                   </dl>
                 )}
                 <p className="mt-6 border-t border-border pt-3 text-[10px] text-muted-foreground">
@@ -292,16 +322,16 @@ function GeneratedStatement() {
                 <Row label="Account holder">{holder}</Row>
                 <Row label="Reference">{reference}</Row>
                 <Row label="Generated">{generated}</Row>
-                <Row label="Data rows">{loading ? "…" : String(doc?.rows.length ?? 0)}</Row>
+                <Row label="Format">PDF · Appendix C</Row>
               </dl>
               <div className="space-y-2.5 p-5 pt-4">
                 <button
                   type="button"
                   disabled={!doc || loading}
-                  onClick={downloadDoc}
+                  onClick={() => void downloadDoc()}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 py-3.5 text-[13px] font-extrabold text-primary-foreground shadow-float press disabled:opacity-40"
                 >
-                  <Download className="size-4" strokeWidth={2.6} /> Download
+                  <Download className="size-4" strokeWidth={2.6} /> Download PDF
                 </button>
                 <div className="grid grid-cols-2 gap-2.5">
                   <button
@@ -355,10 +385,10 @@ function GeneratedStatement() {
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={downloadDoc}
+              onClick={() => void downloadDoc()}
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-gradient px-4 py-2.5 text-[12.5px] font-extrabold text-primary-foreground"
             >
-              <Download className="size-3.5" /> Download
+              <Download className="size-3.5" /> Download PDF
             </button>
             <button
               type="button"

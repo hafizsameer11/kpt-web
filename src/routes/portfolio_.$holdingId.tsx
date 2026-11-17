@@ -37,29 +37,31 @@ function downloadHoldingDoc(
   holding: HoldingDetail,
   doc: { label: string; kind: string; size: string; url?: string },
 ) {
-  try {
-    if (doc.url) {
-      window.open(doc.url, "_blank", "noopener,noreferrer");
-      toast.success(`${doc.label} opened`);
-      return;
-    }
-    downloadDocumentPdf({
-      title: doc.label,
-      subtitle: `${holding.name} · ${holding.rate}`,
-      rows: [
-        { label: "Plan", value: holding.name },
-        { label: "Principal", value: `₦${holding.principal.toLocaleString("en-NG")}` },
-        { label: "Start", value: holding.startDate },
-        { label: "Maturity", value: holding.maturityDate },
-        { label: "Rate", value: holding.rate },
-      ],
-      body: `${doc.label} for your Kipit ${holding.kind.toLowerCase()}. Keep this for your records.`,
-      filename: `${doc.label.replace(/\s+/g, "-").toLowerCase()}.html`,
-    });
-    toast.success(`${doc.label} downloaded`);
-  } catch (err) {
-    toast.error(err instanceof Error ? err.message : "Could not download document");
+  if (doc.url) {
+    window.open(doc.url, "_blank", "noopener,noreferrer");
+    toast.success(`${doc.label} opened`);
+    return;
   }
+  void (async () => {
+    try {
+      await downloadDocumentPdf({
+        title: doc.label,
+        subtitle: `${holding.name} · ${holding.rate}`,
+        rows: [
+          { label: "Plan", value: holding.name },
+          { label: "Principal", value: `₦${holding.principal.toLocaleString("en-NG")}` },
+          { label: "Start", value: holding.startDate },
+          { label: "Maturity", value: holding.maturityDate },
+          { label: "Rate", value: holding.rate },
+        ],
+        body: `${doc.label} for your Kipit ${holding.kind.toLowerCase()}. Keep this for your records.`,
+        filename: `${doc.label.replace(/\s+/g, "-").toLowerCase()}.pdf`,
+      });
+      toast.success(`${doc.label} PDF downloaded`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not download document");
+    }
+  })();
 }
 
 export const Route = createFileRoute("/portfolio_/$holdingId")({

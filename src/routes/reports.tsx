@@ -83,38 +83,40 @@ function ReportsScreen() {
   }, []);
 
   const download = () => {
-    try {
-      downloadDocumentPdf({
-        title: `Kipit ${period} report`,
-        subtitle: r.range,
-        rows: [
-          { label: "Period", value: r.label },
-          { label: "Opening value", value: naira(r.openingValue) },
-          { label: "Closing value", value: naira(r.closingValue) },
-          { label: "Growth (return only)", value: `${naira(r.growthAmount)} · ${r.growthPct}%` },
-          { label: "Interest earned (net)", value: naira(r.interestNet) },
-          { label: "Gross interest", value: naira(r.interestGross) },
-          { label: "Less WHT (10%)", value: naira(r.interestWht) },
-          { label: "Contributions", value: naira(r.contributions) },
-          { label: "Withdrawals", value: naira(r.withdrawals) },
-          { label: "Average rate", value: r.averageRate },
-          { label: "Best performer", value: r.bestPerformer },
-        ],
-        whtSection: [
-          {
-            label: "Plans + Call Account (period)",
-            gross: formatMoneyNaira(r.interestGross),
-            wht: formatMoneyNaira(r.interestWht),
-            net: formatMoneyNaira(r.interestNet),
-          },
-        ],
-        body: r.summary,
-        filename: `kipit-${period.toLowerCase()}-report.html`,
-      });
-      toast.success(`${period} report downloaded`);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not download report.");
-    }
+    void (async () => {
+      try {
+        await downloadDocumentPdf({
+          title: `Kipit ${period} report`,
+          subtitle: r.range,
+          rows: [
+            { label: "Period", value: r.label },
+            { label: "Opening value", value: naira(r.openingValue) },
+            { label: "Closing value", value: naira(r.closingValue) },
+            { label: "Growth (return only)", value: `${naira(r.growthAmount)} · ${r.growthPct}%` },
+            { label: "Interest earned (net)", value: naira(r.interestNet) },
+            { label: "Gross interest", value: naira(r.interestGross) },
+            { label: "Less WHT (10%)", value: naira(r.interestWht) },
+            { label: "Contributions", value: naira(r.contributions) },
+            { label: "Withdrawals", value: naira(r.withdrawals) },
+            { label: "Average rate", value: r.averageRate },
+            { label: "Best performer", value: r.bestPerformer },
+          ],
+          whtSection: [
+            {
+              label: "Plans + Call Account (period)",
+              gross: formatMoneyNaira(r.interestGross),
+              wht: formatMoneyNaira(r.interestWht),
+              net: formatMoneyNaira(r.interestNet),
+            },
+          ],
+          body: r.summary,
+          filename: `kipit-${period.toLowerCase()}-report.pdf`,
+        });
+        toast.success(`${period} report PDF downloaded`);
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Could not download report.");
+      }
+    })();
   };
 
   return (
