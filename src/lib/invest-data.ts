@@ -34,11 +34,31 @@ export const CALL_ACCOUNT = {
     "Interest accrues daily on your idle cash and is credited monthly. No lock-in, no penalty.",
 };
 
-export const LOCK_HOW_IT_WORKS =
-  "Highest rates, fixed for the full period. Choose interest Upfront (paid to your wallet on day one) or At maturity. Cannot be broken before maturity. Min ₦1,000.";
+/** B8 — Kipit Lock rules (full list on Invest tab). */
+export const LOCK_RULES: string[] = [
+  "Our highest rates — fixed for the full period.",
+  "Choose 30, 60, 90, 180 or 365 days, or a custom period of 31 days or more.",
+  "Interest can be paid Upfront (into your wallet on day one — withdraw, move to Call Account, or reinvest) or At maturity (with your principal).",
+  "This plan cannot be broken, liquidated or withdrawn before its maturity date.",
+  "At maturity, money is paid into your wallet, rolled over, or moved to your Call Account — based on the instruction you set.",
+  "Start with as little as ₦1,000.",
+];
 
-export const FLEX_HOW_IT_WORKS =
-  "A fixed rate with a way out after 30 days from invest or your most recent top-up. Interest at maturity. Breaking withdraws the full amount, forfeits 50% of accrued interest, and credits your wallet within 3 business days. Min ₦1,000.";
+/** B8 — Kipit Flex rules (full list on Invest tab). */
+export const FLEX_RULES: string[] = [
+  "A fixed rate with a way out if you need the money.",
+  "Choose 60, 90, 180 or 365 days, or a custom period of 31 days or more (nothing 30 days or less).",
+  "Interest is paid at maturity only.",
+  "You can only break the plan after 30 days from the date you invest or from your most recent top-up.",
+  "Breaking the plan withdraws the full amount — partial withdrawals are not allowed.",
+  "If you break early, you lose 50% of the interest accrued up to that date. Your principal is not affected.",
+  "Money from a broken plan is credited to your wallet within 3 business days.",
+  "If you hold to maturity, you receive full interest.",
+  "Start with as little as ₦1,000.",
+];
+
+export const LOCK_HOW_IT_WORKS = LOCK_RULES.join(" ");
+export const FLEX_HOW_IT_WORKS = FLEX_RULES.join(" ");
 
 export function lockConsentText(maturityDate: string) {
   return `I understand that this Kipit Lock plan cannot be broken, liquidated or withdrawn before its maturity date of ${maturityDate}. I have read and accept the Terms and Conditions.`;

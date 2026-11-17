@@ -19,8 +19,8 @@ import { AmountCounter } from "@/components/kipit/motion";
 import { naira } from "@/lib/home-data";
 import {
   CALL_ACCOUNT,
-  FLEX_HOW_IT_WORKS,
-  LOCK_HOW_IT_WORKS,
+  FLEX_RULES,
+  LOCK_RULES,
   PLAN_MIN_NAIRA,
   useTenorBands,
   type CatalogTenor,
@@ -246,9 +246,20 @@ function LockFlexTabs({
         <p className="mt-0.5 text-[12px] font-semibold text-gold">
           {tab === "LOCK" ? lockSub : flexSub}
         </p>
-        <p className="mt-2 text-[12.5px] leading-relaxed text-muted-foreground">
-          {tab === "LOCK" ? LOCK_HOW_IT_WORKS : FLEX_HOW_IT_WORKS}
+        <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          How it works
         </p>
+        <ul className="mt-2 space-y-2">
+          {(tab === "LOCK" ? LOCK_RULES : FLEX_RULES).map((rule) => (
+            <li
+              key={rule}
+              className="grid grid-cols-[auto_minmax(0,1fr)] gap-2 text-[12.5px] leading-relaxed text-muted-foreground"
+            >
+              <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-gold" aria-hidden />
+              <span>{rule}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <div className="mt-4">
