@@ -1,13 +1,20 @@
 import { KycGuard } from "@/components/kipit/KycGate";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, Info, ShieldCheck, Wallet } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
-import { useCountUp } from "@/components/kipit/motion";
+import { InterestBreakdown } from "@/components/kipit/InterestBreakdown";
 import { naira } from "@/lib/home-data";
 import { PLAN_MIN_NAIRA, useTenorBands } from "@/lib/invest-data";
 import { useWalletBalance } from "@/lib/wallet-balance";
+import { interestBreakdownFromNetRate } from "@/lib/wht";
+
+function daysFromPlanLabel(plan?: string) {
+  if (!plan || plan === "custom") return 0;
+  const n = Number(String(plan).replace(/\D/g, ""));
+  return n > 0 ? n : 0;
+}
 
 export const Route = createFileRoute("/fixed-plans_/create/")({
   validateSearch: z.object({
@@ -58,7 +65,11 @@ function CreatePlanAmountScreen() {
   const { plan, planType: planTypeRaw } = Route.useSearch();
   const planType = planTypeRaw === "FLEX" ? "FLEX" : "LOCK";
   const productLabel = planType === "FLEX" ? "Kipit Flex" : "Kipit Lock";
-  const band = TENOR_BANDS.find((b) => b.days === plan);
+  const planDays = daysFromPlanLabel(plan);
+  const band =
+    TENOR_BANDS.find((b) => b.days === plan) ||
+    TENOR_BANDS.find((b) => daysFromPlanLabel(b.days) === planDays) ||
+    null;
   const MINIMUM = Math.max(
     PLAN_MIN_NAIRA,
     band && band.minimum > 0 ? band.minimum : LOWEST_MIN,
@@ -72,7 +83,16 @@ function CreatePlanAmountScreen() {
   const valid = amount > 0 && !belowMin && !overWallet;
   const shortfall = overWallet ? amount - WALLET : 0;
 
-  const bestYearly = useCountUp(Math.round(amount * (BEST_RATE / 100)), 500);
+  // B10 — prorate for selected tenor (principal × rate × days / 365), not a full year.
+  const earningBreakdown = useMemo(() => {
+    if (!(amount > 0 && planDays > 0 && BEST_RATE > 0)) return null;
+    return interestBreakdownFromNetRate({
+      principal: amount,
+      netRatePct: BEST_RATE,
+      days: planDays,
+      payout: "AT_MATURITY",
+    });
+  }, [amount, planDays, BEST_RATE]);
 
   return (
     <AppShell title="Create Plan" navVariant="elevated">
@@ -213,20 +233,35 @@ function CreatePlanAmountScreen() {
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Earning potential
               </p>
-              <p className="mt-3 font-display text-[30px] font-extrabold leading-none tracking-[-0.02em] text-num text-foreground">
-                {naira(bestYearly)}
-              </p>
-              <p className="mt-1 text-[12px] text-muted-foreground">
-                {band
-                  ? `per year on ${band.name} at ${BEST_RATE}% p.a.`
-                  : `per year at our best rate of ${BEST_RATE}% p.a.`}
-              </p>
-              <p className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                <Info className="size-3.5 shrink-0" />
-                {band
-                  ? `${band.name} is fixed for ${band.days} — confirm it on the next screen.`
-                  : "Your exact rate depends on the tenor you choose next."}
-              </p>
+              {earningBreakdown ? (
+                <>
+                  <p className="mt-2 text-[12px] text-muted-foreground">
+                    For {planDays} days at {BEST_RATE}% net p.a.
+                  </p>
+                  <div className="mt-3">
+                    <InterestBreakdown data={earningBreakdown} />
+                  </div>
+                  <p className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <Info className="size-3.5 shrink-0" />
+                    Interest = principal × rate × days ÷ 365 (net of 10% WHT). Confirm tenor next.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="mt-3 font-display text-[22px] font-extrabold text-foreground">
+                    Choose a tenor next
+                  </p>
+                  <p className="mt-1 text-[12px] text-muted-foreground">
+                    Exact interest is calculated for your selected days — not a full year.
+                  </p>
+                  <p className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <Info className="size-3.5 shrink-0" />
+                    {BEST_RATE > 0
+                      ? `Indicative best rate up to ${BEST_RATE}% net p.a. — final figure after tenor.`
+                      : "Your exact rate depends on the tenor you choose next."}
+                  </p>
+                </>
+              )}
             </section>
 
             <div className="card-surface p-5">
@@ -387,25 +422,40 @@ function CreatePlanAmountScreen() {
               )}
             </section>
 
-            {/* Earning potential */}
+            {/* Earning potential — B10: tenor-prorated, not yearly */}
             <section className="card-surface p-4 md:p-5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Earning potential
               </p>
-              <p className="mt-3 font-display text-[26px] font-extrabold leading-none tracking-[-0.02em] text-num text-foreground">
-                {naira(bestYearly)}
-              </p>
-              <p className="mt-1 text-[12px] text-muted-foreground">
-                {band
-                  ? `per year on ${band.name} at ${BEST_RATE}% p.a.`
-                  : `per year at our best rate of ${BEST_RATE}% p.a.`}
-              </p>
-              <p className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                <Info className="size-3.5 shrink-0" />
-                {band
-                  ? `${band.name} is fixed for ${band.days} — confirm it on the next screen.`
-                  : "Your exact rate depends on the tenor you choose next."}
-              </p>
+              {earningBreakdown ? (
+                <>
+                  <p className="mt-2 text-[12px] text-muted-foreground">
+                    For {planDays} days at {BEST_RATE}% net p.a.
+                  </p>
+                  <div className="mt-3">
+                    <InterestBreakdown data={earningBreakdown} />
+                  </div>
+                  <p className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <Info className="size-3.5 shrink-0" />
+                    Interest = principal × rate × days ÷ 365 (net of 10% WHT). Confirm tenor next.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="mt-3 font-display text-[22px] font-extrabold text-foreground">
+                    Choose a tenor next
+                  </p>
+                  <p className="mt-1 text-[12px] text-muted-foreground">
+                    Exact interest is calculated for your selected days — not a full year.
+                  </p>
+                  <p className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <Info className="size-3.5 shrink-0" />
+                    {BEST_RATE > 0
+                      ? `Indicative best rate up to ${BEST_RATE}% net p.a. — final figure after tenor.`
+                      : "Your exact rate depends on the tenor you choose next."}
+                  </p>
+                </>
+              )}
             </section>
           </div>
 
