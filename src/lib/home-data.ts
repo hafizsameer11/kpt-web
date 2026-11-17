@@ -29,8 +29,17 @@ export function setInvestedTotal(value: number) {
 }
 
 export const WEEK_EARNINGS = 0;
-export const MONTH_CHANGE = 0;
-export const MONTH_CHANGE_PCT = 0;
+/** B2 — month-to-date interest; hydrated from home API via live-balances. */
+export let MONTH_CHANGE = 0;
+export let MONTH_CHANGE_PCT = 0;
+
+export function setMonthInterest(interestNaira: number, portfolioTotal: number) {
+  MONTH_CHANGE = Math.max(0, Math.round(interestNaira));
+  MONTH_CHANGE_PCT =
+    portfolioTotal > 0
+      ? Math.round((MONTH_CHANGE / portfolioTotal) * 1000) / 10
+      : 0;
+}
 
 export const naira = (value: number) =>
   `₦${value.toLocaleString("en-NG", { maximumFractionDigits: 0 })}`;

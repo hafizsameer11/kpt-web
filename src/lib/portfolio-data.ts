@@ -33,9 +33,8 @@ export const WALLET_TOTAL = WALLET;
 export const PORTFOLIO_TOTAL =
   WALLET_TOTAL + CALL_TOTAL + FIXED_TOTAL + EXPLORE_TOTAL;
 
-/** Growth over the trailing month — zero until API provides figures. */
-export const PORTFOLIO_MONTH_CHANGE = 0;
-export const PORTFOLIO_MONTH_CHANGE_PCT = 0;
+/** Prefer home-data MONTH_CHANGE / MONTH_CHANGE_PCT (hydrated from API). */
+export { MONTH_CHANGE as PORTFOLIO_MONTH_CHANGE, MONTH_CHANGE_PCT as PORTFOLIO_MONTH_CHANGE_PCT } from "./home-data";
 export const INTEREST_EARNED_YTD = 0;
 
 export type Slice = {

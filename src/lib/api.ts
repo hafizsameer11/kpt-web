@@ -481,6 +481,8 @@ export async function fetchHome() {
   return api<{
     greetingName: string;
     interestThisWeek: number;
+    /** Calendar month-to-date interest (Lagos), same sources as the week figure. */
+    interestThisMonth?: number;
     /** Overall interest today (Call + maturity interest). */
     interestToday?: number;
     /** Call Account daily interest only — for Call “earned today”. */

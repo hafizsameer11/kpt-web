@@ -74,6 +74,8 @@ type LiveState = {
   greetingName: string;
   invested: number;
   interestThisWeek: number;
+  /** B2 — month-to-date interest (naira). */
+  interestThisMonth: number;
   interestWeekSeries: number[];
   interestWeekLabels: string[];
   holdings: LiveHolding[];
@@ -90,6 +92,7 @@ const EMPTY: LiveState = {
   greetingName: "",
   invested: 0,
   interestThisWeek: 0,
+  interestThisMonth: 0,
   interestWeekSeries: [0, 0, 0, 0, 0, 0, 0],
   interestWeekLabels: ["M", "T", "W", "T", "F", "S", "S"],
   holdings: [],
@@ -230,6 +233,7 @@ async function doHydrateLiveBalances() {
       greetingName: home.greetingName || home.user?.firstName || "",
       invested,
       interestThisWeek: Math.max(0, Math.round(home.interestThisWeek ?? 0)),
+      interestThisMonth: Math.max(0, Math.round(home.interestThisMonth ?? 0)),
       interestWeekSeries: Array.from({ length: 7 }, (_, i) =>
         Math.max(0, Math.round(Number(home.interestWeekSeries?.[i]) || 0)),
       ),
@@ -246,11 +250,12 @@ async function doHydrateLiveBalances() {
       profileComplete: home.profileComplete !== false,
       user: home.user ?? null,
     };
-    // Keep portfolioTotal available via invested + wallet on home screen.
-    void portfolioTotal;
-    const { setInvestedTotal, setWeekInterestSeries } = await import("@/lib/home-data");
+    const { setInvestedTotal, setWeekInterestSeries, setMonthInterest } = await import(
+      "@/lib/home-data"
+    );
     setInvestedTotal(state.invested);
     setWeekInterestSeries(state.interestWeekSeries);
+    setMonthInterest(state.interestThisMonth, portfolioTotal);
     const homeData = await import("@/lib/home-data");
     if (home.feed?.length) {
       homeData.setHomeFeed(home.feed);

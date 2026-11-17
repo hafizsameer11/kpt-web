@@ -18,8 +18,6 @@ import { useBalanceVisibility, useIsNewUser } from "@/hooks/useBalanceVisibility
 import { GreetingText } from "@/components/kipit/SpecBlocks";
 import { AmountCounter } from "@/components/kipit/motion";
 import {
-  MONTH_CHANGE,
-  MONTH_CHANGE_PCT,
   QUICK_ACTIONS,
   WEEK_LABELS,
   naira,
@@ -734,6 +732,9 @@ function DesktopHome() {
   const TOTAL = WALLET + INVESTED;
   const valueAtMaturity =
     live.valueAtMaturity > 0 ? live.valueAtMaturity : TOTAL;
+  const monthChange = live.interestThisMonth;
+  const monthChangePct =
+    TOTAL > 0 ? Math.round((monthChange / TOTAL) * 1000) / 10 : 0;
   const { hidden, toggle, mask } = useBalanceVisibility();
   const investedPct = TOTAL > 0 ? Math.round((INVESTED / TOTAL) * 100) : 0;
 
@@ -798,7 +799,7 @@ function DesktopHome() {
                     <ArrowUpRight className="size-3.5" /> +{naira(live.interestThisWeek)} this week
                   </span>
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-primary-foreground/75">
-                    +{naira(MONTH_CHANGE)} ({MONTH_CHANGE_PCT}%) this month
+                    +{naira(monthChange)} ({monthChangePct}%) this month
                   </span>
                 </div>
               </div>
