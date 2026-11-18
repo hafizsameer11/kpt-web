@@ -626,12 +626,34 @@ export function documentHtml(input: DocumentPdfInput) {
 
 export async function downloadDocumentPdf(input: DocumentPdfInput) {
   const pdfName = defaultFilename(input, "pdf");
+
+  // Prefer server Chromium print PDF (vector text, Appendix C / Statement_template match).
+  try {
+    const { fetchStatementPdfBlob } = await import("@/lib/api");
+    const blob = await fetchStatementPdfBlob({
+      title: input.title,
+      subtitle: input.subtitle,
+      reference: input.reference,
+      filename: pdfName,
+      rows: input.rows,
+      clientMeta: input.clientMeta,
+      portfolioSummary: input.portfolioSummary,
+      whtSection: input.whtSection,
+      investments: input.investments,
+      transactions: input.transactions,
+    });
+    if (blob.size >= 64) {
+      triggerDownload(blob, pdfName);
+      return;
+    }
+  } catch {
+    /* fall through to client render */
+  }
+
   try {
     const blob = await documentPdfBlob(input);
     triggerDownload(blob, pdfName);
   } catch (err) {
-    // Last resort: open the same HTML in a print window so the user can Save as PDF
-    // with browser fonts/layout (exact match to View). Still surface the failure.
     try {
       printDocumentPdf(input);
     } catch {
@@ -652,7 +674,24 @@ export async function documentPdfBase64(input: DocumentPdfInput): Promise<{
   contentType: "application/pdf";
   contentBase64: string;
 }> {
-  const blob = await documentPdfBlob(input);
+  let blob: Blob;
+  try {
+    const { fetchStatementPdfBlob } = await import("@/lib/api");
+    blob = await fetchStatementPdfBlob({
+      title: input.title,
+      subtitle: input.subtitle,
+      reference: input.reference,
+      filename: defaultFilename(input, "pdf"),
+      rows: input.rows,
+      clientMeta: input.clientMeta,
+      portfolioSummary: input.portfolioSummary,
+      whtSection: input.whtSection,
+      investments: input.investments,
+      transactions: input.transactions,
+    });
+  } catch {
+    blob = await documentPdfBlob(input);
+  }
   const buffer = await blob.arrayBuffer();
   const bytes = new Uint8Array(buffer);
   let binary = "";

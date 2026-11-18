@@ -1102,6 +1102,74 @@ export async function emailStatement(input: {
   );
 }
 
+/** Server Chromium print PDF (Appendix C). Returns raw PDF bytes. */
+export async function fetchStatementPdfBlob(input: {
+  title: string;
+  subtitle?: string;
+  reference?: string;
+  filename?: string;
+  rows?: { label: string; value: string }[];
+  clientMeta?: { label: string; value: string }[];
+  portfolioSummary?: { label: string; value: string }[];
+  whtSection?: { label: string; gross: string; wht: string; net: string }[];
+  investments?: {
+    plan: string;
+    principal: string;
+    rate: string;
+    maturity: string;
+    gross: string;
+    wht: string;
+    net: string;
+    valueAtMaturity: string;
+  }[];
+  transactions?: {
+    date: string;
+    description: string;
+    reference: string;
+    credit: string;
+    debit: string;
+  }[];
+}): Promise<Blob> {
+  const headers = new Headers({ "Content-Type": "application/json" });
+  const token = getAccessToken();
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+
+  let res = await fetch(`${API_BASE}/v1/settings/statements/pdf`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(input),
+  });
+
+  if (res.status === 401) {
+    const refreshed = await refreshAccessToken();
+    if (refreshed) {
+      const retryHeaders = new Headers({ "Content-Type": "application/json" });
+      const next = getAccessToken();
+      if (next) retryHeaders.set("Authorization", `Bearer ${next}`);
+      res = await fetch(`${API_BASE}/v1/settings/statements/pdf`, {
+        method: "POST",
+        headers: retryHeaders,
+        body: JSON.stringify(input),
+      });
+    }
+  }
+
+  if (!res.ok) {
+    const json = (await res.json().catch(() => ({}))) as {
+      error?: { message?: string; code?: string };
+    };
+    throw new ApiError(
+      res.status,
+      json.error?.message ?? `Statement PDF failed (${res.status})`,
+      json.error?.code,
+    );
+  }
+
+  const blob = await res.blob();
+  if (!blob.size) throw new ApiError(500, "Empty statement PDF", "PDF_EMPTY");
+  return new Blob([blob], { type: "application/pdf" });
+}
+
 export async function patchAutoInvestRule(id: string, input: { active: boolean }) {
   return api<ApiAutoInvestRule>(`/v1/invest/auto-invest/${id}`, {
     method: "PATCH",
