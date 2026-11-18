@@ -43,6 +43,67 @@ function assetHref(path: string) {
   }
 }
 
+type BrandAssets = {
+  logo: string;
+  stamp: string;
+  fontCss: string;
+};
+
+async function urlToDataUrl(path: string): Promise<string> {
+  const href = assetHref(path);
+  const res = await fetch(href);
+  if (!res.ok) throw new Error(`Could not load asset (${res.status})`);
+  const blob = await res.blob();
+  return await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error ?? new Error("Asset read failed"));
+    reader.readAsDataURL(blob);
+  });
+}
+
+function buildFontFaceCss(regular: string, bold: string, italic: string) {
+  return `
+@font-face{font-family:'TeXGyrePagella';src:url('${regular}') format('opentype');font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:'TeXGyrePagella';src:url('${bold}') format('opentype');font-weight:700;font-style:normal;font-display:block}
+@font-face{font-family:'TeXGyrePagella';src:url('${bold}') format('opentype');font-weight:800;font-style:normal;font-display:block}
+@font-face{font-family:'TeXGyrePagella';src:url('${italic}') format('opentype');font-weight:400;font-style:italic;font-display:block}
+*{box-sizing:border-box;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision}
+html,body{margin:0;padding:0;background:${PAGE_BG};color:${INK};${FONT_STACK}}
+img{display:block;max-width:100%}
+table{border-collapse:collapse}
+@media print{
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+`;
+}
+
+let brandAssetsPromise: Promise<BrandAssets> | null = null;
+
+/** Embed logo/stamp/fonts as data URLs so PDF capture never hits CORS / tainted canvas. */
+async function getBrandAssets(): Promise<BrandAssets> {
+  if (!brandAssetsPromise) {
+    brandAssetsPromise = (async () => {
+      const [logo, stamp, regular, bold, italic] = await Promise.all([
+        urlToDataUrl(kamLogoUrl),
+        urlToDataUrl(kamStampUrl),
+        urlToDataUrl(pagellaRegularUrl),
+        urlToDataUrl(pagellaBoldUrl),
+        urlToDataUrl(pagellaItalicUrl),
+      ]);
+      return {
+        logo,
+        stamp,
+        fontCss: buildFontFaceCss(regular, bold, italic),
+      };
+    })().catch((err) => {
+      brandAssetsPromise = null;
+      throw err;
+    });
+  }
+  return brandAssetsPromise;
+}
+
 export type DocumentPdfInput = {
   title: string;
   subtitle?: string;
@@ -90,18 +151,13 @@ const thRight = th.replace("text-align:left", "text-align:right");
 const td = `padding:8px;border-bottom:1px solid ${LINE};font-size:11px;${FONT_STACK};color:${INK};vertical-align:top`;
 const tdRight = `${td};text-align:right;font-variant-numeric:tabular-nums`;
 
-function fontFaceCss() {
-  const regular = assetHref(pagellaRegularUrl);
-  const bold = assetHref(pagellaBoldUrl);
-  const italic = assetHref(pagellaItalicUrl);
-  return `
-@font-face{font-family:'TeXGyrePagella';src:url('${regular}') format('opentype');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'TeXGyrePagella';src:url('${bold}') format('opentype');font-weight:700;font-style:normal;font-display:swap}
-@font-face{font-family:'TeXGyrePagella';src:url('${bold}') format('opentype');font-weight:800;font-style:normal;font-display:swap}
-@font-face{font-family:'TeXGyrePagella';src:url('${italic}') format('opentype');font-weight:400;font-style:italic;font-display:swap}
-*{box-sizing:border-box;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
-body{margin:0;background:${PAGE_BG};color:${INK};${FONT_STACK}}
-`;
+function fontFaceCss(brand?: BrandAssets) {
+  if (brand) return brand.fontCss;
+  return buildFontFaceCss(
+    assetHref(pagellaRegularUrl),
+    assetHref(pagellaBoldUrl),
+    assetHref(pagellaItalicUrl),
+  );
 }
 
 function parsePeriodSubtitle(subtitle?: string) {
@@ -127,9 +183,9 @@ function sumMoneyColumn(rows: { [k: string]: string }[], key: string) {
   return `₦${total.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-function buildHtml(input: DocumentPdfInput) {
-  const logo = assetHref(kamLogoUrl);
-  const stamp = assetHref(kamStampUrl);
+function buildHtml(input: DocumentPdfInput, brand?: BrandAssets) {
+  const logo = brand?.logo ?? assetHref(kamLogoUrl);
+  const stamp = brand?.stamp ?? assetHref(kamStampUrl);
   const { period, ref } = parsePeriodSubtitle(input.subtitle);
   const reference = input.reference || ref;
 
@@ -239,9 +295,9 @@ function buildHtml(input: DocumentPdfInput) {
       ? input.subtitle
       : "";
 
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>${escapeHtml(input.title)}</title><style>${fontFaceCss()}</style></head>
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>${escapeHtml(input.title)}</title><style>${fontFaceCss(brand)}</style></head>
 <body>
-  <div style="${FONT_STACK};padding:28px 28px 24px;max-width:900px;margin:0 auto;background:${PAGE_BG}">
+  <div id="kipit-statement" style="${FONT_STACK};padding:24px 22px 20px;width:750px;max-width:750px;margin:0 auto;background:${PAGE_BG}">
     <header style="display:flex;align-items:stretch;justify-content:space-between;gap:18px;margin-bottom:14px">
       <div style="display:flex;align-items:center;min-width:0;flex:1">
         <img src="${escapeHtml(logo)}" alt="Kipit Asset Management" style="height:58px;width:auto;max-width:280px;object-fit:contain" />
@@ -395,107 +451,104 @@ function waitForImages(root: ParentNode) {
   );
 }
 
-/** Browser canvas dimension ceiling (Chrome ~16384); stay under it with room for scale. */
-const MAX_CANVAS_EDGE = 8192;
+/** Keep total canvas pixels under browser limits (tall statements used to OOM / taint). */
+const MAX_CANVAS_PIXELS = 8_000_000;
 
-async function waitForStatementFonts() {
+function delay(ms: number) {
+  return new Promise<void>((resolve) => window.setTimeout(resolve, ms));
+}
+
+async function waitForDocumentReady(doc: Document) {
   try {
-    const faces = [
-      new FontFace("TeXGyrePagella", `url(${assetHref(pagellaRegularUrl)})`, {
-        weight: "400",
-        style: "normal",
-      }),
-      new FontFace("TeXGyrePagella", `url(${assetHref(pagellaBoldUrl)})`, {
-        weight: "700",
-        style: "normal",
-      }),
-      new FontFace("TeXGyrePagella", `url(${assetHref(pagellaItalicUrl)})`, {
-        weight: "400",
-        style: "italic",
-      }),
-    ];
-    const loaded = await Promise.all(faces.map((f) => f.load()));
-    for (const face of loaded) document.fonts.add(face);
-    await document.fonts.ready;
+    if (doc.fonts?.ready) await doc.fonts.ready;
   } catch {
-    /* system Palatino / Georgia fallback still applied via CSS stack */
+    /* ignore */
   }
+  await waitForImages(doc);
+  await delay(180);
 }
 
 /**
- * Render HTML into an off-screen host and return a multi-page PDF blob.
- * Uses the same markup + TeXGyrePagella as the HTML view so fonts match.
+ * Render the exact statement HTML (same as View / HTML download) into a PDF.
+ * Uses an iframe + embedded data-URL assets so fonts/images match and export succeeds.
  */
 export async function documentPdfBlob(input: DocumentPdfInput): Promise<Blob> {
-  const html = buildHtml(input);
-  const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-  const host = document.createElement("div");
-  host.setAttribute("aria-hidden", "true");
-  // Must stay "visible" to html2canvas — opacity:0 / display:none cause blank or throw.
-  host.style.cssText = [
-    "position:fixed",
-    "left:0",
-    "top:0",
-    "width:794px",
-    "background:#ffffff",
-    `color:${INK}`,
-    FONT_STACK,
-    "z-index:-1",
-    "pointer-events:none",
-    "opacity:0.02",
-    "overflow:visible",
-    "transform:translateX(-110%)",
-  ].join(";");
-  // Keep <style> from the HTML document so PDF capture uses the same fonts as View HTML.
-  host.innerHTML = `<style>${fontFaceCss()}</style>${bodyMatch ? bodyMatch[1]! : html}`;
-  document.body.appendChild(host);
+  const brand = await getBrandAssets();
+  const html = buildHtml(input, brand);
+
+  const iframe = document.createElement("iframe");
+  iframe.setAttribute("aria-hidden", "true");
+  iframe.setAttribute("title", "statement-pdf-render");
+  iframe.style.cssText =
+    "position:fixed;left:-12000px;top:0;width:794px;height:1123px;border:0;opacity:1;pointer-events:none;background:#ffffff;";
+  document.body.appendChild(iframe);
 
   try {
-    await waitForStatementFonts();
-    await waitForImages(host);
-    await new Promise((r) => window.setTimeout(r, 120));
+    const idoc = iframe.contentDocument;
+    if (!idoc) throw new Error("Could not open statement renderer");
+    idoc.open();
+    idoc.write(html);
+    idoc.close();
 
-    const [{ jsPDF }, html2canvasMod] = await Promise.all([import("jspdf"), import("html2canvas")]);
+    await waitForDocumentReady(idoc);
+
+    const target =
+      idoc.getElementById("kipit-statement") ?? idoc.body.firstElementChild ?? idoc.body;
+    const contentWidth = 750;
+    const contentHeight = Math.max(
+      (target as HTMLElement).scrollHeight || 0,
+      idoc.body.scrollHeight || 0,
+      1,
+    );
+    iframe.style.width = `${contentWidth + 44}px`;
+    iframe.style.height = `${contentHeight + 40}px`;
+    await delay(60);
+
+    const [{ jsPDF }, html2canvasMod] = await Promise.all([
+      import("jspdf"),
+      import("html2canvas"),
+    ]);
     const html2canvas = html2canvasMod.default;
 
-    const contentWidth = Math.max(host.scrollWidth, 794);
-    const contentHeight = Math.max(host.scrollHeight, 1);
-    const scale = Math.min(2.5, MAX_CANVAS_EDGE / contentWidth, MAX_CANVAS_EDGE / contentHeight);
+    const scale = Math.min(
+      2,
+      Math.sqrt(MAX_CANVAS_PIXELS / (contentWidth * contentHeight)),
+    );
 
-    const canvas = await html2canvas(host, {
-      scale: Math.max(1.5, scale),
+    const canvas = await html2canvas(target as HTMLElement, {
+      scale: Math.max(1.15, scale),
       useCORS: true,
       allowTaint: false,
       backgroundColor: "#ffffff",
       logging: false,
-      letterRendering: true,
       width: contentWidth,
       windowWidth: contentWidth,
       scrollX: 0,
       scrollY: 0,
-      imageTimeout: 15_000,
-      onclone: (_doc, cloned) => {
-        cloned.style.transform = "none";
-        cloned.style.opacity = "1";
-        cloned.style.left = "0";
-        cloned.style.top = "0";
-        cloned.style.position = "static";
-        cloned.style.fontFamily = FONT.replace(/'/g, "");
+      imageTimeout: 20_000,
+      onclone: (clonedDoc) => {
+        const root = clonedDoc.getElementById("kipit-statement") as HTMLElement | null;
+        if (root) {
+          root.style.transform = "none";
+          root.style.opacity = "1";
+          root.style.margin = "0";
+        }
+        clonedDoc.body.style.background = "#ffffff";
       },
     });
+
+    // Prefer the already-imported jsPDF constructor (avoid require in ESM builds).
+    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 10;
+    const usableWidth = pageWidth - margin * 2;
+    const usableHeight = pageHeight - margin * 2;
 
     if (!canvas.width || !canvas.height) {
       throw new Error("Statement canvas was empty");
     }
 
-    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const margin = 8;
-    const usableWidth = pageWidth - margin * 2;
-    const usableHeight = pageHeight - margin * 2;
-
-    // Slice into page strips as PNG so text stays as sharp as the HTML view.
     const pxPerMm = canvas.width / usableWidth;
     const pageSlicePx = Math.max(1, Math.floor(usableHeight * pxPerMm));
     const sliceCanvas = document.createElement("canvas");
@@ -512,19 +565,21 @@ export async function documentPdfBlob(input: DocumentPdfInput): Promise<Blob> {
       sliceCtx.fillRect(0, 0, sliceCanvas.width, sliceH);
       sliceCtx.drawImage(canvas, 0, y, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
 
-      const imgData = sliceCanvas.toDataURL("image/png");
+      const imgData = sliceCanvas.toDataURL("image/jpeg", 0.95);
       const sliceHeightMm = sliceH / pxPerMm;
       if (pageIndex > 0) pdf.addPage();
-      pdf.addImage(imgData, "PNG", margin, margin, usableWidth, sliceHeightMm);
+      pdf.addImage(imgData, "JPEG", margin, margin, usableWidth, sliceHeightMm);
 
       y += sliceH;
       pageIndex += 1;
       if (pageIndex > 40) break;
     }
 
-    return pdf.output("blob");
+    const blob = pdf.output("blob");
+    if (!blob || blob.size < 64) throw new Error("Generated PDF was empty");
+    return blob;
   } finally {
-    host.remove();
+    iframe.remove();
   }
 }
 
@@ -573,16 +628,22 @@ export async function downloadDocumentPdf(input: DocumentPdfInput) {
   const pdfName = defaultFilename(input, "pdf");
   try {
     const blob = await documentPdfBlob(input);
-    if (!blob || blob.size < 64) {
-      throw new Error("Generated PDF was empty");
-    }
     triggerDownload(blob, pdfName);
   } catch (err) {
-    const html = buildHtml(input);
-    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
-    triggerDownload(blob, defaultFilename(input, "html"));
+    // Last resort: open the same HTML in a print window so the user can Save as PDF
+    // with browser fonts/layout (exact match to View). Still surface the failure.
+    try {
+      printDocumentPdf(input);
+    } catch {
+      const brand = await getBrandAssets().catch(() => undefined);
+      const html = buildHtml(input, brand);
+      const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+      triggerDownload(blob, defaultFilename(input, "html"));
+    }
     const detail = err instanceof Error && err.message ? ` (${err.message})` : "";
-    throw new Error(`PDF export failed — HTML copy downloaded instead.${detail}`);
+    throw new Error(
+      `PDF download failed${detail}. Use the print dialog (Save as PDF) or the HTML copy.`,
+    );
   }
 }
 
