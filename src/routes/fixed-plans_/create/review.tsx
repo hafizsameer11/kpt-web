@@ -33,11 +33,17 @@ import { parseGiftContact } from "@/lib/gift-data";
 import { naira } from "@/lib/home-data";
 import {
   PRODUCT_CONSENT_VERSION,
-  TENOR_BANDS,
   flexConsentText,
   lockConsentText,
+  rateForCustomDays,
+  useTenorBands,
+  type PlanFamily,
 } from "@/lib/invest-data";
-import { interestBreakdownFromNetRate, parseNetRatePct } from "@/lib/wht";
+import {
+  formatRatePair,
+  interestBreakdownFromNetRate,
+  parseNetRatePct,
+} from "@/lib/wht";
 import { refreshWalletFromApi, useWalletBalance } from "@/lib/wallet-balance";
 import { hydrateLiveBalances } from "@/lib/live-balances";
 
@@ -54,6 +60,8 @@ export const Route = createFileRoute("/fixed-plans_/create/review")({
     giftMessage: z.string().catch(""),
     planType: z.enum(["LOCK", "FLEX"]).optional().catch("LOCK"),
     interestPayout: z.enum(["AT_MATURITY", "UPFRONT"]).optional().catch("AT_MATURITY"),
+    /** Net p.a. rate from prior step — avoids flashing a hardcoded fallback before hydrate. */
+    ratePct: z.number().optional().catch(undefined),
   }),
   head: () => ({
     meta: [
@@ -99,30 +107,52 @@ interface PlanCalc {
   payout: number;
   maturityDate: string;
   maturityIso: string;
-  breakdown: ReturnType<typeof interestBreakdownFromNetRate>;
+  ready: boolean;
+  breakdown: ReturnType<typeof interestBreakdownFromNetRate> | null;
 }
 
 function usePlanCalc(
   amount: number,
   days: number,
   payoutMode: "AT_MATURITY" | "UPFRONT" = "AT_MATURITY",
+  planType: PlanFamily = "LOCK",
+  seededRatePct?: number,
 ): PlanCalc {
-  const band = TENOR_BANDS.find(
-    (b) => Number(b.days.replace(/\D/g, "")) === days,
-  );
-  const ratePct = band
-    ? (band.ratePct > 0 ? band.ratePct : parseNetRatePct(band.rate))
-    : 14;
-  const rateLabel = band ? band.rate : `${ratePct}%`;
-  const breakdown = interestBreakdownFromNetRate({
-    principal: amount,
-    netRatePct: ratePct,
-    days,
-    payout: payoutMode,
-  });
-  const interest = Math.round(breakdown.netInterest);
-  const payout = Math.round(breakdown.valueAtMaturity);
-  const mat = new Date(Date.now() + days * DAY_MS);
+  const { loading } = useTenorBands();
+  const matched =
+    days > 0 ? rateForCustomDays(planType, days, payoutMode) : null;
+  const fromCatalog =
+    matched && matched.ratePct > 0
+      ? matched.ratePct
+      : matched
+        ? parseNetRatePct(matched.rate)
+        : 0;
+  const seeded =
+    typeof seededRatePct === "number" &&
+    Number.isFinite(seededRatePct) &&
+    seededRatePct > 0
+      ? seededRatePct
+      : 0;
+  // Prefer live catalog once ready; until then use the rate carried from options/tenor.
+  const ratePct = fromCatalog > 0 ? fromCatalog : seeded;
+  const ready = ratePct > 0 && !loading;
+  const rateLabel = matched?.rate
+    ? matched.rate
+    : ratePct > 0
+      ? formatRatePair(ratePct).label
+      : "—";
+  const breakdown =
+    amount > 0 && days > 0 && ratePct > 0
+      ? interestBreakdownFromNetRate({
+          principal: amount,
+          netRatePct: ratePct,
+          days,
+          payout: payoutMode,
+        })
+      : null;
+  const interest = breakdown ? Math.round(breakdown.netInterest) : 0;
+  const payout = breakdown ? Math.round(breakdown.valueAtMaturity) : 0;
+  const mat = new Date(Date.now() + Math.max(days, 0) * DAY_MS);
   const maturityDate = mat.toLocaleDateString("en-NG", {
     day: "2-digit",
     month: "short",
@@ -135,6 +165,7 @@ function usePlanCalc(
     payout,
     maturityDate,
     maturityIso: mat.toISOString().slice(0, 10),
+    ready,
     breakdown,
   };
 }
@@ -294,8 +325,19 @@ function useAuthFlow() {
 }
 
 function AuthPad({ flow }: { flow: ReturnType<typeof useAuthFlow> }) {
-  const { rateLabel } = usePlanCalc(Route.useSearch().amount, Route.useSearch().days);
-  const days = Route.useSearch().days;
+  const search = Route.useSearch();
+  const payoutMode =
+    search.planType === "FLEX"
+      ? "AT_MATURITY"
+      : (search.interestPayout ?? "AT_MATURITY");
+  const { rateLabel } = usePlanCalc(
+    search.amount,
+    search.days,
+    payoutMode,
+    search.planType === "FLEX" ? "FLEX" : "LOCK",
+    search.ratePct,
+  );
+  const days = search.days;
   return (
     <>
       <p className="mt-3 text-center text-[16px] font-extrabold">
@@ -360,13 +402,28 @@ function AuthPad({ flow }: { flow: ReturnType<typeof useAuthFlow> }) {
 /* ------------------------------------------------------------------ */
 
 function PlanReviewMobile() {
-  const { amount, days, name, maturity, auto, gift, planType, interestPayout } =
-    Route.useSearch();
+  const {
+    amount,
+    days,
+    name,
+    maturity,
+    auto,
+    gift,
+    planType,
+    interestPayout,
+    ratePct: seededRatePct,
+  } = Route.useSearch();
   const flow = useAuthFlow();
   const payoutMode =
     planType === "FLEX" ? "AT_MATURITY" : (interestPayout ?? "AT_MATURITY");
   const { rateLabel, interest, payout, maturityDate, maturityIso, breakdown } =
-    usePlanCalc(amount, days, payoutMode);
+    usePlanCalc(
+      amount,
+      days,
+      payoutMode,
+      planType === "FLEX" ? "FLEX" : "LOCK",
+      seededRatePct,
+    );
   const WALLET = useWalletBalance();
   const breakDate = new Date(Date.now() + 30 * DAY_MS).toISOString().slice(0, 10);
   const consentCopy =
@@ -469,7 +526,11 @@ function PlanReviewMobile() {
                   Earning potential
                 </p>
                 <div className="mt-3">
-                  <InterestBreakdown data={breakdown} />
+                  {breakdown ? (
+                    <InterestBreakdown data={breakdown} />
+                  ) : (
+                    <p className="text-[12px] text-muted-foreground">Loading rate…</p>
+                  )}
                 </div>
                 <p className="mt-3 text-[11px] text-muted-foreground">
                   Figures are shown after 10% withholding tax and assume you keep this plan until
@@ -570,13 +631,28 @@ function PlanReviewMobile() {
 /* ------------------------------------------------------------------ */
 
 function PlanReviewDesktop() {
-  const { amount, days, name, maturity, auto, gift, planType, interestPayout } =
-    Route.useSearch();
+  const {
+    amount,
+    days,
+    name,
+    maturity,
+    auto,
+    gift,
+    planType,
+    interestPayout,
+    ratePct: seededRatePct,
+  } = Route.useSearch();
   const flow = useAuthFlow();
   const payoutMode =
     planType === "FLEX" ? "AT_MATURITY" : (interestPayout ?? "AT_MATURITY");
   const { rateLabel, interest, payout, maturityDate, maturityIso, breakdown } =
-    usePlanCalc(amount, days, payoutMode);
+    usePlanCalc(
+      amount,
+      days,
+      payoutMode,
+      planType === "FLEX" ? "FLEX" : "LOCK",
+      seededRatePct,
+    );
   const WALLET = useWalletBalance();
   const breakDate = new Date(Date.now() + 30 * DAY_MS).toISOString().slice(0, 10);
   const consentCopy =
@@ -678,7 +754,11 @@ function PlanReviewDesktop() {
                   </Row>
                 </dl>
                 <div className="mt-4 border-t border-border pt-4">
-                  <InterestBreakdown data={breakdown} />
+                  {breakdown ? (
+                    <InterestBreakdown data={breakdown} />
+                  ) : (
+                    <p className="text-[12px] text-muted-foreground">Loading rate…</p>
+                  )}
                 </div>
               </section>
             </Rise>

@@ -3,8 +3,12 @@ import { ArrowRight, PiggyBank, RefreshCcw, Wallet } from "lucide-react";
 import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
-import { TENOR_BANDS } from "@/lib/invest-data";
-import { parseNetRatePct } from "@/lib/wht";
+import {
+  rateForCustomDays,
+  useTenorBands,
+  type PlanFamily,
+} from "@/lib/invest-data";
+import { formatRatePair, parseNetRatePct } from "@/lib/wht";
 
 export const Route = createFileRoute("/fixed-plans_/create/success")({
   validateSearch: z.object({
@@ -43,16 +47,24 @@ const MATURITY_LABEL = {
 
 function PlanSuccessScreen() {
   const { amount, days, name, maturity } = Route.useSearch();
-  const band = TENOR_BANDS.find(
-    (b) => Number(b.days.replace(/\D/g, "")) === days,
-  );
-  const ratePct = band
-    ? (band.ratePct > 0 ? band.ratePct : parseNetRatePct(band.rate))
-    : 14;
-  const rateLabel = band ? band.rate : `${ratePct}%`;
-  const productName = name || band?.name || "Kipit Fixed Plan";
-  const interest = Math.round((amount * (ratePct / 100) * days) / 365);
-  const payout = amount + interest;
+  useTenorBands();
+  const planType: PlanFamily = /flex/i.test(name) ? "FLEX" : "LOCK";
+  const band = days > 0 ? rateForCustomDays(planType, days, "AT_MATURITY") : null;
+  const ratePct =
+    band && band.ratePct > 0
+      ? band.ratePct
+      : band
+        ? parseNetRatePct(band.rate)
+        : 0;
+  const rateLabel =
+    band?.rate ?? (ratePct > 0 ? formatRatePair(ratePct).label : "—");
+  const productName =
+    name ||
+    (planType === "FLEX" ? "Kipit Flex" : "Kipit Lock") ||
+    "Kipit Fixed Plan";
+  const interest =
+    ratePct > 0 ? Math.round((amount * (ratePct / 100) * days) / 365) : 0;
+  const payout = ratePct > 0 ? amount + interest : 0;
   const maturityDate = new Date(Date.now() + days * DAY_MS).toLocaleDateString(
     "en-NG",
     { day: "2-digit", month: "short", year: "numeric" },

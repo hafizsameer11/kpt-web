@@ -15,7 +15,10 @@ import { AppShell } from "@/components/kipit/AppShell";
 import { AmountCounter, Rise } from "@/components/kipit/motion";
 import { naira } from "@/lib/home-data";
 import { parseGiftContact } from "@/lib/gift-data";
-import { TENOR_BANDS } from "@/lib/invest-data";
+import {
+  rateForCustomDays,
+  useTenorBands,
+} from "@/lib/invest-data";
 import { useWalletBalance } from "@/lib/wallet-balance";
 
 export const Route = createFileRoute("/fixed-plans_/create/options")({
@@ -76,10 +79,7 @@ function PlanOptionsScreen() {
   const { amount, days, planType: planTypeRaw } = Route.useSearch();
   const planType = planTypeRaw === "FLEX" ? "FLEX" : "LOCK";
   const WALLET = useWalletBalance();
-  const band = TENOR_BANDS.find(
-    (b) => Number(b.days.replace(/\D/g, "")) === days,
-  );
-  const rate = band ? band.rate : "—";
+  useTenorBands();
 
   /* MOB-070 — optional fields */
   const [planName, setPlanName] = useState("");
@@ -90,6 +90,11 @@ function PlanOptionsScreen() {
   const [interestPayout, setInterestPayout] = useState<"AT_MATURITY" | "UPFRONT">(
     "AT_MATURITY",
   );
+  const payoutMode =
+    planType === "FLEX" ? ("AT_MATURITY" as const) : interestPayout;
+  const band = days > 0 ? rateForCustomDays(planType, days, payoutMode) : null;
+  const rate = band?.rate ?? "—";
+  const ratePct = band?.ratePct ?? 0;
 
   /* MOB-071 — auto-invest */
   const [autoInvest, setAutoInvest] = useState(false);
@@ -131,6 +136,7 @@ function PlanOptionsScreen() {
     giftMessage: forWhom === "gift" ? giftMessage.trim() : "",
     planType,
     interestPayout: planType === "FLEX" ? ("AT_MATURITY" as const) : interestPayout,
+    ratePct: ratePct > 0 ? ratePct : undefined,
   };
 
   return (
