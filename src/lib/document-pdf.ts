@@ -1,10 +1,14 @@
 /**
  * Client-side Kipit-branded statement / document export (browser view + real PDF).
  * Visual layout matched to Kipit Statement_template.pdf (Appendix C).
+ * Typography uses TeX Gyre Pagella — the same family as Statement_template.pdf.
  */
 
 import kamLogoUrl from "@/assets/brand/kipit-asset-management-logo.png";
 import kamStampUrl from "@/assets/brand/kipit-company-stamp.png";
+import pagellaBoldUrl from "@/assets/fonts/texgyrepagella-bold.otf";
+import pagellaItalicUrl from "@/assets/fonts/texgyrepagella-italic.otf";
+import pagellaRegularUrl from "@/assets/fonts/texgyrepagella-regular.otf";
 
 /** Brand tokens from Statement_template.pdf / Kipit Asset Management logo. */
 const NAVY = "#001657";
@@ -16,6 +20,11 @@ const MUTED = "#5b6b8c";
 const LINE = "#d7deeb";
 const ROW_ALT = "#f5f7fb";
 const PAGE_BG = "#ffffff";
+
+/** Matches Statement_template.pdf (TeXGyrePagella). */
+const FONT =
+  "'TeXGyrePagella','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif";
+const FONT_STACK = `font-family:${FONT}`;
 
 function escapeHtml(value: string) {
   return value
@@ -75,11 +84,25 @@ const RMB_DISCLAIMER =
 const FOOTER_CONTACT =
   "Kipit Asset Management Limited | RC 8735505 | 7/9 Molade Okoya-Thomas Street, Victoria Island, Lagos | support@mykipit.com | +234 707 198 5171";
 
-const sectionTitle = `margin:22px 0 10px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:${NAVY};font-family:'Segoe UI',system-ui,sans-serif;font-weight:800`;
-const th = `padding:9px 8px;background:${NAVY};color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:0.05em;font-family:'Segoe UI',system-ui,sans-serif;font-weight:700;text-align:left;border:none`;
+const sectionTitle = `margin:22px 0 10px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:${NAVY};${FONT_STACK};font-weight:700`;
+const th = `padding:9px 8px;background:${NAVY};color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:0.05em;${FONT_STACK};font-weight:700;text-align:left;border:none`;
 const thRight = th.replace("text-align:left", "text-align:right");
-const td = `padding:8px;border-bottom:1px solid ${LINE};font-size:11px;font-family:'Segoe UI',system-ui,sans-serif;color:${INK};vertical-align:top`;
+const td = `padding:8px;border-bottom:1px solid ${LINE};font-size:11px;${FONT_STACK};color:${INK};vertical-align:top`;
 const tdRight = `${td};text-align:right;font-variant-numeric:tabular-nums`;
+
+function fontFaceCss() {
+  const regular = assetHref(pagellaRegularUrl);
+  const bold = assetHref(pagellaBoldUrl);
+  const italic = assetHref(pagellaItalicUrl);
+  return `
+@font-face{font-family:'TeXGyrePagella';src:url('${regular}') format('opentype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'TeXGyrePagella';src:url('${bold}') format('opentype');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'TeXGyrePagella';src:url('${bold}') format('opentype');font-weight:800;font-style:normal;font-display:swap}
+@font-face{font-family:'TeXGyrePagella';src:url('${italic}') format('opentype');font-weight:400;font-style:italic;font-display:swap}
+*{box-sizing:border-box;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+body{margin:0;background:${PAGE_BG};color:${INK};${FONT_STACK}}
+`;
+}
 
 function parsePeriodSubtitle(subtitle?: string) {
   if (!subtitle) return { period: "", ref: "" };
@@ -116,8 +139,8 @@ function buildHtml(input: DocumentPdfInput) {
         ${clientMeta
           .map(
             (c) => `<div>
-              <div style="font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:${NAVY};font-family:'Segoe UI',system-ui,sans-serif;font-weight:700">${escapeHtml(c.label)}</div>
-              <div style="margin-top:4px;font-size:13px;font-weight:700;color:${INK};font-family:'Segoe UI',system-ui,sans-serif">${escapeHtml(c.value)}</div>
+              <div style="font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:${NAVY};${FONT_STACK};font-weight:700">${escapeHtml(c.label)}</div>
+              <div style="margin-top:4px;font-size:13px;font-weight:700;color:${INK};${FONT_STACK}">${escapeHtml(c.value)}</div>
             </div>`,
           )
           .join("")}
@@ -135,8 +158,8 @@ function buildHtml(input: DocumentPdfInput) {
             const labelColor = emphasize ? "rgba(255,255,255,0.78)" : NAVY;
             const valueColor = emphasize ? "#fff" : INK;
             return `<div style="border:1px solid ${border};background:${bg};padding:12px 12px 14px;min-height:78px">
-              <div style="font-size:10px;line-height:1.35;color:${labelColor};font-family:'Segoe UI',system-ui,sans-serif;font-weight:600">${escapeHtml(r.label)}</div>
-              <div style="margin-top:10px;font-size:18px;line-height:1.15;font-weight:800;color:${valueColor};font-family:'Segoe UI',system-ui,sans-serif;font-variant-numeric:tabular-nums">${escapeHtml(r.value)}</div>
+              <div style="font-size:10px;line-height:1.35;color:${labelColor};${FONT_STACK};font-weight:600">${escapeHtml(r.label)}</div>
+              <div style="margin-top:10px;font-size:18px;line-height:1.15;font-weight:700;color:${valueColor};${FONT_STACK};font-variant-numeric:tabular-nums">${escapeHtml(r.value)}</div>
             </div>`;
           })
           .join("")}
@@ -216,15 +239,15 @@ function buildHtml(input: DocumentPdfInput) {
       ? input.subtitle
       : "";
 
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>${escapeHtml(input.title)}</title></head>
-<body style="margin:0;background:${PAGE_BG};color:${INK}">
-  <div style="font-family:'Segoe UI',system-ui,sans-serif;padding:28px 28px 24px;max-width:900px;margin:0 auto;background:${PAGE_BG}">
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>${escapeHtml(input.title)}</title><style>${fontFaceCss()}</style></head>
+<body>
+  <div style="${FONT_STACK};padding:28px 28px 24px;max-width:900px;margin:0 auto;background:${PAGE_BG}">
     <header style="display:flex;align-items:stretch;justify-content:space-between;gap:18px;margin-bottom:14px">
       <div style="display:flex;align-items:center;min-width:0;flex:1">
         <img src="${escapeHtml(logo)}" alt="Kipit Asset Management" style="height:58px;width:auto;max-width:280px;object-fit:contain" />
       </div>
       <div style="background:${NAVY};color:#fff;min-width:280px;max-width:360px;padding:16px 18px;display:flex;flex-direction:column;justify-content:center">
-        <div style="font-size:16px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;line-height:1.2">${escapeHtml(input.title)}</div>
+        <div style="font-size:16px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;line-height:1.2">${escapeHtml(input.title)}</div>
         ${periodLine ? `<div style="margin-top:8px;font-size:11px;line-height:1.45;color:rgba(255,255,255,0.88)">${escapeHtml(periodLine)}</div>` : ""}
         ${reference ? `<div style="margin-top:4px;font-size:11px;color:rgba(255,255,255,0.88)">Ref: ${escapeHtml(reference)}</div>` : ""}
       </div>
@@ -375,9 +398,33 @@ function waitForImages(root: ParentNode) {
 /** Browser canvas dimension ceiling (Chrome ~16384); stay under it with room for scale. */
 const MAX_CANVAS_EDGE = 8192;
 
+async function waitForStatementFonts() {
+  try {
+    const faces = [
+      new FontFace("TeXGyrePagella", `url(${assetHref(pagellaRegularUrl)})`, {
+        weight: "400",
+        style: "normal",
+      }),
+      new FontFace("TeXGyrePagella", `url(${assetHref(pagellaBoldUrl)})`, {
+        weight: "700",
+        style: "normal",
+      }),
+      new FontFace("TeXGyrePagella", `url(${assetHref(pagellaItalicUrl)})`, {
+        weight: "400",
+        style: "italic",
+      }),
+    ];
+    const loaded = await Promise.all(faces.map((f) => f.load()));
+    for (const face of loaded) document.fonts.add(face);
+    await document.fonts.ready;
+  } catch {
+    /* system Palatino / Georgia fallback still applied via CSS stack */
+  }
+}
+
 /**
  * Render HTML into an off-screen host and return a multi-page PDF blob.
- * Avoids opacity:0 (html2canvas blank/fail) and one giant JPEG (OOM / size limits).
+ * Uses the same markup + TeXGyrePagella as the HTML view so fonts match.
  */
 export async function documentPdfBlob(input: DocumentPdfInput): Promise<Blob> {
   const html = buildHtml(input);
@@ -391,33 +438,37 @@ export async function documentPdfBlob(input: DocumentPdfInput): Promise<Blob> {
     "top:0",
     "width:794px",
     "background:#ffffff",
-    "color:#0f172a",
+    `color:${INK}`,
+    FONT_STACK,
     "z-index:-1",
     "pointer-events:none",
     "opacity:0.02",
     "overflow:visible",
     "transform:translateX(-110%)",
   ].join(";");
-  host.innerHTML = bodyMatch ? bodyMatch[1]! : html;
+  // Keep <style> from the HTML document so PDF capture uses the same fonts as View HTML.
+  host.innerHTML = `<style>${fontFaceCss()}</style>${bodyMatch ? bodyMatch[1]! : html}`;
   document.body.appendChild(host);
 
   try {
+    await waitForStatementFonts();
     await waitForImages(host);
-    await new Promise((r) => window.setTimeout(r, 80));
+    await new Promise((r) => window.setTimeout(r, 120));
 
     const [{ jsPDF }, html2canvasMod] = await Promise.all([import("jspdf"), import("html2canvas")]);
     const html2canvas = html2canvasMod.default;
 
     const contentWidth = Math.max(host.scrollWidth, 794);
     const contentHeight = Math.max(host.scrollHeight, 1);
-    const scale = Math.min(2, MAX_CANVAS_EDGE / contentWidth, MAX_CANVAS_EDGE / contentHeight);
+    const scale = Math.min(2.5, MAX_CANVAS_EDGE / contentWidth, MAX_CANVAS_EDGE / contentHeight);
 
     const canvas = await html2canvas(host, {
-      scale: Math.max(1, scale),
+      scale: Math.max(1.5, scale),
       useCORS: true,
       allowTaint: false,
       backgroundColor: "#ffffff",
       logging: false,
+      letterRendering: true,
       width: contentWidth,
       windowWidth: contentWidth,
       scrollX: 0,
@@ -429,6 +480,7 @@ export async function documentPdfBlob(input: DocumentPdfInput): Promise<Blob> {
         cloned.style.left = "0";
         cloned.style.top = "0";
         cloned.style.position = "static";
+        cloned.style.fontFamily = FONT.replace(/'/g, "");
       },
     });
 
@@ -443,7 +495,7 @@ export async function documentPdfBlob(input: DocumentPdfInput): Promise<Blob> {
     const usableWidth = pageWidth - margin * 2;
     const usableHeight = pageHeight - margin * 2;
 
-    // Slice the canvas into page-height strips — avoids one huge data URL.
+    // Slice into page strips as PNG so text stays as sharp as the HTML view.
     const pxPerMm = canvas.width / usableWidth;
     const pageSlicePx = Math.max(1, Math.floor(usableHeight * pxPerMm));
     const sliceCanvas = document.createElement("canvas");
@@ -460,14 +512,14 @@ export async function documentPdfBlob(input: DocumentPdfInput): Promise<Blob> {
       sliceCtx.fillRect(0, 0, sliceCanvas.width, sliceH);
       sliceCtx.drawImage(canvas, 0, y, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
 
-      const imgData = sliceCanvas.toDataURL("image/jpeg", 0.92);
+      const imgData = sliceCanvas.toDataURL("image/png");
       const sliceHeightMm = sliceH / pxPerMm;
       if (pageIndex > 0) pdf.addPage();
-      pdf.addImage(imgData, "JPEG", margin, margin, usableWidth, sliceHeightMm);
+      pdf.addImage(imgData, "PNG", margin, margin, usableWidth, sliceHeightMm);
 
       y += sliceH;
       pageIndex += 1;
-      if (pageIndex > 40) break; // safety for pathological statements
+      if (pageIndex > 40) break;
     }
 
     return pdf.output("blob");
