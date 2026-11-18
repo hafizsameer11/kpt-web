@@ -94,12 +94,12 @@ function OfferTabPills({
   );
 }
 
+function exploreCatalogKey() {
+  return `${EXPLORE_PRODUCTS.length}:${EXPLORE_CATEGORIES.length}:${EXPLORE_PRODUCTS.map((p) => p.id).join(",")}`;
+}
+
 function ExploreScreen() {
-  useSyncExternalStore(
-    subscribeExplore,
-    () => `${EXPLORE_PRODUCTS.length}:${EXPLORE_CATEGORIES.length}`,
-    () => "0",
-  );
+  useSyncExternalStore(subscribeExplore, exploreCatalogKey, () => "0");
   useEffect(() => {
     void hydrateExploreFromApi();
   }, []);
@@ -112,6 +112,7 @@ function ExploreScreen() {
 }
 
 function MobileExplore() {
+  const catalogKey = useSyncExternalStore(subscribeExplore, exploreCatalogKey, () => "0");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
   const [offerTab, setOfferTab] = useState<OfferTab>("Active");
@@ -132,7 +133,8 @@ function MobileExplore() {
         p.category.toLowerCase().includes(q);
       return inCategory && inLifecycle && inQuery;
     });
-  }, [query, category, offerTab]);
+    // catalogKey busts the memo after API hydrate (products used to stay empty until a category click).
+  }, [query, category, offerTab, catalogKey]);
 
   const activeCategory = EXPLORE_CATEGORIES.find((c) => c.id === category);
 
@@ -545,6 +547,7 @@ function Stat({
 /* ── Desktop ─────────────────────────────────────────────────── */
 
 function DesktopExplore() {
+  const catalogKey = useSyncExternalStore(subscribeExplore, exploreCatalogKey, () => "0");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
   const [offerTab, setOfferTab] = useState<OfferTab>("Active");
@@ -566,7 +569,7 @@ function DesktopExplore() {
         p.category.toLowerCase().includes(q);
       return inCategory && inLifecycle && inQuery;
     });
-  }, [query, category, offerTab]);
+  }, [query, category, offerTab, catalogKey]);
 
   const activeCategory = EXPLORE_CATEGORIES.find((c) => c.id === category);
 
