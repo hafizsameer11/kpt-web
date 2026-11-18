@@ -68,8 +68,8 @@ function buildFontFaceCss(regular: string, bold: string, italic: string) {
 @font-face{font-family:'TeXGyrePagella';src:url('${bold}') format('opentype');font-weight:700;font-style:normal;font-display:block}
 @font-face{font-family:'TeXGyrePagella';src:url('${bold}') format('opentype');font-weight:800;font-style:normal;font-display:block}
 @font-face{font-family:'TeXGyrePagella';src:url('${italic}') format('opentype');font-weight:400;font-style:italic;font-display:block}
-*{box-sizing:border-box;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision}
-html,body{margin:0;padding:0;background:${PAGE_BG};color:${INK};${FONT_STACK}}
+*{box-sizing:border-box;font-family:${FONT} !important;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision}
+html,body{margin:0;padding:0;background:${PAGE_BG};color:${NAVY};${FONT_STACK}}
 img{display:block;max-width:100%}
 table{border-collapse:collapse}
 @media print{
@@ -145,10 +145,10 @@ const RMB_DISCLAIMER =
 const FOOTER_CONTACT =
   "Kipit Asset Management Limited | RC 8735505 | 7/9 Molade Okoya-Thomas Street, Victoria Island, Lagos | support@mykipit.com | +234 707 198 5171";
 
-const sectionTitle = `margin:22px 0 10px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:${NAVY};${FONT_STACK};font-weight:700`;
-const th = `padding:9px 8px;background:${NAVY};color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:0.05em;${FONT_STACK};font-weight:700;text-align:left;border:none`;
+const sectionTitle = `margin:22px 0 10px;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:${NAVY};${FONT_STACK};font-weight:700`;
+const th = `padding:9px 8px;background:${NAVY};color:#fff;font-size:10px;text-transform:none;letter-spacing:0.02em;${FONT_STACK};font-weight:700;text-align:left;border:none`;
 const thRight = th.replace("text-align:left", "text-align:right");
-const td = `padding:8px;border-bottom:1px solid ${LINE};font-size:11px;${FONT_STACK};color:${INK};vertical-align:top`;
+const td = `padding:8px;border-bottom:1px solid ${LINE};font-size:11px;${FONT_STACK};color:${NAVY};vertical-align:top`;
 const tdRight = `${td};text-align:right;font-variant-numeric:tabular-nums`;
 
 function fontFaceCss(brand?: BrandAssets) {
@@ -190,13 +190,15 @@ function buildHtml(input: DocumentPdfInput, brand?: BrandAssets) {
   const reference = input.reference || ref;
 
   const clientMeta = (input.clientMeta ?? []).slice(0, 4);
+  // Template: gold strip under header, then light-gray client bar (not a full gold block).
   const clientMetaHtml = clientMeta.length
-    ? `<div style="display:grid;grid-template-columns:repeat(${clientMeta.length},minmax(0,1fr));gap:12px;background:${GOLD};padding:12px 14px;margin:0 0 18px">
+    ? `<div style="height:10px;background:${GOLD};margin:14px 0 0;width:100%"></div>
+       <div style="display:grid;grid-template-columns:repeat(${clientMeta.length},minmax(0,1fr));gap:12px;background:#eef1f6;padding:12px 14px;margin:0 0 18px">
         ${clientMeta
           .map(
             (c) => `<div>
-              <div style="font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:${NAVY};${FONT_STACK};font-weight:700">${escapeHtml(c.label)}</div>
-              <div style="margin-top:4px;font-size:13px;font-weight:700;color:${INK};${FONT_STACK}">${escapeHtml(c.value)}</div>
+              <div style="font-size:11px;color:#6b7280;${FONT_STACK};font-weight:400">${escapeHtml(c.label)}</div>
+              <div style="margin-top:4px;font-size:15px;font-weight:700;color:${NAVY};${FONT_STACK}">${escapeHtml(c.value)}</div>
             </div>`,
           )
           .join("")}
@@ -209,12 +211,15 @@ function buildHtml(input: DocumentPdfInput, brand?: BrandAssets) {
         ${portfolio
           .map((r) => {
             const emphasize = /total portfolio value today/i.test(r.label);
+            const accent =
+              /net interest accrued/i.test(r.label) || /value at maturity/i.test(r.label);
             const bg = emphasize ? NAVY : "#fff";
             const border = emphasize ? NAVY : LINE;
-            const labelColor = emphasize ? "rgba(255,255,255,0.78)" : NAVY;
-            const valueColor = emphasize ? "#fff" : INK;
-            return `<div style="border:1px solid ${border};background:${bg};padding:12px 12px 14px;min-height:78px">
-              <div style="font-size:10px;line-height:1.35;color:${labelColor};${FONT_STACK};font-weight:600">${escapeHtml(r.label)}</div>
+            const labelColor = emphasize ? "rgba(255,255,255,0.8)" : "#6b7280";
+            const valueColor = emphasize ? "#fff" : NAVY;
+            const accentBorder = accent && !emphasize ? `border-left:5px solid ${GOLD};` : "";
+            return `<div style="border:1px solid ${border};${accentBorder}background:${bg};padding:12px 12px 14px;min-height:78px">
+              <div style="font-size:11px;line-height:1.35;color:${labelColor};${FONT_STACK};font-weight:400">${escapeHtml(r.label)}</div>
               <div style="margin-top:10px;font-size:18px;line-height:1.15;font-weight:700;color:${valueColor};${FONT_STACK};font-variant-numeric:tabular-nums">${escapeHtml(r.value)}</div>
             </div>`;
           })
@@ -297,15 +302,15 @@ function buildHtml(input: DocumentPdfInput, brand?: BrandAssets) {
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>${escapeHtml(input.title)}</title><style>${fontFaceCss(brand)}</style></head>
 <body>
-  <div id="kipit-statement" style="${FONT_STACK};padding:24px 22px 20px;width:750px;max-width:750px;margin:0 auto;background:${PAGE_BG}">
-    <header style="display:flex;align-items:stretch;justify-content:space-between;gap:18px;margin-bottom:14px">
+  <div id="kipit-statement" style="${FONT_STACK};padding:24px 22px 20px;width:750px;max-width:750px;margin:0 auto;background:${PAGE_BG};color:${NAVY}">
+    <header style="display:flex;align-items:stretch;justify-content:space-between;gap:16px;margin-bottom:0">
       <div style="display:flex;align-items:center;min-width:0;flex:1">
-        <img src="${escapeHtml(logo)}" alt="Kipit Asset Management" style="height:58px;width:auto;max-width:280px;object-fit:contain" />
+        <img src="${escapeHtml(logo)}" alt="Kipit Asset Management" style="height:56px;width:auto;max-width:280px;object-fit:contain" />
       </div>
-      <div style="background:${NAVY};color:#fff;min-width:280px;max-width:360px;padding:16px 18px;display:flex;flex-direction:column;justify-content:center">
-        <div style="font-size:16px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;line-height:1.2">${escapeHtml(input.title)}</div>
-        ${periodLine ? `<div style="margin-top:8px;font-size:11px;line-height:1.45;color:rgba(255,255,255,0.88)">${escapeHtml(periodLine)}</div>` : ""}
-        ${reference ? `<div style="margin-top:4px;font-size:11px;color:rgba(255,255,255,0.88)">Ref: ${escapeHtml(reference)}</div>` : ""}
+      <div style="background:${NAVY};color:#fff;min-width:46%;max-width:52%;padding:16px 18px;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-size:16px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;line-height:1.15">${escapeHtml(input.title)}</div>
+        ${periodLine ? `<div style="margin-top:8px;font-size:11px;line-height:1.45;color:rgba(255,255,255,0.92);font-weight:400">${escapeHtml(periodLine)}</div>` : ""}
+        ${reference ? `<div style="margin-top:4px;font-size:11px;color:rgba(255,255,255,0.92);font-weight:400">Ref: ${escapeHtml(reference)}</div>` : ""}
       </div>
     </header>
 
