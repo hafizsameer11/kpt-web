@@ -5,6 +5,7 @@ import { AppShell } from "@/components/kipit/AppShell";
 import { Rise } from "@/components/kipit/motion";
 import { naira } from "@/lib/home-data";
 import { CALL_ACCOUNT, useTenorBands } from "@/lib/invest-data";
+import { parseNetRatePct } from "@/lib/wht";
 
 export const Route = createFileRoute("/calculator")({
   head: () => ({
@@ -64,7 +65,7 @@ function useCalcOptions(): { options: Option[]; loading: boolean } {
         id: b.days,
         name: b.name,
         days: Number(b.days.replace(/\D/g, "")),
-        rate: Number(b.rate.replace(/[^0-9.]/g, "")),
+        rate: b.ratePct > 0 ? b.ratePct : parseNetRatePct(b.rate),
         minimum: b.minimum > 0 ? b.minimum : 10_000,
         liquidity: `Locked for ${b.days}`,
       })),

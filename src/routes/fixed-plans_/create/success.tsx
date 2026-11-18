@@ -4,6 +4,7 @@ import { z } from "zod";
 import { AppShell } from "@/components/kipit/AppShell";
 import { naira } from "@/lib/home-data";
 import { TENOR_BANDS } from "@/lib/invest-data";
+import { parseNetRatePct } from "@/lib/wht";
 
 export const Route = createFileRoute("/fixed-plans_/create/success")({
   validateSearch: z.object({
@@ -45,7 +46,9 @@ function PlanSuccessScreen() {
   const band = TENOR_BANDS.find(
     (b) => Number(b.days.replace(/\D/g, "")) === days,
   );
-  const ratePct = band ? Number(band.rate.replace(/[^0-9.]/g, "")) : 14;
+  const ratePct = band
+    ? (band.ratePct > 0 ? band.ratePct : parseNetRatePct(band.rate))
+    : 14;
   const rateLabel = band ? band.rate : `${ratePct}%`;
   const productName = name || band?.name || "Kipit Fixed Plan";
   const interest = Math.round((amount * (ratePct / 100) * days) / 365);

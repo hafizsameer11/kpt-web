@@ -3,6 +3,18 @@
 export const WHT_FRACTION = 0.1;
 export const NET_FROM_GROSS = 1 - WHT_FRACTION;
 
+/**
+ * Parse the leading net % from labels like `10.00% net (11.11% gross)`.
+ * Stripping all non-digits yields `10.0011.11` → NaN — always take the first number.
+ */
+export function parseNetRatePct(label: string | number | null | undefined): number {
+  if (typeof label === "number") return Number.isFinite(label) ? label : 0;
+  if (label == null) return 0;
+  const match = String(label).match(/-?\d+(?:\.\d+)?/);
+  const n = match ? Number(match[0]) : NaN;
+  return Number.isFinite(n) ? n : 0;
+}
+
 export function grossRatePctFromNet(netPct: number) {
   return netPct / NET_FROM_GROSS;
 }

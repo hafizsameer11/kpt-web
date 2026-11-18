@@ -8,7 +8,7 @@ import { InterestBreakdown } from "@/components/kipit/InterestBreakdown";
 import { naira } from "@/lib/home-data";
 import { PLAN_MIN_NAIRA, useTenorBands } from "@/lib/invest-data";
 import { useWalletBalance } from "@/lib/wallet-balance";
-import { interestBreakdownFromNetRate } from "@/lib/wht";
+import { interestBreakdownFromNetRate, parseNetRatePct } from "@/lib/wht";
 
 function daysFromPlanLabel(plan?: string) {
   if (!plan || plan === "custom") return 0;
@@ -60,7 +60,7 @@ function CreatePlanAmountScreen() {
     ? Math.min(...TENOR_BANDS.map((b) => (b.minimum > 0 ? b.minimum : DEFAULT_MIN)))
     : DEFAULT_MIN;
   const TOP_RATE = TENOR_BANDS.length
-    ? Math.max(...TENOR_BANDS.map((b) => Number(b.rate.replace(/[^0-9.]/g, "")) || 0))
+    ? Math.max(...TENOR_BANDS.map((b) => b.ratePct || parseNetRatePct(b.rate) || 0))
     : 0;
   const { plan, planType: planTypeRaw } = Route.useSearch();
   const planType = planTypeRaw === "FLEX" ? "FLEX" : "LOCK";
@@ -74,7 +74,9 @@ function CreatePlanAmountScreen() {
     PLAN_MIN_NAIRA,
     band && band.minimum > 0 ? band.minimum : LOWEST_MIN,
   );
-  const BEST_RATE = band ? Number(band.rate.replace(/[^0-9.]/g, "")) : TOP_RATE;
+  const BEST_RATE = band
+    ? (band.ratePct > 0 ? band.ratePct : parseNetRatePct(band.rate))
+    : TOP_RATE;
 
   const [raw, setRaw] = useState("");
   const amount = Number(raw.replace(/[^0-9]/g, "")) || 0;

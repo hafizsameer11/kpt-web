@@ -10,6 +10,7 @@ import {
   type ApiInvestRates,
   type ApiRateBand,
 } from "@/lib/api";
+import { parseNetRatePct } from "@/lib/wht";
 
 export const PLAN_MIN_NAIRA = 1_000;
 export const LOCK_STANDARD_TENORS = [30, 60, 90, 180, 365] as const;
@@ -88,6 +89,8 @@ export type TenorBand = {
   name: string;
   days: string;
   rate: string;
+  /** Numeric net p.a. rate — prefer this over parsing `rate` labels. */
+  ratePct: number;
   minimum: number;
   featured?: boolean;
 };
@@ -172,6 +175,7 @@ function mapBands(bands: ApiRateBand[]) {
       name,
       days: `${days} days`,
       rate: rateLabel,
+      ratePct: Number.isFinite(b.ratePct) ? b.ratePct : parseNetRatePct(rateLabel),
       minimum,
       featured: days === 90,
     };
@@ -293,7 +297,7 @@ export function catalogTenorsFor(family: PlanFamily): CatalogTenor[] {
     return {
       days,
       rate: match?.rate ?? "—",
-      ratePct: match ? Number(match.rate.replace(/[^0-9.]/g, "")) || 0 : 0,
+      ratePct: match?.ratePct ?? (match ? parseNetRatePct(match.rate) : 0),
       minimum: match?.minimum ?? PLAN_MIN_NAIRA,
     };
   });

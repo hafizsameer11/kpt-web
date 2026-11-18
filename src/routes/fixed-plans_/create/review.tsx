@@ -37,7 +37,7 @@ import {
   flexConsentText,
   lockConsentText,
 } from "@/lib/invest-data";
-import { interestBreakdownFromNetRate } from "@/lib/wht";
+import { interestBreakdownFromNetRate, parseNetRatePct } from "@/lib/wht";
 import { refreshWalletFromApi, useWalletBalance } from "@/lib/wallet-balance";
 import { hydrateLiveBalances } from "@/lib/live-balances";
 
@@ -110,7 +110,9 @@ function usePlanCalc(
   const band = TENOR_BANDS.find(
     (b) => Number(b.days.replace(/\D/g, "")) === days,
   );
-  const ratePct = band ? Number(band.rate.replace(/[^0-9.]/g, "")) : 14;
+  const ratePct = band
+    ? (band.ratePct > 0 ? band.ratePct : parseNetRatePct(band.rate))
+    : 14;
   const rateLabel = band ? band.rate : `${ratePct}%`;
   const breakdown = interestBreakdownFromNetRate({
     principal: amount,
