@@ -59,8 +59,40 @@ const CATEGORY_ICON: Record<string, typeof Landmark> = {
 const isActiveOffering = (p: ExploreProduct) =>
   p.availability === "open" || p.availability === "closing";
 
+type OfferTab = "Active" | "Past";
+
 const EXPLORE_SUBTITLE =
   "Invest in Treasury Bills, Commercial Papers, Mutual Funds and Bonds selected by our investment team. See the rate, tenor and minimum for every offering before you invest.";
+
+function OfferTabPills({
+  tab,
+  onChange,
+  className = "",
+}: {
+  tab: OfferTab;
+  onChange: (t: OfferTab) => void;
+  className?: string;
+}) {
+  return (
+    <div className={`flex gap-2 ${className}`}>
+      {(["Active", "Past"] as const).map((t) => (
+        <button
+          key={t}
+          type="button"
+          onClick={() => onChange(t)}
+          aria-pressed={tab === t}
+          className={`rounded-full border px-3.5 py-1.5 text-[12px] font-bold press ${
+            tab === t
+              ? "border-transparent bg-brand text-brand-foreground"
+              : "border-border bg-card text-muted-foreground"
+          }`}
+        >
+          {t}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 function ExploreScreen() {
   useSyncExternalStore(
@@ -82,6 +114,7 @@ function ExploreScreen() {
 function MobileExplore() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
+  const [offerTab, setOfferTab] = useState<OfferTab>("Active");
 
   const featured = EXPLORE_PRODUCTS.filter((p) => p.featured && isActiveOffering(p));
 
@@ -89,14 +122,17 @@ function MobileExplore() {
     const q = query.trim().toLowerCase();
     return EXPLORE_PRODUCTS.filter((p) => {
       const inCategory = !category || p.categoryId === category;
+      // B18: Active / Past — Closed only under Past (home + category filter).
+      const inLifecycle =
+        offerTab === "Active" ? isActiveOffering(p) : p.availability === "closed";
       const inQuery =
         !q ||
         p.name.toLowerCase().includes(q) ||
         p.issuer.toLowerCase().includes(q) ||
         p.category.toLowerCase().includes(q);
-      return inCategory && inQuery;
+      return inCategory && inLifecycle && inQuery;
     });
-  }, [query, category]);
+  }, [query, category, offerTab]);
 
   const activeCategory = EXPLORE_CATEGORIES.find((c) => c.id === category);
 
@@ -168,7 +204,10 @@ function MobileExplore() {
                     <button
                       key={c.id}
                       type="button"
-                      onClick={() => setCategory(active ? null : c.id)}
+                      onClick={() => {
+                        setCategory(active ? null : c.id);
+                        setOfferTab("Active");
+                      }}
                       aria-pressed={active}
                       style={{ ["--d" as string]: `${i * 80}ms` }}
                       className={`k-rise relative flex flex-col justify-between overflow-hidden rounded-xl p-4 text-left press md:rounded-xl md:p-5 ${
@@ -243,7 +282,7 @@ function MobileExplore() {
             </Rise>
           )}
 
-          {/* Offerings list */}
+          {/* Offerings list — Active / Past (B18) */}
           <Rise delay={120}>
             <section className="mt-6">
               <div className="flex items-center justify-between gap-3">
@@ -256,6 +295,7 @@ function MobileExplore() {
                     onClick={() => {
                       setCategory(null);
                       setQuery("");
+                      setOfferTab("Active");
                     }}
                     className="text-[11.5px] font-bold text-foreground underline-offset-4 hover:underline"
                   >
@@ -264,11 +304,19 @@ function MobileExplore() {
                 )}
               </div>
 
+              <OfferTabPills tab={offerTab} onChange={setOfferTab} className="mt-3" />
+
               {results.length === 0 ? (
                 <div className="mt-3 rounded-xl border border-dashed border-border p-6 text-center">
-                  <p className="text-[13px] font-bold">No matching offerings</p>
+                  <p className="text-[13px] font-bold">
+                    {offerTab === "Active"
+                      ? "No Active offerings right now"
+                      : "No Past offerings yet"}
+                  </p>
                   <p className="mt-1 text-[12px] text-muted-foreground">
-                    Try a different search or category.
+                    {offerTab === "Active"
+                      ? "Switch to Past to see closed offerings."
+                      : "Closed offerings in this view will appear here."}
                   </p>
                 </div>
               ) : (
@@ -499,6 +547,7 @@ function Stat({
 function DesktopExplore() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
+  const [offerTab, setOfferTab] = useState<OfferTab>("Active");
   const [visible, setVisible] = useState(6);
 
   const featured = EXPLORE_PRODUCTS.filter((p) => p.featured && isActiveOffering(p));
@@ -507,14 +556,17 @@ function DesktopExplore() {
     const q = query.trim().toLowerCase();
     return EXPLORE_PRODUCTS.filter((p) => {
       const inCategory = !category || p.categoryId === category;
+      // B18: Active / Past — Closed only under Past.
+      const inLifecycle =
+        offerTab === "Active" ? isActiveOffering(p) : p.availability === "closed";
       const inQuery =
         !q ||
         p.name.toLowerCase().includes(q) ||
         p.issuer.toLowerCase().includes(q) ||
         p.category.toLowerCase().includes(q);
-      return inCategory && inQuery;
+      return inCategory && inLifecycle && inQuery;
     });
-  }, [query, category]);
+  }, [query, category, offerTab]);
 
   const activeCategory = EXPLORE_CATEGORIES.find((c) => c.id === category);
 
@@ -580,6 +632,7 @@ function DesktopExplore() {
               type="button"
               onClick={() => {
                 setCategory(active ? null : c.id);
+                setOfferTab("Active");
                 setVisible(6);
               }}
               aria-pressed={active}
@@ -635,13 +688,13 @@ function DesktopExplore() {
           )}
 
           <section className="card-surface p-6">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="font-display text-base font-extrabold">
                 {activeCategory ? activeCategory.name : "All offerings"}
               </h2>
               <div className="flex items-center gap-3">
                 <span className="text-[11px] font-semibold text-muted-foreground">
-                  {results.length} listed
+                  {results.length} {offerTab.toLowerCase()}
                 </span>
                 {(category || query) && (
                   <button
@@ -649,6 +702,7 @@ function DesktopExplore() {
                     onClick={() => {
                       setCategory(null);
                       setQuery("");
+                      setOfferTab("Active");
                       setVisible(6);
                     }}
                     className="text-[11.5px] font-bold text-foreground underline-offset-4 hover:underline"
@@ -659,11 +713,19 @@ function DesktopExplore() {
               </div>
             </div>
 
+            <OfferTabPills tab={offerTab} onChange={(t) => { setOfferTab(t); setVisible(6); }} className="mt-4" />
+
             {results.length === 0 ? (
               <div className="mt-4 rounded-xl border border-dashed border-border p-10 text-center">
-                <p className="text-[13px] font-bold">No matching offerings</p>
+                <p className="text-[13px] font-bold">
+                  {offerTab === "Active"
+                    ? "No Active offerings right now"
+                    : "No Past offerings yet"}
+                </p>
                 <p className="mt-1 text-[12px] text-muted-foreground">
-                  Try a different search or category.
+                  {offerTab === "Active"
+                    ? "Switch to Past to see closed offerings."
+                    : "Closed offerings in this view will appear here."}
                 </p>
               </div>
             ) : (
