@@ -372,53 +372,102 @@ function waitForImages(root: ParentNode) {
   );
 }
 
-/** Render HTML into a hidden host and return a multi-page PDF blob. */
+/** Browser canvas dimension ceiling (Chrome ~16384); stay under it with room for scale. */
+const MAX_CANVAS_EDGE = 8192;
+
+/**
+ * Render HTML into an off-screen host and return a multi-page PDF blob.
+ * Avoids opacity:0 (html2canvas blank/fail) and one giant JPEG (OOM / size limits).
+ */
 export async function documentPdfBlob(input: DocumentPdfInput): Promise<Blob> {
   const html = buildHtml(input);
   const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
   const host = document.createElement("div");
   host.setAttribute("aria-hidden", "true");
-  host.style.cssText =
-    "position:fixed;left:-12000px;top:0;width:900px;background:#ffffff;z-index:-1;pointer-events:none;opacity:0;";
+  // Must stay "visible" to html2canvas — opacity:0 / display:none cause blank or throw.
+  host.style.cssText = [
+    "position:fixed",
+    "left:0",
+    "top:0",
+    "width:794px",
+    "background:#ffffff",
+    "color:#0f172a",
+    "z-index:-1",
+    "pointer-events:none",
+    "opacity:0.02",
+    "overflow:visible",
+    "transform:translateX(-110%)",
+  ].join(";");
   host.innerHTML = bodyMatch ? bodyMatch[1]! : html;
   document.body.appendChild(host);
 
   try {
     await waitForImages(host);
-    await new Promise((r) => window.setTimeout(r, 50));
+    await new Promise((r) => window.setTimeout(r, 80));
 
     const [{ jsPDF }, html2canvasMod] = await Promise.all([import("jspdf"), import("html2canvas")]);
     const html2canvas = html2canvasMod.default;
 
+    const contentWidth = Math.max(host.scrollWidth, 794);
+    const contentHeight = Math.max(host.scrollHeight, 1);
+    const scale = Math.min(2, MAX_CANVAS_EDGE / contentWidth, MAX_CANVAS_EDGE / contentHeight);
+
     const canvas = await html2canvas(host, {
-      scale: 2,
+      scale: Math.max(1, scale),
       useCORS: true,
+      allowTaint: false,
       backgroundColor: "#ffffff",
       logging: false,
-      windowWidth: 900,
+      width: contentWidth,
+      windowWidth: contentWidth,
+      scrollX: 0,
+      scrollY: 0,
+      imageTimeout: 15_000,
+      onclone: (_doc, cloned) => {
+        cloned.style.transform = "none";
+        cloned.style.opacity = "1";
+        cloned.style.left = "0";
+        cloned.style.top = "0";
+        cloned.style.position = "static";
+      },
     });
+
+    if (!canvas.width || !canvas.height) {
+      throw new Error("Statement canvas was empty");
+    }
 
     const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    const margin = 6;
+    const margin = 8;
     const usableWidth = pageWidth - margin * 2;
     const usableHeight = pageHeight - margin * 2;
-    const imgWidth = usableWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    let heightLeft = imgHeight;
-    let position = margin;
-    const imgData = canvas.toDataURL("image/jpeg", 0.93);
+    // Slice the canvas into page-height strips — avoids one huge data URL.
+    const pxPerMm = canvas.width / usableWidth;
+    const pageSlicePx = Math.max(1, Math.floor(usableHeight * pxPerMm));
+    const sliceCanvas = document.createElement("canvas");
+    sliceCanvas.width = canvas.width;
+    const sliceCtx = sliceCanvas.getContext("2d");
+    if (!sliceCtx) throw new Error("Could not create PDF canvas context");
 
-    pdf.addImage(imgData, "JPEG", margin, position, imgWidth, imgHeight);
-    heightLeft -= usableHeight;
+    let y = 0;
+    let pageIndex = 0;
+    while (y < canvas.height) {
+      const sliceH = Math.min(pageSlicePx, canvas.height - y);
+      sliceCanvas.height = sliceH;
+      sliceCtx.fillStyle = "#ffffff";
+      sliceCtx.fillRect(0, 0, sliceCanvas.width, sliceH);
+      sliceCtx.drawImage(canvas, 0, y, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
 
-    while (heightLeft > 2) {
-      position = margin - (imgHeight - heightLeft);
-      pdf.addPage();
-      pdf.addImage(imgData, "JPEG", margin, position, imgWidth, imgHeight);
-      heightLeft -= usableHeight;
+      const imgData = sliceCanvas.toDataURL("image/jpeg", 0.92);
+      const sliceHeightMm = sliceH / pxPerMm;
+      if (pageIndex > 0) pdf.addPage();
+      pdf.addImage(imgData, "JPEG", margin, margin, usableWidth, sliceHeightMm);
+
+      y += sliceH;
+      pageIndex += 1;
+      if (pageIndex > 40) break; // safety for pathological statements
     }
 
     return pdf.output("blob");
@@ -472,12 +521,16 @@ export async function downloadDocumentPdf(input: DocumentPdfInput) {
   const pdfName = defaultFilename(input, "pdf");
   try {
     const blob = await documentPdfBlob(input);
+    if (!blob || blob.size < 64) {
+      throw new Error("Generated PDF was empty");
+    }
     triggerDownload(blob, pdfName);
-  } catch {
+  } catch (err) {
     const html = buildHtml(input);
     const blob = new Blob([html], { type: "text/html;charset=utf-8" });
     triggerDownload(blob, defaultFilename(input, "html"));
-    throw new Error("PDF export failed — HTML copy downloaded instead.");
+    const detail = err instanceof Error && err.message ? ` (${err.message})` : "";
+    throw new Error(`PDF export failed — HTML copy downloaded instead.${detail}`);
   }
 }
 
