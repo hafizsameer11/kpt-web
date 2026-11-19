@@ -395,6 +395,11 @@ function PlanOptionsScreen() {
 
               {forWhom === "gift" && (
                 <div className="k-rise mt-4 space-y-3">
+                  <p className="rounded-xl border border-gold/25 bg-gold/10 px-3.5 py-3 text-[12px] leading-relaxed text-foreground/80">
+                    A gift is a funded investment for someone else — not a cash transfer. You pay
+                    from your wallet; they claim a real plan with the rate and tenor you chose.
+                    Unclaimed gifts return to your wallet after 30 days.
+                  </p>
                   <input
                     value={recipient}
                     onChange={(e) => setRecipient(e.target.value)}
@@ -801,6 +806,11 @@ function PlanOptionsScreen() {
 
                 {forWhom === "gift" && (
                   <div className="k-rise mt-4 space-y-3">
+                    <p className="rounded-xl border border-gold/25 bg-gold/10 px-3.5 py-3 text-[12px] leading-relaxed text-foreground/80">
+                      A gift is a funded investment for someone else — not a cash transfer. You pay
+                      from your wallet; they claim a real plan with the rate and tenor you chose.
+                      Unclaimed gifts return to your wallet after 30 days.
+                    </p>
                     <input
                       value={recipient}
                       onChange={(e) => setRecipient(e.target.value)}

@@ -148,7 +148,7 @@ export async function hydrateExploreFromApi() {
       .map((c) => ({
         id: c.slug || c.id,
         name: c.name || "Category",
-        short: (c.name || "Category").split(" ")[0] || c.name || "Category",
+        short: c.name || "Category",
         count: c.productCount ?? 0,
       }));
     EXPLORE_PRODUCTS = list.map((p) => {
